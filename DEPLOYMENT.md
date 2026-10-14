@@ -47,7 +47,7 @@ The launcher supplies the correct local origin when you choose another port. Reg
 
 ## Connect an empty GitHub repository
 
-Current workspace: `origin` points to `git@github.com:maniksurtani/rephase.git`; the remote was confirmed empty. The initial push has not completed because GitHub rejected the workspace token. GitHub Actions will run after a successful push; the Cloudflare deployment job remains gated.
+Current workspace: `origin` points to `git@github.com:maniksurtani/rephase.git`; the remote was confirmed empty. The GitHub connection now authenticates as `maniksurtani`, but Git pushes return HTTP 403. The initial push awaits repository write authorization for this connection or a push from a computer with a working SSH key. GitHub Actions will run after a successful push; the Cloudflare deployment job remains gated. The connected ChatGPT Codex Connector has no installation on the repository owner account `maniksurtani`. Install [the GitHub app](https://github.com/apps/chatgpt-codex-connector) for that account and include `rephase` in its repository access before retrying.
 
 Create an empty GitHub repository, choosing its name and visibility. Leave GitHub's README, license and `.gitignore` initialization options unchecked so the remote stays empty and can receive this repository's existing history.
 
@@ -70,7 +70,7 @@ Then run the printed `git push -u origin main` command when you are ready to upl
 
 ## Move the complete Git history to your computer
 
-The handoff includes `rephase.bundle`, a verified Git bundle containing the full committed history. It contains no ignored credentials, dependency directories, or local database state. Download it, then run these commands from its directory on a computer with a working GitHub SSH key:
+The portable handoff uses `rephase.bundle`, a verified Git bundle containing the committed history at the time it was generated. It contains no ignored credentials, dependency directories, or local database state. Download the latest bundle, then run these commands from its directory on a computer with a working GitHub SSH key:
 
 ```sh
 git clone rephase.bundle rephase-git
@@ -79,7 +79,7 @@ git remote set-url origin git@github.com:maniksurtani/rephase.git
 git push -u origin main
 ```
 
-Cloning the bundle sets `origin` to the bundle file initially, so the `set-url` command changes it to GitHub before pushing. This preserves all commits and the prepared workflows. If you prefer to push from the build workspace, update its GitHub credential through the secure environment configuration first; never paste a token into chat or a remote URL.
+Cloning the bundle sets `origin` to the bundle file initially, so the `set-url` command changes it to GitHub before pushing. This preserves the bundle's commits and the prepared workflows. Pushing from the build workspace requires repository write authorization for its GitHub connection; a successful authentication check alone does not verify push permission. Never paste a token into chat or a remote URL.
 
 ## Prepare Cloudflare and Google
 
