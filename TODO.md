@@ -70,7 +70,7 @@ Amadeus Self-Service is discontinued. AirLabs's near-term schedules and Skyscann
 
 - [x] Receive the SSH remote `git@github.com:maniksurtani/rephase.git`, confirm it is empty, and configure `origin`.
 - [x] Prepare a verified Git bundle containing the complete history for a local SSH push.
-- [ ] Complete the initial push: GitHub authentication now succeeds, but Git pushes return HTTP 403; install ChatGPT Codex Connector on owner account `maniksurtani` with access to `rephase`, or use the bundle on a computer with working SSH access.
+- [x] Complete the initial push to [maniksurtani/rephase](https://github.com/maniksurtani/rephase), with local `main` tracking `origin/main`.
 - [ ] Configure a real Google OAuth web client and verify real sign-in/sync end to end.
 - [ ] Choose an AeroDataBox plan, configure its key, and verify representative routes at +60/+90/+150 days; record missing coverage.
 - [ ] Choose the Cloudflare account/origin, create D1, set deployment configuration/secrets, and decide when to enable automatic main deployment.
@@ -86,4 +86,4 @@ Amadeus Self-Service is discontinued. AirLabs's near-term schedules and Skyscann
 
 Verification: frontend and Worker TypeScript passed; all 173 Vitest tests passed across 14 suites using one worker and a 30-second timeout on this shared environment. The initial full run had one five-second storage timeout during parallel compiler load; the final run passed. Production build contains 24 precached assets. All ten Chromium scenarios are verified: desktop agenda/calendar, mobile persistence/overflow, example-to-personal editing/focus/cabin choices, invalid itinerary rejection, offline account namespace and Science page, cloud conflict/reload behavior, static Science without JavaScript, flight confirmation, DST occurrence selection, and adherence/reload. Two new browser selectors were corrected (internal citation vs external CDC link; history item vs a limitation containing “missed”); affected scenarios and mobile/offline checks passed the focused final rerun (4/4). Local D1 migration 0002, API 200/401/403 checks, production Science URL without a redirect, scheduled purge, launcher startup/shutdown and real Wrangler dry runs succeeded.
 
-Real OAuth/provider coverage and clinical efficacy are not implied by these checks. The GitHub remote is configured and authentication succeeds; the initial push remains blocked by HTTP 403 when writing to the repository. No Cloudflare deployment exists yet.
+Real OAuth/provider coverage and clinical efficacy are not implied by these checks. The code is synced to [maniksurtani/rephase](https://github.com/maniksurtani/rephase), and local `main` tracks `origin/main`. No Cloudflare deployment exists yet.

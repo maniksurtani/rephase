@@ -86,7 +86,7 @@ For the independent numerical fixture reproduction, see [the kernel notes](src/l
 
 ## GitHub and Cloudflare
 
-The workspace has `origin` configured as `git@github.com:maniksurtani/rephase.git`. GitHub confirmed the repository was empty. The GitHub connection now authenticates as `maniksurtani`, but the initial push is still pending: GitHub returns HTTP 403 when this connection attempts to push. Its repository write authorization needs to be resolved, or the bundle can be pushed from a computer with a working SSH key. No Cloudflare resources have been created or deployed. The connected ChatGPT Codex Connector has no installation on the repository owner account `maniksurtani`. Install [the GitHub app](https://github.com/apps/chatgpt-codex-connector) for that account and include `rephase` in its repository access before retrying.
+The code is synced to [maniksurtani/rephase](https://github.com/maniksurtani/rephase) on the `main` branch. The workspace has `origin` configured as `git@github.com:maniksurtani/rephase.git`, with `main` tracking `origin/main`. No Cloudflare resources have been created or deployed.
 
 For another checkout, inspect the remote helper:
 
