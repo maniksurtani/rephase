@@ -47,6 +47,8 @@ The launcher supplies the correct local origin when you choose another port. Reg
 
 ## Connect an empty GitHub repository
 
+Current workspace: `origin` points to `git@github.com:maniksurtani/rephase.git`; the remote was confirmed empty. The initial push has not completed because GitHub rejected the workspace token. GitHub Actions will run after a successful push; the Cloudflare deployment job remains gated.
+
 Create an empty GitHub repository, choosing its name and visibility. Leave GitHub's README, license and `.gitignore` initialization options unchecked so the remote stays empty and can receive this repository's existing history.
 
 For SSH authentication, add your SSH public key to GitHub. For HTTPS, sign in with `gh auth login` or a Git credential manager; GitHub does not accept your account password for Git pushes. Never put an access token in a remote URL.
@@ -65,6 +67,19 @@ npm run github:remote -- --url https://github.com/YOUR_ACCOUNT/YOUR_REPO.git --c
 ```
 
 Then run the printed `git push -u origin main` command when you are ready to upload. The helper never pushes, force-pushes, creates a repository or replaces an existing different remote. The `Checks` workflow runs for pull requests and pushes to `main`; it installs locked dependencies, typechecks, tests, builds and runs Chromium browser scenarios. Pull-request checks receive no deployment or provider secrets.
+
+## Move the complete Git history to your computer
+
+The handoff includes `rephase.bundle`, a verified Git bundle containing the full committed history. It contains no ignored credentials, dependency directories, or local database state. Download it, then run these commands from its directory on a computer with a working GitHub SSH key:
+
+```sh
+git clone rephase.bundle rephase-git
+cd rephase-git
+git remote set-url origin git@github.com:maniksurtani/rephase.git
+git push -u origin main
+```
+
+Cloning the bundle sets `origin` to the bundle file initially, so the `set-url` command changes it to GitHub before pushing. This preserves all commits and the prepared workflows. If you prefer to push from the build workspace, update its GitHub credential through the secure environment configuration first; never paste a token into chat or a remote URL.
 
 ## Prepare Cloudflare and Google
 

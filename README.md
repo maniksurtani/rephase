@@ -86,7 +86,9 @@ For the independent numerical fixture reproduction, see [the kernel notes](src/l
 
 ## GitHub and Cloudflare
 
-No GitHub remote has been configured, and no Cloudflare resources have been created or deployed. After you create an empty GitHub repository, inspect the helper:
+The workspace has `origin` configured as `git@github.com:maniksurtani/rephase.git`. GitHub confirmed the repository was empty. The initial push is pending: GitHub rejected the workspace token, and `gh auth status` reports it as invalid. Refresh the workspace GitHub credential through its secure configuration or push from a computer with a working SSH key. No Cloudflare resources have been created or deployed.
+
+For another checkout, inspect the remote helper:
 
 ```sh
 npm run github:remote -- --help

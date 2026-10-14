@@ -1,6 +1,6 @@
 # Rephase build tasks
 
-Updated 2026-10-14. Checked items are implemented and engineering-verified. External credentials, publication, and clinical/outcome research are separate gates; they cannot be completed by local tests.
+Updated 2026-10-15. Checked items are implemented and engineering-verified. External credentials, publication, and clinical/outcome research are separate gates; they cannot be completed by local tests.
 
 ## Foundation and design
 
@@ -68,7 +68,9 @@ Amadeus Self-Service is discontinued. AirLabs's near-term schedules and Skyscann
 
 ## External setup and research gates
 
-- [ ] Receive the user's empty GitHub remote URL and authentication preference; configure/push when requested.
+- [x] Receive the SSH remote `git@github.com:maniksurtani/rephase.git`, confirm it is empty, and configure `origin`.
+- [x] Prepare a verified Git bundle containing the complete history for a local SSH push.
+- [ ] Complete the initial push: the workspace GitHub token is invalid; refresh authentication or use the bundle on a computer with working SSH access.
 - [ ] Configure a real Google OAuth web client and verify real sign-in/sync end to end.
 - [ ] Choose an AeroDataBox plan, configure its key, and verify representative routes at +60/+90/+150 days; record missing coverage.
 - [ ] Choose the Cloudflare account/origin, create D1, set deployment configuration/secrets, and decide when to enable automatic main deployment.
@@ -84,4 +86,4 @@ Amadeus Self-Service is discontinued. AirLabs's near-term schedules and Skyscann
 
 Verification: frontend and Worker TypeScript passed; all 173 Vitest tests passed across 14 suites using one worker and a 30-second timeout on this shared environment. The initial full run had one five-second storage timeout during parallel compiler load; the final run passed. Production build contains 24 precached assets. All ten Chromium scenarios are verified: desktop agenda/calendar, mobile persistence/overflow, example-to-personal editing/focus/cabin choices, invalid itinerary rejection, offline account namespace and Science page, cloud conflict/reload behavior, static Science without JavaScript, flight confirmation, DST occurrence selection, and adherence/reload. Two new browser selectors were corrected (internal citation vs external CDC link; history item vs a limitation containing “missed”); affected scenarios and mobile/offline checks passed the focused final rerun (4/4). Local D1 migration 0002, API 200/401/403 checks, production Science URL without a redirect, scheduled purge, launcher startup/shutdown and real Wrangler dry runs succeeded.
 
-Real OAuth/provider coverage and clinical efficacy are not implied by these checks. No GitHub remote or Cloudflare deployment exists yet.
+Real OAuth/provider coverage and clinical efficacy are not implied by these checks. The GitHub remote is configured; the initial push was blocked by an invalid workspace token. No Cloudflare deployment exists yet.
