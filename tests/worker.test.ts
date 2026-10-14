@@ -95,7 +95,7 @@ describe('Worker account API', () => {
 
   it('reports absent Google setup without simulating authentication', async () => {
     const config = await invoke(request('/api/config'), { GOOGLE_CLIENT_ID: '' });
-    expect(await config.json()).toEqual({ googleClientId: null, syncAvailable: false });
+    expect(await config.json()).toEqual({ googleClientId: null, syncAvailable: false, flightLookupAvailable: false, flightProvider: 'aerodatabox' });
     const login = await invoke(request('/api/auth/google', 'POST', { credential: 'fake' }), { GOOGLE_CLIENT_ID: '' });
     expect(login.status).toBe(503);
     expect(login.headers.has('Set-Cookie')).toBe(false);
@@ -278,6 +278,45 @@ describe('Saved state contract', () => {
     expect(validateAppData(legacy)).toMatch(/flight details/);
   });
 
+  it('validates new planning preferences and owner-confirmed provider records', () => {
+    const saved = structuredClone(validData);
+    Object.assign(saved.preferences, { planningMode: 'model', autoSync: true, calendarAlarms: true });
+    Object.assign(saved.trips[0].legs[0], { flightSource: 'aerodatabox', flightFetchedAt: '2026-10-14T10:00:00Z', providerRecordConfirmed: true, takeoffDateTime: '2026-11-05T20:20', landingDateTime: '2026-11-06T13:50', taxiOutMinutes: 20, taxiInMinutes: 10 });
+    expect(validateAppData(saved)).toBeNull();
+    saved.trips[0].legs[0].providerRecordConfirmed = false;
+    expect(validateAppData(saved)).toMatch(/flight details/);
+    saved.trips[0].legs[0].providerRecordConfirmed = true;
+    saved.preferences.planningMode = 'invalid' as 'model';
+    expect(validateAppData(saved)).toMatch(/preferences/);
+    saved.preferences.planningMode = 'model';
+    saved.trips[0].legs[0].taxiOutMinutes = 181;
+    expect(validateAppData(saved)).toMatch(/flight details/);
+  });
+
+  it('validates bounded adherence records and rejects cross-trip references', () => {
+    const saved = structuredClone(validData);
+    saved.trips[0].adherence = [{ id: 'record-a', tripId: 'trip-a', actionId: 'sleep-action-a', type: 'sleep', scheduledStart: '2026-11-05T10:00:00Z', scheduledEnd: '2026-11-05T18:00:00Z', timeZone: 'America/Los_Angeles', status: 'partial', actualStart: '2026-11-05T11:00:00Z', actualEnd: '2026-11-05T17:00:00Z', recordedAt: '2026-11-05T18:00:00Z' }];
+    expect(validateAppData(saved)).toBeNull();
+    saved.trips[0].adherence[0].tripId = 'trip-other';
+    expect(validateAppData(saved)).toMatch(/trip details/);
+    saved.trips[0].adherence[0].tripId = 'trip-a';
+    saved.trips[0].adherence[0].actualEnd = '2026-11-05T09:00:00Z';
+    expect(validateAppData(saved)).toMatch(/trip details/);
+    saved.trips[0].adherence[0].actualEnd = '2026-11-05T17:00:00Z';
+    saved.trips[0].adherence[0].recordedAt = '2026-11-05T18:00:60Z';
+    expect(validateAppData(saved)).toMatch(/trip details/);
+  });
+
+  it('rejects DST gaps, unchosen folds and contradictory actual flight times', () => {
+    const saved = structuredClone(validData); const leg = saved.trips[0].legs[0];
+    leg.departureDateTime = '2026-11-01T01:30'; leg.arrivalDateTime = '2026-11-01T19:30';
+    expect(validateAppData(saved)).toMatch(/flight details/);
+    leg.departureDisambiguation = 'later'; expect(validateAppData(saved)).toBeNull();
+    leg.takeoffDateTime = '2026-11-01T00:30'; expect(validateAppData(saved)).toMatch(/flight details/);
+    delete leg.takeoffDateTime; leg.departureDateTime = '2026-03-08T02:30'; leg.arrivalDateTime = '2026-03-08T19:30';
+    expect(validateAppData(saved)).toMatch(/flight details/);
+  });
+
   it('accepts full valid state and rejects invalid dates, zones, enums and references', () => {
     expect(validateAppData(validData)).toBeNull();
     const invalid = structuredClone(validData);
@@ -287,6 +326,7 @@ describe('Saved state contract', () => {
     invalid.preferences.homeTimeZone = 'Imaginary/Zone';
     expect(validateAppData(invalid)).toMatch(/preferences/);
     invalid.preferences.homeTimeZone = 'UTC';
+    invalid.trips[0].legs[0].departureDateTime = validData.trips[0].legs[0].departureDateTime;
     invalid.selectedTripId = 'missing-trip';
     expect(validateAppData(invalid)).toMatch(/selected trip/);
     expect(validateAppData({ ...validData, schemaVersion: 2 })).toMatch(/schema/);

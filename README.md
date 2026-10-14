@@ -1,90 +1,97 @@
 # Rephase
 
-A mobile-first jet lag planner with a dark sleep theme, multi-destination itineraries, local storage, and optional Google account sync. The app runs its planner in the browser; a small Cloudflare Worker handles account persistence.
+A mobile-first jet lag planner with a dark sleep theme, complex itineraries, optional Google sync, and flight-number/date lookup. Planning runs in the browser, including offline. A small Cloudflare Worker handles authentication, optional persistence, and flight-provider requests.
 
-The first planner is an **evidence-informed rules prototype**. It is not a calibrated biological model or a clinically validated treatment. Large/uncertain shifts omit precise light and melatonin advice. The numerical optimizer and clinical review remain in [TODO.md](TODO.md).
+The default experimental planner uses the published Forger99 light-driven circadian model and compares constrained advance/delay schedules across the itinerary. Its equations have been checked against an independent Python/SciPy reference. **Numerical verification is not clinical validation:** personal phase, received light, and actual sleep remain uncertain. Conservative planning rules are also available in Profile. Read the standalone [Science page](public/science.html) at `/science.html` for plain-language explanations and original sources.
 
-## Quick local preview
+## Start locally
 
-Use Node.js 22.13 or newer (Node 24 is used for development).
-
-```sh
-cd /workspace/rephase
-npm install
-npm run dev
-```
-
-Open **http://localhost:5173** on the machine running the app. If this workspace is remote, forward port **5173** through your workspace/IDE first; a remote loopback address is not your device's localhost.
-
-The sample London → Dubai connection → Singapore → San Francisco trip uses future dates relative to when you first open the app. It is clearly marked as an example, not actual flight data. Start a new trip or edit the sample, set your Profile preferences, and explore Your plan. Preferences/trips survive reload in IndexedDB.
-
-Trip editing, planning, preferences, calendar/JSON export, and local saving work without Google credentials or a backend. The development server proxies `/api` to the optional Worker; without that server, Google/sync are unavailable and their controls explain configuration requirements.
-
-Each flight includes travel class and actual lie-flat availability. Business class does not automatically imply a bed. In-flight rest excludes the first 30 minutes after takeoff and the final 60 minutes before landing; seated travel receives rest/nap guidance rather than a full-night sleep promise.
-
-## Production bundle and offline preview
+Use Node.js **22.13 or newer**; Node 24 is used for development. From this repository:
 
 ```sh
-npm run build
-npm run preview
+npm start
 ```
 
-Open **http://localhost:4173**. Production registers a service worker and precaches the complete static bundle. Let the first load finish online; then saved plans can be read/recalculated offline. The browser must support service workers/IndexedDB, and installation requires HTTPS or localhost. Dev mode intentionally does not install the service worker.
+The [launcher](scripts/launch.mjs) installs locked dependencies when missing, builds outdated assets, applies **local** D1 migrations, starts Vite and the local Worker, and opens **http://localhost:5173**. Press **Ctrl+C** to stop its servers. It preserves existing `.dev.vars` and refuses occupied ports.
 
-Use your browser's install/Add to Home Screen action where supported. Service-worker caching explicitly excludes the API, Google requests, and user data. Local private data is stored in an account-scoped IndexedDB namespace rather than a public asset cache.
-
-## Optional local Worker and Google sync
-
-No remote Cloudflare database or deployment is needed to test the local Worker:
+Useful alternatives:
 
 ```sh
-cp .dev.vars.example .dev.vars
-npm run build
-npm run db:local
-npm run worker:dev
+npm start -- --static        # Browser-only development; no Worker or D1
+npm start -- --production    # Built offline app and local API on localhost:8787
+npm start -- --no-open       # Do not open a browser automatically
+npm start -- --help
 ```
 
-Run `npm run dev` in a second terminal and continue using http://localhost:5173. Wrangler serves assets/API on http://localhost:8787; Vite provides the development UI and same-origin API proxy.
+If this workspace is remote, forward port **5173** (or **8787** in production mode) through your IDE/workspace. The remote machine's loopback address is not your device's localhost.
 
-For real Google sign-in, create a Google OAuth **Web application** client and register `http://localhost:5173` as an authorized JavaScript origin. Put its public client ID in the ignored `.dev.vars` file:
+The London → Dubai connection → Singapore → San Francisco example uses relative future dates and is labeled as an example. Create a trip or edit it to make a personal itinerary. Profile controls habitual/preferred sleep, duration, chronotype, supplements, planning mode, calendar reminders, and optional automatic sync.
+
+Flight editing supports travel class and **separately confirmed** lie-flat availability. Unknown airborne times use 30-minute taxi allowances at each end, then exclude the first 30 minutes after takeoff and the final 60 before landing. Short flights may have no rest window. Crew instructions take priority. Airline class alone does not imply a bed.
+
+## Google sign-in and account sync
+
+Local planning, manual trips, exports, and saved preferences work without credentials. The launcher creates an ignored `.dev.vars` with empty credentials if the file is absent. To test real Google sign-in, create an OAuth **Web application** client and register `http://localhost:5173` as an authorized JavaScript origin, then set:
 
 ```dotenv
 GOOGLE_CLIENT_ID="your-client-id.apps.googleusercontent.com"
 ALLOWED_ORIGIN="http://localhost:5173"
 ```
 
-The ID-token sign-in flow needs no OAuth client secret and requests no Gmail/Calendar access. Restart Wrangler after configuration changes. Without a client ID, the Worker intentionally reports Google/sync as unavailable. Google end-to-end sign-in is not verified until a real client is configured.
+Restart the launcher after changes. Register `http://localhost:8787` too if testing production mode. This GIS ID-token flow needs no OAuth client secret and requests no Gmail or Calendar access.
 
-Sign-in verifies Google tokens on the Worker and establishes an HttpOnly session. Choose cloud data, an existing account-local copy, or explicitly copy guest data. **Sync is manual in this version.** The revision counter is preserved locally across reload; concurrent changes produce a choice rather than silently overwriting another device. Signing out switches to the separate guest namespace. Cloud deletion leaves the local copy intact, and local clearing leaves cloud data intact.
+Guest and account storage remain separate. First sign-in offers an explicit choice before copying guest data into an account. Sync uses revisions and a persisted three-way merge base: separate edits can merge; conflicting edits require a choice. Automatic sync is opt-in. Cached offline identity never authorizes the API. Clearing local data and deleting cloud data are distinct operations; account copies can persist on other devices until those devices sync or clear them.
+
+Real Google login is implemented but cannot be verified end to end without your OAuth client.
+
+## Optional flight lookup
+
+The adapter uses **AeroDataBox through RapidAPI**, rather than discontinued Amadeus Self-Service, near-term AirLabs schedules, or Skyscanner route search. Subscribe to a suitable plan and put the key in `.dev.vars`:
+
+```dotenv
+RAPIDAPI_KEY="your-key"
+```
+
+Never commit keys or put them in browser configuration. Lookup requires a verified Google account and maps a flight number plus **departure-airport local date** to candidate schedules. Confirm your own booked/traveled flight before saving. Results remain editable and do not change your cabin choices. Future coverage is best effort; always compare with your booking.
+
+The Worker caches normalized schedules with freshness timestamps, labels stale results, deduplicates concurrent requests within an isolate, and reserves daily/monthly/global request quotas before provider calls. Defaults: 10 provider requests per account/day, 40/month, and 150 globally/month. Airport metadata calls count too. AeroDataBox's free plan is for noncommercial use; check current plan limits and terms before enabling it. Shared cache retention is six days with hourly cleanup, below the seven-day limit. Owner-specific trip records are never reused as a shared cache. Provider attribution remains visible after manual edits to imported records.
+
+Live route coverage at +60/+90/+150 days awaits your key; fixtures are synthetic and do not prove future coverage.
+
+## Offline and calendar export
+
+```sh
+npm run build
+npm run preview
+```
+
+Open **http://localhost:4173**. Let the first online load finish to install the service worker. The app, planning worker, fonts, airport data, and Science page are precached; API/account responses and Google requests are excluded. Saved trips can then generate plans offline. Installation requires HTTPS or localhost and browser support for IndexedDB/service workers. Development mode does not register a service worker.
+
+Calendar export uses UTC instants, stable IDs, and optional reminders ten minutes before actions. Contiguous midnight-split actions are combined to avoid a second sleep alarm. Calendar applications decide whether imported alarms are honored. JSON export provides a backup; browser storage may be cleared or evicted.
 
 ## Checks
 
 ```sh
 npm run typecheck
-npm test
+npm test -- --maxWorkers=1
 npm run build
 npm run test:e2e
 ```
 
-Browser checks use Playwright against the production preview. Chromium can be selected with `PLAYWRIGHT_CHROMIUM_EXECUTABLE`; `/usr/bin/chromium` is used when available. Otherwise install Playwright's Chromium once with `npx playwright install chromium`.
+Playwright uses `/usr/bin/chromium` when present, or `PLAYWRIGHT_CHROMIUM_EXECUTABLE`; otherwise install it with `npx playwright install chromium`. Engineering checks cover numerical reference trajectories, temporal/itinerary constraints, adherence replay, daylight, API ownership/nonce/session/revision security, cache/quotas, sync merges, calendar export, and deployment/launcher configuration. Browser checks use controlled API responses for account and flight scenarios.
 
-Tests cover DST ambiguity, fractional timezones, date-line flights, itinerary/phase continuity, sleep/caffeine conflict checks, supplement opt-outs, calendar escaping, account-local storage, signed-token rejection, API ownership, session revocation, and stale-revision rejection. Browser checks exercise the app rather than relying only on TypeScript compilation.
+Verified locally: frontend/Worker TypeScript, all 173 unit/model/API tests, production build, ten Chromium scenarios, local D1/API/scheduled-handler smoke checks, launcher setup/shutdown, and real Wrangler dry-run bundling. Corrected browser selectors passed their affected rerun. Real Google and provider checks await credentials; no public deployment occurred. QA servers are stopped after verification.
 
-Current verification: 46 unit/API tests pass, TypeScript and production build pass, all six Chromium browser scenarios have been verified, and local D1 migration/API smoke checks succeed. Browser sync tests use controlled API responses; real Google sign-in still needs a configured OAuth client. QA servers are stopped after verification; use the preview commands above to start your session.
+For the independent numerical fixture reproduction, see [the kernel notes](src/lib/circadian/README.md). The airport source and optional Bun benchmark are documented in [DATA_SOURCES.md](DATA_SOURCES.md). `npm run benchmark:bun` reports honestly if Bun is absent; Node/npm remain the authoritative toolchain and lockfile.
 
-## Repository
+## GitHub and Cloudflare
 
-- [DESIGN.md](DESIGN.md): product, architecture, data model, science, authentication, offline behavior, and deployment boundary.
-- [TODO.md](TODO.md): current implementation and future milestones.
-- `src/App.tsx`, `src/styles.css`: responsive application UI.
-- `src/lib/plan.ts`, `src/lib/time.ts`: versioned browser rules engine and temporal validation.
-- `src/lib/store.ts`, `src/lib/auth.ts`: local storage and Worker integration.
-- `worker/`, `migrations/`: minimal Google/session/state API and D1 schema.
-- `scripts/build-offline.mjs`: production shell precache generation.
-- `wrangler.jsonc`: prepared static-asset/Worker configuration, with a local-only placeholder D1 ID.
+No GitHub remote has been configured, and no Cloudflare resources have been created or deployed. After you create an empty GitHub repository, inspect the helper:
 
-## Cloudflare later
+```sh
+npm run github:remote -- --help
+```
 
-No remote Cloudflare resources have been created or deployed. After discussing the account and domain, create D1, replace the placeholder database ID, apply remote migrations, set the production Google client ID/origin, and deploy the built Worker/static bundle. Register the final HTTPS origin with Google. A paid flight-data provider, push reminders, numerical optimizer, and validation are separate milestones.
+[DEPLOYMENT.md](DEPLOYMENT.md) describes remote setup, the local/CI scripts, required Cloudflare/Google configuration, optional provider secret, and the deployment workflow. PR/main CI runs checks; deployment is manual initially. Automatic main-branch deployment can be enabled after the first verified release.
 
-Dynamic flight lookup and caching are listed in TODO.md with AeroDataBox as the recommended candidate for testing. AirLabs's near-term schedules and Skyscanner's booking searches do not satisfy known-flight lookup months ahead; Amadeus Self-Service was decommissioned. The live integration awaits provider access and coverage checks. Bun is also listed for optional development-tool benchmarking; the current commands remain verified Node/npm scripts.
+[DESIGN.md](DESIGN.md) describes the architecture, scientific assumptions, API and storage contracts. [TODO.md](TODO.md) tracks completed implementation and external setup/research gates. [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and the bundled licenses preserve attribution.

@@ -3,3 +3,5 @@
 # Google OAuth Web application client. The public client ID is required.
 GOOGLE_CLIENT_ID=""
 ALLOWED_ORIGIN="http://localhost:5173"
+# Optional AeroDataBox RapidAPI key. This is a secret; keep it in this ignored local file.
+RAPIDAPI_KEY=""

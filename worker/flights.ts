@@ -1,0 +1,279 @@
+import { findAirport } from '../src/lib/airports';
+import { Temporal } from '@js-temporal/polyfill';
+import type { FlightCandidate, FlightLookupResult } from '../src/lib/types';
+
+/** Contract checked against https://doc.aerodatabox.com/docs/openapi-rapidapi-v1.json. */
+export interface FlightEnv {
+  RAPIDAPI_KEY?: string;
+  FLIGHT_DAILY_LIMIT?: string;
+  FLIGHT_MONTHLY_LIMIT?: string;
+  FLIGHT_GLOBAL_MONTHLY_LIMIT?: string;
+}
+export interface FlightQuery { flightNumber: string; date: string; departureAirport?: string }
+export interface FlightDependencies { fetch?: typeof fetch; timeoutMs?: number; /** Internal deadline covering flight plus airport requests. */ deadlineMs?: number }
+interface CacheRow { data: string; fetched_at: number; expires_at: number; retain_until: number }
+type JsonRecord = Record<string, unknown>;
+const object = (v: unknown): v is JsonRecord => Boolean(v && typeof v === 'object' && !Array.isArray(v));
+const HOST = 'aerodatabox.p.rapidapi.com';
+const PROVIDER = 'https://' + HOST;
+const ATTRIBUTION = 'Flight data by AeroDataBox · https://aerodatabox.com';
+// Six days leaves a full day for an hourly scheduled purge to run before the
+// provider's seven-day maximum (Terms 5.5). No raw provider responses are stored.
+const RETENTION = 6 * 24 * 60 * 60;
+const RESPONSE_BYTES = 512 * 1024;
+const MAX_FLIGHTS = 40;
+const activeRequests = new WeakMap<D1Database, Map<string, Promise<FlightLookupResult>>>();
+
+export class FlightApiError extends Error {
+  constructor(public status: number, message: string) { super(message); }
+}
+
+export function normalizeFlightNumber(value: unknown): string | null {
+  if (typeof value !== 'string' || value.length > 16) return null;
+  const normalized = value.trim().toUpperCase().replace(/ +/g, '');
+  // IATA carriers include alphanumeric pairs (U2, 6E); ICAO carriers use three
+  // letters. A suffix is accepted for an explicitly supplied flight designator.
+  return /^(?:[A-Z0-9]{2}|[A-Z]{3})[0-9]{1,4}[A-Z]?$/.test(normalized) && /[A-Z]/.test(normalized.slice(0, 2))
+    ? normalized : null;
+}
+function airportCode(value: unknown): string | null {
+  return typeof value === 'string' && /^(?:[A-Z]{3}|[A-Z]{4})$/.test(value) ? value : null;
+}
+function validDate(value: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const parsed = new Date(value + 'T00:00:00Z');
+  return Number.isFinite(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
+}
+function validZone(value: unknown): value is string {
+  if (typeof value !== 'string' || value.length > 80) return false;
+  try { new Intl.DateTimeFormat('en', { timeZone: value }); return true; } catch { return false; }
+}
+export function validateFlightQuery(url: URL, now: number): FlightQuery {
+  if (url.search.length > 200 || [...url.searchParams.keys()].some(k => !['flightNumber', 'date', 'departureAirport'].includes(k))
+    || [...new Set(url.searchParams.keys())].some(k => url.searchParams.getAll(k).length !== 1)) {
+    throw new FlightApiError(400, 'Provide one flight number, departure date, and optional departure airport.');
+  }
+  const flightNumber = normalizeFlightNumber(url.searchParams.get('flightNumber'));
+  const date = url.searchParams.get('date') ?? '';
+  const rawAirport = url.searchParams.get('departureAirport');
+  const departureAirport = rawAirport === null ? undefined : airportCode(rawAirport.trim().toUpperCase());
+  const days = (Date.parse(date + 'T00:00:00Z') - Date.parse(new Date(now * 1000).toISOString().slice(0, 10) + 'T00:00:00Z')) / 86_400_000;
+  if (!flightNumber || !validDate(date) || days < -1 || days > 365 || departureAirport === null) {
+    throw new FlightApiError(400, 'Use an IATA or ICAO flight number and a valid local departure date within the next year.');
+  }
+  return { flightNumber, date, ...(departureAirport ? { departureAirport } : {}) };
+}
+
+export async function purgeFlightData(db: D1Database, now: number): Promise<void> {
+  await db.batch([
+    db.prepare('DELETE FROM flight_cache WHERE retain_until <= ?').bind(now),
+    db.prepare('DELETE FROM flight_airport_cache WHERE retain_until <= ?').bind(now),
+    db.prepare('DELETE FROM flight_usage WHERE retain_until <= ?').bind(now),
+  ]);
+}
+function limit(value: string | undefined, fallback: number, max: number): number {
+  return value && /^\d+$/.test(value) && Number(value) >= 1 && Number(value) <= max ? Number(value) : fallback;
+}
+async function reserveRequest(db: D1Database, env: FlightEnv, accountId: string, now: number): Promise<void> {
+  const date = new Date(now * 1000).toISOString();
+  const reservations = [
+    [`user:${accountId}`, `day:${date.slice(0, 10)}`, limit(env.FLIGHT_DAILY_LIMIT, 10, 1000)],
+    [`user:${accountId}`, `month:${date.slice(0, 7)}`, limit(env.FLIGHT_MONTHLY_LIMIT, 40, 10_000)],
+    ['global', `month:${date.slice(0, 7)}`, limit(env.FLIGHT_GLOBAL_MONTHLY_LIMIT, 150, 1_000_000)],
+  ] as const;
+  for (const [principal, bucket, maximum] of reservations) {
+    // Single-statement conditional writes remain atomic across Worker isolates.
+    // A failed later reservation conservatively leaves earlier counters spent.
+    const reserved = await db.prepare(
+      'INSERT INTO flight_usage (principal, bucket, requests, retain_until) VALUES (?, ?, 1, ?) ON CONFLICT(principal, bucket) DO UPDATE SET requests = flight_usage.requests + 1 WHERE flight_usage.requests < ? RETURNING requests',
+    ).bind(principal, bucket, now + 40 * 86_400, maximum).first<{ requests: number }>();
+    if (!reserved) throw new FlightApiError(429, 'Flight lookup allowance reached. Use manual entry or try again after the allowance resets.');
+  }
+}
+
+async function readProviderJson(response: Response): Promise<unknown> {
+  const length = Number(response.headers.get('Content-Length'));
+  if (Number.isFinite(length) && length > RESPONSE_BYTES) throw new FlightApiError(502, 'Flight provider response is too large. Use manual entry.');
+  if (!response.headers.get('Content-Type')?.toLowerCase().includes('application/json') || !response.body) {
+    throw new FlightApiError(502, 'Flight provider returned an unreadable response. Use manual entry.');
+  }
+  const reader = response.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  try {
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      size += value.byteLength;
+      if (size > RESPONSE_BYTES) { await reader.cancel(); throw new FlightApiError(502, 'Flight provider response is too large. Use manual entry.'); }
+      chunks.push(value);
+    }
+  } finally { reader.releaseLock(); }
+  const bytes = new Uint8Array(size);
+  let offset = 0;
+  for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.byteLength; }
+  try { return JSON.parse(new TextDecoder('utf-8', { fatal: true, ignoreBOM: false }).decode(bytes)); }
+  catch { throw new FlightApiError(502, 'Flight provider returned invalid data. Use manual entry.'); }
+}
+async function providerRequest(path: string, db: D1Database, env: FlightEnv, accountId: string, now: number, dependencies: FlightDependencies): Promise<unknown> {
+  const remaining = (dependencies.deadlineMs ?? (Date.now() + 15_000)) - Date.now();
+  if (remaining <= 0) throw new FlightApiError(503, 'Flight lookup timed out. Use manual entry or try again later.');
+  await reserveRequest(db, env, accountId, now);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), Math.max(1, Math.min(dependencies.timeoutMs ?? 8_000, 10_000, remaining)));
+  try {
+    const result = await (dependencies.fetch ?? fetch)(PROVIDER + path, {
+      method: 'GET', headers: { 'X-RapidAPI-Key': env.RAPIDAPI_KEY!.trim(), 'X-RapidAPI-Host': HOST, Accept: 'application/json' },
+      signal: controller.signal, redirect: 'error', cache: 'no-store',
+    });
+    if (result.status === 204 || result.status === 404) return null;
+    if (!result.ok) throw new FlightApiError(503, 'Flight provider is temporarily unavailable or the subscription does not cover this date. Use manual entry.');
+    return await readProviderJson(result);
+  } catch (error) {
+    if (error instanceof FlightApiError) throw error;
+    // Provider responses and network exceptions can include credentials. Do not
+    // log or expose either. Do not retry automatically and spend more credits.
+    throw new FlightApiError(503, 'Flight provider could not be reached. Use manual entry or try again later.');
+  } finally { clearTimeout(timeout); }
+}
+
+function airportFrom(movement: unknown): JsonRecord | null { return object(movement) && object(movement.airport) ? movement.airport : null; }
+function codeFrom(airport: JsonRecord): string | null { return airportCode(airport.iata) ?? airportCode(airport.icao); }
+async function airportZone(airport: JsonRecord, db: D1Database, env: FlightEnv, accountId: string, now: number, dependencies: FlightDependencies, memo: Map<string, string | null>): Promise<string | null> {
+  if (validZone(airport.timeZone)) return airport.timeZone;
+  const code = codeFrom(airport);
+  if (!code) return null;
+  const catalogZone = findAirport(code)?.timeZone;
+  if (catalogZone) return catalogZone;
+  if (memo.has(code)) return memo.get(code)!;
+  const saved = await db.prepare('SELECT time_zone FROM flight_airport_cache WHERE airport_code = ? AND retain_until > ?').bind(code, now).first<{ time_zone: string }>();
+  if (saved && validZone(saved.time_zone)) { memo.set(code, saved.time_zone); return saved.time_zone; }
+  const data = await providerRequest(`/airports/${code.length === 3 ? 'iata' : 'icao'}/${code}?withRunways=false&withTime=false`, db, env, accountId, now, dependencies);
+  const zone = object(data) && ((typeof airport.iata === 'string' && data.iata === airport.iata) || (typeof airport.icao === 'string' && data.icao === airport.icao)) && validZone(data.timeZone) ? data.timeZone : null;
+  memo.set(code, zone);
+  if (zone) await db.prepare('INSERT INTO flight_airport_cache (airport_code, time_zone, retain_until) VALUES (?, ?, ?) ON CONFLICT(airport_code) DO UPDATE SET time_zone = excluded.time_zone, retain_until = excluded.retain_until').bind(code, zone, now + RETENTION).run();
+  return zone;
+}
+
+/** Require explicit UTC AND local values and check them against an IANA zone.
+ * This detects arrival-date, DST-offset and duration errors rather than guessing. */
+function timePair(value: unknown, timeZone: string): { utc: string; local: string; epoch: number; disambiguation?: 'earlier' | 'later' } | null {
+  if (!object(value) || typeof value.utc !== 'string' || typeof value.local !== 'string'
+    || value.utc.length > 40 || value.local.length > 40
+    || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,3})?)?(?:Z|\+00:00)$/.test(value.utc)
+    || !/^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}(?::\d{2}(?:\.\d{1,3})?)?(?:Z|[+-]\d{2}:\d{2})?$/.test(value.local)) return null;
+  const epoch = Date.parse(value.utc);
+  if (!Number.isFinite(epoch)) return null;
+  const utcClock = value.utc.replace(/(?:Z|\+00:00)$/, '').replace(/\.\d{1,3}$/, '');
+  if (new Date(epoch).toISOString().slice(0, 19) !== (utcClock.length === 16 ? utcClock + ':00' : utcClock)) return null;
+  const parts = new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' }).formatToParts(new Date(epoch));
+  const get = (type: string) => parts.find(p => p.type === type)?.value;
+  const canonical = `${get('year')}-${get('month')}-${get('day')}T${get('hour')}:${get('minute')}`;
+  if (canonical !== value.local.replace(' ', 'T').slice(0, 16)) return null;
+  if (value.local.length >= 19 && value.local[16] === ':' && value.local.slice(17, 19) !== get('second')) return null;
+  if (/(?:Z|[+-]\d{2}:\d{2})$/.test(value.local) && Date.parse(value.local.replace(' ', 'T')) !== epoch) return null;
+  const clock = Temporal.PlainDateTime.from(canonical);
+  const early = clock.toZonedDateTime(timeZone, { disambiguation: 'earlier' }).epochMilliseconds;
+  const late = clock.toZonedDateTime(timeZone, { disambiguation: 'later' }).epochMilliseconds;
+  const disambiguation = early === late ? undefined : Math.abs(epoch - early) < 60_000 ? 'earlier' : 'later';
+  const local = get('second') === '00' ? canonical : `${canonical}:${get('second')}`;
+  return { utc: new Date(epoch).toISOString(), local, epoch, ...(disambiguation ? { disambiguation } : {}) };
+}
+
+export async function normalizeFlights(payload: unknown, query: FlightQuery, resolveZone: (airport: JsonRecord) => Promise<string | null>): Promise<{ candidates: FlightCandidate[]; warnings: string[] }> {
+  if (!Array.isArray(payload) || payload.length > MAX_FLIGHTS) throw new FlightApiError(502, 'Flight provider returned an unexpected collection. Use manual entry.');
+  const candidates: FlightCandidate[] = [];
+  const warnings = new Set<string>();
+  for (const flight of payload) {
+    if (!object(flight)) throw new FlightApiError(502, 'Flight provider returned invalid flight data. Use manual entry.');
+    const departure = flight.departure; const arrival = flight.arrival;
+    const origin = airportFrom(departure); const destination = airportFrom(arrival);
+    if (!origin || !destination || !object(departure) || !object(arrival) || !codeFrom(origin) || !codeFrom(destination)) {
+      warnings.add('Some provider records lacked complete airports or schedules and were omitted.'); continue;
+    }
+    if (query.departureAirport && query.departureAirport !== origin.iata && query.departureAirport !== origin.icao) continue;
+    if (['Canceled', 'Diverted', 'CanceledUncertain'].includes(String(flight.status)) || flight.isCargo === true) {
+      warnings.add('Canceled, diverted, uncertain, or cargo flights were omitted. Confirm your booking with the airline.'); continue;
+    }
+    const number = normalizeFlightNumber(flight.number);
+    if (!number) { warnings.add('A provider record had an invalid flight number and was omitted.'); continue; }
+    const departureZone = await resolveZone(origin); const arrivalZone = await resolveZone(destination);
+    if (!departureZone || !arrivalZone) { warnings.add('Some airports have no verified IANA time zone; enter these flights manually.'); continue; }
+    const start = timePair(departure.scheduledTime, departureZone); const end = timePair(arrival.scheduledTime, arrivalZone);
+    if (!start || !end || start.local.slice(0, 10) !== query.date || end.epoch <= start.epoch || end.epoch - start.epoch > 36 * 3_600_000) {
+      warnings.add('Some provider schedules had missing or inconsistent dates, UTC times, or durations and were omitted.'); continue;
+    }
+    if (number !== query.flightNumber || flight.codeshareStatus === 'IsCodeshared') {
+      warnings.add('Code-share or operating-flight results may use a different flight number. Select the route that matches your booking.');
+    }
+    const takeoff = timePair(departure.runwayTime, departureZone); const landing = timePair(arrival.runwayTime, arrivalZone);
+    // revisedTime is explicitly ambiguous in the provider contract. It must
+    // never be treated as takeoff or landing. Retain explicit runwayTime only
+    // when it lies inside the selected schedule and forms a sensible interval.
+    const usableTakeoff = takeoff && takeoff.epoch >= start.epoch && takeoff.epoch < end.epoch
+      && (!takeoff.disambiguation || takeoff.disambiguation === start.disambiguation);
+    const usableLanding = landing && landing.epoch > (usableTakeoff ? takeoff.epoch : start.epoch) && landing.epoch <= end.epoch
+      && (!landing.disambiguation || landing.disambiguation === end.disambiguation);
+    if (departure.runwayTime || arrival.runwayTime) warnings.add('Runway times, when supplied, are provider estimates or actual times. Recheck after schedule changes.');
+    const candidate: FlightCandidate = {
+      id: `${number}-${codeFrom(origin)}-${codeFrom(destination)}-${start.utc}`,
+      flightNumber: number, airline: object(flight.airline) && typeof flight.airline.name === 'string' ? flight.airline.name.slice(0, 120) : 'Airline not supplied',
+      departureAirport: codeFrom(origin)!, arrivalAirport: codeFrom(destination)!,
+      departureDateTime: start.local, arrivalDateTime: end.local,
+      departureTimeZone: departureZone, arrivalTimeZone: arrivalZone,
+      ...(start.disambiguation ? { departureDisambiguation: start.disambiguation } : {}),
+      ...(end.disambiguation ? { arrivalDisambiguation: end.disambiguation } : {}),
+      departureUtc: start.utc, arrivalUtc: end.utc, durationMinutes: Math.round((end.epoch - start.epoch) / 60_000),
+      ...(usableTakeoff ? { takeoffDateTime: takeoff.local } : {}), ...(usableLanding ? { landingDateTime: landing.local } : {}),
+    };
+    if (!candidates.some(c => c.id === candidate.id)) candidates.push(candidate);
+  }
+  if (candidates.length > 1) warnings.add('More than one matching leg was found. Select the airports and times on your booking.');
+  if (!candidates.length) warnings.add('No complete matching scheduled flight was found. Coverage varies by date and route; use manual entry.');
+  return { candidates, warnings: [...warnings] };
+}
+
+export async function lookupFlights(query: FlightQuery, db: D1Database, env: FlightEnv, accountId: string, now: number, dependencies: FlightDependencies = {}): Promise<FlightLookupResult> {
+  if (!env.RAPIDAPI_KEY?.trim()) throw new FlightApiError(503, 'Flight lookup is not configured. Use manual entry.');
+  await purgeFlightData(db, now);
+  // The cache is only public scheduled data, never an owner trip record. The
+  // search result is shared for a bounded time under Terms 5.5, not pooled from
+  // retained owner records under Terms 5.8.
+  const key = `${query.flightNumber}:${query.date}:${query.departureAirport ?? '*'}`;
+  const cached = await db.prepare('SELECT data, fetched_at, expires_at, retain_until FROM flight_cache WHERE cache_key = ? AND retain_until > ?').bind(key, now).first<CacheRow>();
+  let saved: FlightLookupResult | undefined;
+  if (cached) {
+    try { saved = JSON.parse(cached.data) as FlightLookupResult; }
+    catch { await db.prepare('DELETE FROM flight_cache WHERE cache_key = ?').bind(key).run(); }
+    if (saved && cached.expires_at > now) return saved;
+  }
+  let requests = activeRequests.get(db);
+  if (!requests) { requests = new Map(); activeRequests.set(db, requests); }
+  const existing = requests.get(key);
+  if (existing) return await existing;
+  if (requests.size >= 30) throw new FlightApiError(503, 'Flight lookup is busy. Try again shortly or use manual entry.');
+  const bounded = { ...dependencies, deadlineMs: Date.now() + 15_000 };
+  const pending = (async () => {
+    try {
+      const payload = await providerRequest(`/flights/number/${query.flightNumber}/${query.date}?dateLocalRole=Departure&withAircraftImage=false&withLocation=false&withFlightPlan=false`, db, env, accountId, now, bounded);
+      const memo = new Map<string, string | null>();
+      const normalized = payload === null ? { candidates: [], warnings: ['No flight was found for this departure date. Use manual entry.'] }
+        : await normalizeFlights(payload, query, airport => airportZone(airport, db, env, accountId, now, bounded, memo));
+      const near = Date.parse(query.date + 'T00:00:00Z') - now * 1000 < 48 * 3_600_000;
+      const ttl = normalized.candidates.length ? (near ? 15 * 60 : 24 * 3_600) : 5 * 60;
+      const result: FlightLookupResult = { provider: 'aerodatabox', ...normalized, fetchedAt: new Date(now * 1000).toISOString(), expiresAt: new Date((now + ttl) * 1000).toISOString(), stale: false, attribution: ATTRIBUTION };
+      await db.prepare('INSERT INTO flight_cache (cache_key, data, fetched_at, expires_at, retain_until) VALUES (?, ?, ?, ?, ?) ON CONFLICT(cache_key) DO UPDATE SET data = excluded.data, fetched_at = excluded.fetched_at, expires_at = excluded.expires_at, retain_until = excluded.retain_until')
+        .bind(key, JSON.stringify(result), now, now + ttl, now + RETENTION).run();
+      return result;
+    } catch (error) {
+      // Never hide a quota decision behind stale data; only a provider failure
+      // can use a still-permitted stale copy, and it remains explicitly dated.
+      if (saved && cached && cached.retain_until > now && error instanceof FlightApiError && [502, 503].includes(error.status)) {
+        return { ...saved, stale: true, warnings: [...saved.warnings, 'Provider refresh failed. These cached times are stale; verify them with your airline before using them.'] };
+      }
+      throw error;
+    } finally { requests!.delete(key); }
+  })();
+  requests.set(key, pending);
+  return await pending;
+}

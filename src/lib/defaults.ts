@@ -7,6 +7,7 @@ export const DEFAULT_PREFERENCES: Preferences = {
   preferredBedtime: '23:00', preferredWakeTime: '07:00', sleepHours: 8,
   sleepAnchor: 'wake', caffeine: true, melatonin: false,
   melatoninAcknowledged: false, preparationDays: 3,
+  planningMode: 'model', autoSync: false, calendarAlarms: true,
 };
 export function createLeg(): FlightLeg {
   return { id: crypto.randomUUID(), flightNumber: '', departureAirport: '', arrivalAirport: '',

@@ -1,0 +1,23 @@
+[
+  {
+    "number": "BA 286",
+    "status": "Expected",
+    "codeshareStatus": "IsOperator",
+    "isCargo": false,
+    "lastUpdatedUtc": "2026-10-14T12:00:00Z",
+    "airline": { "name": "British Airways", "iata": "BA", "icao": "BAW" },
+    "departure": {
+      "airport": { "iata": "SFO", "icao": "KSFO", "name": "San Francisco", "timeZone": "America/Los_Angeles" },
+      "scheduledTime": { "utc": "2026-11-06T04:00:00Z", "local": "2026-11-05 20:00-08:00" },
+      "revisedTime": { "utc": "2026-11-06T04:05:00Z", "local": "2026-11-05 20:05-08:00" },
+      "runwayTime": { "utc": "2026-11-06T04:20:00Z", "local": "2026-11-05 20:20-08:00" },
+      "quality": ["Basic"]
+    },
+    "arrival": {
+      "airport": { "iata": "LHR", "icao": "EGLL", "name": "London Heathrow", "timeZone": "Europe/London" },
+      "scheduledTime": { "utc": "2026-11-06T14:00:00Z", "local": "2026-11-06 14:00+00:00" },
+      "runwayTime": { "utc": "2026-11-06T13:50:00Z", "local": "2026-11-06 13:50+00:00" },
+      "quality": ["Basic"]
+    }
+  }
+]

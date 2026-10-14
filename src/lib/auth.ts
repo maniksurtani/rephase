@@ -1,10 +1,11 @@
-import type { Account, AppData } from './types';
+import type { Account, AppData, FlightLookupResult } from './types';
 import { isAppData } from './store';
 
-export interface AuthConfig { googleClientId: string | null; syncAvailable: boolean }
+export interface AuthConfig { googleClientId: string | null; syncAvailable: boolean; flightLookupAvailable?: boolean; flightProvider?: 'aerodatabox' }
 export class ApiError extends Error { constructor(message: string, public status: number) { super(message); } }
 export async function api<T>(path: string, options?: RequestInit): Promise<T> {
-  const response = await fetch(path, { credentials:'same-origin', ...options,
+  const signal=options?.signal ? AbortSignal.any([options.signal,AbortSignal.timeout(18000)]) : AbortSignal.timeout(18000);
+  const response = await fetch(path, { credentials:'same-origin', ...options, signal,
     headers: { ...(options?.body ? {'Content-Type':'application/json'} : {}), ...options?.headers } });
   let payload: unknown;
   try { payload = await response.json(); } catch { throw new ApiError('The local API is unavailable. Start the Worker to use Google sign-in and sync.',response.status); }
@@ -25,6 +26,11 @@ export async function getCloudState(accountId:string): Promise<{data:AppData|nul
 export const putCloudState = (data:AppData,revision:number,accountId:string) => api<{revision:number}>('/api/state',{method:'PUT',headers:{'X-Rephase-Account':accountId},body:JSON.stringify({data,revision})});
 export const deleteCloudState = (accountId:string) => api<{revision:number}>('/api/state',{method:'DELETE',headers:{'X-Rephase-Account':accountId}});
 export const logout = () => api('/api/auth/logout',{method:'POST'});
+export function lookupFlight(accountId:string,flightNumber:string,date:string,departureAirport?:string,signal?:AbortSignal) {
+  const query=new URLSearchParams({flightNumber,date});
+  if(departureAirport)query.set('departureAirport',departureAirport);
+  return api<FlightLookupResult>(`/api/flights?${query}`,{headers:{'X-Rephase-Account':accountId},signal});
+}
 
 interface GoogleResponse { credential:string }
 interface GoogleApi {
@@ -40,8 +46,10 @@ async function loadGoogle() {
   if (window.google) return;
   if (!googlePromise) googlePromise = new Promise<void>((resolve,reject) => {
     const script = document.createElement('script'); script.src = 'https://accounts.google.com/gsi/client';
-    script.async = true; script.onload = () => resolve();
-    script.onerror = () => { googlePromise = null; script.remove(); reject(new Error('Google sign-in could not load. Check your internet connection.')); };
+    const failed=()=> {clearTimeout(timer);googlePromise=null;script.remove();reject(new Error('Google sign-in could not load. Check your internet connection and try again.'));};
+    const timer=setTimeout(failed,15000);
+    script.async = true; script.onload = () => {clearTimeout(timer);resolve();};
+    script.onerror = failed;
     document.head.append(script);
   });
   await googlePromise;

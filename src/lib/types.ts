@@ -14,6 +14,9 @@ export interface Preferences {
   melatonin: boolean;
   melatoninAcknowledged: boolean;
   preparationDays: number;
+  planningMode?: 'rules' | 'model';
+  autoSync?: boolean;
+  calendarAlarms?: boolean;
 }
 export interface FlightLeg {
   id: string;
@@ -29,6 +32,28 @@ export interface FlightLeg {
   /** Optional only for compatibility with existing schema-1 saved trips. */
   travelClass?: TravelClass;
   lieFlat?: boolean;
+  departureDisambiguation?: 'earlier' | 'later';
+  arrivalDisambiguation?: 'earlier' | 'later';
+  takeoffDateTime?: string;
+  landingDateTime?: string;
+  taxiOutMinutes?: number;
+  taxiInMinutes?: number;
+  flightSource?: 'manual' | 'aerodatabox';
+  flightFetchedAt?: string;
+  providerRecordConfirmed?: boolean;
+}
+export interface AdherenceRecord {
+  id: string;
+  tripId: string;
+  actionId: string;
+  type: ActionType;
+  scheduledStart: string;
+  scheduledEnd: string;
+  timeZone: string;
+  status: 'completed' | 'missed' | 'partial';
+  actualStart?: string;
+  actualEnd?: string;
+  recordedAt: string;
 }
 export interface Trip {
   id: string;
@@ -36,6 +61,7 @@ export interface Trip {
   legs: FlightLeg[];
   createdAt: string;
   updatedAt: string;
+  adherence?: AdherenceRecord[];
 }
 export type ActionType = 'sleep' | 'light' | 'avoid-light' | 'caffeine' | 'melatonin';
 export interface PlanAction {
@@ -49,6 +75,7 @@ export interface PlanAction {
   reason: string;
   dose?: string;
   evidenceUrl?: string;
+  feasibility?: 'daylight' | 'indoor' | 'unknown';
 }
 export interface PlanDay {
   id: string;
@@ -68,6 +95,41 @@ export interface Plan {
   days: PlanDay[];
   warnings: string[];
   summary: { destinations: number; flightHours: number; timeZoneChanges: number };
+  model?: {
+    name: string;
+    numericallyVerified: boolean;
+    clinicallyValidated: false;
+    strategy: 'advance' | 'delay' | 'mixed';
+    assumptions: string[];
+  };
+}
+export interface FlightCandidate {
+  id: string;
+  flightNumber: string;
+  airline: string;
+  operatingFlightNumber?: string;
+  departureAirport: string;
+  arrivalAirport: string;
+  departureDateTime: string;
+  arrivalDateTime: string;
+  departureTimeZone: string;
+  arrivalTimeZone: string;
+  departureUtc: string;
+  arrivalUtc: string;
+  durationMinutes: number;
+  takeoffDateTime?: string;
+  landingDateTime?: string;
+  departureDisambiguation?: 'earlier' | 'later';
+  arrivalDisambiguation?: 'earlier' | 'later';
+}
+export interface FlightLookupResult {
+  provider: 'aerodatabox';
+  candidates: FlightCandidate[];
+  fetchedAt: string;
+  expiresAt: string;
+  stale: boolean;
+  attribution: string;
+  warnings: string[];
 }
 export interface AppData {
   schemaVersion: 1;

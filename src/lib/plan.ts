@@ -1,8 +1,9 @@
 import { Temporal } from '@js-temporal/polyfill';
 import type { AdaptationStrategy, Plan, PlanAction, PlanDay, Preferences, Trip } from './types';
 import { dateInZone, localToInstant } from './time';
+import { generateModelPlan, type ModelPlanOptions } from './model-plan';
 
-export const PLAN_VERSION = 'rules-1.1.0';
+export const PLAN_VERSION = 'rules-1.2.0';
 const HOUR = 3_600_000;
 const DAY = 24 * HOUR;
 const MAX_HORIZON = 90 * DAY;
@@ -78,8 +79,8 @@ export function validateTrip(trip: Trip): string[] {
     const prefix = `Flight ${index + 1}`;
     if (!leg.id || ids.has(leg.id)) errors.push(`${prefix}: use a unique flight identifier.`);
     ids.add(leg.id);
-    if (!leg.departureAirport.trim() || !leg.arrivalAirport.trim()) {
-      errors.push(`${prefix}: select departure and arrival airports.`);
+    if (!/^[A-Z0-9]{3,4}$/.test(leg.departureAirport) || !/^[A-Z0-9]{3,4}$/.test(leg.arrivalAirport)) {
+      errors.push(`${prefix}: select departure and arrival airports using a 3–4 character uppercase airport code.`);
     }
     if (!['connection', 'destination'].includes(leg.stayAfter)) {
       errors.push(`${prefix}: choose a connection or destination stay.`);
@@ -90,18 +91,29 @@ export function validateTrip(trip: Trip): string[] {
     let departure: number | undefined;
     let arrival: number | undefined;
     try {
-      departure = localToInstant(leg.departureDateTime, leg.departureTimeZone);
+      departure = localToInstant(leg.departureDateTime, leg.departureTimeZone, leg.departureDisambiguation);
     } catch {
-      errors.push(`${prefix}: departure date/time or zone is invalid, nonexistent, or ambiguous during daylight saving. Choose an unambiguous local time.`);
+      errors.push(`${prefix}: departure date/time or zone is invalid, nonexistent, or ambiguous during daylight saving. Choose a valid local time; select earlier or later when that clock occurs twice.`);
     }
     try {
-      arrival = localToInstant(leg.arrivalDateTime, leg.arrivalTimeZone);
+      arrival = localToInstant(leg.arrivalDateTime, leg.arrivalTimeZone, leg.arrivalDisambiguation);
     } catch {
-      errors.push(`${prefix}: arrival date/time or zone is invalid, nonexistent, or ambiguous during daylight saving. Choose an unambiguous local time.`);
+      errors.push(`${prefix}: arrival date/time or zone is invalid, nonexistent, or ambiguous during daylight saving. Choose a valid local time; select earlier or later when that clock occurs twice.`);
     }
     if (departure !== undefined && arrival !== undefined) {
       if (arrival <= departure) errors.push(`${prefix}: arrival must follow departure in real time.`);
-      if (arrival - departure > 48 * HOUR) errors.push(`${prefix}: flight duration exceeds 48 hours; check dates and zones.`);
+      for (const minutes of [leg.taxiOutMinutes, leg.taxiInMinutes]) {
+        if (minutes !== undefined && (!Number.isFinite(minutes) || minutes < 0 || minutes > 180)) errors.push(`${prefix}: taxi allowances must be between 0 and 180 minutes.`);
+      }
+      try {
+        const airborne = flightAirborneTiming(leg);
+        if (airborne.takeoff < departure || airborne.landing > arrival || (airborne.landing <= airborne.takeoff && (leg.takeoffDateTime || leg.landingDateTime || leg.taxiOutMinutes !== undefined || leg.taxiInMinutes !== undefined))) {
+          errors.push(`${prefix}: takeoff and landing must fit in gate departure/arrival order; revise airborne times or taxi allowances.`);
+        }
+      } catch {
+        errors.push(`${prefix}: airborne takeoff or landing time is invalid, nonexistent, or ambiguous.`);
+      }
+      if (arrival - departure > 36 * HOUR) errors.push(`${prefix}: flight duration exceeds 36 hours; check dates and zones.`);
       if (previousArrival !== undefined && departure < previousArrival + HOUR / 2) {
         errors.push(`${prefix}: leave at least 30 minutes after the previous arrival and put flights in travel order.`);
       }
@@ -128,6 +140,7 @@ function validatePreferences(prefs: Preferences): void {
     throw new RangeError('Preparation days must be between 0 and 7.');
   }
   if (!['wake', 'bed'].includes(prefs.sleepAnchor)) throw new RangeError('Choose a sleep or wake anchor.');
+  if (prefs.planningMode !== undefined && !['rules', 'model'].includes(prefs.planningMode)) throw new RangeError('Choose a supported planning mode.');
 }
 
 function subtract(range: Range, blocked: Range[]): Range[] {
@@ -169,14 +182,15 @@ function phaseOccurrences(range: Range, phase: number): number[] {
  * Phase moves only by an assumed population pace during destination/preparation time.
  * Chronotype is context; it does not add an invented offset to habitual sleep timing.
  */
-export function generatePlan(trip: Trip, prefs: Preferences): Plan {
+export function generateRulesPlan(trip: Trip, prefs: Preferences): Plan {
   const errors = validateTrip(trip);
   if (errors.length) throw new RangeError(errors.join('\n'));
   validatePreferences(prefs);
   const flights = trip.legs.map(leg => ({
     leg,
-    departure: localToInstant(leg.departureDateTime, leg.departureTimeZone),
-    arrival: localToInstant(leg.arrivalDateTime, leg.arrivalTimeZone),
+    departure: localToInstant(leg.departureDateTime, leg.departureTimeZone, leg.departureDisambiguation),
+    arrival: localToInstant(leg.arrivalDateTime, leg.arrivalTimeZone, leg.arrivalDisambiguation),
+    ...flightAirborneTiming(leg),
   }));
   const first = flights[0];
   const last = flights[flights.length - 1];
@@ -220,8 +234,8 @@ export function generatePlan(trip: Trip, prefs: Preferences): Plan {
       warnings.add(`A surface transfer is required between ${flight.leg.arrivalAirport} and ${onwards.leg.departureAirport}. Its timing and light/sleep constraints are unknown; review every opportunity during that gap and allow enough transfer time.`);
     }
     // Airport buffers are unavailable for sleeping, timed light, caffeine, or melatonin.
-    if (flight.arrival - flight.departure > 1.5 * HOUR) segments.push({
-      start: Math.max(horizonStart, flight.departure + HOUR / 2), end: Math.min(horizonEnd, flight.arrival - HOUR),
+    if (flight.landing - flight.takeoff > 1.5 * HOUR) segments.push({
+      start: Math.max(horizonStart, flight.takeoff + HOUR / 2), end: Math.min(horizonEnd, flight.landing - HOUR),
       zone: flight.leg.arrivalTimeZone, stage: 'travel', label: `${flight.leg.departureAirport} → ${flight.leg.arrivalAirport}`,
       strategy: 'home', adapt: false, flight: true, lieFlat: flight.leg.lieFlat === true,
     });
@@ -281,7 +295,7 @@ export function generatePlan(trip: Trip, prefs: Preferences): Plan {
       day.shifts.push(progress);
       day.phaseShiftHours = rounded(day.shifts.reduce((sum, value) => sum + value, 0));
       day.remainingShiftHours = rounded(Math.abs(neededShift(endPhase, target)));
-      const note = segment.flight ? 'In-flight rest is optional. Stay awake for the first 30 minutes after takeoff and the final 60 minutes before landing; follow crew instructions. Seat configuration changes comfort guidance, not assumed clock-shift rates.'
+      const note = segment.flight ? 'In-flight rest is optional. Gate times include taxiing; allow a conservative 30 minutes at each end when airborne times are unknown. Stay awake for the first 30 minutes after takeoff and the final 60 minutes before landing; follow crew instructions. Seat configuration changes comfort guidance, not assumed clock-shift rates.'
         : segment.strategy === 'partial' ? 'Partial adjustment aims halfway toward this destination; actual adjustment may differ.'
         : segment.strategy === 'home' ? 'Keep your usual home-time sleep pattern where practical; the body-clock estimate carries forward from earlier stops.'
         : 'Adjustment assumes at most 1 hour/day earlier or 1.5 hours/day later while on the ground; this is not a prediction of your response.';
@@ -316,8 +330,8 @@ export function generatePlan(trip: Trip, prefs: Preferences): Plan {
         .filter(sleep => sleep.end - sleep.start >= (segment.flight ? 30 : 15) * 60_000);
       for (const sleep of boundedSleeps) add('sleep', sleep, segment.flight ? (segment.lieFlat ? 'Lie-flat sleep opportunity' : 'Seated rest or nap opportunity') : 'Sleep opportunity',
         segment.flight ? (segment.lieFlat
-          ? 'Your reported lie-flat seat may make sleep more comfortable. Use an eye mask and earplugs if practical; actual sleep duration and recovery vary. The first 30 minutes and final 60 minutes of the flight are protected, and crew instructions take priority.'
-          : 'Use this biological sleep window for seated rest or naps as comfort allows. Seated sleep can be fragmented; the plan does not assume you obtain your usual sleep hours. An eye mask, earplugs, and comfortable head support may help. The first 30 minutes and final 60 minutes of the flight are protected, and crew instructions take priority.')
+          ? 'Your reported lie-flat seat may make sleep more comfortable. Use an eye mask and earplugs if practical; actual sleep duration and recovery vary. Taxi time, the first 30 minutes after takeoff, and final 60 minutes before landing are protected, and crew instructions take priority.'
+          : 'Use this biological sleep window for seated rest or naps as comfort allows. Seated sleep can be fragmented; the plan does not assume you obtain your usual sleep hours. An eye mask, earplugs, and comfortable head support may help. Taxi time, the first 30 minutes after takeoff, and final 60 minutes before landing are protected, and crew instructions take priority.')
           : `Aim for ${prefs.sleepHours} hours across your main sleep period. This window may be shortened by travel; do not sacrifice safety or essential obligations.`,
         'Protect sleep while gradually aligning the schedule. Travel fatigue and sleep debt also affect how you feel.');
 
@@ -382,4 +396,22 @@ export function generatePlan(trip: Trip, prefs: Preferences): Plan {
       timeZoneChanges: trip.legs.filter(leg => leg.departureTimeZone !== leg.arrivalTimeZone).length,
     },
   };
+}
+
+/** Gate schedule and airborne schedule are different: default taxi allowances are conservative estimates. */
+export function flightAirborneTiming(leg: Trip['legs'][number]): { takeoff: number; landing: number } {
+  const departure = localToInstant(leg.departureDateTime, leg.departureTimeZone, leg.departureDisambiguation);
+  const arrival = localToInstant(leg.arrivalDateTime, leg.arrivalTimeZone, leg.arrivalDisambiguation);
+  return {
+    takeoff: leg.takeoffDateTime ? localToInstant(leg.takeoffDateTime, leg.departureTimeZone, leg.departureDisambiguation) : departure + (leg.taxiOutMinutes ?? 30) * 60_000,
+    landing: leg.landingDateTime ? localToInstant(leg.landingDateTime, leg.arrivalTimeZone, leg.arrivalDisambiguation) : arrival - (leg.taxiInMinutes ?? 30) * 60_000,
+  };
+}
+
+/** Newly generated plans use the numerical model; the original rules remain an explicit fallback. */
+export function generatePlan(trip: Trip, prefs: Preferences, options?: ModelPlanOptions): Plan {
+  const errors = validateTrip(trip);
+  if (errors.length) throw new RangeError(errors.join('\n'));
+  validatePreferences(prefs);
+  return prefs.planningMode === 'rules' ? generateRulesPlan(trip, prefs) : generateModelPlan(trip, prefs, options);
 }

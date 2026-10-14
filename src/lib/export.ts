@@ -44,8 +44,8 @@ function download(contents: string, mime: string, filename: string) {
   document.body.append(link); link.click(); link.remove();
   setTimeout(() => URL.revokeObjectURL(url),1000);
 }
-export function exportCalendar(plan: Plan, trip: Trip) {
-  download(buildCalendar(plan,trip),'text/calendar;charset=utf-8','rephase-plan.ics');
+export function exportCalendar(plan: Plan, trip: Trip, withAlarms = true) {
+  download(buildCalendar(plan,trip,withAlarms),'text/calendar;charset=utf-8','rephase-plan.ics');
 }
 export function exportData(data: AppData) {
   download(JSON.stringify(data,null,2),'application/json',`rephase-backup-${new Date().toISOString().slice(0,10)}.json`);

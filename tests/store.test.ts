@@ -38,3 +38,57 @@ describe('account-scoped local storage',()=> {
     expect(await loadLastAccount()).toBeNull();
   });
 });
+
+describe('atomic sync history and committed local writes',()=> {
+  it('persists the actual common payload with its revision and removes both on clear',async()=> {
+    const { loadSyncSnapshot,saveSyncSnapshot,loadSyncPaused }=await import('../src/lib/store');
+    const data=createInitialData();
+    await saveSyncSnapshot('alice',{data,revision:9});
+    expect(await loadSyncSnapshot('alice')).toEqual({data,revision:9});
+    expect(await loadRevision('alice')).toBe(9);
+    expect(await loadSyncSnapshot('bob')).toBeNull();
+    await clearData('alice');
+    expect(await loadSyncSnapshot('alice')).toBeNull();
+    expect(await loadRevision('alice')).toBeNull();
+    expect(await loadSyncPaused('alice')).toBe(true);
+  });
+  it('captures payload at invocation and serializes writes so the newest commit wins',async()=> {
+    const original=createInitialData();
+    const first=saveData('alice',original);
+    original.preferences.sleepHours=10;
+    const second=saveData('alice',original);
+    original.preferences.sleepHours=11;
+    await Promise.all([first,second]);
+    expect((await loadData('alice'))?.preferences.sleepHours).toBe(10);
+  });
+  it('keeps delete tombstones and paused-sync metadata account scoped',async()=> {
+    const { loadSyncSnapshot,saveSyncSnapshot,loadSyncPaused,saveSyncPaused }=await import('../src/lib/store');
+    await saveSyncSnapshot('alice',{data:null,revision:12});
+    await saveSyncPaused('alice',true);
+    await saveSyncPaused('bob',false);
+    expect(await loadSyncSnapshot('alice')).toEqual({data:null,revision:12});
+    expect(await loadSyncPaused('alice')).toBe(true);
+    expect(await loadSyncPaused('bob')).toBe(false);
+    await expect(saveSyncSnapshot('alice',{data:null,revision:NaN})).rejects.toThrow();
+    await expect(saveRevision('alice',-1)).rejects.toThrow();
+  });
+  it('uses the shared validator for added model, adherence and flight-time fields',async()=> {
+    const data=createInitialData();
+    data.preferences.planningMode='model';data.preferences.autoSync=true;
+    const leg=data.trips[0].legs[0];
+    leg.taxiOutMinutes=20;leg.taxiInMinutes=10;
+    leg.takeoffDateTime=leg.departureDateTime.replace('T','T');
+    await saveData('alice',data);
+    expect(await loadData('alice')).toEqual(data);
+    await expect(saveData('alice',{...data,preferences:{...data.preferences,sleepHours:NaN}})).rejects.toThrow();
+  });
+});
+
+  it('commits rebased local data and its accepted snapshot in one checkpoint',async()=> {
+    const {saveSyncState,loadSyncSnapshot}=await import('../src/lib/store');
+    const cloud=createInitialData(),local=structuredClone(cloud);local.preferences.caffeine=false;
+    await saveSyncState('alice',local,{data:cloud,revision:17});
+    expect(await loadData('alice')).toEqual(local);
+    expect(await loadSyncSnapshot('alice')).toEqual({data:cloud,revision:17});
+    expect(await loadRevision('alice')).toBe(17);
+  });

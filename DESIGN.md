@@ -1,6 +1,6 @@
 # Rephase system design
 
-Status: local first implementation; deployment intentionally deferred. Last updated: 2026-10-14.
+Status: second local implementation; deployment intentionally deferred. Last updated: 2026-10-14.
 
 ## Product and scope
 
@@ -10,13 +10,13 @@ Confirmed requirements:
 
 - Responsive web application with mobile navigation and desktop layouts.
 - Google authentication, with no password management.
-- Mostly static execution; Cloudflare Worker only for authenticated persistence and optional future integrations.
+- Mostly static execution; Cloudflare Worker only for authentication, optional persistence, and optional flight-provider lookup.
 - Chronotype, usual and preferred bed/wake times, required sleep hours, caffeine and melatonin preferences.
 - Complex itineraries with connections, multiple destination stays, and returns.
 - Optional melatonin timing and evidence-based dose information.
 - A working local preview before discussing Cloudflare deployment.
 
-Implementation assumptions: manual flight entry initially, cross-device sync through a minimal Worker/D1 API, no paid flight-data provider, no push delivery, and an engineering MVP rather than a clinically validated medical product. These defaults can be revised without moving the planner to a server.
+Implementation choices: manual entry with optional AeroDataBox lookup, a minimal Worker/D1 API, optional account sync, a browser planning worker, and calendar reminders rather than Web Push. Provider access and real Google login require user configuration. This is an engineering implementation with numerical reference checks, not a clinically validated medical product.
 
 ## Experience
 
@@ -45,19 +45,23 @@ flowchart LR
 ```
 
 - **Frontend**: React, TypeScript, Vite, Lucide icons. Static HTML/CSS/JavaScript, with no SSR or runtime framework server.
-- **Planner**: pure, deterministic TypeScript functions. No account or network dependency. The first engine uses conservative schedule rules. A calibrated numerical optimizer is a later, independently validated milestone.
+- **Planner**: pure TypeScript functions executed in a dedicated browser Web Worker; obsolete requests are cancelled. No account or network dependency. The default experimental model ports published Forger99 dynamics and searches constrained advance/delay schedules. A conservative rules mode remains selectable.
 - **Local data**: IndexedDB, partitioned by guest or Google account. Local changes survive reload; private API responses and authentication credentials are never put in the service-worker cache.
 - **Offline**: a production-only service worker caches the static app shell and assets. Saved preferences/trips generate plans offline. Initial installation, Google sign-in, and sync need connectivity.
-- **API**: one Worker serves `/api/*`; static assets handle the rest. D1 stores account state and hashed revocable sessions. Auth is optional for using the local planner.
+- **API**: one Worker serves `/api/*`; static assets handle the rest. D1 stores account state, hashed revocable sessions, provider cache and request quotas. Auth is optional for local planning and required for provider lookup. An hourly scheduled handler purges expired provider cache.
 - **Hosting**: Cloudflare Worker Static Assets. Wrangler configuration and D1 migrations are prepared locally, but no remote resource is created or deployed in this implementation turn.
 
 ## Domain model
 
-`Preferences` holds home IANA timezone, chronotype, usual bedtime/wake time, preferred bedtime/wake time, `sleepHours`, `sleepAnchor`, supplement opt-ins, a melatonin suitability acknowledgement, and `preparationDays`.
+`Preferences` holds home IANA timezone, chronotype, usual bedtime/wake time, preferred bedtime/wake time, `sleepHours`, `sleepAnchor`, supplement opt-ins, a melatonin suitability acknowledgement, and `preparationDays`, planning mode, opt-in automatic sync, and calendar-alarm preference.
 
-`Trip` holds an ID, name, timestamps, and ordered `FlightLeg[]`. Each leg contains original local timestamps and explicit IANA zones, airport codes, optional flight number, `stayAfter` (`connection` or `destination`), and `strategy` (`adapt`, `partial`, `home`). Airport selection supplies a zone from a bundled common-airport catalog. An unlisted airport remains usable through explicit timezone input; the catalog is not claimed to cover every airport.
+`Trip` holds an ID, name, timestamps, and ordered `FlightLeg[]`. Each leg contains original local timestamps and explicit IANA zones, airport codes, optional flight number, `stayAfter` (`connection` or `destination`), and `strategy` (`adapt`, `partial`, `home`). Airport selection supplies zones and coordinates from a pinned MIT global catalog of 7,884 IATA airports. Manual codes/zones remain supported for unlisted or ICAO airports. Suggestions are filtered and capped so the editor does not render thousands of DOM options. See DATA_SOURCES.md for provenance, update checks, and license.
 
 Each flight also records travel class (economy, premium economy, business, first) and a separately confirmed `lieFlat` flag. New user legs default to economy with no confirmed bed. These fields are optional for compatibility with older schema-1 records; missing bed availability receives conservative seated-rest guidance. Business/first labels never imply a bed. Airline/aircraft changes can alter seat availability, so the traveler confirms the actual seat.
+
+Legs also support explicit DST-fold occurrence choices, optional local airborne timestamps, and default taxi allowances. Provider provenance/fetch time and an owner-specific booking confirmation persist on imported legs; a later manual edit does not erase attribution or imply a reverified provider schedule.
+
+`AdherenceRecord` stores the original action ID/type, scheduled UTC interval and display zone, completed/missed/partial status, optional actual UTC interval, and recording time. Light/sleep records replay past assumed exposure in model mode; caffeine and melatonin records are a diary. They are not physiological measurements.
 
 The itinerary is interpreted as home → flights/connections → destination stay → flights/connections → next stay → return. Destination stays are derived from arrival and the next departure. A long layover is not automatically a destination stay: the traveler classifies it. Connections retain sleep opportunities and travel constraints without resetting the circadian baseline.
 
@@ -68,39 +72,44 @@ The itinerary is interpreted as home → flights/connections → destination sta
 ## Time and validation
 
 - Use Temporal with a polyfill to resolve local input to UTC.
-- Reject nonexistent and repeated DST local times rather than silently picking an offset. A future UI enhancement can offer explicit repeated-time choices.
+- Reject nonexistent DST clocks. Repeated clocks require an explicit earlier/later occurrence; the editor shows both UTC instants. Provider UTC offsets determine the correct occurrence for imported schedules.
 - Compare flights and connections in UTC; a date-line crossing can arrive on an earlier local calendar date.
 - Validate timezones, required fields, positive elapsed durations, and departure ordering.
 - Bound itinerary length/horizon and API payload size to prevent runaway work or storage.
 - Preserve IANA zones and local timestamps so future timezone-rule changes can regenerate schedules.
 - Include meaningful tests for DST transitions, half/quarter-hour offsets, date-line travel, overlapping flights, multi-stop continuity, and preference opt-outs.
 
-## Science and first-engine limits
+## Science, model, and limits
 
-Light is the principal environmental cue for the central circadian clock. Its effect depends on estimated biological phase, not simply destination morning/evening. Melatonin timing for phase shifting differs from using it near bedtime for sleep. Caffeine supports alertness and can interfere with sleep; it is not a cure for circadian misalignment.
+Light is the principal environmental cue for the central circadian clock. Its effect depends on biological phase, rather than simply destination morning/evening. Melatonin timing for phase shifting differs from using it near bedtime for sleep. Caffeine supports alertness and can interfere with sleep; it is not a cure for circadian misalignment.
 
-Initial phase is estimated from **habitual**, not preferred, sleep. Chronotype provides context, without adding an arbitrary extra morning/night-person offset on top of reported timing. Habitual sleep is still an imperfect phase estimate. A future seven-day diary or measured DLMO can improve the inputs, but even diaries do not establish precise biological phase.
+Initial phase is estimated from **habitual**, not preferred, sleep. Chronotype provides context, without adding an arbitrary offset on top of reported timing. Neither reported sleep nor a chronotype answer measures DLMO. The standalone `/science.html` page explains these concepts without JavaScript and links authoritative guidance and original research.
 
-The initial engine:
+### Published numerical model
 
-1. Resolves all legs to UTC and builds preparation, flight, connection, and destination periods.
-2. Carries its estimated phase through the full itinerary, including the return.
-3. Uses configurable preparation availability and conservative population-level shift assumptions, clearly labeled as assumptions.
-4. Preserves requested sleep duration where feasible and avoids boarding/landing buffers. Unavoidable travel sleep loss is reported rather than hidden.
-5. Generates light/avoidance windows around estimated biological phase and prevents overlap with scheduled sleep.
-6. Supports full, partial, and home-time strategies. Short-stay goals may warrant partial adjustment.
-7. Keeps caffeine windows at least eight hours away from scheduled sleep opportunities.
-8. Emits uncertainty warnings for large shifts and excludes unsafe/uncertain melatonin timing.
+The Forger99 right-hand side and fixed parameters are ported from the MIT-licensed Arcascope reference at pinned commit `db6eb08b6c0b0586cdac7795bf10bbbbfd323c1a`. RK4 integration uses a five-minute final replay; candidate search uses fifteen minutes. An independent Python generator imports the upstream derivatives and compares adaptive SciPy DOP853 and upstream RK4 trajectories across darkness, habitual entrainment, variable light, and high-light pulses. Step-size convergence and model minima are tested separately. Attribution, reproduction instructions, and actual tolerances appear in `THIRD_PARTY_NOTICES.md`, `src/lib/circadian/README.md`, and committed fixtures. **These checks verify equations and computation, not personal phase estimates or clinical outcomes.**
 
-Every in-flight rest opportunity starts no earlier than **30 minutes after takeoff** and ends no later than **60 minutes before landing**, irrespective of travel class or bed availability. A flight with no usable interval has no in-flight sleep action. Lie-flat availability changes opportunity wording and practical instructions; upright seating receives seated-rest/nap guidance without claiming a restorative full night. No unsupported class-specific phase rates or fixed 90-minute sleep cycles are introduced. Crew instructions always take priority.
+The planner initializes a habitual light/dark routine for 21 days with fixed published parameters. Reported usual bedtime and wake time determine the baseline duration separately from desired future sleep; unsupported baseline durations fall back explicitly with a warning. It compares constrained advance and delay candidates at adapting stays, retaining a beam of three whole-itinerary routes and carrying oscillator state through every connection/destination/return. Modeled oscillator minima guide light windows and phase-error scoring; a preferred-routine oscillator establishes the target. The search is bounded, approximate, and not claimed to find a global optimum. Planned main sleep changes are limited to one hour per day where unconstrained, with requested elapsed duration preserved when travel allows.
 
-The current calculation applies these margins to the entered flight departure/arrival interval. Airline timetables may use gate times rather than airborne times, so these are planned operational estimates: actual crew restrictions override the windows. The flight-provider milestone includes distinguishing gate and airborne timestamps and re-anchoring these buffers when actual takeoff/landing data is available.
+Model inputs assume darkness 0 lux, dim light 10 lux, waking background 150 lux, bright indoor light 500 lux, and daylight opportunity 1,000 lux. Airport coordinates estimate sunrise/sunset, including polar day/night. Daylight does not guarantee sunshine or actual received light. Unknown locations and nighttime windows identify an indoor/uncertain light requirement. Seat class, sleep quality, fatigue, caffeine, and melatonin do not drive this light-only physiology model.
 
-**This is an evidence-informed rule engine, not a calibrated circadian oscillator or clinically validated intervention.** It cannot measure a user's phase, actual light exposure, sleep, or medication suitability. Do not present precise predicted recovery dates, guaranteed prevention, Timeshifter equivalence, or a guessed light window as an exact physiological measurement. Daylight feasibility is not yet computed from latitude/weather; advice explains when ordinary indoor light may be the available option.
+Baseline sensitivity replays begin two hours earlier and later. This is an illustrative uncertainty check, not a confidence interval or individualized calibration. No promised recovery date or guaranteed jet-lag prevention is shown. Health conditions, individual responses, observed exposure, and real adherence can change outcomes.
 
-Melatonin is disabled by default. Enable only after an acknowledgement explaining drowsiness, interaction review, and medical consultation where appropriate. Eligible action cards show **0.5–1 mg as general adult dose information** from current CDC guidance, not a personally optimized prescription. The first engine omits melatonin for large or phase-ambiguous shifts and around travel activities. It does not recommend waking to take it, morning sedation, increasing dose for larger shifts, or taking it before driving. Disabling the preference removes its actions entirely. Clinical suitability cannot be established by a checkbox; the copy says so.
+Past light/sleep records replay assumed exposure and constrain darkness, then recommendations are generated only for the future. Logged scheduled history remains visible; a new calculation does not rewrite recorded actions. Missed/partial records and unlogged time need assumptions. Actual sleep is not measured, and the model does not calculate sleep debt or a cabin-specific adaptation rate. A dedicated Web Worker keeps searching off the UI thread; longer bounded itineraries can take several seconds.
 
-Later research implementation: port and attribute an MIT-licensed published oscillator (e.g. Forger99/Jewett99/Hannay19 reference), compare numerical trajectories against the reference, optimize advance **and** delay routes, incorporate local daylight and realistic light/sleep constraints, then evaluate melatonin separately. The 2026 Huang itinerary model informs requirements but its authors' code is available on request, so the MVP does not claim to reproduce it. Research-model accuracy and real-world app efficacy require separate validation.
+### Operational constraints and optional tools
+
+In-flight rest starts at least **30 minutes after takeoff** and ends at least **60 minutes before landing**, regardless of cabin class. Known airborne timestamps override estimates. Gate-only schedules allow **30 minutes taxi-out and 30 minutes taxi-in by default**, with editable allowances, then apply airborne buffers. Invalid explicit airborne ordering is rejected; short flights without usable rest have no sleep action. Connection/boarding/arrival transitions are also protected. Lie-flat availability changes comfort instructions, not model dynamics. Seated travel receives rest/nap guidance without claiming a restorative full night. Crew instructions always take priority.
+
+Caffeine windows are optional and stay at least eight hours from planned sleep. This is a conservative practical cutoff, not a guarantee for all doses or individuals. The model does not simulate caffeine's alertness or phase effects.
+
+Melatonin is disabled by default and requires a suitability acknowledgement. Eligible cards show **0.5–1 mg as general adult CDC information**, not an optimized personal prescription. Guidance is constrained to ground nighttime sleep with conservative biological-phase and advance-route checks; large or uncertain shifts and travel/transfer windows omit it. The numerical model does not simulate melatonin or optimize dose. A checkbox cannot determine medical suitability. Do not wake solely to take it or treat it as safe before driving/working.
+
+### Conservative rules mode and research boundary
+
+Rules mode retains the original evidence-informed planner with clearly labeled population shift assumptions, whole-trip continuity, and large-shift uncertainty exclusions. Its linear adjustment assumptions are not claimed as measured physiology. Adherence-driven numerical replanning belongs to model mode.
+
+The 2026 Huang itinerary model informs requirements, but its authors' code is available on request; Rephase does not claim to reproduce it or Timeshifter's proprietary algorithm. Clinical review of supplement guidance, usability evaluation, and real-world efficacy assessment remain separate research gates. Engineering completion cannot substitute for them.
 
 ### Evidence references
 
@@ -112,7 +121,7 @@ Later research implementation: port and attribute an MIT-licensed published osci
 - [Huang et al. 2026 — Modeling itinerary effects on jetlag duration](https://doi.org/10.1093/sleep/zsag063): flight timing and sleep opportunities affect simulated adaptation; group-average modeling, not a personalized efficacy trial.
 - [Drake et al. 2013 — Caffeine and sleep](https://pubmed.ncbi.nlm.nih.gov/24235903/) and [Burke et al. 2015 — Caffeine and circadian timing](https://pubmed.ncbi.nlm.nih.gov/26378246/).
 - [NCCIH — Melatonin](https://www.nccih.nih.gov/health/melatonin-what-you-need-to-know): interactions and special-population consultation.
-- [Arcascope circadian reference models](https://github.com/Arcascope/circadian): potential later numerical reference, MIT license.
+- [Arcascope circadian reference models](https://github.com/Arcascope/circadian): pinned numerical reference used by the Forger99 port, MIT license.
 
 ## Authentication and persistence
 
@@ -124,20 +133,23 @@ API contracts:
 
 | Method/path | Result |
 | --- | --- |
-| `GET /api/config` | Public Google client ID or null, sync availability |
+| `GET /api/config` | Public Google client ID or null, sync and flight-lookup availability/provider |
 | `GET /api/auth/challenge` | Login nonce and challenge cookie |
 | `POST /api/auth/google` | Verify `{credential}`, establish session, return account |
 | `GET /api/me` | Current account or 401 |
 | `POST /api/auth/logout` | Revoke session and expire cookie |
 | `GET /api/state` | `{data, revision}` for session owner |
 | `PUT /api/state` | Save `{data, revision}`; stale revision returns 409 |
-| `DELETE /api/state` | Delete saved cloud preferences/trips |
+| `DELETE /api/state` | Delete saved cloud preferences/trips; return monotonic revision |
+| `GET /api/flights` | Authenticated normalized candidates for flightNumber/date/optional departureAirport |
 
-Local use works without credentials. Google/sync controls explain when configuration is unavailable; there is no fake sign-in. First sign-in requires an explicit choice to copy guest data to an account; downloaded cloud state never silently overwrites an edited guest itinerary. Revision conflicts offer fetch-cloud or keep-local choices. Sync is explicit in the first version; automatic background merging is deferred.
+Local use works without credentials. Google/sync controls explain when configuration is unavailable; there is no fake sign-in. First sign-in requires an explicit choice to copy guest data to an account; downloaded cloud state never silently overwrites an edited guest itinerary. A persisted account-scoped sync snapshot supports three-way merging by preference field and trip/leg/action IDs. Flight identity and schedule edits are atomic, preventing a merged flight neither user entered. Independent edits can converge; same-field edits, delete/edit conflicts, and incompatible ordering require an explicit cloud/local choice. Manual sync remains available and automatic sync is opt-in, gated on verified account identity and pending choices. In-flight device edits are preserved and queued for another merge rather than silently replaced.
+
+Automatic sync needs an open app. Write serialization applies within one tab; live editing propagation across tabs is a future enhancement. Cached or expired account copies have a Google reauthentication control. Device-only trip selection does not resume paused uploads after deletion.
 
 State requests include an expected-account header, which the Worker compares with the verified session identity. The header never selects database ownership. This rejects a stale tab's request when another tab has switched the shared session to a different Google account. Client account operations are serialized; revisions remain bound to the account namespace across reload.
 
-D1 migrations define users, sessions/challenges, and user state. This keeps the API small while retaining schema/revision metadata. Future per-trip records can replace the aggregate state when concurrent editing warrants it.
+D1 migrations define users, sessions/challenges, user state, flight cache, airport-zone cache, and atomic quota reservations. This keeps the API small while retaining schema/revision metadata. Future per-trip records can replace the aggregate state when concurrent editing warrants it.
 
 Local logout switches to the guest namespace. Account-local data can be explicitly cleared. JSON export remains available. Delete-cloud-data is distinct from deleting the local copy and must clearly describe its result. Deletion retains only a monotonic revision tombstone so an old client cannot overwrite a recreated cloud record.
 
@@ -153,25 +165,25 @@ DM Sans and Manrope are bundled locally with their SIL Open Font Licenses. Typog
 
 ## Development and deployment boundary
 
-Local static preview: `npm install`, `npm run dev`, then `http://localhost:5173`. Without the API, trip/profile/planning/export work and sign-in shows configuration status.
+One-command local preview: `npm start`, then `http://localhost:5173`. The launcher installs missing locked dependencies, builds stale assets, applies local migrations, starts the UI/Worker, and cleans up owned processes on exit. `npm start -- --static` runs only the browser UI; `--production` tests the built app/API at `http://localhost:8787`. Without the API, trip/profile/planning/export work and sign-in shows configuration status.
 
 Local full stack: build assets, initialize local D1, run Wrangler on 8787, and run Vite on 5173. A Google OAuth web client ID and registered localhost JavaScript origin enable real sign-in; no OAuth client secret is required for this GIS flow. `.dev.vars` is ignored. No Google credentials are supplied in this repository.
 
-Before Cloudflare deployment, select an account/domain, create a D1 database, replace the local database ID, apply remote migrations, configure the Google client ID/production origin, build, and then deploy. These are future actions for discussion with the user, not actions taken during local implementation.
+Before Cloudflare deployment, select an account/domain, create a D1 database, replace the local database ID, apply remote migrations, configure the Google client ID/production origin, build, and then deploy. These external actions remain deferred. DEPLOYMENT.md and supporting scripts prepare them concretely: validate public settings, create resources/store secrets only with explicit invocation, apply remote migrations, and deploy through a gated GitHub workflow. A Wrangler dry run verifies bundling without publishing; no external resources were created.
 
 Primary platform documentation: [Cloudflare Static Assets](https://developers.cloudflare.com/workers/static-assets/), [SPA routing](https://developers.cloudflare.com/workers/static-assets/routing/single-page-application/), [D1](https://developers.cloudflare.com/d1/), [Google token verification](https://developers.google.com/identity/gsi/web/guides/verify-google-id-token), and [Google OAuth client setup](https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid).
 
-### Planned dynamic flight lookup and caching
+### Implemented dynamic flight lookup and caching
 
-The requested integration looks up airline/flight number and the **departure-airport local date**, returning departure/arrival airports, scheduled local times, offsets, duration, and airline. This is roadmap work, not an implemented live integration. After current-provider research, **AeroDataBox is the recommended candidate for evaluation**; Amadeus is retained below as historical context rather than the active default.
+The requested integration looks up airline/flight number and the **departure-airport local date**, returning departure/arrival airports, scheduled local times, offsets, duration, and airline. The authenticated AeroDataBox adapter, normalization, cache, quota handling, and editable confirmation UI are implemented. Real future-route coverage requires a provider key and remains unverified. Amadeus is retained below as historical context rather than the active provider.
 
 **Current access dependency:** as verified on 2026-10-14, Amadeus's official portal states its Self-Service portal was decommissioned on July 17; its official API specification repositories were archived on July 17, 2026. The historic Self-Service free tier is not assumed to be available. Confirm current Amadeus Enterprise access and terms, or discuss a supported provider before implementation. [Official portal notice](https://admin.developers.amadeus.com/), [official archived specifications](https://github.com/amadeus4dev/amadeus-open-api-specification).
 
 The historical REST operation was `GET /v2/schedule/flights`, with `carrierCode`, `flightNumber`, `scheduledDepartureDate`, and optional `operationalSuffix`. Its leg board/off-point IATA codes and matching `STD`/`STA` timing records provide schedule data; duration comes from scheduled-leg/segment duration. Codeshare operating carriers and multi-leg flight numbers need explicit candidate selection. Airline names require a carrier dictionary. Returned offsets must be joined to airport IANA zones; an offset alone cannot identify a timezone. Historical sandbox data was a snapshot, so coverage and future-date availability must be checked against the eventual account. [Historical official OpenAPI contract](https://github.com/amadeus4dev/amadeus-open-api-specification/blob/main/spec/yaml/OnDemandFlightStatus_v2_swagger_specification.yaml).
 
-Implement a Worker provider adapter and normalized flight-candidate schema. Credentials and provider access tokens remain in Worker secrets/memory, never client assets. Resolve airport zones, validate durations and chronology in UTC, and ask the traveler to confirm editable results before changing the itinerary. Travel class/actual bed availability remain user inputs; a generic flight-status response cannot establish them.
+The Worker provider adapter returns a normalized flight-candidate schema. Credentials and provider access tokens remain in Worker secrets/memory, never client assets. Resolve airport zones, validate durations and chronology in UTC, and ask the traveler to confirm editable results before changing the itinerary. Travel class/actual bed availability remain user inputs; a generic flight-status response cannot establish them.
 
-Cache permitted normalized schedules in D1 by provider, environment, schema version, carrier, flight number/suffix, and local departure date. Include fetch/expiry timestamps and source attribution. Use provider-approved TTLs: longer for distant schedules, shorter near departure, plus brief negative-result caching. Deduplicate concurrent lookups, cap requests/pagination, enforce user-level usage limits, and respect licensing/quotas. Display stale results explicitly when refresh fails; keep manual entry available and never fabricate missing schedule data.
+The implementation caches permitted normalized schedules in D1 by provider, environment, schema version, carrier, flight number/suffix, and local departure date. Include fetch/expiry timestamps and source attribution. Fresh TTLs are 24 hours for distant flights, 15 minutes near departure, and five minutes for no-results. Shared retention is six days with hourly purge, below the seven-day contractual maximum. Fresh-cache lookups spend no provider request quota. Each outbound request reserves per-account daily/monthly and global monthly credits atomically; defaults are 10/40/150. Airport-zone requests also count. Outbound calls have bounded workflow/request deadlines, no automatic costly retries, and no upstream application cache. Deduplicate concurrent lookups, cap requests/pagination, enforce user-level usage limits, and respect licensing/quotas. Display stale results explicitly when refresh fails; keep manual entry available and never fabricate missing schedule data.
 
 Provider comparison verified on 2026-10-14:
 
@@ -191,6 +203,6 @@ The verified development workflow currently uses Node/npm, Vite, Vitest, Playwri
 
 ## Verification and known future work
 
-Require TypeScript checks, a production build, temporal/itinerary/opt-out tests, Worker rejection/ownership/revision tests, and local HTTP smoke checks. Browser QA is run only when a supported browser-control tool is available; otherwise disclose that visual interactions have not been browser-tested. Real Google sign-in cannot be end-to-end verified without an OAuth client. No deployment or clinical validation is implied by passing engineering checks.
+Require TypeScript checks, a production build, temporal/itinerary/opt-out tests, Worker rejection/ownership/revision tests, and local HTTP smoke checks. Browser QA uses Playwright/Chromium against the production build, including static science, flight confirmation, and offline shell behavior; API scenarios use controlled responses. Real Google sign-in cannot be end-to-end verified without an OAuth client. No deployment or clinical validation is implied by passing engineering checks.
 
 See [TODO.md](TODO.md) for completed work, remaining implementation tasks, and research/deployment milestones.

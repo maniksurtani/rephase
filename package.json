@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "start": "node scripts/launch.mjs",
     "dev": "vite --host 0.0.0.0",
     "build": "tsc -p tsconfig.json && vite build && node scripts/build-offline.mjs",
     "preview": "vite preview --host 0.0.0.0",
@@ -11,7 +12,12 @@
     "test:e2e": "playwright test",
     "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.worker.json",
     "worker:dev": "wrangler dev --port 8787",
-    "db:local": "wrangler d1 migrations apply rephase --local"
+    "db:local": "wrangler d1 migrations apply rephase --local",
+    "deploy": "node scripts/deploy.mjs",
+    "deploy:check": "node scripts/check-deploy-config.mjs",
+    "cloudflare:configure": "node scripts/configure-cloudflare.mjs",
+    "github:remote": "node scripts/github-remote.mjs",
+    "benchmark:bun": "node scripts/benchmark-bun.mjs"
   },
   "dependencies": {
     "@js-temporal/polyfill": "^0.5.1",

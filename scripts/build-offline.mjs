@@ -31,7 +31,7 @@ self.addEventListener('fetch', event => {
   const url = new URL(request.url);
   if (request.method !== 'GET' || url.origin !== self.location.origin || url.pathname.startsWith('/api/')) return;
   if (request.mode === 'navigate') {
-    event.respondWith(fetch(request).catch(() => caches.match('/index.html')));
+    event.respondWith(fetch(request).catch(() => caches.match(ASSETS.includes(url.pathname) ? url.pathname : '/index.html')));
   } else if (ASSETS.includes(url.pathname)) {
     event.respondWith(caches.match(url.pathname).then(cached => cached || fetch(request)));
   }

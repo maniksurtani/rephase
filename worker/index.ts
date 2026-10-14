@@ -1,8 +1,9 @@
 import { createRemoteJWKSet, jwtVerify, type JWTVerifyGetKey } from 'jose';
 import type { Account, AppData } from '../src/lib/types';
 import { validateAppData } from './validation';
+import { FlightApiError, lookupFlights, purgeFlightData, validateFlightQuery, type FlightDependencies, type FlightEnv } from './flights';
 
-export interface Env {
+export interface Env extends FlightEnv {
   DB?: D1Database;
   GOOGLE_CLIENT_ID?: string;
   /** Exact browser origin; needed for the localhost Vite reverse proxy. */
@@ -14,7 +15,7 @@ interface GoogleIdentity { id: string; name: string; email: string }
 interface ChallengeRow { nonce_hash: string; expires_at: number }
 interface SessionRow extends Account { expires_at: number }
 interface StateRow { data: string; revision: number }
-interface Dependencies {
+interface Dependencies extends FlightDependencies {
   now?: () => number;
   verifyToken?: typeof verifyGoogleCredential;
 }
@@ -163,7 +164,8 @@ export async function handleApi(request: Request, env: Env, dependencies: Depend
     if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(request.method)) checkOrigin(request, env);
     if (path === '/api/config' && request.method === 'GET') {
       const googleClientId = env.GOOGLE_CLIENT_ID?.trim() || null;
-      return response({ googleClientId, syncAvailable: Boolean(googleClientId && env.DB) });
+      return response({ googleClientId, syncAvailable: Boolean(googleClientId && env.DB),
+        flightLookupAvailable: Boolean(googleClientId && env.DB && env.RAPIDAPI_KEY?.trim()), flightProvider: 'aerodatabox' });
     }
     if (path === '/api/auth/challenge' && request.method === 'GET') {
       if (!env.GOOGLE_CLIENT_ID?.trim()) throw new ApiError(503, 'Google sign-in is not configured. Add GOOGLE_CLIENT_ID to the Worker.');
@@ -228,6 +230,18 @@ export async function handleApi(request: Request, env: Env, dependencies: Depend
     if (path === '/api/me' && request.method === 'GET') {
       return response(await accountFor(request, requireDatabase(env), now));
     }
+    if (path === '/api/flights' && request.method === 'GET') {
+      const db = requireDatabase(env);
+      const account = await accountFor(request, db, now);
+      if (request.headers.get('X-Rephase-Account') !== account.id) {
+        throw new ApiError(403, 'Your signed-in account changed. Sign in again before looking up flights.');
+      }
+      // This GET can spend provider credits. Custom account headers and origin
+      // checks prevent a foreign page from spending another account's budget.
+      if (request.headers.has('Origin') || request.headers.get('Sec-Fetch-Site') === 'cross-site') checkOrigin(request, env);
+      const query = validateFlightQuery(new URL(request.url), now);
+      return response(await lookupFlights(query, db, env, account.id, now, dependencies));
+    }
     if (path === '/api/state' && ['GET', 'PUT', 'DELETE'].includes(request.method)) {
       const db = requireDatabase(env);
       const account = await accountFor(request, db, now);
@@ -267,7 +281,7 @@ export async function handleApi(request: Request, env: Env, dependencies: Depend
     }
     const methods: Record<string, string[]> = {
       '/api/config': ['GET'], '/api/auth/challenge': ['GET'], '/api/auth/google': ['POST'],
-      '/api/auth/logout': ['POST'], '/api/me': ['GET'], '/api/state': ['GET', 'PUT', 'DELETE'],
+      '/api/auth/logout': ['POST'], '/api/me': ['GET'], '/api/state': ['GET', 'PUT', 'DELETE'], '/api/flights': ['GET'],
     };
     if (methods[path]) {
       const result = response({ error: 'Method not allowed.' }, 405);
@@ -276,13 +290,16 @@ export async function handleApi(request: Request, env: Env, dependencies: Depend
     }
     return response({ error: 'API endpoint not found.' }, 404);
   } catch (error) {
-    if (error instanceof ApiError) return response({ error: error.message }, error.status);
+    if (error instanceof ApiError || error instanceof FlightApiError) return response({ error: error.message }, error.status);
     // Never include Google credentials, session tokens, SQL, or private state in an error response/log.
     return response({ error: 'Account storage is unavailable. Check the Worker configuration and D1 migrations.' }, 503);
   }
 }
 
 export default {
+  async scheduled(event: ScheduledController, env: Env): Promise<void> {
+    if (env.DB) await purgeFlightData(env.DB, Math.floor(event.scheduledTime / 1000));
+  },
   async fetch(request: Request, env: Env): Promise<Response> {
     if (new URL(request.url).pathname.startsWith('/api/')) return handleApi(request, env);
     return env.ASSETS ? env.ASSETS.fetch(request) : new Response('Static assets are not built. Run npm run build.', { status: 404 });

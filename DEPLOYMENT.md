@@ -1,0 +1,166 @@
+# Running and deploying Rephase
+
+No GitHub repository, Cloudflare resource or public deployment is created by installing this project. The deployment tools below are prepared for when an account and destination have been chosen.
+
+## Start the app locally
+
+Install **Node.js 22.13 or newer** with npm; Node 24 is used in CI. From the repository directory:
+
+```sh
+npm start
+```
+
+The launcher installs dependencies only if they are missing, builds if needed, creates `.dev.vars` with empty keys if that file does not exist, applies migrations to **local D1**, and starts both servers. It opens **http://localhost:5173** once the UI and API respond. The API also listens on **http://localhost:8787**. Stop them together with **Ctrl+C**. Existing `.dev.vars` values are preserved and credentials are never printed.
+
+For a terminal without a desktop browser, use:
+
+```sh
+npm start -- --no-open
+```
+
+Useful variants:
+
+```sh
+# Browser-only app; Google sync and live flight lookup require the Worker.
+npm start -- --static --no-open
+
+# Serve the built PWA and API from one local origin on port 8787.
+npm start -- --production --no-open
+
+# Use alternative ports without killing existing processes.
+npm start -- --port 5174 --worker-port 8788 --no-open
+
+npm start -- --help
+```
+
+If a port is occupied the launcher exits before setup. It does not stop another application's server. Servers bind to local loopback. In a remote workspace, forward port 5173, or 8787 in production mode, through your IDE/workspace and open the forwarded URL on your device. To test Google sign-in remotely with the launcher's local-origin defaults, use a localhost tunnel that preserves the registered `http://localhost:5173` origin (or port 8787 for production mode).
+
+Local planning, trip editing, the science page and saved preferences work without credentials. To test Google sign-in, create a **Google OAuth Web application** client and add `http://localhost:5173` to its authorized JavaScript origins. For production-mode local testing, also add `http://localhost:8787`. Set its public client ID in `.dev.vars` and restart the launcher:
+
+```dotenv
+GOOGLE_CLIENT_ID="your-client-id.apps.googleusercontent.com"
+ALLOWED_ORIGIN="http://localhost:5173"
+RAPIDAPI_KEY=""
+```
+
+The launcher supplies the correct local origin when you choose another port. Register that origin in Google as well. This sign-in flow needs no Google client secret, redirect URL, Gmail access or Calendar access. Once a flight provider subscription is configured, its RapidAPI key belongs in the ignored `.dev.vars` file for local lookup; live lookup requires signing in.
+
+## Connect an empty GitHub repository
+
+Create an empty GitHub repository, choosing its name and visibility. Leave GitHub's README, license and `.gitignore` initialization options unchecked so the remote stays empty and can receive this repository's existing history.
+
+For SSH authentication, add your SSH public key to GitHub. For HTTPS, sign in with `gh auth login` or a Git credential manager; GitHub does not accept your account password for Git pushes. Never put an access token in a remote URL.
+
+The helper defaults to printing the exact commands, with no remote writes:
+
+```sh
+npm run github:remote -- --url https://github.com/YOUR_ACCOUNT/YOUR_REPO.git
+# Alternatively: --url git@github.com:YOUR_ACCOUNT/YOUR_REPO.git
+```
+
+To verify the remote is empty and add `origin` **locally**:
+
+```sh
+npm run github:remote -- --url https://github.com/YOUR_ACCOUNT/YOUR_REPO.git --check-empty --configure
+```
+
+Then run the printed `git push -u origin main` command when you are ready to upload. The helper never pushes, force-pushes, creates a repository or replaces an existing different remote. The `Checks` workflow runs for pull requests and pushes to `main`; it installs locked dependencies, typechecks, tests, builds and runs Chromium browser scenarios. Pull-request checks receive no deployment or provider secrets.
+
+## Prepare Cloudflare and Google
+
+Rephase uses one **Cloudflare Worker with static assets**, one **D1 database** for Google sessions, account data and the shared flight cache, and an hourly scheduled handler to purge expiring provider data. The planner remains in the browser. This is a Workers deployment, not a separate Pages project.
+
+Static HTML keeps its explicit filename (`html_handling: none`), so `/science.html` has the same URL in the offline cache and on Cloudflare. SPA fallback handles the application routes.
+
+After choosing the Cloudflare account, use Wrangler's login flow locally:
+
+```sh
+npx wrangler login
+```
+
+Create the D1 database when ready; this command creates a remote resource:
+
+```sh
+npx wrangler d1 create rephase
+```
+
+Keep the resulting database UUID for configuration. The all-zero UUID in the checked-in `wrangler.jsonc` is exclusively for local development. The deployment scripts generate an ignored `wrangler.deploy.json` from that base, so the repository retains its portable local configuration.
+
+Choose the production HTTPS origin before deploying, such as `https://rephase.YOUR_WORKERS_SUBDOMAIN.workers.dev`. Your account's Workers dashboard identifies its workers.dev subdomain. A custom domain can be configured later in the Worker's domain settings; update the configured origin and Google authorized origins together. Record that domain in the base Wrangler `routes` configuration when adopting it, so future deployments preserve the intended hosting configuration. Do not configure a URL path, trailing slash or plain HTTP.
+
+Create a production Google OAuth **Web application** client, or add the production origin to the existing client's authorized JavaScript origins. Configure the Google consent screen's audience/test users as required for your intended users. The Google client ID is public configuration, while the Cloudflare API token and RapidAPI key are secrets.
+
+## GitHub Actions deployment
+
+Create a GitHub Actions environment named **production**. Optional required reviewers can make a deployment wait for approval; this project does not impose that setting. Configure the following repository or production-environment **variables**:
+
+| Variable | Value |
+|---|---|
+| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare account's 32-character ID |
+| `CLOUDFLARE_D1_DATABASE_ID` | UUID returned by D1 creation |
+| `PUBLIC_APP_ORIGIN` | Exact final HTTPS origin |
+| `GOOGLE_CLIENT_ID` | Google OAuth Web application client ID |
+| `FLIGHT_DAILY_LIMIT` | Optional per-account daily lookup limit; default 10, range 1–1000 |
+| `FLIGHT_MONTHLY_LIMIT` | Optional per-account monthly lookup limit; default 40, range 1–10000 |
+| `FLIGHT_GLOBAL_MONTHLY_LIMIT` | Optional total monthly outbound-provider budget; default 150, range 1–1000000 |
+
+Add these production-environment **secrets**:
+
+| Secret | Purpose |
+|---|---|
+| `CLOUDFLARE_API_TOKEN` | Authenticate Wrangler's deployment and remote D1 migrations |
+| `RAPIDAPI_KEY` | Optional AeroDataBox/RapidAPI key; omit to leave live lookup unavailable |
+
+Create a Cloudflare API token scoped to the chosen account with **Account → Workers Scripts → Edit**, **Account → D1 → Edit**, and **Account → Account Settings → Read** for account identification. The final permission's internal/API name is `Account Settings Read`; the exact label shown in the dashboard may differ. The workers.dev setup needs no zone permission. Managing a custom domain/zone via automation would require separately scoped permissions; configuring it through the dashboard avoids granting this workflow those permissions. Use the relevant [Cloudflare permission reference](https://developers.cloudflare.com/fundamentals/api/reference/permissions/) when creating the token.
+
+The workflow initially runs deployment only when you choose **Actions → Deploy to Cloudflare → Run workflow**, on the `main` branch. It validates all target settings, runs checks and browser scenarios, applies remote migrations, uploads the Worker/static bundle, optionally uploads the provider secret via Wrangler stdin, and checks the public configuration endpoint. Secrets are not written to configuration files, command-line arguments or logs.
+
+After deciding to enable deployment on every push to `main`, set the **repository variable** `DEPLOY_ENABLED` to `true`. Leave it absent or set it to `false` for manual-only deployment. This switch must be a repository variable because the workflow evaluates it before loading an environment's variables. Restrict who can push to `main` or add branch protection as appropriate for your repository.
+
+The hourly cache purge is enabled by the base Wrangler configuration. Set lookup budgets below your subscribed provider allowance, reserving capacity for uncached airport timezone requests and manual/provider usage outside this app. A cached flight result may still be outdated; users confirm retrieved times before applying them to a trip.
+
+## Local deployment check and deployment
+
+Create an ignored `.deployment.env` file containing only the public deployment settings:
+
+```dotenv
+CLOUDFLARE_ACCOUNT_ID=your_32_character_account_id
+CLOUDFLARE_D1_DATABASE_ID=your_database_uuid
+PUBLIC_APP_ORIGIN=https://rephase.YOUR_WORKERS_SUBDOMAIN.workers.dev
+GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
+```
+
+Node's built-in env-file support makes these commands work across platforms:
+
+```sh
+node --env-file=.deployment.env scripts/check-deploy-config.mjs
+node --env-file=.deployment.env scripts/configure-cloudflare.mjs
+node --env-file=.deployment.env scripts/deploy.mjs --dry-run
+```
+
+The first command validates without writing anything. The second writes only ignored local configuration. The dry run builds and bundles locally; it does not apply remote migrations, upload secrets or deploy code. Install dependencies with `npm ci` first if necessary. Wrangler may read local settings while bundling; deployment configuration contains only explicitly allowed public variables.
+
+For an actual deployment after account setup and login:
+
+```sh
+node --env-file=.deployment.env scripts/deploy.mjs --apply
+```
+
+This command applies remote D1 migrations **before** deploying. A failed code upload does not roll those migrations back; migrations should remain compatible with the prior Worker version. Wrangler may ask for confirmation when applying migrations in a local interactive terminal; CI applies them without that prompt. The API check confirms public configuration and, when a provider key was uploaded, that flight lookup is enabled. It does not test complete Google authentication or live provider coverage. Finish by signing in with a real Google account, saving/reloading a trip, testing a representative future flight, and loading a saved plan offline on desktop and mobile.
+
+To add a provider key without recording it in a shell argument or file, use Wrangler's interactive secret prompt after configuration:
+
+```sh
+npx wrangler secret put RAPIDAPI_KEY --config wrangler.deploy.json
+```
+
+Existing Cloudflare secrets are preserved when a deployment omits `RAPIDAPI_KEY`; omitting the local variable does not delete an already configured secret. Remove it explicitly through Wrangler or Cloudflare if you want to disable live lookup. Never commit `.dev.vars`, `.deployment.env`, API tokens, provider credentials or account data.
+
+## Authoritative setup references
+
+- [Cloudflare Workers with GitHub Actions](https://developers.cloudflare.com/workers/ci-cd/external-cicd/github-actions/)
+- [Wrangler D1 creation and migration commands](https://developers.cloudflare.com/d1/wrangler-commands/)
+- [Cloudflare Worker secret management](https://developers.cloudflare.com/workers/configuration/secrets/)
+- [Cloudflare API token permission reference](https://developers.cloudflare.com/fundamentals/api/reference/permissions/)
+- [GitHub Actions secrets](https://docs.github.com/en/actions/how-tos/security-for-github-actions/security-guides/using-secrets-in-github-actions)
+- [Google Identity Services setup](https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid)

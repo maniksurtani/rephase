@@ -8,7 +8,7 @@ const preferences: Preferences = {
   homeTimeZone: 'America/New_York', chronotype: 'intermediate',
   usualBedtime: '23:00', usualWakeTime: '07:00',
   preferredBedtime: '23:00', preferredWakeTime: '07:00', sleepHours: 8, sleepAnchor: 'wake',
-  caffeine: true, melatonin: false, melatoninAcknowledged: false, preparationDays: 3,
+  caffeine: true, melatonin: false, melatoninAcknowledged: false, preparationDays: 3, planningMode: 'rules',
 };
 const first: FlightLeg = {
   id: 'outbound', flightNumber: 'BA178', departureAirport: 'JFK', arrivalAirport: 'LHR',
@@ -44,7 +44,7 @@ describe('planning rules', () => {
       const departure = localToInstant(leg.departureDateTime, leg.departureTimeZone);
       const arrival = localToInstant(leg.arrivalDateTime, leg.arrivalTimeZone);
       for (const action of actions(result)) {
-        expect(overlap(action, departure - 2 * HOUR, departure + HOUR / 2)).toBe(false);
+        expect(overlap(action, departure - 2 * HOUR, departure + HOUR)).toBe(false);
         expect(overlap(action, arrival - HOUR, arrival + HOUR)).toBe(false);
       }
     }
@@ -67,10 +67,10 @@ describe('planning rules', () => {
         const inFlightSleep = actions(result).filter(action => action.type === 'sleep'
           && Date.parse(action.start) >= departure && Date.parse(action.end) <= arrival);
         expect(inFlightSleep.length).toBeGreaterThan(0);
-        expect(Math.min(...inFlightSleep.map(action => Date.parse(action.start)))).toBe(departure + HOUR / 2);
-        expect(Math.max(...inFlightSleep.map(action => Date.parse(action.end)))).toBe(arrival - HOUR);
+        expect(Math.min(...inFlightSleep.map(action => Date.parse(action.start)))).toBe(departure + HOUR);
+        expect(Math.max(...inFlightSleep.map(action => Date.parse(action.end)))).toBe(arrival - 1.5 * HOUR);
         for (const sleep of inFlightSleep) {
-          expect(overlap(sleep, departure, departure + HOUR / 2)).toBe(false);
+          expect(overlap(sleep, departure, departure + HOUR)).toBe(false);
           expect(overlap(sleep, arrival - HOUR, arrival)).toBe(false);
         }
       }
@@ -229,6 +229,11 @@ describe('itinerary validation', () => {
       departureTimeZone: 'Pacific/Kiritimati', arrivalTimeZone: 'Pacific/Honolulu' };
     expect(validateTrip(trip([leg]))).toEqual([]);
     expect(generatePlan(trip([leg]), { ...preferences, homeTimeZone: 'Pacific/Kiritimati', preparationDays: 0 }).summary.flightHours).toBe(2);
+  });
+  it('rejects malformed airport codes and gate flights longer than 36 hours', () => {
+    expect(validateTrip(trip([{ ...first, departureAirport: 'XX' }])).join(' ')).toContain('airport code');
+    const longFlight = { ...first, departureTimeZone: 'UTC', arrivalTimeZone: 'UTC', departureDateTime: '2026-10-14T06:00', arrivalDateTime: '2026-10-16T00:30' };
+    expect(validateTrip(trip([longFlight])).join(' ')).toContain('36 hours');
   });
   it('rejects excessive trip duration', () => {
     const distant = { ...first, id: 'distant', departureDateTime: '2027-02-14T18:00', arrivalDateTime: '2027-02-15T06:00' };

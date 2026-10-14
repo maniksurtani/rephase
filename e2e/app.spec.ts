@@ -31,6 +31,8 @@ test('mobile preferences persist after reload without overflow',async({page})=> 
   await expect(page.getByLabel('Hours of sleep you need')).toHaveValue('9');
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
   await expect(page.getByText('Google sign-in needs a client ID',{exact:false})).toBeVisible();
+  await page.evaluate(()=>window.scrollTo(0,0));
+  await page.screenshot({path:'artifacts/preview-mobile.png'});
 });
 
 test('editing the example preserves keyboard focus and creates a personal itinerary',async({page})=> {
@@ -77,6 +79,8 @@ test('production shell and a saved account namespace reopen offline',async({page
   await expect(page.getByText('Offline account copy',{exact:false})).toBeVisible();
   const cached=await page.evaluate(async()=> {const names=await caches.keys();const all=await Promise.all(names.map(async name=>(await (await caches.open(name)).keys()).map(request=>new URL(request.url).pathname)));return all.flat();});
   expect(cached.some(path=>path.startsWith('/api/'))).toBe(false);
+  await page.goto('/science.html');
+  await expect(page.getByRole('heading',{level:1})).toContainText('Your body clock.');
 });
 
 test('stale cloud revisions preserve local edits across reload until a choice is made',async({page})=> {
@@ -92,6 +96,7 @@ test('stale cloud revisions preserve local edits across reload until a choice is
     cloud=body.data;revision+=1;return route.fulfill({json:{revision}});
   });
   await page.goto('/');await page.getByRole('button',{name:'Profile',exact:true}).first().click();
+  await expect(page.getByText('traveler@example.com',{exact:true})).toBeVisible();
   await page.getByLabel('Hours of sleep you need').fill('9');await page.getByRole('button',{name:'Save preferences'}).click();
   revision=2;cloud={...cloud,preferences:{...cloud.preferences,sleepHours:7.5}};
   await page.getByRole('button',{name:'Sync my data'}).click();
@@ -103,4 +108,80 @@ test('stale cloud revisions preserve local edits across reload until a choice is
   await expect(page.getByRole('dialog',{name:'Two copies, one choice'})).toBeVisible();
   await page.getByRole('button',{name:'Use cloud copy',exact:true}).click();
   await expect(page.getByLabel('Hours of sleep you need')).toHaveValue('7.5');
+});
+
+test('static science page works without JavaScript and fits a mobile screen',async({browser})=> {
+  const context=await browser.newContext({javaScriptEnabled:false,viewport:{width:360,height:800}});
+  const page=await context.newPage();await page.goto('http://127.0.0.1:4173/science.html');
+  await expect(page.getByRole('heading',{level:1})).toBeVisible();
+  await expect(page.locator('#source-cdc > a')).toHaveAttribute('href',/cdc\.gov/);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
+  await page.screenshot({path:'artifacts/science-mobile.png'});
+  await context.close();
+});
+
+test('flight lookup confirms a candidate without changing cabin choices',async({page})=> {
+  const account={id:'lookup-account',name:'Flight traveler',email:'flight@example.com'};
+  await page.route('**/api/config',route=>route.fulfill({json:{googleClientId:'test-client',syncAvailable:true,flightLookupAvailable:true,flightProvider:'aerodatabox'}}));
+  await page.route('**/api/me',route=>route.fulfill({json:account}));
+  await page.route('**/api/state',route=>route.fulfill({json:{data:{schemaVersion:1,preferences:DEFAULT_PREFERENCES,trips:[],selectedTripId:null},revision:0}}));
+  await page.route('**/api/flights?*',route=> {
+    expect(route.request().headers()['x-rephase-account']).toBe(account.id);
+    expect(new URL(route.request().url()).searchParams.get('date')).toBe('2026-12-01');
+    return route.fulfill({json:{provider:'aerodatabox',candidates:[{id:'ba286',flightNumber:'BA286',airline:'British Airways',departureAirport:'SFO',arrivalAirport:'LHR',departureDateTime:'2026-12-01T20:00',arrivalDateTime:'2026-12-02T14:00',departureTimeZone:'America/Los_Angeles',arrivalTimeZone:'Europe/London',departureUtc:'2026-12-02T04:00:00Z',arrivalUtc:'2026-12-02T14:00:00Z',durationMinutes:600}],fetchedAt:'2026-10-14T12:00:00Z',expiresAt:'2026-10-15T12:00:00Z',stale:false,attribution:'Flight data by AeroDataBox',warnings:[]}});
+  });
+  await page.goto('/');await page.getByRole('button',{name:'Profile',exact:true}).first().click();
+  await expect(page.getByText(account.email,{exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Trips',exact:true}).first().click();
+  await page.getByRole('button',{name:'New trip',exact:true}).click();
+  await page.getByLabel('Flight number').fill('BA286');
+  await page.getByLabel('Travel class').selectOption('business');await page.getByLabel('Lie-flat bed available?').selectOption('yes');
+  await page.getByText('Find this flight by number and departure date',{exact:true}).click();
+  await page.getByLabel('Departure date at the departure airport').fill('2026-12-01');
+  await page.getByRole('button',{name:'Look up flight',exact:true}).click();
+  const use=page.getByRole('button',{name:'Use this flight',exact:true});await expect(use).toBeDisabled();
+  await page.getByLabel('This is my own booked or previously traveled trip.',{exact:false}).check();await use.click();
+  await expect(page.getByLabel('Local departure date & time')).toHaveValue('2026-12-01T20:00');
+  await expect(page.getByLabel('Local arrival date & time')).toHaveValue('2026-12-02T14:00');
+  await expect(page.getByLabel('Travel class')).toHaveValue('business');await expect(page.getByLabel('Lie-flat bed available?')).toHaveValue('yes');
+  await page.getByRole('button',{name:'Create my plan',exact:true}).click();
+  await expect(page.getByRole('heading',{name:'My next journey',exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Trips',exact:true}).first().click();
+  await expect(page.getByRole('link',{name:'Originally imported from AeroDataBox'})).toBeVisible();
+});
+
+test('repeated local flight times require an explicit occurrence',async({page})=> {
+  await page.goto('/');await page.getByRole('button',{name:'Trips',exact:true}).first().click();
+  await page.getByRole('button',{name:'New trip',exact:true}).click();
+  await page.getByLabel('Airport code').first().fill('JFK');await page.getByLabel('Airport code').last().fill('BOS');
+  await page.getByLabel('Local departure date & time').fill('2026-11-01T01:30');
+  await page.getByLabel('Local arrival date & time').fill('2026-11-01T03:30');
+  const fold=page.getByRole('combobox',{name:'Departure: this clock time occurs twice'});
+  await expect(fold).toBeVisible();await fold.selectOption('later');
+  await page.getByRole('button',{name:'Create my plan',exact:true}).click();
+  await expect(page.getByRole('heading',{name:'My next journey',exact:true})).toBeVisible();
+});
+
+test('actual experience is saved and only future recommendations are replanned',async({page})=> {
+  const local=(days:number,hour:string)=>`${new Date(Date.now()+days*86400000).toISOString().slice(0,10)}T${hour}`;
+  await page.goto('/');await page.getByRole('button',{name:'Trips',exact:true}).first().click();
+  await page.getByRole('button',{name:'New trip',exact:true}).click();
+  await page.getByLabel('Trip name').fill('My recent flight');
+  await page.getByLabel('Airport code').first().fill('JFK');await page.getByLabel('Airport code').last().fill('LHR');
+  await page.getByLabel('Departure time zone').fill('UTC');await page.getByLabel('Arrival time zone').fill('UTC');
+  await page.getByLabel('Local departure date & time').fill(local(-3,'12:00'));
+  await page.getByLabel('Local arrival date & time').fill(local(-3,'20:00'));
+  await page.getByRole('button',{name:'Create my plan',exact:true}).click();
+  await expect(page.getByRole('heading',{name:'My recent flight',exact:true})).toBeVisible();
+  await page.locator('.day-button').first().click();
+  await page.getByRole('button',{name:'Record what happened',exact:true}).first().click();
+  await page.getByRole('combobox',{name:'What happened?'}).selectOption('missed');
+  await page.getByRole('button',{name:'Save record',exact:true}).click();
+  await expect(page.getByText('Your recorded history',{exact:false})).toBeVisible();
+  await page.getByText('Your recorded history',{exact:false}).click();
+  await expect(page.locator('.plan-warnings').filter({hasText:'Your recorded history'}).locator('li').filter({hasText:'missed'})).toBeVisible();
+  await page.reload();await page.getByRole('button',{name:'Explore your plan'}).click();
+  await expect(page.getByText('Your recorded history',{exact:false})).toBeVisible();
+  await page.getByRole('button',{name:'Today',exact:true}).first().click();
+  await page.screenshot({path:'artifacts/preview-desktop.png'});
 });
