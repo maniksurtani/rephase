@@ -1,0 +1,15 @@
+{
+  "id": "/",
+  "name": "Rephase — travel in rhythm",
+  "short_name": "Rephase",
+  "description": "A personal jet lag plan for your whole journey.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#101323",
+  "theme_color": "#101323",
+  "icons": [
+    {"src":"/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
+    {"src":"/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+  ]
+}

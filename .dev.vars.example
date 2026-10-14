@@ -1,0 +1,5 @@
+# Copy to .dev.vars for local Worker development; do not commit .dev.vars.
+# Register http://localhost:5173 as an authorized JavaScript origin in a
+# Google OAuth Web application client. The public client ID is required.
+GOOGLE_CLIENT_ID=""
+ALLOWED_ORIGIN="http://localhost:5173"

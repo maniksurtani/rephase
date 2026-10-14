@@ -57,6 +57,8 @@ flowchart LR
 
 `Trip` holds an ID, name, timestamps, and ordered `FlightLeg[]`. Each leg contains original local timestamps and explicit IANA zones, airport codes, optional flight number, `stayAfter` (`connection` or `destination`), and `strategy` (`adapt`, `partial`, `home`). Airport selection supplies a zone from a bundled common-airport catalog. An unlisted airport remains usable through explicit timezone input; the catalog is not claimed to cover every airport.
 
+Each flight also records travel class (economy, premium economy, business, first) and a separately confirmed `lieFlat` flag. New user legs default to economy with no confirmed bed. These fields are optional for compatibility with older schema-1 records; missing bed availability receives conservative seated-rest guidance. Business/first labels never imply a bed. Airline/aircraft changes can alter seat availability, so the traveler confirms the actual seat.
+
 The itinerary is interpreted as home → flights/connections → destination stay → flights/connections → next stay → return. Destination stays are derived from arrival and the next departure. A long layover is not automatically a destination stay: the traveler classifies it. Connections retain sleep opportunities and travel constraints without resetting the circadian baseline.
 
 `Plan` contains engine version, input trip ID, generation timestamp, warnings, summary, and ordered `PlanDay[]`. Every action records a UTC start/end, named display zone, type, instructions, reason, and optional evidence/dose information. Plans are regenerated from inputs rather than synced as authoritative biological observations.
@@ -89,6 +91,10 @@ The initial engine:
 6. Supports full, partial, and home-time strategies. Short-stay goals may warrant partial adjustment.
 7. Keeps caffeine windows at least eight hours away from scheduled sleep opportunities.
 8. Emits uncertainty warnings for large shifts and excludes unsafe/uncertain melatonin timing.
+
+Every in-flight rest opportunity starts no earlier than **30 minutes after takeoff** and ends no later than **60 minutes before landing**, irrespective of travel class or bed availability. A flight with no usable interval has no in-flight sleep action. Lie-flat availability changes opportunity wording and practical instructions; upright seating receives seated-rest/nap guidance without claiming a restorative full night. No unsupported class-specific phase rates or fixed 90-minute sleep cycles are introduced. Crew instructions always take priority.
+
+The current calculation applies these margins to the entered flight departure/arrival interval. Airline timetables may use gate times rather than airborne times, so these are planned operational estimates: actual crew restrictions override the windows. The flight-provider milestone includes distinguishing gate and airborne timestamps and re-anchoring these buffers when actual takeoff/landing data is available.
 
 **This is an evidence-informed rule engine, not a calibrated circadian oscillator or clinically validated intervention.** It cannot measure a user's phase, actual light exposure, sleep, or medication suitability. Do not present precise predicted recovery dates, guaranteed prevention, Timeshifter equivalence, or a guessed light window as an exact physiological measurement. Daylight feasibility is not yet computed from latitude/weather; advice explains when ordinary indoor light may be the available option.
 
@@ -129,15 +135,21 @@ API contracts:
 
 Local use works without credentials. Google/sync controls explain when configuration is unavailable; there is no fake sign-in. First sign-in requires an explicit choice to copy guest data to an account; downloaded cloud state never silently overwrites an edited guest itinerary. Revision conflicts offer fetch-cloud or keep-local choices. Sync is explicit in the first version; automatic background merging is deferred.
 
+State requests include an expected-account header, which the Worker compares with the verified session identity. The header never selects database ownership. This rejects a stale tab's request when another tab has switched the shared session to a different Google account. Client account operations are serialized; revisions remain bound to the account namespace across reload.
+
 D1 migrations define users, sessions/challenges, and user state. This keeps the API small while retaining schema/revision metadata. Future per-trip records can replace the aggregate state when concurrent editing warrants it.
 
-Local logout switches to the guest namespace. Account-local data can be explicitly cleared. JSON export remains available. Delete-cloud-data is distinct from deleting the local copy and must clearly describe its result.
+Local logout switches to the guest namespace. Account-local data can be explicitly cleared. JSON export remains available. Delete-cloud-data is distinct from deleting the local copy and must clearly describe its result. Deletion retains only a monotonic revision tombstone so an old client cannot overwrite a recreated cloud record.
+
+An offline namespace pointer stores only the last account's local display identity, never a token. It lets that account's saved data reopen offline, but it does not authorize an API operation. The Worker still verifies sessions on every account request; online mutations require an account match.
 
 ## Offline and exports
 
 Production service-worker caching is restricted to same-origin static GET requests. `/api/*` and Google requests are excluded. Cache versioning replaces the old shell safely; dev mode does not install a worker, avoiding stale hot-reload code.
 
-Calendar export produces RFC 5545 `.ics` events with UTC instants, escaped content, and stable event IDs. Calendar reminders may work offline after import, but alarm behavior varies by calendar application. Rephase does not request Google Calendar access. There is no reliable browser timer for a closed mobile app; Web Push, subscriptions, and scheduled delivery would require a later backend feature.
+Calendar export produces RFC 5545 `.ics` events with UTC instants, escaped content, and stable event IDs. Contiguous midnight-split actions are merged before export so a sleep continuation cannot trigger an additional bedtime alarm. Calendar reminders may work offline after import, but alarm behavior varies by calendar application. Rephase does not request Google Calendar access. There is no reliable browser timer for a closed mobile app; Web Push, subscriptions, and scheduled delivery would require a later backend feature.
+
+DM Sans and Manrope are bundled locally with their SIL Open Font Licenses. Typography remains available offline and does not require external font requests.
 
 ## Development and deployment boundary
 
@@ -148,6 +160,34 @@ Local full stack: build assets, initialize local D1, run Wrangler on 8787, and r
 Before Cloudflare deployment, select an account/domain, create a D1 database, replace the local database ID, apply remote migrations, configure the Google client ID/production origin, build, and then deploy. These are future actions for discussion with the user, not actions taken during local implementation.
 
 Primary platform documentation: [Cloudflare Static Assets](https://developers.cloudflare.com/workers/static-assets/), [SPA routing](https://developers.cloudflare.com/workers/static-assets/routing/single-page-application/), [D1](https://developers.cloudflare.com/d1/), [Google token verification](https://developers.google.com/identity/gsi/web/guides/verify-google-id-token), and [Google OAuth client setup](https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid).
+
+### Planned dynamic flight lookup and caching
+
+The requested integration looks up airline/flight number and the **departure-airport local date**, returning departure/arrival airports, scheduled local times, offsets, duration, and airline. This is roadmap work, not an implemented live integration. After current-provider research, **AeroDataBox is the recommended candidate for evaluation**; Amadeus is retained below as historical context rather than the active default.
+
+**Current access dependency:** as verified on 2026-10-14, Amadeus's official portal states its Self-Service portal was decommissioned on July 17; its official API specification repositories were archived on July 17, 2026. The historic Self-Service free tier is not assumed to be available. Confirm current Amadeus Enterprise access and terms, or discuss a supported provider before implementation. [Official portal notice](https://admin.developers.amadeus.com/), [official archived specifications](https://github.com/amadeus4dev/amadeus-open-api-specification).
+
+The historical REST operation was `GET /v2/schedule/flights`, with `carrierCode`, `flightNumber`, `scheduledDepartureDate`, and optional `operationalSuffix`. Its leg board/off-point IATA codes and matching `STD`/`STA` timing records provide schedule data; duration comes from scheduled-leg/segment duration. Codeshare operating carriers and multi-leg flight numbers need explicit candidate selection. Airline names require a carrier dictionary. Returned offsets must be joined to airport IANA zones; an offset alone cannot identify a timezone. Historical sandbox data was a snapshot, so coverage and future-date availability must be checked against the eventual account. [Historical official OpenAPI contract](https://github.com/amadeus4dev/amadeus-open-api-specification/blob/main/spec/yaml/OnDemandFlightStatus_v2_swagger_specification.yaml).
+
+Implement a Worker provider adapter and normalized flight-candidate schema. Credentials and provider access tokens remain in Worker secrets/memory, never client assets. Resolve airport zones, validate durations and chronology in UTC, and ask the traveler to confirm editable results before changing the itinerary. Travel class/actual bed availability remain user inputs; a generic flight-status response cannot establish them.
+
+Cache permitted normalized schedules in D1 by provider, environment, schema version, carrier, flight number/suffix, and local departure date. Include fetch/expiry timestamps and source attribution. Use provider-approved TTLs: longer for distant schedules, shorter near departure, plus brief negative-result caching. Deduplicate concurrent lookups, cap requests/pagination, enforce user-level usage limits, and respect licensing/quotas. Display stale results explicitly when refresh fails; keep manual entry available and never fabricate missing schedule data.
+
+Provider comparison verified on 2026-10-14:
+
+| Provider | Suitability for a known flight months ahead |
+| --- | --- |
+| AirLabs | Official schedules cover at most about 10 hours ahead; its single-flight endpoint returns the nearest occurrence, not a specified future date. [Schedules](https://airlabs.co/docs/schedules), [single flight](https://airlabs.co/docs/flight). |
+| Skyscanner | Route/date booking search, with partner approval and booking-use requirements; its FAQ explicitly excludes a specific-flight search. [Official FAQ](https://developers.skyscanner.net/docs/faqs). |
+| AeroDataBox | Direct flight-number/date lookup using `dateLocalRole=Departure`. Free RapidAPI Basic for noncommercial testing; Pro is a low-cost commercial option. Future coverage is best effort. [Date semantics](https://aerodatabox.com/flight-history/), [coverage](https://aerodatabox.com/data-coverage/). |
+
+The AeroDataBox RapidAPI listing shows Basic at $0 with 400 units/month and a maximum ±365-day data range; Pro at $8/month with 5,000 units and a ±180-day range. Single-date flight lookup consumes two units. These are plan ceilings, not guarantees that any given future flight exists in the dataset. Confirm route coverage and current terms before enabling live integration. [Provider pricing](https://rapidapi.com/aedbx-aedbx/api/aerodatabox/pricing).
+
+Its current terms distinguish a shared cache (normally at most seven days) from genuine owner-specific trip records: Article 5.8 allows limited booked/traveled-trip fields while that owner keeps the record. Owner records must not supply a shared lookup cache, and incorporated data follows owner deletion. Attribution and noncommercial restrictions apply to the free plan. [Current terms](https://aerodatabox.com/terms). Keep provider credentials server-side and validate sample +60/+90/+150-day routes before adoption.
+
+### Tooling evaluation
+
+The verified development workflow currently uses Node/npm, Vite, Vitest, Playwright, and Wrangler. Bun can offer faster installs and script execution, but the deployed browser and Cloudflare runtimes remain independent of that choice. Evaluate Bun on reproducible installs, native dependency lifecycle scripts, Wrangler, and the existing tests before adopting a single authoritative lockfile. Replacing the Vite bundler or test framework is a separate decision with a smaller likely benefit for this static app. [Bun package manager](https://bun.com/docs/pm/cli/install), [Bun compatibility status](https://bun.com/docs/runtime/nodejs-compat).
 
 ## Verification and known future work
 
