@@ -1,6 +1,6 @@
 import { findAirport } from '../src/lib/airports';
 import { Temporal } from '@js-temporal/polyfill';
-import type { FlightCandidate, FlightLookupResult } from '../src/lib/types';
+import type { AircraftType, FlightCandidate, FlightLookupResult } from '../src/lib/types';
 
 /** Contract checked against https://doc.aerodatabox.com/docs/openapi-rapidapi-v1.json. */
 export interface FlightEnv {
@@ -216,6 +216,14 @@ async function providerRequest(path: string, db: D1Database, env: FlightEnv, acc
 }
 
 function airportFrom(movement: unknown): JsonRecord | null { return object(movement) && object(movement.airport) ? movement.airport : null; }
+function aircraftFrom(value: unknown): AircraftType | undefined {
+  // FlightAircraftContract exposes a nullable model, not IATA/ICAO type codes.
+  // Keep just this optional label: registration, transponder and photo data
+  // must never become part of a saved trip or imply a confirmed seat layout.
+  if (!object(value) || typeof value.model !== 'string' || /[\u0000-\u001f\u007f-\u009f]/.test(value.model)) return undefined;
+  const model = value.model.trim();
+  return model && model.length <= 120 ? { model } : undefined;
+}
 function codeFrom(airport: JsonRecord): string | null { return airportCode(airport.iata) ?? airportCode(airport.icao); }
 async function airportZone(airport: JsonRecord, db: D1Database, env: FlightEnv, accountId: string, now: number, dependencies: FlightDependencies, memo: Map<string, string | null>): Promise<string | null> {
   if (validZone(airport.timeZone)) return airport.timeZone;
@@ -296,9 +304,11 @@ export async function normalizeFlights(payload: unknown, query: FlightQuery, res
     const usableLanding = landing && landing.epoch > (usableTakeoff ? takeoff.epoch : start.epoch) && landing.epoch <= end.epoch
       && (!landing.disambiguation || landing.disambiguation === end.disambiguation);
     if (departure.runwayTime || arrival.runwayTime) warnings.add('Runway times, when supplied, are provider estimates or actual times. Recheck after schedule changes.');
+    const aircraft = aircraftFrom(flight.aircraft);
     const candidate: FlightCandidate = {
       id: `${number}-${codeFrom(origin)}-${codeFrom(destination)}-${start.utc}`,
       flightNumber: number, airline: object(flight.airline) && typeof flight.airline.name === 'string' ? flight.airline.name.slice(0, 120) : 'Airline not supplied',
+      ...(aircraft ? { aircraft } : {}),
       departureAirport: codeFrom(origin)!, arrivalAirport: codeFrom(destination)!,
       departureDateTime: start.local, arrivalDateTime: end.local,
       departureTimeZone: departureZone, arrivalTimeZone: arrivalZone,
@@ -320,7 +330,9 @@ export async function lookupFlights(query: FlightQuery, db: D1Database, env: Fli
   // The cache is only public scheduled data, never an owner trip record. The
   // search result is shared for a bounded time under Terms 5.5, not pooled from
   // retained owner records under Terms 5.8.
-  const key = `${query.flightNumber}:${query.date}:${query.departureAirport ?? '*'}`;
+  // Version normalized cache entries so earlier rows that discarded aircraft
+  // metadata cannot be mistaken for a current provider omission.
+  const key = `v2:${query.flightNumber}:${query.date}:${query.departureAirport ?? '*'}`;
   const cached = await db.prepare('SELECT data, fetched_at, expires_at, retain_until FROM flight_cache WHERE cache_key = ? AND retain_until > ?').bind(key, now).first<CacheRow>();
   let saved: FlightLookupResult | undefined;
   if (cached) {

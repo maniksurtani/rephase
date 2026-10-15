@@ -37,6 +37,7 @@ export function decoratePlanWithTravel(plan: Plan, trip: Trip): Plan {
     arrival: new Date(localToInstant(leg.arrivalDateTime, leg.arrivalTimeZone, leg.arrivalDisambiguation)).toISOString(),
     departureTimeZone: leg.departureTimeZone,
     arrivalTimeZone: leg.arrivalTimeZone,
+    ...(leg.aircraft ? { aircraft: { ...leg.aircraft } } : {}),
   }));
   const days = new Map<string, PlanDay>(plan.days.map(day => [`${day.date}:${day.timeZone}`, { ...day }]));
   const bounds = new Map<string, { start: number; end: number }>();

@@ -408,6 +408,19 @@ describe('Saved state contract', () => {
     expect(validateAppData(saved)).toMatch(/flight details/);
   });
 
+  it('accepts optional bounded aircraft models and rejects tracking fields or malformed metadata', () => {
+    const saved = structuredClone(validData);
+    expect(validateAppData(saved)).toBeNull();
+    saved.trips[0].legs[0].aircraft = { model: 'Airbus A350-1000' };
+    expect(validateAppData(saved)).toBeNull();
+    for (const aircraft of [null, [], {}, { model: '' }, { model: '   ' }, { model: ' Boeing 787-9' },
+      { model: 'x'.repeat(121) }, { model: 'Boeing\n787' }, { model: 'Boeing\u0085787' }, { model: 787 },
+      { model: 'Boeing 787-9', reg: 'SYNTHETIC' }, { icao: 'B789' }]) {
+      Object.assign(saved.trips[0].legs[0], { aircraft });
+      expect(validateAppData(saved)).toMatch(/flight details/);
+    }
+  });
+
   it('validates bounded adherence records and rejects cross-trip references', () => {
     const saved = structuredClone(validData);
     saved.trips[0].adherence = [{ id: 'record-a', tripId: 'trip-a', actionId: 'sleep-action-a', type: 'sleep', scheduledStart: '2026-11-05T10:00:00Z', scheduledEnd: '2026-11-05T18:00:00Z', timeZone: 'America/Los_Angeles', status: 'partial', actualStart: '2026-11-05T11:00:00Z', actualEnd: '2026-11-05T17:00:00Z', recordedAt: '2026-11-05T18:00:00Z' }];

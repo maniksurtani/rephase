@@ -31,6 +31,8 @@ The London → Dubai connection → Singapore → San Francisco example uses rel
 
 Flight entry starts with a flight number and departure date. Find and confirm the matching flight, or choose **Enter manually** to reveal airports, local dates/times and timezones. Existing legs show their selected-flight summary and retain cabin choices; changing a lookup query requires a new confirmation or an explicit manual-entry choice before saving. Manual time inputs use HH:mm, with a blank arrival initially matching departure until adjusted. This editor is deployed; verification and publication are recorded in TODO.md.
 
+When AeroDataBox supplies an aircraft model, it appears in lookup results, the selected flight, saved trips and planner flight cards. This uses the existing response and key, with no extra request. Equipment may be missing for future flights or change before departure; confirm it with the airline. Aircraft type never selects a lie-flat bed for you. Look up and confirm an existing saved leg again to add its model; the app does not refresh trips automatically.
+
 The planner has one airplane-window tile per date. Travel days have plane markers, explicit flight cards, and recommendation times in both origin and destination zones with local dates. Short flights remain visible even without a usable rest window.
 
 Flight editing supports travel class and **separately confirmed** lie-flat availability. Unknown airborne times use 30-minute taxi allowances at each end, then exclude the first 30 minutes after takeoff and the final 60 before landing. Short flights may have no rest window. Crew instructions take priority. Airline class alone does not imply a bed.

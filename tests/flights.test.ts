@@ -52,6 +52,29 @@ describe('AeroDataBox normalization', () => {
     expect(normalized.candidates).toHaveLength(1);
     expect(normalized.candidates[0]).toMatchObject({ flightNumber: 'BA286', departureDateTime: '2026-11-05T20:00', arrivalDateTime: '2026-11-06T14:00', departureUtc: '2026-11-06T04:00:00.000Z', durationMinutes: 600, takeoffDateTime: '2026-11-05T20:20', landingDateTime: '2026-11-06T13:50', airline: 'British Airways' });
   });
+  it('keeps only the documented aircraft model without retaining identity, photos or inventing type codes', async () => {
+    const copy = fixture();
+    copy[0].aircraft = {
+      model: '  Boeing 787-9  ', reg: 'private-aircraft-registration', modeS: 'private-transponder',
+      image: { url: 'https://private.example/aircraft.jpg' }, iata: '789', icao: 'B789',
+    };
+    const normalized = await normalizeFlights(copy, QUERY, resolver);
+    expect(normalized.candidates).toHaveLength(1);
+    expect(normalized.candidates[0].aircraft).toEqual({ model: 'Boeing 787-9' });
+    expect(JSON.stringify(normalized)).not.toMatch(/private-|B789|789"|aircraft\.jpg/);
+    expect(normalized.candidates[0]).not.toHaveProperty('lieFlat');
+  });
+  it.each([
+    undefined, null, 'Boeing 787-9', {}, { model: null }, { model: 789 }, { model: '' }, { model: '   ' },
+    { model: 'A'.repeat(121) }, { model: 'Boeing\n787-9' }, { model: 'Boeing\u007f787-9' }, { model: 'Boeing\u0085787-9' },
+    { reg: 'private-aircraft-registration', modeS: 'private-transponder', iata: '789', icao: 'B789' },
+  ])('keeps a usable schedule when optional aircraft metadata is absent or malformed (%j)', async aircraft => {
+    const copy = fixture(); copy[0].aircraft = aircraft;
+    const { candidates } = await normalizeFlights(copy, QUERY, resolver);
+    expect(candidates).toHaveLength(1);
+    expect(candidates[0]).not.toHaveProperty('aircraft');
+    expect(candidates[0]).toMatchObject({ departureUtc: '2026-11-06T04:00:00.000Z', durationMinutes: 600 });
+  });
   it('preserves runway seconds so the first thirty minutes are not shortened by rounding', async () => {
     const copy = fixture();
     copy[0].departure.runwayTime = { utc: '2026-11-06T04:20:45Z', local: '2026-11-05 20:20:45-08:00' };
@@ -165,6 +188,23 @@ describe('Authenticated flight lookup, retention and quota', () => {
     expect(await other.json()).toEqual(first); expect(provider).toHaveBeenCalledTimes(1);
     expect(sqlite.prepare('SELECT COUNT(*) AS count FROM user_state').get()).toEqual({ count: 0 });
     expect(sqlite.prepare("SELECT requests FROM flight_usage WHERE principal = 'global'").get()).toEqual({ requests: 1 });
+  });
+  it('refreshes old normalized cache entries that discarded aircraft metadata', async () => {
+    const legacy = await normalizeFlights(fixture(), QUERY, resolver);
+    const data: FlightLookupResult = {
+      provider: 'aerodatabox', ...legacy, fetchedAt: new Date(NOW).toISOString(), expiresAt: new Date(NOW + 86_400_000).toISOString(), stale: false, attribution: 'Flight data by AeroDataBox',
+    };
+    sqlite.prepare('INSERT INTO flight_cache VALUES (?, ?, ?, ?, ?)')
+      .run('BA286:2026-11-05:*', JSON.stringify(data), NOW / 1000, NOW / 1000 + 86_400, NOW / 1000 + 6 * 86_400);
+    const copy = fixture(); copy[0].aircraft = { model: 'Boeing 787-9', reg: 'private-aircraft-registration' };
+    provider.mockImplementation(async () => providerResponse(copy));
+    const first = await (await invoke()).json() as FlightLookupResult;
+    expect(first.candidates[0].aircraft).toEqual({ model: 'Boeing 787-9' });
+    expect(provider).toHaveBeenCalledTimes(1);
+    expect(sqlite.prepare("SELECT cache_key FROM flight_cache WHERE cache_key LIKE 'v2:%'").get()).toEqual({ cache_key: 'v2:BA286:2026-11-05:*' });
+    expect(JSON.stringify(sqlite.prepare("SELECT data FROM flight_cache WHERE cache_key LIKE 'v2:%'").get())).not.toContain('private-aircraft-registration');
+    expect(await (await invoke(flightRequest(undefined, 'user-b', SESSION_B))).json()).toEqual(first);
+    expect(provider).toHaveBeenCalledTimes(1);
   });
   it('caches missing flight responses briefly and returns no fabricated schedule', async () => {
     provider.mockImplementation(async () => new Response(null, { status: 204 }));

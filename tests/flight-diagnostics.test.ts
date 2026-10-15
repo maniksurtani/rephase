@@ -95,7 +95,8 @@ describe('manual flight diagnostics', () => {
     expect(options.headers['X-RapidAPI-Key']).toBe(environment.RAPIDAPI_KEY);
     expect(JSON.parse(log.mock.calls[0][0])).toEqual({
       event: 'flight_provider_diagnostic', status: 200, result: 'schedule_returned', responseBytes: expect.any(Number),
-      scheduleCount: 2, completeScheduleRecordCount: 1, utcSpaceRecordCount: 0, normalizedCandidateCount: 1, warningCount: 0,
+      scheduleCount: 2, completeScheduleRecordCount: 1, utcSpaceRecordCount: 0,
+      aircraftModelRecordCount: 0, normalizedCandidateCount: 1, normalizedAircraftCount: 0, warningCount: 0,
       quota: { 'x-ratelimit-api-units-limit': 400, 'x-ratelimit-api-units-remaining': 398, 'x-ratelimit-api-units-reset': 172000 },
     });
     const output = JSON.stringify(log.mock.calls);
@@ -112,6 +113,25 @@ describe('manual flight diagnostics', () => {
     expect(result.candidates).toHaveLength(1);
     expect(result.candidates[0]).toMatchObject({ departureAirport: 'SYD', arrivalAirport: 'HNL', durationMinutes: 570 });
     expect(result.warnings).toEqual([]);
+  });
+
+  it('counts provided aircraft labels and normalized aircraft without revealing models or tracking fields', async () => {
+    const normalize = await loadFlightNormalizer();
+    const fetchDiagnostic = vi.fn().mockResolvedValue(Response.json([
+      { ...scheduled, number: 'QF103', aircraft: { model: 'private-aircraft-model', registration: 'private-registration', modeS: 'private-transponder', image: 'https://private-image.example/' } },
+      { ...scheduled, number: 'QF103' },
+      { ...scheduled, number: 'QF103', aircraft: { model: 123, registration: 'private-registration' } },
+      { ...scheduled, number: 'QF103', aircraft: { model: '   ' } },
+    ]));
+    const log = vi.fn();
+
+    await inspectProvider(environment, fetchDiagnostic, log, normalize);
+
+    expect(JSON.parse(log.mock.calls[0][0])).toMatchObject({
+      scheduleCount: 4, aircraftModelRecordCount: 1, normalizedCandidateCount: 1, normalizedAircraftCount: 1,
+    });
+    expect(JSON.stringify(log.mock.calls)).not.toContain('private-');
+    expect(JSON.stringify(log.mock.calls)).not.toMatch(/registration|modeS|transponder|https:|image/);
   });
 
   it('flags schedules rejected by the application without logging warnings, dates or validation exceptions', async () => {

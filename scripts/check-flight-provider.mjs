@@ -142,6 +142,10 @@ export async function inspectProvider(env = process.env, fetcher = fetch, output
       && typeof movement.scheduledTime?.utc === 'string' && typeof movement.scheduledTime?.local === 'string')).length : undefined;
   const utcSpaceRecordCount = Array.isArray(data) ? data.filter(row => [row?.departure, row?.arrival].some(movement =>
     typeof movement?.scheduledTime?.utc === 'string' && /^\d{4}-\d{2}-\d{2} /.test(movement.scheduledTime.utc))).length : undefined;
+  // Count optional label presence only. Do not log models, registrations,
+  // transponders or photos; the application separately sanitizes the label.
+  const hasAircraftModel = row => typeof row?.aircraft?.model === 'string' && Boolean(row.aircraft.model.trim());
+  const aircraftModelRecordCount = Array.isArray(data) ? data.filter(hasAircraftModel).length : undefined;
   let normalized;
   if (Array.isArray(data)) {
     try {
@@ -151,7 +155,9 @@ export async function inspectProvider(env = process.env, fetcher = fetch, output
   }
   output(JSON.stringify({ event: 'flight_provider_diagnostic', status: response.status, result, responseBytes: bytes,
     ...(Array.isArray(data) ? { scheduleCount: data.length, completeScheduleRecordCount, utcSpaceRecordCount,
-      normalizedCandidateCount: normalized?.candidates.length ?? 0, warningCount: normalized?.warnings.length ?? 0 } : {}), quota }));
+      aircraftModelRecordCount, normalizedCandidateCount: normalized?.candidates.length ?? 0,
+      normalizedAircraftCount: normalized?.candidates.filter(hasAircraftModel).length ?? 0,
+      warningCount: normalized?.warnings.length ?? 0 } : {}), quota }));
   if (!['schedule_returned', 'no_schedule'].includes(result)) throw new Error('Provider diagnostic did not confirm a usable subscription.');
   if (result === 'schedule_returned' && !normalized?.candidates.length) {
     throw new Error('Provider returned schedules that the application could not validate.');

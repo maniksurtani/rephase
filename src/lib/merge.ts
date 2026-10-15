@@ -14,7 +14,7 @@ function canonical(value:Value):string {
 const equal=(a:Value,b:Value)=>canonical(a)===canonical(b);
 const copy=(value:Value):Value=>value===missing?missing:structuredClone(value);
 const record=(value:Value):value is Record<string,unknown>=>Boolean(value && value!==missing && typeof value==='object' && !Array.isArray(value));
-const flightFields=['flightNumber','departureAirport','arrivalAirport','departureDateTime','arrivalDateTime','departureTimeZone','arrivalTimeZone','departureDisambiguation','arrivalDisambiguation','takeoffDateTime','landingDateTime','taxiOutMinutes','taxiInMinutes','flightSource','flightFetchedAt','providerRecordConfirmed'];
+const flightFields=['flightNumber','departureAirport','arrivalAirport','departureDateTime','arrivalDateTime','departureTimeZone','arrivalTimeZone','departureDisambiguation','arrivalDisambiguation','takeoffDateTime','landingDateTime','taxiOutMinutes','taxiInMinutes','flightSource','flightFetchedAt','providerRecordConfirmed','aircraft'];
 function merge(base:Value,local:Value,remote:Value,path:string,conflicts:string[]):Value {
   if(equal(local,remote))return copy(local);
   if(equal(base,local))return copy(remote);

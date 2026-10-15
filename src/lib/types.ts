@@ -18,6 +18,10 @@ export interface Preferences {
   autoSync?: boolean;
   calendarAlarms?: boolean;
 }
+/** Planned equipment only; it does not establish an airline's seat layout. */
+export interface AircraftType {
+  model: string;
+}
 export interface FlightLeg {
   id: string;
   flightNumber: string;
@@ -41,6 +45,7 @@ export interface FlightLeg {
   flightSource?: 'manual' | 'aerodatabox';
   flightFetchedAt?: string;
   providerRecordConfirmed?: boolean;
+  aircraft?: AircraftType;
 }
 export interface AdherenceRecord {
   id: string;
@@ -104,6 +109,7 @@ export interface PlanTravelSegment {
   departureTimeZone: string;
   arrivalTimeZone: string;
   mealPlan?: FlightMealPlan;
+  aircraft?: AircraftType;
 }
 export interface PlanDay {
   id: string;
@@ -138,6 +144,7 @@ export interface FlightCandidate {
   id: string;
   flightNumber: string;
   airline: string;
+  aircraft?: AircraftType;
   operatingFlightNumber?: string;
   departureAirport: string;
   arrivalAirport: string;

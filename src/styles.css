@@ -158,3 +158,7 @@
 .flight-search-fields{grid-template-columns:repeat(2,minmax(0,1fr))}
 .flight-endpoints>div,.flight-operations .field-grid>*{min-width:0}
 @media(max-width:540px){.flight-search-fields{grid-template-columns:minmax(0,1fr)}.flight-operations .field:has(input[type=datetime-local]){grid-column:1/-1}}
+.flight-selection-aircraft{font-size:12px;line-height:1.7;color:#b8abc9;margin-top:8px;overflow-wrap:anywhere}
+.flight-result .flight-aircraft{color:#b8abc9}
+.flight-segment-aircraft{font-size:12px;line-height:1.7;color:#baabc9;margin:10px 0 0;overflow-wrap:anywhere}
+.mini-leg .mini-aircraft{display:block;font-size:11px;line-height:1.7;color:#9c91ad;margin-top:4px;overflow-wrap:anywhere}

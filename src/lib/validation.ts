@@ -1,6 +1,7 @@
 import type { AppData } from './types';
 import { Temporal } from '@js-temporal/polyfill';
 import { localToInstant } from './time';
+import { isAircraftType } from './aircraft';
 
 type RecordValue = Record<string, unknown>;
 const record = (value: unknown): value is RecordValue => value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -92,7 +93,7 @@ export function validateAppData(value: unknown): string | null {
     for (const leg of trip.legs) {
       const keys = ['id', 'flightNumber', 'departureAirport', 'arrivalAirport', 'departureDateTime', 'arrivalDateTime',
         'departureTimeZone', 'arrivalTimeZone', 'stayAfter', 'strategy'];
-      if (!record(leg) || !knownKeys(leg, keys, ['travelClass', 'lieFlat', 'departureDisambiguation', 'arrivalDisambiguation', 'takeoffDateTime', 'landingDateTime', 'taxiOutMinutes', 'taxiInMinutes', 'flightSource', 'flightFetchedAt', 'providerRecordConfirmed']) || !identity(leg.id) || legIds.has(leg.id)
+      if (!record(leg) || !knownKeys(leg, keys, ['travelClass', 'lieFlat', 'departureDisambiguation', 'arrivalDisambiguation', 'takeoffDateTime', 'landingDateTime', 'taxiOutMinutes', 'taxiInMinutes', 'flightSource', 'flightFetchedAt', 'providerRecordConfirmed', 'aircraft']) || !identity(leg.id) || legIds.has(leg.id)
         || !text(leg.flightNumber, 24, true) || !airport(leg.departureAirport) || !airport(leg.arrivalAirport)
         || !localDateTime(leg.departureDateTime) || !localDateTime(leg.arrivalDateTime)
         || !timeZone(leg.departureTimeZone) || !timeZone(leg.arrivalTimeZone)
@@ -106,6 +107,7 @@ export function validateAppData(value: unknown): string | null {
         || !optional(leg, 'taxiInMinutes', value => Number.isInteger(value) && (value as number) >= 0 && (value as number) <= 180)
         || !optional(leg, 'flightSource', value => choice(value, ['manual', 'aerodatabox']))
         || !optional(leg, 'flightFetchedAt', timestamp)
+        || !optional(leg, 'aircraft', isAircraftType)
         || !optional(leg, 'providerRecordConfirmed', value => typeof value === 'boolean')
         || (leg.flightSource === 'aerodatabox' && (leg.providerRecordConfirmed !== true || !timestamp(leg.flightFetchedAt)))
         || !flightInterval(leg)) {

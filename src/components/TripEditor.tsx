@@ -5,6 +5,7 @@ import { findAirport } from '../lib/airports';
 import { createLeg } from '../lib/defaults';
 import { departureTimeEdit, minuteDateTimeValue, type ArrivalDefaultState } from '../lib/flight-entry';
 import { localToInstant } from '../lib/time';
+import { aircraftLabel } from '../lib/aircraft';
 import { AirportInput } from './AirportInput';
 import { FoldChoice } from './FoldChoice';
 import { FlightLookup, type FlightQuery } from './FlightLookup';
@@ -62,6 +63,11 @@ export function TripEditor({ trip, setTrip, errors, onSave, onClose, existing, a
     setTrip({ ...trip, legs: trip.legs.map(leg => {
       if(leg.id!==id)return leg;
       const updated={...leg,...patch};
+      const normalizedNumber = (value: string) => value.toUpperCase().replace(/\s/g, '');
+      const changedIdentity = normalizedNumber(updated.flightNumber) !== normalizedNumber(leg.flightNumber)
+        || updated.departureDateTime.slice(0, 10) !== leg.departureDateTime.slice(0, 10)
+        || updated.departureAirport !== leg.departureAirport || updated.arrivalAirport !== leg.arrivalAirport;
+      if (manualScheduleEdit && changedIdentity) delete updated.aircraft;
       if(manualScheduleEdit) {
         // Keep the original provider attribution after a manual correction.
         if(updated.flightSource!=='aerodatabox')updated.flightSource='manual';
@@ -122,7 +128,7 @@ export function TripEditor({ trip, setTrip, errors, onSave, onClose, existing, a
         <div className="stay-editor"><label className="field"><span>After this flight</span><select value={leg.stayAfter} onChange={event => updateLeg(leg.id, { stayAfter: event.target.value as FlightLeg['stayAfter'] })}><option value="destination">I’m staying at this destination</option><option value="connection">Airport connection / in transit</option></select></label>{leg.stayAfter === 'destination' ? <label className="field"><span>Adjustment strategy for this stay</span><select value={leg.strategy} onChange={event => updateLeg(leg.id, { strategy: event.target.value as FlightLeg['strategy'] })}><option value="adapt">Adjust toward local time</option><option value="partial">Partial adjustment for a short stay</option><option value="home">Keep my home rhythm</option></select><small>{leg.strategy === 'partial' ? 'Useful when you have a short stay before another destination.' : leg.strategy === 'home' ? 'Preserve your home body clock while planning in local time.' : 'Shift gradually toward your preferred destination sleep schedule.'}</small></label> : <div className="connection-info"><Info size={16}/><p>Your body-clock estimate continues through this connection. Add the onward flight below.</p></div>}</div>
       </section>)}</div>
       <button type="button" className="add-flight-button" onClick={addLeg}><Plus size={17}/>Add the next flight or return leg</button>
-      <div className="inline-note"><Globe2 size={16}/><p>All flight times use each airport’s local time. Confirm the schedule against your booking before saving.</p></div>
+      <div className="inline-note"><Globe2 size={16}/><p>All flight times use each airport’s local time. Confirm the schedule against your booking before saving. Aircraft may change; confirm with the airline.</p></div>
       <div className="modal-footer sticky-footer"><button type="button" className="button secondary" onClick={onClose}>Cancel</button><button type="submit" className="button primary">{existing ? 'Save & regenerate plan' : 'Create my plan'}<ArrowRight size={16}/></button></div>
     </form>
   </Modal>;
@@ -138,6 +144,7 @@ function SelectedFlight({ leg, candidate }: { leg: FlightLeg; candidate?: Flight
   return <section className="flight-selection-summary" aria-label="Selected flight">
     <div className="flight-selection-route"><Plane size={18}/><strong>{leg.departureAirport} <ArrowRight size={15}/> {leg.arrivalAirport}</strong>{duration !== undefined && duration > 0 && <span>{Math.floor(duration / 60)}h {duration % 60}m</span>}</div>
     {candidate && <p className="flight-selection-airline">{candidate.airline}{candidate.operatingFlightNumber ? ` · operated as ${candidate.operatingFlightNumber}` : ''}</p>}
+    <p className="flight-selection-aircraft">{aircraftLabel(leg.aircraft) ? `Aircraft · ${aircraftLabel(leg.aircraft)}` : 'Aircraft type not provided'}</p>
     <div className="flight-selection-clocks">{([
       { label: 'Departs', at: leg.departureDateTime, airport: leg.departureAirport, zone: leg.departureTimeZone },
       { label: 'Arrives', at: leg.arrivalDateTime, airport: leg.arrivalAirport, zone: leg.arrivalTimeZone },

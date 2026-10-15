@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { LoaderCircle, Search } from 'lucide-react';
 import type { FlightCandidate, FlightLeg, FlightLookupResult } from '../lib/types';
 import { lookupFlight } from '../lib/auth';
+import { aircraftLabel } from '../lib/aircraft';
 
 export interface FlightQuery { flightNumber: string; date: string }
 
@@ -44,6 +45,7 @@ export function FlightLookup({ query: input, onQueryChange, accountId, available
       flightNumber: candidate.flightNumber, departureAirport: candidate.departureAirport, arrivalAirport: candidate.arrivalAirport,
       departureDateTime: candidate.departureDateTime, arrivalDateTime: candidate.arrivalDateTime,
       departureTimeZone: candidate.departureTimeZone, arrivalTimeZone: candidate.arrivalTimeZone,
+      aircraft: candidate.aircraft,
       ...(candidate.departureDisambiguation ? { departureDisambiguation: candidate.departureDisambiguation } : {}),
       ...(candidate.arrivalDisambiguation ? { arrivalDisambiguation: candidate.arrivalDisambiguation } : {}),
       ...(candidate.takeoffDateTime ? { takeoffDateTime: candidate.takeoffDateTime } : {}),
@@ -69,6 +71,7 @@ export function FlightLookup({ query: input, onQueryChange, accountId, available
         {result.candidates.map(candidate => <article className="flight-result" key={candidate.id}>
           <strong>{candidate.flightNumber} · {candidate.airline}</strong>
           <span>{candidate.departureAirport} → {candidate.arrivalAirport} · {Math.floor(candidate.durationMinutes / 60)}h {candidate.durationMinutes % 60}m</span>
+          <span className="flight-aircraft">{aircraftLabel(candidate.aircraft) ? `Aircraft · ${aircraftLabel(candidate.aircraft)}` : 'Aircraft type not provided'}</span>
           <span>Departs {candidate.departureDateTime.slice(0, 16).replace('T', ' ')} ({candidate.departureTimeZone})</span>
           <span>Arrives {candidate.arrivalDateTime.slice(0, 16).replace('T', ' ')} ({candidate.arrivalTimeZone})</span>
           {candidate.operatingFlightNumber && <span>Operated as {candidate.operatingFlightNumber}</span>}

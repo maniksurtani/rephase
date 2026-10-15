@@ -14,6 +14,20 @@ describe('three-way account merge',()=> {
     expect(result.data.trips[0].legs[0].lieFlat).toBe(false);
     expect(result.data.trips[0].legs[1].travelClass).toBe('economy');
   });
+  it('merges aircraft refreshes with cabin edits but keeps aircraft tied to flight identity',()=> {
+    const base=createInitialData();base.trips[0].legs[0].aircraft={model:'Boeing 777-300ER'};
+    const local=structuredClone(base),remote=structuredClone(base);
+    local.trips[0].legs[0].travelClass='economy';
+    remote.trips[0].legs[0].aircraft={model:'Boeing 787-9'};
+    const refreshed=mergeAppData(base,local,remote);
+    expect(refreshed.conflicts).toEqual([]);
+    expect(refreshed.data.trips[0].legs[0]).toMatchObject({aircraft:{model:'Boeing 787-9'},travelClass:'economy'});
+    local.trips[0].legs[0].flightNumber='BA123';delete local.trips[0].legs[0].aircraft;
+    const changed=mergeAppData(base,local,remote);
+    expect(changed.conflicts.some(path=>path.includes('flightDetails'))).toBe(true);
+    expect(changed.data.trips[0].legs[0].flightNumber).toBe('BA123');
+    expect(changed.data.trips[0].legs[0].aircraft).toBeUndefined();
+  });
   it('detects delete-versus-edit instead of silently losing a trip',()=> {
     const base=createInitialData(),local=structuredClone(base),remote=structuredClone(base);
     local.trips=[];local.selectedTripId=null;remote.trips[0].name='Changed on another device';
