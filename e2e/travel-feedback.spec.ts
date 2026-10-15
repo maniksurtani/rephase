@@ -187,6 +187,7 @@ test('minute-only flight entry defaults arrival until edited and preserves exist
   await page.getByRole('button', { name: 'New trip', exact: true }).click();
   const editor = page.getByRole('dialog', { name: 'Plan a new journey', exact: true });
   await editor.getByLabel('Trip name').fill('Minute entry regression');
+  await editor.getByRole('button', { name: 'Enter manually', exact: true }).click();
   await editor.getByLabel('Airport code').first().fill('MEL');
   await editor.getByLabel('Airport code').last().fill('SYD');
   const fields = editor.locator('input[type="datetime-local"]');
@@ -206,6 +207,8 @@ test('minute-only flight entry defaults arrival until edited and preserves exist
 
   await page.getByRole('button', { name: 'Edit trip', exact: true }).click();
   const reopened = page.getByRole('dialog', { name: 'Edit your journey', exact: true });
+  await expect(reopened.getByLabel('Local arrival date & time')).toBeHidden();
+  await reopened.getByRole('button', { name: 'Enter manually', exact: true }).click();
   await expect(reopened.getByLabel('Local arrival date & time')).toHaveValue('2026-10-27T21:35');
   await reopened.getByLabel('Local departure date & time').fill('2026-10-27T20:25');
   await expect(reopened.getByLabel('Local arrival date & time')).toHaveValue('2026-10-27T21:35');

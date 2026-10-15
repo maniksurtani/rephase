@@ -27,6 +27,18 @@ Verification allows over three minutes for transient DNS/TLS or edge readiness f
 
 Production smoke checks passed: desktop and 390px mobile guest planning, unique date tiles, both airport clocks, meal advice, calendar export, all 24 offline assets, offline planner/Science, Science without JavaScript, and HTTP 401 for unauthenticated account/state APIs. These checks do not complete Google sign-in or spend provider credits. Manual deployment is always available; automatic main-push deployment depends on the repository variable `DEPLOY_ENABLED=true`.
 
+## Enable AeroDataBox flight lookup
+
+The adapter and shared D1 cache already exist. Activating lookup needs an AeroDataBox subscription, one Worker secret and a redeploy; the RapidAPI host is preconfigured, so no additional Cloudflare resource or public client setting is required. The key is not yet confirmed, and live future-route coverage remains unverified. The lookup-first editor starts with flight number/departure date and shows manual airports/times/zones only after **Enter manually**, retaining the selected flight summary and cabin choices.
+
+1. Open [AeroDataBox’s RapidAPI pricing page](https://rapidapi.com/aedbx-aedbx/api/aerodatabox/pricing) and subscribe using the RapidAPI application whose key you intend to use. **Basic** is suitable for personal/noncommercial use and currently includes **400 API units/month**. These are units, not requests: single-date flight lookup currently costs two units, with additional metadata usage charged separately. Review the current terms and allowance before choosing a plan.
+2. Open the [RapidAPI developer dashboard](https://rapidapi.com/developer/dashboard), choose **Apps**, select that application and open **Authorization**. Copy its **X-RapidAPI-Key** value. The [official key guide](https://docs.rapidapi.com/docs/keys-and-key-rotation) explains application keys and rotation. Copy only the key value, without a header name, quotes or `Bearer` prefix.
+3. In [GitHub’s repository environments](https://github.com/maniksurtani/rephase/settings/environments), select **production → Environment secrets → Add environment secret**. Set the name to **`RAPIDAPI_KEY`** and paste the plain key as its value. Store it as a secret, not an Actions variable or a `VITE_` browser setting. Keep the key out of chat and source control.
+4. Run **Actions → Deploy to Cloudflare → Run workflow → main**. Adding or changing the GitHub secret alone does not update an already running Worker. The existing workflow supplies it through secure secret input to Wrangler and uploads it to the Worker; it is not written into the static assets or public deployment configuration.
+5. After deployment, sign in to Rephase and look up a known booked flight using its **departure-airport local date**. Confirm the airline, route and local times against the booking before applying it. Then test representative routes at +60/+90/+150 days and record missing coverage. A plan’s advertised maximum date range does not guarantee that a specific future flight is available. **Enter manually** remains available for unavailable or incomplete results.
+
+The default app budgets are 10 outbound provider requests per account/day, 40 per account/month and 150 globally/month; airport metadata calls also count. These controls measure requests rather than AeroDataBox units. Monitor the RapidAPI dashboard and leave capacity for metadata and usage outside Rephase. A cache hit avoids an outbound provider request, but cached times still require booking confirmation.
+
 ## Account storage and avatar migration
 
 Signed-in preferences and trips live in D1 and save automatically after committed edits are debounced. IndexedDB is an offline cache with pending edits and revision merge metadata; it is not the authoritative account store. Guest data stays separate and is never automatically copied into an account. Older same-account edits with a saved baseline use three-way merging. Without that baseline, personal data can migrate once only into a never-initialized D1 account, excluding demonstration trips; existing server data and deletion tombstones are never blindly replaced. Transactional per-tab journals keep unsaved drafts recoverable when multiple tabs are used. Google’s official button opens Google directly, and the header avatar menu contains Sign out. No application starting-data chooser or manual sync step is required.
@@ -233,6 +245,8 @@ Existing Cloudflare secrets are preserved when a deployment omits `RAPIDAPI_KEY`
 - [Cloudflare Worker secret management](https://developers.cloudflare.com/workers/configuration/secrets/)
 - [Cloudflare API token permission reference](https://developers.cloudflare.com/fundamentals/api/reference/permissions/)
 - [GitHub Actions secrets](https://docs.github.com/en/actions/how-tos/security-for-github-actions/security-guides/using-secrets-in-github-actions)
+- [RapidAPI application keys and rotation](https://docs.rapidapi.com/docs/keys-and-key-rotation)
+- [AeroDataBox subscription/pricing](https://rapidapi.com/aedbx-aedbx/api/aerodatabox/pricing)
 - [Google Identity Services setup](https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid)
 - [Cloudflare Security Events](https://developers.cloudflare.com/waf/analytics/security-events/)
 - [Cloudflare skip rules](https://developers.cloudflare.com/waf/custom-rules/skip/) and [supported skip options](https://developers.cloudflare.com/waf/custom-rules/skip/options/)

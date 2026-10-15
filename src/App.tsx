@@ -128,6 +128,7 @@ export default function App(props: AppProps) {
   const [selectedDayId, setSelectedDayId] = useState<string | null>(null);
   const [scienceOpen, setScienceOpen] = useState(false);
   const [draftTrip, setDraftTrip] = useState<Trip | null>(null);
+  const draftAccountId = useRef<string | null>(account?.id ?? null);
   const [tripErrors, setTripErrors] = useState<string[]>([]);
   const [deleteTripId, setDeleteTripId] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
@@ -159,6 +160,10 @@ export default function App(props: AppProps) {
   const showSaveStatus = Boolean(saveStatus && !['Saved on this device', 'Saving on this device…', 'Opening your device data…', 'Device data cleared'].includes(saveStatus));
 
   useEffect(() => { const timer = window.setInterval(() => setNow(new Date()), 60000); return () => window.clearInterval(timer); }, []);
+  useEffect(() => {
+    // An editor opened for one identity must not save into a different account.
+    setDraftTrip(null); setTripErrors([]); setDeleteTripId(null); setRecordAction(null); setSelectedDayId(null);
+  }, [account?.id]);
   useEffect(() => { setSelectedDayId(null); }, [trip?.id]);
   useEffect(() => { if (notice) { const timer = window.setTimeout(() => setNotice(null), 4500); return () => window.clearTimeout(timer); } }, [notice]);
   useEffect(() => {
@@ -169,11 +174,12 @@ export default function App(props: AppProps) {
     return () => { document.body.style.overflow = previous; };
   }, [scienceOpen, draftTrip, deleteTripId]);
 
-  function editTrip(value: Trip) { setDraftTrip({ ...value, legs: value.legs.map(l => ({ ...l })) }); setTripErrors([]); }
-  function createTrip() { setDraftTrip(createEmptyTrip()); setTripErrors([]); }
+  function editTrip(value: Trip) { draftAccountId.current = account?.id ?? null; setDraftTrip({ ...value, legs: value.legs.map(l => ({ ...l })) }); setTripErrors([]); }
+  function createTrip() { draftAccountId.current = account?.id ?? null; setDraftTrip(createEmptyTrip()); setTripErrors([]); }
   function selectTrip(id: string) { onChange({ ...data, selectedTripId: id }); setSelectedDayId(null); }
   function saveTrip() {
     if (!draftTrip) return;
+    if (draftAccountId.current !== (account?.id ?? null)) { setDraftTrip(null); return; }
     const errors = validateTrip(draftTrip);
     if (!draftTrip.name.trim()) errors.unshift('Give your trip a name.');
     if (errors.length) { setTripErrors(errors); return; }

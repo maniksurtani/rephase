@@ -81,6 +81,17 @@ Updated 2026-10-15. Checked items record completed implementation; verification 
 - [x] Export meal windows without sleep-interrupting alarms and explain the evidence on the Science page.
 - [x] Verify five-flight regression, model estimates, meal policies, unique dates, and mobile layout; sync to GitHub.
 
+## Lookup-first flight entry and provider activation
+
+- [x] Make flight number and departure date the default flight-entry controls; keep manual airports, date-times and zones hidden until **Enter manually**, including for existing legs.
+- [x] Retain a selected-flight summary and travel class/lie-flat choices; require renewed lookup confirmation or explicit manual entry after query edits.
+- [x] Close trip drafts on account switches and reject saving a draft under a different account identity.
+- [x] Document AeroDataBox Basic’s personal/noncommercial terms and 400 API units/month, distinguishing provider units from the app’s request budgets.
+- [x] Provide the RapidAPI subscription/key walkthrough and GitHub `production` environment-secret setup, with a redeploy to upload the secret to the existing Worker.
+- [x] Verify frontend/Worker TypeScript, the production build and desktop/mobile browser regressions; CI repeats the complete unit and browser suites before deployment.
+- [ ] Publish the lookup-first editor and verify its production mobile/manual fallback.
+- [ ] Confirm the owner has set `RAPIDAPI_KEY`, deploy its Worker secret and verify representative real future routes without claiming universal coverage.
+
 ## Dynamic flight lookup — AeroDataBox
 
 Amadeus Self-Service is discontinued. AirLabs's near-term schedules and Skyscanner's route-search API do not meet the known-flight/date requirement months ahead. Provider evidence, current plan limits, and terms are linked in DESIGN.md.
@@ -138,3 +149,5 @@ Real OAuth/provider coverage and clinical efficacy are not implied by these chec
 Account update verification (2026-10-15): frontend and Worker TypeScript passed, all 319 Vitest tests passed across 25 suites, the production build prepared 24 offline assets, and all 23 Chromium scenarios passed locally and in GitHub Actions. Coverage includes automatic server saving/reload/new-device loading, direct Google button flow, avatar/Sign out menu, expired sessions, offline retries, persistent conflicts, unsaved form preservation and account switches, and three-tab draft recovery. Local and production `0003_google_avatar.sql` migrations and Wrangler dry-run bundling passed. The updated Worker/assets are deployed by [run 38686653951](https://github.com/maniksurtani/rephase/actions/runs/38686653951); its final runner public check is blocked by the known Cloudflare challenge. Google SDK/account APIs are mocked in browser regressions; real-account acceptance remains pending.
 
 Anonymous production checks with the real Google SDK passed at 1120px and 390px: official sign-in iframes load, there is no application login dialog or horizontal overflow, and guest planning/meals/unique dates/offline Science work. The Google iframe transparency fix was verified before and after SDK mounting without altering Google's button design. No Google login was completed and no flight-provider credits were used during these checks.
+
+Lookup-first editor verification (2026-10-15): frontend and Worker TypeScript passed and the production build prepared 24 offline assets. All 27 existing Chromium scenarios passed after updating manual-entry regressions; three targeted scenarios passed again on the final build, including the new account-switch draft-isolation case (28 total scenarios). Coverage includes default-hidden manual fields, mobile entry and arrival defaults, unavailable lookup, provider selection/cabin preservation, changed-query save guards, independent multi-leg controls and retained attribution after manual edits. Google and provider responses are mocked; these checks do not establish live flight coverage. Publication and real provider-key/route acceptance are tracked above.

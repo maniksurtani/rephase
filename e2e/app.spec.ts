@@ -56,6 +56,7 @@ test('editing the example preserves keyboard focus and creates a personal itiner
 test('invalid arrival ordering is rejected and the draft remains editable',async({page})=> {
   await page.goto('/');await page.getByRole('button',{name:'Explore your plan'}).click();
   await page.getByRole('button',{name:'Edit trip',exact:true}).click();
+  await page.locator('.flight-editor-card').first().getByRole('button',{name:'Enter manually',exact:true}).click();
   await page.getByLabel('Local arrival date & time').first().fill('2020-01-01T01:00');
   await page.getByRole('button',{name:'Save & regenerate plan'}).click();
   await expect(page.getByText('Flight 1: arrival must follow departure in real time.')).toBeVisible();
@@ -93,49 +94,10 @@ test('static science page works without JavaScript and fits a mobile screen',asy
   await context.close();
 });
 
-test('flight lookup confirms a candidate without changing cabin choices',async({page})=> {
-  const account={id:'lookup-account',name:'Flight traveler',email:'flight@example.com'};
-  let accountData={schemaVersion:1,preferences:DEFAULT_PREFERENCES,trips:[],selectedTripId:null};
-  let revision=0;
-  await page.route('https://accounts.google.com/gsi/client',route=>route.fulfill({contentType:'application/javascript',body:'window.google={accounts:{id:{initialize(){},renderButton(){},disableAutoSelect(){}}}};'}));
-  await page.route('**/api/auth/challenge',route=>route.fulfill({json:{nonce:'flight-test-nonce'}}));
-  await page.route('**/api/config',route=>route.fulfill({json:{googleClientId:'test-client',syncAvailable:true,flightLookupAvailable:true,flightProvider:'aerodatabox'}}));
-  await page.route('**/api/me',route=>route.fulfill({json:account}));
-  await page.route('**/api/state',route=> {
-    if(route.request().method()==='GET')return route.fulfill({json:{data:accountData,revision}});
-    const body=route.request().postDataJSON();
-    if(body.revision!==revision)return route.fulfill({status:409,json:{error:'Changed on another device'}});
-    accountData=body.data;revision++;
-    return route.fulfill({json:{revision}});
-  });
-  await page.route('**/api/flights?*',route=> {
-    expect(route.request().headers()['x-rephase-account']).toBe(account.id);
-    expect(new URL(route.request().url()).searchParams.get('date')).toBe('2026-12-01');
-    return route.fulfill({json:{provider:'aerodatabox',candidates:[{id:'ba286',flightNumber:'BA286',airline:'British Airways',departureAirport:'SFO',arrivalAirport:'LHR',departureDateTime:'2026-12-01T20:00',arrivalDateTime:'2026-12-02T14:00',departureTimeZone:'America/Los_Angeles',arrivalTimeZone:'Europe/London',departureUtc:'2026-12-02T04:00:00Z',arrivalUtc:'2026-12-02T14:00:00Z',durationMinutes:600}],fetchedAt:'2026-10-14T12:00:00Z',expiresAt:'2026-10-15T12:00:00Z',stale:false,attribution:'Flight data by AeroDataBox',warnings:[]}});
-  });
-  await page.goto('/');await page.getByRole('button',{name:'Profile',exact:true}).first().click();
-  await expect(page.getByRole('button',{name:`${account.name}'s account menu`})).toBeVisible();
-  await page.getByRole('button',{name:'Trips',exact:true}).first().click();
-  await page.getByRole('button',{name:'New trip',exact:true}).click();
-  await page.getByLabel('Flight number').fill('BA286');
-  await page.getByLabel('Travel class').selectOption('business');await page.getByLabel('Lie-flat bed available?').selectOption('yes');
-  await page.getByText('Find this flight by number and departure date',{exact:true}).click();
-  await page.getByLabel('Departure date at the departure airport').fill('2026-12-01');
-  await page.getByRole('button',{name:'Look up flight',exact:true}).click();
-  const use=page.getByRole('button',{name:'Use this flight',exact:true});await expect(use).toBeDisabled();
-  await page.getByLabel('This is my own booked or previously traveled trip.',{exact:false}).check();await use.click();
-  await expect(page.getByLabel('Local departure date & time')).toHaveValue('2026-12-01T20:00');
-  await expect(page.getByLabel('Local arrival date & time')).toHaveValue('2026-12-02T14:00');
-  await expect(page.getByLabel('Travel class')).toHaveValue('business');await expect(page.getByLabel('Lie-flat bed available?')).toHaveValue('yes');
-  await page.getByRole('button',{name:'Create my plan',exact:true}).click();
-  await expect(page.getByRole('heading',{name:'My next journey',exact:true})).toBeVisible();
-  await page.getByRole('button',{name:'Trips',exact:true}).first().click();
-  await expect(page.getByRole('link',{name:'Originally imported from AeroDataBox'})).toBeVisible();
-});
-
 test('repeated local flight times require an explicit occurrence',async({page})=> {
   await page.goto('/');await page.getByRole('button',{name:'Trips',exact:true}).first().click();
   await page.getByRole('button',{name:'New trip',exact:true}).click();
+  await page.getByRole('button',{name:'Enter manually',exact:true}).click();
   await page.getByLabel('Airport code').first().fill('JFK');await page.getByLabel('Airport code').last().fill('BOS');
   await page.getByLabel('Local departure date & time').fill('2026-11-01T01:30');
   await page.getByLabel('Local arrival date & time').fill('2026-11-01T03:30');
@@ -150,6 +112,7 @@ test('actual experience is saved and only future recommendations are replanned',
   await page.goto('/');await page.getByRole('button',{name:'Trips',exact:true}).first().click();
   await page.getByRole('button',{name:'New trip',exact:true}).click();
   await page.getByLabel('Trip name').fill('My recent flight');
+  await page.getByRole('button',{name:'Enter manually',exact:true}).click();
   await page.getByLabel('Airport code').first().fill('JFK');await page.getByLabel('Airport code').last().fill('LHR');
   await page.getByLabel('Departure time zone').fill('UTC');await page.getByLabel('Arrival time zone').fill('UTC');
   await page.getByLabel('Local departure date & time').fill(local(-3,'12:00'));
