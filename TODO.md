@@ -169,7 +169,13 @@ Amadeus Self-Service is discontinued. AirLabs's near-term schedules and Skyscann
 - [x] Render a continuous vertical day timeline with time/date/zone labels, inline flight/recommendation cards and mobile layout.
 - [x] Preserve dual airport clocks, aircraft, meal advice/details, explanations and adherence recording.
 - [x] Verify overlap, midnight/DST/date-line travel, five-flight itinerary, short flights and mobile readability.
-- [ ] Publish the timeline through the single-check verified-artifact release path and record live checks.
+- [x] Publish the timeline through the single-check verified-artifact release path and record live checks.
+
+Timeline verification (15 October 2026): all 18 focused helper/calendar tests, frontend/Worker TypeScript, the production build and all eight affected browser scenarios passed across focused runs. An additional final-CSS desktop geometry check passed. Coverage includes concurrent rail lanes, duration spacing, original IDs/record controls, free-time gaps, midnight clipping/arrival points, 23/25-hour DST days, a 90-minute repeated-hour flight, date-line travel, all five itinerary legs, both flights on 24 October, meal expansion/collapse, and 390px layout. Independent review found no material issue. Measured mobile document/timeline heights stayed stable across animation frames and a subsequent wait with collapsed and expanded meals; no horizontal overflow occurred.
+
+Source `f58739bf1da0713116fef29970ead9c8b53d686f` passed [Checks 38734623450](https://github.com/maniksurtani/rephase/actions/runs/38734623450): all 432 unit/model/API/runtime tests across 33 suites and all 40 browser scenarios (37 Chromium, three mobile WebKit). The full browser suite ran once for this code commit and took 2.1 minutes; successful Checks produced release artifact `11971916497`. [Deployment 38735198350](https://github.com/maniksurtani/rephase/actions/runs/38735198350) reused that exact run/attempt/artifact, verified its complete file inventory and finished in 32 seconds without rebuilding, repeating browser tests or applying migrations. It uploaded Worker version `49bc7b4a-4c5c-4f9f-b5d7-1f0159b21aae` before installing the configured secret. Public HTTP verification was not invoked.
+
+Separate anonymous live checks at 1440px and 390px passed with exact published `index-NjoZRzhx.js`: San Francisco/unchanged PDT captions, chronological timeline rows, sleep/free-time bands, both 24 October flights, Departure/Arrival labels with no Gate headings, visible meal policy and expandable details, and no page errors or overflow. Only public configuration was requested; account endpoints were intercepted and the temporary guest namespace held the itinerary. Browsers closed after checks. No Google sign-in, account write, live provider request, schema migration or scientific timing change was made by this release.
 
 ## Arrival-city labels and faster releases
 
