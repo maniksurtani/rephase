@@ -10,6 +10,7 @@ const USAGE_SQL = `SELECT CASE WHEN principal = 'global' THEN 'global' ELSE 'acc
   bucket, COUNT(*) AS principals, SUM(requests) AS reserved_requests, MAX(requests) AS max_requests
   FROM flight_usage WHERE retain_until > CAST(strftime('%s', 'now') AS INTEGER)
   GROUP BY scope, bucket ORDER BY bucket, scope`;
+const PROBE_QUERY = { flightNumber: 'QF103', date: '2026-10-17' };
 
 function value(env, name) { return typeof env[name] === 'string' ? env[name].trim() : ''; }
 function safeInteger(number) { return typeof number === 'number' && Number.isSafeInteger(number) && number >= 0; }
@@ -87,9 +88,40 @@ export async function inspectUsage(env = process.env, fetcher = fetch, output = 
   output(JSON.stringify({ event: 'flight_usage_diagnostic', result: 'ok', limits, rows }));
 }
 
-export async function inspectProvider(env = process.env, fetcher = fetch, output = console.log) {
+/** Bundle only repository code in memory; payloads and credentials never enter it. */
+export async function loadFlightNormalizer() {
+  try {
+    const { build } = await import('esbuild');
+    const projectRoot = fileURLToPath(new URL('../', import.meta.url));
+    const result = await build({
+      stdin: {
+        contents: `import { normalizeFlights } from './worker/flights.ts';
+          import { findAirport } from './src/lib/airports.ts';
+          export async function normalize(payload, query) {
+            return normalizeFlights(payload, query, async airport => {
+              if (typeof airport.timeZone === 'string') {
+                try { new Intl.DateTimeFormat('en', { timeZone: airport.timeZone }); return airport.timeZone; } catch {}
+              }
+              const code = typeof airport.iata === 'string' ? airport.iata : airport.icao;
+              return typeof code === 'string' ? findAirport(code)?.timeZone ?? null : null;
+            });
+          }`,
+        resolveDir: projectRoot, sourcefile: 'flight-diagnostic-normalizer.ts', loader: 'ts',
+      },
+      bundle: true, platform: 'node', format: 'esm', target: 'node24', write: false, logLevel: 'silent',
+    });
+    const module = await import(`data:text/javascript;base64,${Buffer.from(result.outputFiles[0].text).toString('base64')}`);
+    return module.normalize;
+  } catch {
+    throw new Error('Could not load application flight validation. No provider request was made.');
+  }
+}
+
+export async function inspectProvider(env = process.env, fetcher = fetch, output = console.log, suppliedNormalizer) {
   const key = value(env, 'RAPIDAPI_KEY');
   if (!key) throw new Error('The production RAPIDAPI_KEY secret is required.');
+  // Prepare the real application validator before spending provider units.
+  const normalize = suppliedNormalizer ?? await loadFlightNormalizer();
   const { response, bytes, data } = await requestJson(`https://${HOST}${PROBE_PATH}`, {
     method: 'GET', headers: { 'X-RapidAPI-Key': key, 'X-RapidAPI-Host': HOST, Accept: 'application/json' },
   }, fetcher);
@@ -108,9 +140,22 @@ export async function inspectProvider(env = process.env, fetcher = fetch, output
   const completeScheduleRecordCount = Array.isArray(data) ? data.filter(row => [row?.departure, row?.arrival].every(movement =>
     movement && typeof (movement.airport?.iata ?? movement.airport?.icao) === 'string'
       && typeof movement.scheduledTime?.utc === 'string' && typeof movement.scheduledTime?.local === 'string')).length : undefined;
+  const utcSpaceRecordCount = Array.isArray(data) ? data.filter(row => [row?.departure, row?.arrival].some(movement =>
+    typeof movement?.scheduledTime?.utc === 'string' && /^\d{4}-\d{2}-\d{2} /.test(movement.scheduledTime.utc))).length : undefined;
+  let normalized;
+  if (Array.isArray(data)) {
+    try {
+      const checked = await normalize(data, PROBE_QUERY);
+      if (Array.isArray(checked?.candidates) && Array.isArray(checked?.warnings)) normalized = checked;
+    } catch { /* Do not print payload details or application exceptions. */ }
+  }
   output(JSON.stringify({ event: 'flight_provider_diagnostic', status: response.status, result, responseBytes: bytes,
-    ...(Array.isArray(data) ? { scheduleCount: data.length, completeScheduleRecordCount } : {}), quota }));
+    ...(Array.isArray(data) ? { scheduleCount: data.length, completeScheduleRecordCount, utcSpaceRecordCount,
+      normalizedCandidateCount: normalized?.candidates.length ?? 0, warningCount: normalized?.warnings.length ?? 0 } : {}), quota }));
   if (!['schedule_returned', 'no_schedule'].includes(result)) throw new Error('Provider diagnostic did not confirm a usable subscription.');
+  if (result === 'schedule_returned' && !normalized?.candidates.length) {
+    throw new Error('Provider returned schedules that the application could not validate.');
+  }
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

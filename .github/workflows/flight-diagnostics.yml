@@ -34,7 +34,10 @@ jobs:
           FLIGHT_MONTHLY_LIMIT: ${{ vars.FLIGHT_MONTHLY_LIMIT }}
           FLIGHT_GLOBAL_MONTHLY_LIMIT: ${{ vars.FLIGHT_GLOBAL_MONTHLY_LIMIT }}
         run: node scripts/check-flight-provider.mjs --usage
-      - name: Check subscribed provider credentials with one request
+      - name: Install application validation dependencies for the optional provider probe
+        if: inputs.check_provider
+        run: npm ci
+      - name: Check subscribed provider credentials and normalize one real response
         if: inputs.check_provider
         env:
           RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
