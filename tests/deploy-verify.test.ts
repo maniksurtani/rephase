@@ -83,6 +83,69 @@ describe('public deployment verification', () => {
     expect(wait).toHaveBeenCalledTimes(2);
   });
 
+  it('reports an allowlisted network error without printing error messages, stacks or arbitrary fields', async () => {
+    const error = new TypeError('private request URL or credentials', {
+      cause: { code: 'ENOTFOUND', message: 'private DNS details', hostname: 'private hostname' },
+    });
+    const fetchPublicConfig = vi.fn().mockRejectedValueOnce(error).mockResolvedValueOnce(readyResponse());
+    const wait = vi.fn().mockResolvedValue(undefined);
+
+    await verifyDeployment(settings, false, { fetch: fetchPublicConfig, wait, attempts: 2, retryDelay: 0 });
+
+    const logs = JSON.stringify(vi.mocked(console.log).mock.calls);
+    expect(logs).toContain('TypeError');
+    expect(logs).toContain('ENOTFOUND');
+    expect(logs).not.toContain('private');
+  });
+
+  it('categorizes an HTML challenge without printing its body or arbitrary response headers', async () => {
+    const fetchPublicConfig = vi.fn().mockResolvedValueOnce(new Response('<html>private response body</html>', {
+      status: 403,
+      headers: { 'Content-Type': 'text/html; private-parameter=secret', 'cf-mitigated': 'challenge', 'x-private': 'secret header' },
+    })).mockResolvedValueOnce(readyResponse());
+    const wait = vi.fn().mockResolvedValue(undefined);
+
+    await verifyDeployment(settings, false, { fetch: fetchPublicConfig, wait, attempts: 2, retryDelay: 0 });
+
+    const logs = JSON.stringify(vi.mocked(console.log).mock.calls);
+    expect(logs).toContain('403');
+    expect(logs).toContain('HTML');
+    expect(logs).toContain('challenge\\\":true');
+    expect(logs).not.toContain('private');
+    expect(logs).not.toContain('secret');
+  });
+
+  it('uses fixed diagnostic categories when error names, codes or MIME types contain arbitrary text', async () => {
+    const fetchPublicConfig = vi.fn()
+      .mockRejectedValueOnce({ name: 'private error name', cause: { code: 'private error code' } })
+      .mockResolvedValueOnce(new Response('private non-JSON content', {
+        status: 502, headers: { 'content-type': 'private/content-type' },
+      }))
+      .mockResolvedValueOnce(readyResponse());
+    const wait = vi.fn().mockResolvedValue(undefined);
+
+    await verifyDeployment(settings, false, { fetch: fetchPublicConfig, wait, attempts: 3, retryDelay: 0 });
+
+    const logs = JSON.stringify(vi.mocked(console.log).mock.calls);
+    expect(logs).toContain('other');
+    expect(logs).not.toContain('private');
+  });
+
+  it('reports configuration readiness using booleans without printing configuration values', async () => {
+    const fetchPublicConfig = vi.fn().mockResolvedValueOnce(Response.json({
+      googleClientId: 'private incorrect client ID', syncAvailable: false, flightLookupAvailable: false, arbitrary: 'private value',
+    })).mockResolvedValueOnce(readyResponse());
+    const wait = vi.fn().mockResolvedValue(undefined);
+
+    await verifyDeployment(settings, false, { fetch: fetchPublicConfig, wait, attempts: 2, retryDelay: 0 });
+
+    const logs = JSON.stringify(vi.mocked(console.log).mock.calls);
+    expect(logs).toContain('clientMatches\\\":false');
+    expect(logs).toContain('syncReady\\\":false');
+    expect(logs).toContain('flightReady\\\":true');
+    expect(logs).not.toContain('private');
+  });
+
   it.each([
     { attempts: 0 }, { attempts: Infinity }, { attempts: 1.5 },
     { retryDelay: -1 }, { retryDelay: Infinity }, { retryDelay: 60_001 },

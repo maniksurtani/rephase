@@ -1,0 +1,52 @@
+name: Verify production
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    environment: production
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_D1_DATABASE_ID: ${{ vars.CLOUDFLARE_D1_DATABASE_ID }}
+      PUBLIC_APP_ORIGIN: ${{ vars.PUBLIC_APP_ORIGIN }}
+      GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_CLIENT_ID }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+      - name: Validate public configuration
+        run: node scripts/check-deploy-config.mjs
+      - name: Check public HTTPS with curl
+        run: |
+          if curl --silent --show-error --max-time 20 --output /dev/null --write-out 'curl_https_status=%{http_code}\n' "$PUBLIC_APP_ORIGIN/api/config"; then
+            echo "curl_probe_complete"
+          else
+            echo "curl_probe_failed"
+          fi
+      - name: Verify public configuration without deploying
+        run: |
+          node --input-type=module <<'JS'
+          import { lookup } from 'node:dns/promises';
+          import { validateDeploymentEnvironment } from './scripts/check-deploy-config.mjs';
+          import { verifyDeployment } from './scripts/deploy.mjs';
+          const settings = validateDeploymentEnvironment();
+          const names = ['HTTP_PROXY', 'HTTPS_PROXY', 'ALL_PROXY', 'NODE_USE_ENV_PROXY', 'NODE_EXTRA_CA_CERTS', 'SSL_CERT_FILE'];
+          console.log(JSON.stringify({ node: process.version, configured: Object.fromEntries(names.map(name => [name, Boolean(process.env[name])])) }));
+          try {
+            const addresses = await lookup(new URL(settings.origin).hostname, { all: true });
+            console.log(JSON.stringify({ dns: 'resolved', addresses }));
+          } catch (error) {
+            const code = ['ENOTFOUND', 'EAI_AGAIN', 'ETIMEOUT'].includes(error.code) ? error.code : 'LOOKUP_ERROR';
+            console.log(JSON.stringify({ dns: 'failed', code }));
+          }
+          await verifyDeployment(settings, false, { attempts: 3, retryDelay: 1000 });
+          JS

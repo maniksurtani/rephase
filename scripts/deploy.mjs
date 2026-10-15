@@ -45,23 +45,47 @@ export async function verifyDeployment(settings, expectFlightLookup = false, opt
   // A first Custom Domain needs time for DNS and TLS as well as edge propagation.
   // Forty checks provide over three minutes even when every request fails quickly.
   console.log('Worker uploaded. Waiting for its public configuration to become ready.');
+  const errorNames = new Set(['Error', 'TypeError', 'AbortError', 'TimeoutError', 'SyntaxError']);
+  const networkCodes = new Set([
+    'ENOTFOUND', 'EAI_AGAIN', 'ECONNREFUSED', 'ECONNRESET', 'ETIMEDOUT',
+    'UND_ERR_CONNECT_TIMEOUT', 'UND_ERR_HEADERS_TIMEOUT', 'UND_ERR_BODY_TIMEOUT',
+    'ERR_TLS_CERT_ALTNAME_INVALID', 'UNABLE_TO_VERIFY_LEAF_SIGNATURE',
+    'CERT_HAS_EXPIRED', 'DEPTH_ZERO_SELF_SIGNED_CERT',
+  ]);
   for (let attempt = 0; attempt < attempts; attempt += 1) {
+    let diagnostic = {};
     try {
       const response = await fetchPublicConfig(`${settings.origin}/api/config`, { signal: AbortSignal.timeout(5000), cache: 'no-store' });
+      const mimeType = response.headers.get('content-type')?.split(';', 1)[0].trim().toLowerCase() || '';
+      diagnostic = {
+        status: response.status,
+        content: mimeType === 'application/json' || /^application\/[a-z0-9.+-]+\+json$/.test(mimeType) ? 'JSON'
+          : ['text/html', 'application/xhtml+xml'].includes(mimeType) ? 'HTML' : 'other',
+        challenge: response.headers.get('cf-mitigated') === 'challenge',
+      };
       const config = await response.json();
-      if (response.ok && config.googleClientId === settings.clientId && config.syncAvailable === true
-          && (!expectFlightLookup || config.flightLookupAvailable === true)) {
+      const clientMatches = config?.googleClientId === settings.clientId;
+      const syncReady = config?.syncAvailable === true;
+      const flightReady = !expectFlightLookup || config?.flightLookupAvailable === true;
+      diagnostic = { ...diagnostic, clientMatches, syncReady, flightReady };
+      if (response.ok && clientMatches && syncReady && flightReady) {
         console.log(`Deployment responds at ${settings.origin}. Google client and database bindings are configured.`);
         console.log('Complete a real Google sign-in and save/reload a trip to verify account sync.');
         return;
       }
-    } catch { /* Network errors are retried without printing request internals. */ }
-    if (attempt < attempts - 1) {
-      if (attempt === 0 || (attempt + 1) % 6 === 0) {
-        console.log(`Public configuration is not ready (check ${attempt + 1}/${attempts}); retrying.`);
-      }
-      await wait(retryDelay);
+    } catch (error) {
+      // Log only categories from fixed allowlists, never server bodies or error messages.
+      diagnostic = {
+        ...diagnostic,
+        error: errorNames.has(error?.name) ? error.name : 'other',
+        networkCode: networkCodes.has(error?.cause?.code) ? error.cause.code : 'other',
+      };
     }
+    if (attempt === 0 || (attempt + 1) % 6 === 0) {
+      const nextStep = attempt < attempts - 1 ? 'retrying.' : 'no checks remain.';
+      console.log(`Public configuration is not ready (check ${attempt + 1}/${attempts}; ${JSON.stringify(diagnostic)}); ${nextStep}`);
+    }
+    if (attempt < attempts - 1) await wait(retryDelay);
   }
   throw new Error('Worker uploaded, but public origin verification is not ready. Check DNS/TLS readiness, PUBLIC_APP_ORIGIN, the Worker route and Google/database configuration before retrying verification.');
 }
