@@ -51,6 +51,31 @@ async function expectChronologicalRail(page: Page) {
     expect(row.end).toBeGreaterThan(row.start);
     if (index) expect(row.start).toBe(rows[index - 1].end);
   }
+  // Only elapsed periods marked as compressed use dotted geometry. Check the
+  // neutral rail and every concurrent guidance lane, not decorative text.
+  const styles = await page.locator('.timeline-step:not(.timeline-end)').evaluateAll(nodes => nodes.map(node => ({
+    compressed: node.getAttribute('data-compressed') === 'true',
+    rail: getComputedStyle(node.querySelector('.timeline-rail')!).borderLeftStyle,
+    bands: [...node.querySelectorAll('.timeline-band')].map(band => ({
+      border: getComputedStyle(band).borderLeftStyle,
+      width: Number.parseFloat(getComputedStyle(band).width),
+      background: getComputedStyle(band).backgroundColor,
+    })),
+  })));
+  expect(styles.some(style => style.compressed)).toBe(true);
+  for (const style of styles) {
+    expect(style.rail).toBe(style.compressed ? 'dotted' : 'solid');
+    for (const band of style.bands) {
+      expect(band.width).toBeGreaterThan(0);
+      if (style.compressed) {
+        expect(band.border).toBe('dotted');
+        expect(band.background).toBe('rgba(0, 0, 0, 0)');
+      } else {
+        expect(band.background).not.toBe('rgba(0, 0, 0, 0)');
+      }
+    }
+  }
+  await expect(page.locator('.timeline-ellipsis')).toHaveCount(0);
   const entries = await intervals(page, '.timeline-entry');
   expect(entries.length).toBeGreaterThan(0);
   for (const [index, entry] of entries.entries()) {
@@ -100,12 +125,12 @@ test('daily timeline shows concurrent duration bands and keeps explanation and r
     minutes: (Number(node.getAttribute('data-end')) - Number(node.getAttribute('data-start'))) / 60_000,
     height: node.getBoundingClientRect().height,
     compressed: node.getAttribute('data-compressed') === 'true',
-    ellipsis: Boolean(node.querySelector('.timeline-ellipsis')),
+    rail: getComputedStyle(node.querySelector('.timeline-rail')!).borderLeftStyle,
   })));
   const longGap = gaps.find(gap => gap.minutes >= 120);
   expect(longGap).toBeDefined();
   expect(longGap!.compressed).toBe(true);
-  expect(longGap!.ellipsis).toBe(true);
+  expect(longGap!.rail).toBe('dotted');
   expect(longGap!.height).toBeLessThanOrEqual(160);
   const sleepIntervals = await intervals(page, '.timeline-band[data-kind="sleep"]');
   const awakeIntervals = await intervals(page, '.timeline-band[data-kind="awake"]');
@@ -139,7 +164,7 @@ test('mobile timeline retains date-line flights, simultaneous rest, two-flight d
   await expect(departure.locator('.flight-clock-origin')).toContainText('17 Oct');
   await expect(departure.locator('.flight-clock-destination')).toContainText('16 Oct');
 
-  // The long free afternoon in Honolulu used to produce repeated 12:00,
+  // The long awake afternoon in Honolulu used to produce repeated 12:00,
   // 15:00, 18:00 and 21:00 rows. Keep its real boundaries and evening advice.
   const quietSpans = await intervals(page, '.timeline-step:not(.timeline-end):not(:has(.timeline-entry))');
   const longest = quietSpans.reduce((best, span) => span.end - span.start > best.end - best.start ? span : best);
@@ -149,7 +174,8 @@ test('mobile timeline retains date-line flights, simultaneous rest, two-flight d
   const tailEnd = Number(await quietTail.getAttribute('data-end'));
   expect(tailEnd - tailStart).toBeGreaterThan(6 * 3_600_000);
   await expect(quietTail).toHaveAttribute('data-compressed', 'true');
-  await expect(quietTail.locator('.timeline-ellipsis')).toBeVisible();
+  await expect(quietTail.locator('.timeline-rail')).toHaveCSS('border-left-style', 'dotted');
+  await expect(quietTail.locator('.timeline-elapsed')).toContainText('elapsed. Timeline compressed.');
   await expect(quietTail.locator('.timeline-status.timeline-awake')).toHaveCount(1);
   expect((await quietTail.boundingBox())!.height).toBeLessThanOrEqual(160);
   const tailRows = (await intervals(page, '.timeline-step:not(.timeline-end)')).filter(row => row.start >= tailStart && row.start < tailEnd);

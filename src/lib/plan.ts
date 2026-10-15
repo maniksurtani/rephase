@@ -331,7 +331,7 @@ export function generateRulesPlan(trip: Trip, prefs: Preferences): Plan {
         .filter(sleep => sleep.end - sleep.start >= (segment.flight ? 30 : 15) * 60_000);
       for (const sleep of boundedSleeps) add('sleep', sleep, segment.flight && !segment.lieFlat ? 'Rest or nap' : 'Bedtime',
         segment.flight ? (segment.lieFlat
-          ? 'A lie-flat bed can make sleep more comfortable. Sleep starts at least 30 minutes after takeoff and ends at least 60 minutes before landing.'
+          ? 'Sleep starts at least 30 minutes after takeoff and ends at least 60 minutes before landing.'
           : 'Rest or nap as your seat allows. An eye mask, earplugs and head support may help. Rest starts at least 30 minutes after takeoff and ends at least 60 minutes before landing.')
           : `Aim for ${prefs.sleepHours} hours of sleep.`,
         'Protect sleep while gradually aligning the schedule. Travel fatigue and sleep debt also affect how you feel.');

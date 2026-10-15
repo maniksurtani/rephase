@@ -181,7 +181,7 @@ test('Google avatar opens an accessible account menu containing sign out',async(
   await trigger.press('ArrowDown');
   const menu=page.getByRole('menu',{name:'Your account'});
   await expect(menu).toBeVisible();
-  await expect(page.getByRole('menuitem',{name:'Sleep preferences'})).toBeFocused();
+  await expect(page.getByRole('menuitem',{name:'Settings'})).toBeFocused();
   await page.screenshot({path:'artifacts/account-desktop.png'});
   await page.setViewportSize({width:390,height:844});
   await page.screenshot({path:'artifacts/account-mobile.png'});

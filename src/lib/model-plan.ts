@@ -207,7 +207,7 @@ function runCandidate(beam: Beam, stage: Stage, prefs: Preferences, trip: Trip, 
   for (const sleep of fullSleeps) {
     const inFlight = stage.kind === 'flight';
     next.actions.push(makeAction(trip, stage, 'sleep', sleep, inFlight && !stage.lieFlat ? 'Rest or nap' : 'Bedtime', inFlight ? (stage.lieFlat
-      ? 'A lie-flat bed can make sleep more comfortable. Sleep starts at least 30 minutes after takeoff and ends at least 60 minutes before landing.'
+      ? 'Sleep starts at least 30 minutes after takeoff and ends at least 60 minutes before landing.'
       : 'Rest or nap as your seat allows. An eye mask, earplugs and head support may help. Rest starts at least 30 minutes after takeoff and ends at least 60 minutes before landing.')
       : `Aim for ${prefs.sleepHours} hours of sleep. Bedtime moves by at most one hour per day.`, 'Sleep supports alertness and recovery.'));
   }

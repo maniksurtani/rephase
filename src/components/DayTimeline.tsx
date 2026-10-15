@@ -10,7 +10,7 @@ import { FlightSegmentCard } from './FlightSegmentCard';
 
 const kinds = ['awake', 'sleep', 'rest', 'light', 'avoid-light', 'caffeine', 'melatonin', 'flight'] as const;
 const appearance = {
-  awake: { label: 'Awake / free time', icon: Sunrise, lane: 0 },
+  awake: { label: 'Awake', icon: Sunrise, lane: 0 },
   sleep: { label: 'Sleep', icon: Moon, lane: 0 },
   rest: { label: 'Rest', icon: Sparkles, lane: 0 },
   light: { label: 'Light', icon: Sun, lane: 1 },
@@ -71,7 +71,7 @@ export function DayTimeline({ day, renderAction, renderFlight }: {
   function startingStatuses(step: TimelineStep): TimelineBand[] {
     const represented = new Set(step.entries.map(entryKind));
     const fresh = step.bands.filter(band => band.start === step.start && !represented.has(band.kind));
-    // Give an otherwise quiet free-time span one label after the preceding
+    // Give an otherwise quiet awake span one label after the preceding
     // activity ends. Ongoing flights/sleep keep their visual band, not repeats.
     if (!fresh.length && step.compressed && !step.entries.length && step.bands.length === 1 && step.bands[0].kind === 'awake') return step.bands;
     return fresh;
@@ -83,7 +83,6 @@ export function DayTimeline({ day, renderAction, renderFlight }: {
       const Icon = appearance[kind].icon;
       return <li className={`timeline-${kind}`} key={kind}><Icon size={13} aria-hidden="true"/>{appearance[kind].label}</li>;
     })}</ul>
-    <p className="timeline-free-note">Free time has no planned sleep or rest.</p>
     <ol className="timeline-steps">{steps.map(step => {
       const at = clock(step.start);
       const statuses = startingStatuses(step);
@@ -93,7 +92,7 @@ export function DayTimeline({ day, renderAction, renderFlight }: {
           key={band.id} className={`timeline-band timeline-${band.kind}`} data-kind={band.kind}
           data-band-id={band.id} data-start={step.start} data-end={step.end}
           title={appearance[band.kind].label} style={{ left: `${appearance[band.kind].lane * 5}px` }}/>)}</div>
-        <div className="timeline-step-content">{statuses.length > 0 && continuation(statuses)}{step.entries.map(renderEntry)}{step.compressed && <div className="timeline-ellipsis" aria-label={`${durationLabel(step.end - step.start)} elapsed`}><span aria-hidden="true">· · ·</span>{!step.entries.length && <small>{durationLabel(step.end - step.start)}</small>}</div>}</div>
+        <div className="timeline-step-content">{statuses.length > 0 && continuation(statuses)}{step.entries.map(renderEntry)}{step.compressed && <span className="timeline-elapsed">{durationLabel(step.end - step.start)} elapsed. Timeline compressed.</span>}</div>
       </li>;
     })}
       <li className="timeline-step timeline-end" data-start={timeline.end} data-end={timeline.end}>

@@ -2,6 +2,14 @@
 
 Updated 2026-10-15. Checked items record completed implementation; verification status for each release is recorded below. External credentials, publication, and clinical/outcome research are separate gates; they cannot be completed by local tests.
 
+## Timeline and settings polish
+
+- [x] Rename sleep-only settings labels to Settings and describe the full set of preferences.
+- [x] Depict compressed periods with a dotted timeline and activity bands, removing visual ellipses while retaining accessible elapsed duration.
+- [x] Label awake periods Awake and remove redundant free-time and lie-flat comfort copy.
+- [x] Verify compact chronology, dotted/solid rendering, account-menu keyboard controls and responsive screenshots.
+- [ ] Publish the exact verified CI artifact and check the live app.
+
 ## Compact flight cards and lounge settings
 
 - [x] Collapse aircraft and both departure/arrival clocks under an independent Flight details disclosure.
