@@ -182,7 +182,13 @@ Separate anonymous live checks at 1440px and 390px passed with exact published `
 - [x] Remove decorative hourly rows and retain activity, midnight and timezone-offset boundaries.
 - [x] Compress long unchanged spans with an ellipsis and continuous colored bands; show free-time/state labels only where useful.
 - [x] Verify the Honolulu quiet-afternoon regression, ongoing flight/sleep bands, DST and desktop/mobile layout.
-- [ ] Publish through the verified-artifact path and record checks.
+- [x] Publish through the verified-artifact path and record checks.
+
+Compact-span verification: all eight focused presentation tests, frontend/Worker TypeScript, the production build and all three affected desktop/mobile/DST browser scenarios passed across focused runs. The mobile Honolulu regression retains one compact 10h18m interval from the last morning action to the real evening advice, omits decorative 12:00/15:00/18:00/21:00 rows, keeps a single free-time label and preserves subsequent recommendations/day-end clocks. Tests also cover continuous flight/sleep bands, overlapping guidance, midnight arrival points, extended date-line days and New York/Lord Howe offset transitions. Original recommendations, IDs and timing remain unchanged.
+
+Source `9e2dbc80a085d92b3ecc486f8e8b0fe4208f2d10` passed [Checks 38738918997](https://github.com/maniksurtani/rephase/actions/runs/38738918997) with all 440 tests across 34 suites and all 40 browser scenarios (37 Chromium, three mobile WebKit). The browser suite ran once for the commit and took 1.9 minutes; release artifact was `11975385625`. [Deployment 38739463131](https://github.com/maniksurtani/rephase/actions/runs/38739463131) reused that exact run/attempt/artifact, verified its inventory and completed in 35 seconds without rebuilding, repeating browser checks or applying migrations. Worker version before the secret update was `b29bb4c5-b7b3-4de1-bce6-2317c61204cd`.
+
+Separate anonymous live checks passed at 1440px/390px against `index-Cz5UnhDe.js`: a >6-hour Honolulu quiet span occupies at most 160px with one label and ellipsis, chronological coverage remains intact, both 24 October flights/meals work, San Francisco/PDT captions remain correct, and no page errors/overflow occur. Public configuration was read; account endpoints were intercepted, guest data was temporary and browsers closed afterward. No Google sign-in, account write or live provider call occurred. The optional public HTTP deployment gate was not invoked.
 
 ## Arrival-city labels and faster releases
 
