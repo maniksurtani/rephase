@@ -52,9 +52,14 @@ describe('light-driven itinerary model', () => {
     const b = generatePlan(trip([{ ...leg, travelClass: 'business', lieFlat: false }]), prefs);
     expect(a.days).toEqual(b.days);
     const flat = generatePlan(trip([{ ...leg, travelClass: 'first', lieFlat: true }]), prefs);
-    expect(all(flat).some(action => action.title === 'Lie-flat sleep opportunity')).toBe(true);
+    const inFlightSleep = (plan: ReturnType<typeof generatePlan>) => all(plan).filter(action => action.type === 'sleep' && overlaps(action, departure, arrival));
+    const flatSleep = inFlightSleep(flat), seatedRest = inFlightSleep(a);
+    expect(flatSleep.length).toBeGreaterThan(0);
+    expect(flatSleep.every(action => action.title === 'Bedtime')).toBe(true);
     expect(flat.days.map(day => day.phaseShiftHours)).toEqual(a.days.map(day => day.phaseShiftHours));
-    expect(all(a).filter(action => action.title === 'Seated rest or nap opportunity').every(action => action.detail.includes('No usual sleep duration or quality is assumed'))).toBe(true);
+    expect(seatedRest.length).toBeGreaterThan(0);
+    expect(seatedRest.every(action => action.title === 'Rest or nap')).toBe(true);
+    expect(flatSleep.map(action => [action.start, action.end])).toEqual(seatedRest.map(action => [action.start, action.end]));
   }, 30_000);
   it('preserves requested elapsed sleep and keeps caffeine/light outside sleep', () => {
     const plan = generatePlan(trip(), { ...prefs, sleepHours: 8.25, usualWakeTime: '07:17', preferredWakeTime: '07:23' });

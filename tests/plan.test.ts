@@ -81,12 +81,16 @@ describe('planning rules', () => {
     const business = generatePlan(trip([{ ...first, travelClass: 'business', lieFlat: false }]), preferences);
     expect(economy.days).toEqual(business.days);
     const lieFlat = generatePlan(trip([{ ...first, travelClass: 'economy', lieFlat: true }]), preferences);
-    const seated = actions(business).filter(action => action.title === 'Seated rest or nap opportunity');
-    const flat = actions(lieFlat).filter(action => action.title === 'Lie-flat sleep opportunity');
+    const departure = localToInstant(first.departureDateTime, first.departureTimeZone);
+    const arrival = localToInstant(first.arrivalDateTime, first.arrivalTimeZone);
+    const inFlightSleep = (plan: ReturnType<typeof generatePlan>) => actions(plan).filter(action => action.type === 'sleep'
+      && Date.parse(action.start) >= departure && Date.parse(action.end) <= arrival);
+    const seated = inFlightSleep(business);
+    const flat = inFlightSleep(lieFlat);
     expect(seated.length).toBeGreaterThan(0);
     expect(flat.length).toBe(seated.length);
-    expect(seated.every(action => action.detail.includes('does not assume you obtain your usual sleep hours'))).toBe(true);
-    expect(flat.every(action => action.detail.includes('actual sleep duration and recovery vary'))).toBe(true);
+    expect(seated.every(action => action.title === 'Rest or nap')).toBe(true);
+    expect(flat.every(action => action.title === 'Bedtime')).toBe(true);
     expect(flat.map(action => [action.start, action.end])).toEqual(seated.map(action => [action.start, action.end]));
     expect(lieFlat.days.map(day => [day.phaseShiftHours, day.remainingShiftHours]))
       .toEqual(business.days.map(day => [day.phaseShiftHours, day.remainingShiftHours]));

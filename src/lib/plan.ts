@@ -297,7 +297,7 @@ export function generateRulesPlan(trip: Trip, prefs: Preferences): Plan {
       day.shifts.push(progress);
       day.phaseShiftHours = rounded(day.shifts.reduce((sum, value) => sum + value, 0));
       day.remainingShiftHours = rounded(Math.abs(neededShift(endPhase, target)));
-      const note = segment.flight ? 'In-flight rest is optional. Gate times include taxiing; allow a conservative 30 minutes at each end when airborne times are unknown. Stay awake for the first 30 minutes after takeoff and the final 60 minutes before landing; follow crew instructions. Seat configuration changes comfort guidance, not assumed clock-shift rates.'
+      const note = segment.flight ? 'Sleep starts at least 30 minutes after takeoff and ends at least 60 minutes before landing.'
         : segment.strategy === 'partial' ? 'Partial adjustment aims halfway toward this destination; actual adjustment may differ.'
         : segment.strategy === 'home' ? 'Keep your usual home-time sleep pattern where practical; the body-clock estimate carries forward from earlier stops.'
         : 'Adjustment assumes at most 1 hour/day earlier or 1.5 hours/day later while on the ground; this is not a prediction of your response.';
@@ -330,11 +330,11 @@ export function generateRulesPlan(trip: Trip, prefs: Preferences): Plan {
       }
       const boundedSleeps = sleeps.map(sleep => ({ start: Math.max(piece.start, sleep.start), end: Math.min(piece.end, sleep.end) }))
         .filter(sleep => sleep.end - sleep.start >= (segment.flight ? 30 : 15) * 60_000);
-      for (const sleep of boundedSleeps) add('sleep', sleep, segment.flight ? (segment.lieFlat ? 'Lie-flat sleep opportunity' : 'Seated rest or nap opportunity') : 'Sleep opportunity',
+      for (const sleep of boundedSleeps) add('sleep', sleep, segment.flight && !segment.lieFlat ? 'Rest or nap' : 'Bedtime',
         segment.flight ? (segment.lieFlat
-          ? 'Your reported lie-flat seat may make sleep more comfortable. Use an eye mask and earplugs if practical; actual sleep duration and recovery vary. Taxi time, the first 30 minutes after takeoff, and final 60 minutes before landing are protected, and crew instructions take priority.'
-          : 'Use this biological sleep window for seated rest or naps as comfort allows. Seated sleep can be fragmented; the plan does not assume you obtain your usual sleep hours. An eye mask, earplugs, and comfortable head support may help. Taxi time, the first 30 minutes after takeoff, and final 60 minutes before landing are protected, and crew instructions take priority.')
-          : `Aim for ${prefs.sleepHours} hours across your main sleep period. This window may be shortened by travel; do not sacrifice safety or essential obligations.`,
+          ? 'A lie-flat bed can make sleep more comfortable. Sleep starts at least 30 minutes after takeoff and ends at least 60 minutes before landing.'
+          : 'Rest or nap as your seat allows. An eye mask, earplugs and head support may help. Rest starts at least 30 minutes after takeoff and ends at least 60 minutes before landing.')
+          : `Aim for ${prefs.sleepHours} hours of sleep.`,
         'Protect sleep while gradually aligning the schedule. Travel fatigue and sleep debt also affect how you feel.');
 
       if (!segment.flight && !segmentUncertain && Math.abs(remaining) >= 0.5 && segment.adapt) {

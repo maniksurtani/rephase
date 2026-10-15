@@ -77,7 +77,7 @@ test('Today and the full plan retain all five flights with both local clocks and
   await expect(page.getByRole('heading', { name: 'Today, at a glance', exact: true })).toBeVisible();
   const outbound = flightCard(page, 'qf103');
   await expect(outbound).toBeVisible();
-  await expect(page.locator('.action-card.current').getByRole('heading', { name: /Seated rest/ })).toBeVisible();
+  await expect(page.locator('.action-card.current').getByRole('heading', { name: /Rest or nap/ })).toBeVisible();
   const departure = outbound.locator('[aria-label="Gate departure"]');
   await expect(departure.locator('.flight-clock-origin')).toContainText('20:15');
   await expect(departure.locator('.flight-clock-origin')).toContainText('17 Oct');
@@ -238,7 +238,7 @@ test('Today keeps a short daytime flight visible when no recommendation is curre
   await page.getByRole('button', { name: 'Explore your plan', exact: true }).click();
   await planDay(page, '2026-10-17', 'UTC').click();
   await expect(flightCard(page, 'short-flight')).toBeVisible();
-  await expect(page.getByRole('heading', { name: /Seated rest/ })).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: /Rest or nap/ })).toHaveCount(0);
   const displayedIntervals = await page.locator('.agenda-list .action-time').evaluateAll(nodes => nodes.map(node => ({
     start: node.querySelector('strong')?.textContent ?? '',
     end: node.querySelector('span')?.textContent ?? '',

@@ -46,8 +46,8 @@ async function newTrip(page: Page, signedIn = false) {
 
 async function selectCandidate(editor: Locator) {
   const use=editor.getByRole('button',{name:'Use this flight',exact:true});
-  await expect(use).toBeDisabled();
-  await editor.getByLabel('This is my own booked or previously traveled trip.',{exact:false}).check();
+  await expect(editor.getByRole('checkbox')).toHaveCount(0);
+  await expect(use).toBeEnabled();
   await use.click();
 }
 
@@ -78,8 +78,22 @@ test('flight number and date are the default entry while guests can reveal manua
   await editor.getByLabel('Airport code').last().fill('LHR');
   await editor.getByLabel('Local departure date & time').fill('2026-12-01T20:00');
   await editor.getByLabel('Local arrival date & time').fill('2026-12-02T14:00');
+  const stopOptions=editor.locator('.stay-editor');
+  await stopOptions.evaluate(element=>element.scrollIntoView({block:'center'}));
+  await stopOptions.screenshot({path:'artifacts/copy-stop-options-mobile.png'});
   await editor.getByRole('button',{name:'Create my plan',exact:true}).click();
   await expect(page.getByRole('heading',{name:'My next journey',exact:true})).toBeVisible();
+  const dismiss=page.getByRole('button',{name:'Dismiss notification',exact:true});
+  if(await dismiss.isVisible())await dismiss.click();
+  const bedtime=page.getByRole('heading',{name:'Bedtime',exact:true}).first();
+  await expect(bedtime).toBeVisible();
+  await bedtime.evaluate(element=>element.closest('.action-card')!.scrollIntoView({block:'center'}));
+  await page.screenshot({path:'artifacts/copy-bedtime-mobile.png'});
+  const footer=page.locator('.page-footer');
+  await footer.scrollIntoViewIfNeeded();
+  await expect(footer.getByRole('link',{name:'Flight data by AeroDataBox',exact:true})).toBeVisible();
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
+  await page.screenshot({path:'artifacts/copy-footer-mobile.png'});
 });
 
 test('manual fallback remains available when the signed-in deployment has no flight API key',async({page})=> {
@@ -103,6 +117,12 @@ test('a confirmed lookup displays its schedule without exposing manual fields an
     return route.fulfill({json:lookupResult()});
   });
   const editor=await newTrip(page,true);
+  const attribution=page.locator('.page-footer').getByRole('link',{name:'Flight data by AeroDataBox',exact:true});
+  await expect(attribution).toHaveCount(1);
+  await expect(attribution).toHaveAttribute('href','https://aerodatabox.com/');
+  await expect(attribution).not.toHaveAttribute('rel',/noreferrer/);
+  expect(await attribution.evaluate(link=>link.closest('[role=dialog]')===null)).toBe(true);
+  await expect(editor.getByRole('link',{name:/AeroDataBox/})).toHaveCount(0);
   await editor.getByLabel('Flight number',{exact:true}).fill('BA286');
   await editor.getByLabel('Departure date at the departure airport').fill('2026-12-01');
   await editor.getByLabel('Travel class').selectOption('business');
@@ -111,6 +131,7 @@ test('a confirmed lookup displays its schedule without exposing manual fields an
   await selectCandidate(editor);
   await expect(editor.getByLabel('Local departure date & time')).toBeHidden();
   await expect(editor.getByLabel('Local arrival date & time')).toBeHidden();
+  await expect(editor).not.toContainText(/Originally imported|verify the schedule against my booking/);
   await expect(editor.locator('.flight-selection-summary')).toContainText('SFO');
   await expect(editor.locator('.flight-selection-summary')).toContainText('LHR');
   await expect(editor.locator('.flight-selection-summary')).toContainText('20:00');
@@ -125,7 +146,8 @@ test('a confirmed lookup displays its schedule without exposing manual fields an
   await editor.getByRole('button',{name:'Create my plan',exact:true}).click();
   await expect(page.getByRole('heading',{name:'My next journey',exact:true})).toBeVisible();
   await page.getByRole('button',{name:'Trips',exact:true}).first().click();
-  await expect(page.getByRole('link',{name:'Originally imported from AeroDataBox'})).toBeVisible();
+  await expect(page.getByRole('link',{name:'Flight data by AeroDataBox',exact:true})).toHaveCount(1);
+  await expect(page.locator('.saved-trip-card')).not.toContainText('Originally imported');
 });
 
 test('changing a confirmed query cannot save the old schedule and the replacement lookup has no stale airport filter',async({page})=> {
@@ -167,6 +189,13 @@ test('existing multi-leg trips reveal manual fields only for the selected flight
   const editor=page.getByRole('dialog',{name:'Edit your journey',exact:true});
   const cards=editor.locator('.flight-editor-card');
   await expect(cards).toHaveCount(4);
+  const stop=cards.first().getByRole('combobox',{name:'After this flight',exact:true});
+  await expect(stop.locator('option')).toHaveText(['Final Destination','Transit']);
+  await expect(cards.first().getByRole('combobox',{name:/^Adjustment Strategy\b/})).toBeVisible();
+  await stop.selectOption('connection');
+  await expect(cards.first().getByRole('combobox',{name:/^Adjustment Strategy\b/})).toHaveCount(0);
+  await stop.selectOption('destination');
+  await expect(cards.first().getByRole('combobox',{name:/^Adjustment Strategy\b/})).toBeVisible();
   for(let index=0;index<4;index++) {
     await expect(cards.nth(index).getByLabel('Departure date at the departure airport')).toBeVisible();
     await expect(cards.nth(index).getByLabel('Local departure date & time')).toBeHidden();

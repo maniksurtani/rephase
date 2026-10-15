@@ -82,8 +82,10 @@ async function findFlight(editor: Locator) {
 }
 
 async function useFlight(editor: Locator) {
-  await editor.getByLabel('This is my own booked or previously traveled trip.',{exact:false}).check();
-  await editor.getByRole('button',{name:'Use this flight',exact:true}).click();
+  await expect(editor.getByRole('checkbox')).toHaveCount(0);
+  const use=editor.getByRole('button',{name:'Use this flight',exact:true});
+  await expect(use).toBeEnabled();
+  await use.click();
 }
 
 async function expectNoHorizontalOverflow(container: Locator) {
@@ -103,6 +105,7 @@ test('provided aircraft appears in lookup, saved trips and the plan without gues
   await useFlight(editor);
   const summary=editor.locator('.flight-selection-summary');
   await expect(summary.locator('.flight-selection-aircraft')).toHaveText(`Aircraft · ${model}`);
+  await expect(editor).not.toContainText(/Originally imported|check against your booking/);
   await expect(editor.getByText('Aircraft may change; confirm with the airline.',{exact:false})).toBeVisible();
   await expect(editor.getByLabel('Travel class')).toHaveValue('economy');
   await expect(editor.getByLabel('Lie-flat bed available?')).toHaveValue('no');

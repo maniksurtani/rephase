@@ -142,6 +142,16 @@ Amadeus Self-Service is discontinued. AirLabs's near-term schedules and Skyscann
 - [x] Publish the aircraft update after the full deployment checks.
 - [x] Confirm aircraft presence on a real provider response and record the result without exposing schedule/tracking data in logs.
 
+## Flight and sleep copy simplification
+
+- [x] Remove the booked-trip checkbox; apply selected results directly with **Use this flight** while preserving source metadata.
+- [x] Consolidate provider attribution into one linked site footer and remove repeated booking/import text from flight forms and trip cards.
+- [x] Use **Final Destination**, **Transit** and **Adjustment Strategy** in the editor.
+- [x] Use **Bedtime** and concise lie-flat/seated guidance in both engines; retain existing sleep timings and 30/60-minute airborne buffers.
+- [x] Update existing planner/calendar and browser regressions for the simplified flow.
+- [x] Complete final mobile/desktop browser verification, including all 16 targeted lookup/aircraft/travel/mobile-date scenarios.
+- [ ] Publish the copy update after full deployment checks.
+
 ## Launch, GitHub, and Cloudflare preparation
 
 - [x] Provide `npm start` with dependency/build/local migration setup, port checks, readiness, and owned-process cleanup.

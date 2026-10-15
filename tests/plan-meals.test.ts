@@ -16,7 +16,7 @@ const trip = (legs: FlightLeg[]): Trip => ({
   id: 'meal-trip', name: 'Meals and sleep', legs, createdAt: '2026-10-01T00:00:00Z', updatedAt: '2026-10-01T00:00:00Z',
 });
 const sleep = (start: string, end: string, id = 'sleep'): PlanAction => ({
-  id, type: 'sleep', start, end, timeZone: 'UTC', title: 'Sleep opportunity', detail: 'Preserve sleep.', reason: 'Rest.',
+  id, type: 'sleep', start, end, timeZone: 'UTC', title: 'Bedtime', detail: 'Preserve sleep.', reason: 'Rest.',
 });
 const day = (actions: PlanAction[]): PlanDay => ({
   id: '2026-10-17:UTC', date: '2026-10-17', timeZone: 'UTC', stage: 'travel', label: 'SYD → HNL',
@@ -227,6 +227,6 @@ describe('flexible flight meals', () => {
     expect(ids.every(id => id.startsWith('meal:outbound:'))).toBe(true);
     // Calendar integration belongs to the exporter; the underlying actions are
     // unchanged regardless of whether it opts into meal metadata.
-    expect(originalCalendar).toContain('SUMMARY:Sleep opportunity');
+    expect(originalCalendar).toContain('SUMMARY:Bedtime');
   });
 });
