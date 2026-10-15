@@ -2,6 +2,16 @@
 
 Updated 2026-10-15. Checked items record completed implementation; verification status for each release is recorded below. External credentials, publication, and clinical/outcome research are separate gates; they cannot be completed by local tests.
 
+## Compact flight cards and lounge settings
+
+- [x] Collapse aircraft and both departure/arrival clocks under an independent Flight details disclosure.
+- [x] Move lounge memberships and loyalty status to Profile's saved preferences, retaining existing values.
+- [x] Replace Explorer membership controls with a compact saved-program summary and Edit memberships shortcut.
+- [x] Put a quiet airport-prefilled Explorer link before every departure card, including unsupported airports and short connections.
+- [x] Keep actual limited visit windows and leave unknown/unavailable times blank instead of inventing usable lounge time.
+- [x] Complete targeted disclosure/settings/account/mobile checks and review screenshots.
+- [ ] Publish the exact verified CI artifact and check the live app.
+
 ## Lounge Explorer
 
 - [x] Design versioned per-airport JSON, a machine-readable schema and an offline research/editing guide.
@@ -293,3 +303,5 @@ Lounge Explorer release: source `fa4fec74c6b0525e5bd49d50265acd08283f6024` passe
 Successful [deployment 38745313576](https://github.com/maniksurtani/rephase/actions/runs/38745313576) reused the exact artifact without rebuilding or repeating tests, finished in 40 seconds, had no migrations to apply, and uploaded Worker version `726ba32c-e5dd-4a3b-b35e-c9d85da3d5c9` before configured-secret installation. No new Cloudflare resource, database migration or API credential was needed.
 
 Anonymous production checks at 1440px and 390px passed against the exact new entry: four SFO records, guest-only local membership selection, a sourced SYD First recommendation with one visible summary, LAX First closure exclusion, and no horizontal overflow/page errors. Only public configuration and static assets reached the network; account/provider/auth requests were intercepted, with no real sign-in or account writes. The desktop engine was Chromium. Local WebKit could not launch because `libGLESv2.so.2` is unavailable, so the live mobile check used Chromium; the CI's three existing mobile WebKit cases passed. These checks do not claim physical-iPhone acceptance or live lounge admission. Browsers and local preview servers were closed after verification.
+
+Compact flight/settings local verification: frontend/Worker TypeScript, production build and 81 focused lounge access/window/preference tests passed. All 15 affected browser scenarios passed across targeted runs: aircraft retention and both clock displays after expansion, keyboard disclosure and independent meals, date-line/DST handling, Profile account save/reload, read-only Explorer memberships, compact links before all five departures including MEL, and a six-minute transit without a recommendation. One test selector was scoped to the flight card after the link gained a matching flight ID; no product correction was needed. Desktop and 390px screenshots show the quiet link and collapsed card without overflow. Full CI and publication are tracked above.

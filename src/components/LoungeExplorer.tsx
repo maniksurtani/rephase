@@ -2,17 +2,18 @@ import { useState } from 'react';
 import { Temporal } from '@js-temporal/polyfill';
 import { Armchair, ArrowUpRight, Check, Clock3, ExternalLink, ShowerHead, Sparkles, Utensils, Wifi } from 'lucide-react';
 import type { Preferences, TravelClass } from '../lib/types';
-import { LOUNGE_MEMBERSHIPS, type LoungeEvaluation, type LoungeMembership, type LoungePriority } from '../lib/lounge-types';
+import { LOUNGE_MEMBERSHIPS, type LoungeEvaluation, type LoungePriority } from '../lib/lounge-types';
 import { LOUNGE_AIRLINES, LOUNGE_DATA, loungeDataFor } from '../lib/lounge-data';
 import { evaluateAirportLounges } from '../lib/lounge-access';
-import { airportCountry, type LoungeOpportunity } from '../lib/lounge-windows';
+import { airportCountry, type LoungeFlightContext } from '../lib/lounge-windows';
 import { findAirport } from '../lib/airports';
 import { localToInstant } from '../lib/time';
 import { travelClock } from '../lib/travel-clocks';
 import { AirportInput } from './AirportInput';
 import { FoldChoice } from './FoldChoice';
+import './lounge-memberships.css';
 
-interface Props { preferences: Preferences; onPreferences: (preferences: Preferences) => void; opportunity?: LoungeOpportunity; onClearContext: () => void }
+interface Props { preferences: Preferences; onPreferences: (preferences: Preferences) => void; opportunity?: LoungeFlightContext; onClearContext: () => void; onEditMemberships: () => void }
 const iso = (value: number) => new Date(value).toISOString();
 function localParts(value: string, zone: string) { const date = Temporal.Instant.from(value).toZonedDateTimeISO(zone); return { date: date.toPlainDate().toString(), time: date.toPlainTime().toString({ smallestUnit: 'minute' }) }; }
 function foldFor(value: string | undefined, zone: string | undefined): 'earlier' | 'later' | undefined {
@@ -22,13 +23,13 @@ function foldFor(value: string | undefined, zone: string | undefined): 'earlier'
   return earlier === later ? undefined : Date.parse(value) >= later ? 'later' : 'earlier';
 }
 
-export function LoungeExplorer({ preferences, onPreferences, opportunity, onClearContext }: Props) {
-  const initial = opportunity ? localParts(opportunity.start, opportunity.timeZone) : { date: Temporal.Now.plainDateISO('America/Los_Angeles').toString(), time: '10:00' };
+export function LoungeExplorer({ preferences, onPreferences, opportunity, onClearContext, onEditMemberships }: Props) {
+  const initial = opportunity ? localParts(opportunity.start ?? opportunity.departure, opportunity.timeZone) : { date: Temporal.Now.plainDateISO('America/Los_Angeles').toString(), time: '10:00' };
   const [airport, setAirport] = useState(opportunity?.airport ?? 'SFO');
   const [contextActive, setContextActive] = useState(Boolean(opportunity));
   const [date, setDate] = useState(initial.date);
-  const [from, setFrom] = useState(initial.time);
-  const [until, setUntil] = useState(opportunity ? localParts(opportunity.end, opportunity.timeZone).time : '12:00');
+  const [from, setFrom] = useState(opportunity && !opportunity.start ? '' : initial.time);
+  const [until, setUntil] = useState(opportunity?.end ? localParts(opportunity.end, opportunity.timeZone).time : opportunity ? '' : '12:00');
   const [departureTime, setDepartureTime] = useState(opportunity ? localParts(opportunity.departure, opportunity.timeZone).time : '13:00');
   const [fromChoice, setFromChoice] = useState<'earlier' | 'later' | undefined>(() => foldFor(opportunity?.start, opportunity?.timeZone));
   const [untilChoice, setUntilChoice] = useState<'earlier' | 'later' | undefined>(() => foldFor(opportunity?.end, opportunity?.timeZone));
@@ -43,7 +44,7 @@ export function LoungeExplorer({ preferences, onPreferences, opportunity, onClea
   const data = loungeDataFor(airport);
   const zone = data?.timeZone ?? findAirport(airport)?.timeZone;
   const memberships = preferences.loungeMemberships ?? [];
-  const [programsOpen, setProgramsOpen] = useState(!memberships.length);
+  const membershipLabels = LOUNGE_MEMBERSHIPS.filter(program => memberships.includes(program.id)).map(program => program.label);
   const priority = preferences.loungePriority ?? 'balanced';
   const terminals = [...new Set(data?.lounges.map(lounge => lounge.terminal) ?? [])];
   let error = '', start = '', end = '', departure = '';
@@ -51,7 +52,7 @@ export function LoungeExplorer({ preferences, onPreferences, opportunity, onClea
   try {
     if (!zone || !date || !from || !until || !departureTime) throw new Error('Choose an airport and a complete visit time.');
     const day = Temporal.PlainDate.from(date), followingDay = day.add({ days: 1 }).toString();
-    const originalEnd = contextActive && opportunity ? localParts(opportunity.end, zone) : undefined;
+    const originalEnd = contextActive && opportunity?.end ? localParts(opportunity.end, zone) : undefined;
     const originalDeparture = contextActive && opportunity ? localParts(opportunity.departure, zone) : undefined;
     endDate = originalEnd && date === initial.date && until === originalEnd.time ? originalEnd.date : until <= from ? followingDay : date;
     departureDate = originalDeparture && date === initial.date && departureTime === originalDeparture.time ? originalDeparture.date : departureTime < from ? followingDay : date;
@@ -76,9 +77,6 @@ export function LoungeExplorer({ preferences, onPreferences, opportunity, onClea
     destinationCountry: contextActive && opportunity && airport === opportunity.airport ? airportCountry(opportunity.destinationAirport) : undefined,
     visitStart: start, visitEnd: end, departure, minimumVisitMinutes: 30, priority,
   }) : undefined;
-  function toggleMembership(id: LoungeMembership, checked: boolean) {
-    onPreferences({ ...preferences, loungeMemberships: checked ? [...memberships.filter(value => value !== id), id] : memberships.filter(value => value !== id) });
-  }
   const total = data?.lounges.length ?? 0;
   function changeAirport(value: string) {
     const next = value.toUpperCase();
@@ -114,15 +112,12 @@ export function LoungeExplorer({ preferences, onPreferences, opportunity, onClea
         <p className="lounge-time-note">For a codeshare, the operating airline flies the plane; the marketing airline is on the flight number.</p>
       </details>
     </div>
-    <section className="lounge-memberships-panel" aria-label="Lounge preferences">
-      <details open={programsOpen} onToggle={event => setProgramsOpen(event.currentTarget.open)}><summary><span>My lounge & frequent flyer programs</span><small>{memberships.length ? `${memberships.length} selected` : 'Add your memberships'}</small></summary>
-        <fieldset className="lounge-programs"><legend className="sr-only">Your programs</legend>{LOUNGE_MEMBERSHIPS.map(program => <label key={program.id}><input type="checkbox" checked={memberships.includes(program.id)} onChange={event => toggleMembership(program.id, event.target.checked)}/><span>{program.label}</span></label>)}</fieldset>
-        <p className="lounge-time-note">Memberships save with your preferences. Choose your airline’s status where listed; generic alliance status may need an issuer check.</p>
-      </details>
+    <section className="lounge-preferences-row" aria-label="Lounge preferences">
+      <div className="lounge-membership-summary"><p>{membershipLabels.length ? `Using ${membershipLabels.join(' · ')}` : 'No lounge memberships saved'}</p><button type="button" className="text-button" onClick={onEditMemberships}>Edit memberships <ArrowUpRight size={13}/></button></div>
       <label className="lounge-field lounge-priority">Prioritise<select value={priority} onChange={event => onPreferences({ ...preferences, loungePriority: event.target.value as LoungePriority })}><option value="balanced">A little of everything</option><option value="showers">A shower</option><option value="dining">A good meal</option><option value="quiet">A quiet space</option></select></label>
     </section>
-    {!data ? <section className="empty-card lounge-empty"><Armchair size={30}/><h2>{findAirport(airport)?.city ?? (airport || 'Choose an airport')}</h2><p>We haven’t researched lounges here yet. Current coverage: {LOUNGE_DATA.map(value => value.airport).join(', ')}.</p></section> : error ? <p className="alert" role="alert">{error}</p> : <>
-      <div className="lounge-results-heading"><div><h2>{findAirport(airport)?.city ?? airport} lounges</h2><p>{total} researched lounges · reviewed {data.updatedAt}</p></div><span className="lounge-count">{recommendation?.results.filter(value => value.access === 'eligible' && value.opening === 'open' && value.visit).length ?? 0} match this visit</span></div>
+    {!data ? <section className="empty-card lounge-empty"><Armchair size={30}/><h2>{findAirport(airport)?.city ?? (airport || 'Choose an airport')}</h2><p>We haven’t researched lounges here yet. Current coverage: {LOUNGE_DATA.map(value => value.airport).join(', ')}.</p></section> : error ? <p className="alert" role={!from || !until ? 'status' : 'alert'}>{!from || !until ? 'Set your visit times to check lounge access and opening hours.' : error}</p> : <>
+      <div className="lounge-results-heading"><div><h2>{findAirport(airport)?.city ?? airport} lounges</h2><p>{total} researched lounges · reviewed {data.updatedAt}</p></div><span className="lounge-count">{recommendation?.results.filter(value => value.access === 'eligible' && value.opening === 'open' && value.visit && value.visit.minutes >= 30).length ?? 0} match this visit</span></div>
       {!recommendation?.recommendedId && <p className="lounge-recommendation-note">{!operatingCarrier || !terminal ? 'Confirm your operating airline and terminal to narrow down a recommendation.' : 'No confirmed match fits this visit. Check the conditional options below.'}</p>}
       <div className="lounge-results">{recommendation?.results.map(result => <LoungeCard key={result.lounge.id} result={result} timeZone={data.timeZone}/>)}</div>
     </>}

@@ -132,8 +132,9 @@ test('mobile timeline retains date-line flights, simultaneous rest, two-flight d
   await page.locator('.day-button[data-date="2026-10-17"]').click();
   await expectChronologicalRail(page);
   await expect(page.locator('.timeline-step:has(.timeline-band[data-kind="flight"]):has(.timeline-band[data-kind="rest"])').first()).toBeVisible();
-  const outbound = page.locator('.day-timeline [data-flight-id="qf103"]');
+  const outbound = page.locator('.day-timeline .flight-segment-card[data-flight-id="qf103"]');
   await expect(outbound).toHaveCount(1);
+  await outbound.locator('.flight-details > summary').click();
   const departure = outbound.getByRole('region', { name: 'Departure', exact: true });
   await expect(departure.locator('.flight-clock-origin')).toContainText('17 Oct');
   await expect(departure.locator('.flight-clock-destination')).toContainText('16 Oct');
@@ -164,22 +165,43 @@ test('mobile timeline retains date-line flights, simultaneous rest, two-flight d
 
   await page.locator('.day-button[data-date="2026-10-24"]').click();
   await expectChronologicalRail(page);
-  await expect(page.locator('.day-timeline [data-flight-id="aa6276"]')).toHaveCount(1);
-  const flight = page.locator('.day-timeline [data-flight-id="qf94"]');
+  await expect(page.locator('.day-timeline .flight-segment-card[data-flight-id="aa6276"]')).toHaveCount(1);
+  const flight = page.locator('.day-timeline .flight-segment-card[data-flight-id="qf94"]');
   await expect(flight).toHaveCount(1);
+  const flightDetails = flight.locator('.flight-details');
+  await expect(flightDetails).not.toHaveAttribute('open', '');
+  await expect(flight.locator('.flight-segment-events')).toBeHidden();
+  await flightDetails.locator('summary').focus();
+  await page.keyboard.press('Enter');
+  await expect(flightDetails).toHaveAttribute('open', '');
+  await expect(flight.locator('.flight-segment-events')).toBeVisible();
   await expect(flight.locator('.flight-clock-origin')).toHaveCount(2);
   await expect(flight.locator('.flight-clock-destination')).toHaveCount(2);
   await expect(flight.locator('.meal-policy')).toBeVisible();
   const details = flight.locator('.meal-details');
   await expect(details).not.toHaveAttribute('open', '');
+  await flightDetails.locator('summary').focus();
+  await page.keyboard.press('Space');
+  await expect(flightDetails).not.toHaveAttribute('open', '');
   await details.locator('summary').click();
   await expect(details).toHaveAttribute('open', '');
+  await expect(flightDetails).not.toHaveAttribute('open', '');
   await expect(details.locator('.meal-reason')).toBeVisible();
+  await flightDetails.locator('summary').click();
+  await expect(flightDetails).toHaveAttribute('open', '');
+  await expect(details).toHaveAttribute('open', '');
   expect(await page.evaluate(() => Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) <= window.innerWidth)).toBe(true);
   await details.locator('summary').click();
   await expect(details).not.toHaveAttribute('open', '');
+  await expect(flightDetails).toHaveAttribute('open', '');
+  await flightDetails.locator('summary').click();
   await flight.scrollIntoViewIfNeeded();
   await page.screenshot({ path: 'artifacts/timeline-flight-mobile.png' });
+  await page.screenshot({ path: 'artifacts/flight-declutter-mobile.png' });
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await flight.scrollIntoViewIfNeeded();
+  await page.screenshot({ path: 'artifacts/flight-declutter-desktop.png' });
+  await page.setViewportSize({ width: 390, height: 844 });
 
   await page.locator('.day-button[data-date="2026-10-20"]').click();
   await page.locator('.day-timeline').scrollIntoViewIfNeeded();
@@ -191,7 +213,7 @@ test('mobile timeline retains date-line flights, simultaneous rest, two-flight d
 
   await page.locator('.day-button[data-date="2026-10-25"]').click();
   await expectChronologicalRail(page);
-  await expect(page.locator('.day-timeline [data-flight-id="qf94"]')).toHaveCount(1);
+  await expect(page.locator('.day-timeline .flight-segment-card[data-flight-id="qf94"]')).toHaveCount(1);
 });
 
 test('repeated daylight-saving hour remains a 25-hour chronological day with a 90-minute flight', async ({ page }) => {
@@ -216,7 +238,8 @@ test('repeated daylight-saving hour remains a 25-hour chronological day with a 9
   await expect(page.locator('.timeline-heading')).toContainText(/EST|GMT[−-]5/);
   const entries = await intervals(page, '.timeline-entry[data-kind="flight"]');
   expect(entries).toEqual([{ start: Date.parse('2026-11-01T05:15:00Z'), end: Date.parse('2026-11-01T06:45:00Z') }]);
-  const flight = page.locator('.day-timeline [data-flight-id="dst-flight"]');
+  const flight = page.locator('.day-timeline .flight-segment-card[data-flight-id="dst-flight"]');
+  await flight.locator('.flight-details > summary').click();
   await expect(flight.locator('[aria-label="Departure"] .flight-clock-origin')).toContainText('01:15');
   await expect(flight.locator('[aria-label="Departure"] .flight-clock-origin')).toContainText(/EDT|GMT[−-]4/);
   await expect(flight.locator('[aria-label="Arrival"] .flight-clock-destination')).toContainText('01:45');

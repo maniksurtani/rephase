@@ -116,7 +116,12 @@ test('provided aircraft appears in lookup, saved trips and the plan without gues
   await expect.poll(()=>api.data.trips[0]?.legs[0].aircraft?.model).toBe(model);
   expect(api.data.trips[0].legs[0].lieFlat).toBe(false);
   await page.locator('.day-button[data-date="2026-12-01"]').click();
+  const flight=page.locator('.flight-segment-card');
+  await expect(flight.locator('.flight-details')).not.toHaveAttribute('open','');
+  await expect(flight.locator('.flight-segment-aircraft')).toBeHidden();
+  await flight.locator('.flight-details > summary').click();
   await expect(page.locator('.flight-segment-card .flight-segment-aircraft')).toHaveText(`Aircraft · ${model}`);
+  await expect(flight.locator('.flight-segment-aircraft')).toBeVisible();
   await page.reload();
   await expect(page.getByRole('button',{name:`${account.name}'s account menu`})).toBeVisible();
   await page.getByRole('button',{name:'Trips',exact:true}).first().click();

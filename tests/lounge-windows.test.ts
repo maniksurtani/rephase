@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { airportCountry, buildLoungeOpportunities } from '../src/lib/lounge-windows';
+import { airportCountry, buildFlightLoungeContexts, buildLoungeOpportunities } from '../src/lib/lounge-windows';
 import type { FlightLeg, Trip } from '../src/lib/types';
 import octoberItinerary from './fixtures/itineraries/oct2026.json';
 
@@ -133,5 +133,105 @@ describe('airport lounge visit opportunities', () => {
 
   it('has no opportunities without flights', () => {
     expect(buildLoungeOpportunities(trip([]))).toEqual([]);
+  });
+});
+
+describe('lounge links for every flight', () => {
+  it('keeps all five real itinerary departures, including airports without lounge research', () => {
+    const itinerary = structuredClone(octoberItinerary.trip) as Trip;
+    const before = structuredClone(itinerary);
+    const contexts = buildFlightLoungeContexts(itinerary);
+    const opportunities = buildLoungeOpportunities(itinerary);
+    expect(contexts.map(value => [value.flightNumber, value.airport, value.kind])).toEqual([
+      ['QF103', 'SYD', 'pre-flight'], ['AS812', 'HNL', 'pre-flight'], ['AA6276', 'SFO', 'pre-flight'],
+      ['QF94', 'LAX', 'transit'], ['QF490', 'MEL', 'pre-flight'],
+    ]);
+    expect(contexts).toEqual(opportunities.map(value => ({ ...value, windowStatus: 'estimated' })));
+    expect(itinerary).toEqual(before);
+  });
+
+  it('provides a short LAX connection link using its real six minutes, without extending the visit', () => {
+    const itinerary = trip([domestic({ stayAfter: 'connection' }), onward({
+      departureDateTime: '2026-10-17T12:51', travelClass: 'first',
+    })]);
+    expect(buildLoungeOpportunities(itinerary)).toHaveLength(1);
+    expect(buildFlightLoungeContexts(itinerary)[1]).toMatchObject({
+      id: 'onward:transit', legId: 'onward', airport: 'LAX', kind: 'transit',
+      flightNumber: 'QF94', destinationAirport: 'MEL', travelClass: 'first',
+      departure: '2026-10-17T19:51:00.000Z', timeZone: 'America/Los_Angeles',
+      start: '2026-10-17T19:00:00.000Z', end: '2026-10-17T19:06:00.000Z',
+      minutes: 6, windowStatus: 'limited',
+    });
+  });
+
+  it('also clamps a short destination stay to the actual arrival and clearance time', () => {
+    const contexts = buildFlightLoungeContexts(trip([domestic(), onward({ departureDateTime: '2026-10-17T12:51' })]));
+    expect(contexts[1]).toMatchObject({
+      id: 'onward:pre-flight', kind: 'pre-flight', windowStatus: 'limited', minutes: 6,
+      start: '2026-10-17T19:00:00.000Z', end: '2026-10-17T19:06:00.000Z',
+    });
+  });
+
+  it.each(['connection', 'destination'] as const)('omits visit times when %s arrival and boarding allowances overlap', stayAfter => {
+    const context = buildFlightLoungeContexts(trip([domestic({ stayAfter }), onward({ departureDateTime: '2026-10-17T12:30' })]))[1];
+    expect(context).toMatchObject({ airport: 'LAX', windowStatus: 'unavailable',
+      note: 'No usable lounge time remains after arrival and boarding allowances.' });
+    expect(context).not.toHaveProperty('start');
+    expect(context).not.toHaveProperty('end');
+    expect(context).not.toHaveProperty('minutes');
+  });
+
+  it('treats an exact meeting of arrival and boarding buffers as unavailable', () => {
+    const context = buildFlightLoungeContexts(trip([domestic({ stayAfter: 'connection' }), onward({ departureDateTime: '2026-10-17T12:45' })]))[1];
+    expect(context.windowStatus).toBe('unavailable');
+    expect(context).not.toHaveProperty('start');
+  });
+
+  it('uses the international incoming clearance allowance for a limited connection', () => {
+    const next = domestic({ id: 'next', departureAirport: 'HNL', arrivalAirport: 'SFO',
+      departureDateTime: '2026-10-17T02:10', arrivalDateTime: '2026-10-17T10:00',
+      departureTimeZone: 'Pacific/Honolulu', arrivalTimeZone: 'America/Los_Angeles' });
+    const context = buildFlightLoungeContexts(trip([leg({ stayAfter: 'connection' }), next]))[1];
+    expect(context).toMatchObject({ airport: 'HNL', windowStatus: 'limited', minutes: 10,
+      start: '2026-10-17T11:30:00.000Z', end: '2026-10-17T11:40:00.000Z' });
+    expect(context.note).toContain('60 minutes for arrival formalities');
+  });
+
+  it.each([
+    ['cross-airport transfer', domestic({ stayAfter: 'connection' }), onward({ departureAirport: 'SFO' }), 'transfer between airports'],
+    ['long connection', domestic({ stayAfter: 'connection' }), onward({ departureDateTime: '2026-10-18T00:00', arrivalDateTime: '2026-10-19T09:00' }), 'longer than 12 hours'],
+    ['invalid previous timing', domestic({ arrivalDateTime: 'invalid' }), onward(), 'timing is incomplete'],
+    ['overlapping previous flight', domestic(), onward({ departureDateTime: '2026-10-17T11:00' }), 'overlaps this departure'],
+  ] as const)('retains the departure link with an unknown visit for %s', (_label, inbound, next, reason) => {
+    const context = buildFlightLoungeContexts(trip([inbound, next])).find(value => value.legId === 'onward');
+    expect(context).toMatchObject({ legId: 'onward', windowStatus: 'unknown', flightNumber: 'QF94' });
+    expect(context?.note).toContain('Set your airport arrival/visit time');
+    expect(context?.note).toContain(reason);
+    expect(context).not.toHaveProperty('start');
+    expect(context).not.toHaveProperty('end');
+    expect(context).not.toHaveProperty('minutes');
+  });
+
+  it('preserves a supplied repeated-hour choice as a real UTC departure and visit', () => {
+    const flight = domestic({ departureDateTime: '2026-11-01T01:30', arrivalDateTime: '2026-11-01T03:00', departureDisambiguation: 'later' });
+    expect(buildFlightLoungeContexts(trip([flight]))[0]).toMatchObject({
+      windowStatus: 'estimated', start: '2026-11-01T07:30:00.000Z', end: '2026-11-01T09:00:00.000Z',
+      departure: '2026-11-01T09:30:00.000Z', minutes: 90,
+    });
+    expect(buildFlightLoungeContexts(trip([{ ...flight, departureDisambiguation: undefined }]))).toEqual([]);
+  });
+
+  it.each([
+    { departureDateTime: '2026-03-08T02:30', arrivalDateTime: '2026-03-08T04:00' },
+    { departureDateTime: 'not-a-date' },
+    { departureTimeZone: 'Imaginary/Zone' },
+    { arrivalDateTime: '2026-10-17T09:00' },
+    { departureAirport: '' },
+  ])('does not expose a context for an invalid current flight (%j)', changes => {
+    expect(buildFlightLoungeContexts(trip([domestic(changes)]))).toEqual([]);
+  });
+
+  it('has no departure links without flights', () => {
+    expect(buildFlightLoungeContexts(trip([]))).toEqual([]);
   });
 });

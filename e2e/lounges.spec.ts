@@ -51,28 +51,42 @@ function noHorizontalOverflow(page: Page) {
   return page.evaluate(() => Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) <= innerWidth);
 }
 
-test('lounge memberships and recommendation priority save automatically to the validated account and survive reopening', async ({ page }) => {
+test('lounge memberships save from Profile, stay out of Explorer, and survive account reload with recommendation priority', async ({ page }) => {
   const api = new LoungeAccountApi();
   await api.install(page);
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.clock.setFixedTime(new Date('2026-10-15T12:00:00Z'));
   await openLounges(page);
+  await expect(page.getByRole('checkbox')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Edit memberships', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Lounge memberships & airline status', exact: true })).toBeVisible();
   const priorityPass = page.getByRole('checkbox', { name: 'Priority Pass', exact: true });
   const qantasPlatinum = page.getByRole('checkbox', { name: 'Qantas Platinum', exact: true });
   await priorityPass.check();
   await qantasPlatinum.check();
-  await page.getByRole('combobox', { name: 'Prioritise', exact: true }).selectOption('showers');
+  await expect(page.getByRole('button', { name: 'Save preferences', exact: true })).toBeEnabled();
+  await page.getByRole('button', { name: 'Save preferences', exact: true }).click();
   await expect.poll(() => api.data.preferences.loungeMemberships).toEqual(['priority-pass', 'qantas-platinum']);
+  await page.getByRole('button', { name: 'Lounges', exact: true }).first().click();
+  await expect(page.getByRole('checkbox')).toHaveCount(0);
+  await expect(page.locator('.lounge-membership-summary')).toContainText('Priority Pass');
+  await expect(page.locator('.lounge-membership-summary')).toContainText('Qantas Platinum');
+  await page.getByRole('combobox', { name: 'Prioritise', exact: true }).selectOption('showers');
   await expect.poll(() => api.data.preferences.loungePriority).toBe('showers');
   expect(api.writes.length).toBeGreaterThan(0);
   expect(validateAppData(api.data)).toBeNull();
   await page.reload();
   await page.getByRole('button', { name: 'Lounges', exact: true }).first().click();
-  await page.locator('.lounge-memberships-panel summary').click();
-  await expect(priorityPass).toBeChecked();
-  await expect(qantasPlatinum).toBeChecked();
+  await expect(page.getByRole('checkbox')).toHaveCount(0);
+  await expect(page.locator('.lounge-membership-summary')).toContainText('Priority Pass');
+  await expect(page.locator('.lounge-membership-summary')).toContainText('Qantas Platinum');
   await expect(page.getByRole('combobox', { name: 'Prioritise', exact: true })).toHaveValue('showers');
   await expect(page.locator('.lounge-card').first()).toBeVisible();
+  expect(await noHorizontalOverflow(page)).toBe(true);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.getByRole('button', { name: 'Edit memberships', exact: true }).click();
+  await expect(priorityPass).toBeChecked();
+  await expect(qantasPlatinum).toBeChecked();
   expect(await noHorizontalOverflow(page)).toBe(true);
 });
 
@@ -114,7 +128,7 @@ test('confirmed airline and terminal unlock a sourced lounge recommendation, and
   await expect(firstLounge.locator('.lounge-recommended')).toHaveCount(0);
 });
 
-test('mobile travel links prefill the correct airport, local visit clocks and cabin, while a short transit has no lounge offer', async ({ page }) => {
+test('compact mobile lounge links precede every departure and preserve flight context for useful, short and uncovered visits', async ({ page }) => {
   const api = new LoungeAccountApi();
   const itinerary = structuredClone(octoberItinerary.trip) as Trip;
   itinerary.legs.find(leg => leg.id === 'qf94')!.travelClass = 'business';
@@ -125,6 +139,26 @@ test('mobile travel links prefill the correct airport, local visit clocks and ca
   await page.goto('/');
   await expect(page.getByRole('heading', { name: itinerary.name, exact: true })).toBeVisible();
   const navigation = page.getByRole('navigation', { name: 'Mobile navigation' });
+  await navigation.getByRole('button', { name: 'Your plan', exact: true }).click();
+  for (const leg of itinerary.legs) {
+    await page.locator(`.day-button[data-date="${leg.departureDateTime.slice(0, 10)}"]`).click();
+    const button = page.getByRole('button', { name: `Explore lounges in ${leg.departureAirport}`, exact: true });
+    await expect(button).toBeVisible();
+    await expect(page.locator(`.flight-segment-card[data-flight-id="${leg.id}"]`)).toBeVisible();
+    expect(await button.evaluate((node, flightId) => {
+      const card = document.querySelector(`.flight-segment-card[data-flight-id="${flightId}"]`);
+      return card !== null && Boolean(node.compareDocumentPosition(card) & Node.DOCUMENT_POSITION_FOLLOWING);
+    }, leg.id)).toBe(true);
+    const bounds = await button.boundingBox();
+    expect(bounds?.height).toBeLessThanOrEqual(60);
+    expect(await noHorizontalOverflow(page)).toBe(true);
+  }
+  await page.getByRole('button', { name: 'Explore lounges in MEL', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Lounge Explorer', exact: true })).toBeVisible();
+  await expect(page.getByRole('combobox', { name: 'Airport', exact: true })).toHaveValue('MEL');
+  await expect(page.locator('.lounge-context')).toContainText('QF490');
+  await expect(page.locator('.lounge-empty')).toContainText('We haven’t researched lounges here yet.');
+  await expect(page.locator('.lounge-card, .lounge-recommended')).toHaveCount(0);
   await navigation.getByRole('button', { name: 'Your plan', exact: true }).click();
   // QF94 remains in transit on the 25th and arrives on the 26th. Its
   // pre-departure lounge window belongs only to the LAX departure day.
@@ -159,8 +193,9 @@ test('mobile travel links prefill the correct airport, local visit clocks and ca
   await expect(page.getByRole('combobox', { name: 'Departure terminal', exact: true })).toHaveValue('');
   await expect(page.getByRole('combobox', { name: 'Cabin', exact: true })).toHaveValue('economy');
 
-  // The preceding domestic arrival at 17:44 leaves no useful lounge visit
-  // once the arrival and boarding buffers are applied to a 19:05 departure.
+  // The preceding domestic arrival at 17:44 leaves only six minutes after
+  // arrival and boarding buffers. The link still explores this airport, but
+  // must retain the real interval and never recommend a fabricated visit.
   const shorterTrip = structuredClone(itinerary);
   shorterTrip.legs.find(leg => leg.id === 'qf94')!.departureDateTime = '2026-10-24T19:05';
   api.data = { ...api.data, trips: [shorterTrip] };
@@ -170,8 +205,19 @@ test('mobile travel links prefill the correct airport, local visit clocks and ca
   await navigation.getByRole('button', { name: 'Your plan', exact: true }).click();
   await page.locator('.day-button[data-date="2026-10-24"]').click();
   await expect(page.locator('.flight-segment-card[data-flight-id="qf94"]')).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Explore lounges in LAX', exact: true })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Explore lounges in SFO', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Explore lounges in LAX', exact: true }).click();
+  await expect(page.getByRole('combobox', { name: 'Airport', exact: true })).toHaveValue('LAX');
+  await expect(page.locator('.lounge-context')).toContainText('QF94');
+  await expect(page.getByLabel('Visit date', { exact: true })).toHaveValue('2026-10-24');
+  await expect(page.getByLabel('From', { exact: true })).toHaveValue('18:14');
+  await expect(page.getByLabel('Until', { exact: true })).toHaveValue('18:20');
+  await expect(page.getByLabel('Departure time', { exact: true })).toHaveValue('19:05');
+  await expect(page.getByRole('combobox', { name: 'Cabin', exact: true })).toHaveValue('business');
+  await page.getByRole('combobox', { name: 'Operating airline', exact: true }).selectOption('QF');
+  await page.getByRole('combobox', { name: 'Departure terminal', exact: true }).selectOption('Tom Bradley International Terminal');
+  await expect(page.locator('.lounge-count')).toHaveText('0 match this visit');
+  await expect(page.locator('.lounge-recommended')).toHaveCount(0);
   expect(await noHorizontalOverflow(page)).toBe(true);
 });
 

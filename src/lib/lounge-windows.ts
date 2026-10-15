@@ -18,6 +18,14 @@ export interface LoungeOpportunity {
   note: string;
 }
 
+/** A departure link remains useful even when no usable visit can be inferred. */
+export type LoungeFlightContext = Omit<LoungeOpportunity, 'start' | 'end' | 'minutes'> & {
+  start?: string;
+  end?: string;
+  minutes?: number;
+  windowStatus: 'estimated' | 'limited' | 'unavailable' | 'unknown';
+};
+
 // The airport catalog does not include countries. Keep this small, explicit map
 // independent of timezone names: an unknown route gets international buffers.
 const COUNTRY_AIRPORTS: Record<string, readonly string[]> = {
@@ -124,4 +132,77 @@ export function buildLoungeOpportunities(trip: Trip): LoungeOpportunity[] {
   });
 
   return opportunities;
+}
+
+/**
+ * One Explorer context for every valid departure, independently of whether its
+ * lounge visit is long enough to count as an opportunity. Short connections use
+ * their actual remaining time; uncertain transfers never get a fabricated visit.
+ */
+export function buildFlightLoungeContexts(trip: Trip): LoungeFlightContext[] {
+  const opportunities = new Map(buildLoungeOpportunities(trip).map(value => [value.legId, value]));
+  const times = trip.legs.map(timedLeg);
+  const contexts: LoungeFlightContext[] = [];
+
+  trip.legs.forEach((leg, index) => {
+    const timing = times[index];
+    const airport = leg.departureAirport.trim().toUpperCase();
+    const destinationAirport = leg.arrivalAirport.trim().toUpperCase();
+    if (!timing || !/^[A-Z]{3}$/.test(airport) || !/^[A-Z]{3}$/.test(destinationAirport)) return;
+
+    const opportunity = opportunities.get(leg.id);
+    if (opportunity) {
+      contexts.push({ ...opportunity, windowStatus: 'estimated' });
+      return;
+    }
+
+    const previous = trip.legs[index - 1];
+    const previousTiming = times[index - 1];
+    const kind = previous?.stayAfter === 'connection' ? 'transit' : 'pre-flight';
+    const context: LoungeFlightContext = {
+      id: `${leg.id}:${kind}`, legId: leg.id, airport, kind,
+      departure: new Date(timing.departure).toISOString(), timeZone: leg.departureTimeZone,
+      flightNumber: leg.flightNumber, destinationAirport, travelClass: leg.travelClass ?? 'economy',
+      windowStatus: 'unknown', note: '',
+    };
+    let uncertainty: string | undefined;
+    if (previous && !previousTiming) {
+      uncertainty = 'the previous flight’s timing is incomplete';
+    } else if (previousTiming && previousTiming.arrival >= timing.departure) {
+      uncertainty = 'the previous flight overlaps this departure';
+    } else if (previous && previous.arrivalAirport.trim().toUpperCase() !== airport) {
+      uncertainty = 'the transfer between airports needs to be planned';
+    } else if (kind === 'transit' && previousTiming && timing.departure - previousTiming.arrival > 12 * 60 * MINUTE) {
+      uncertainty = 'this stopover is longer than 12 hours';
+    }
+    if (uncertainty) {
+      context.note = `Set your airport arrival/visit time in Lounge Explorer; ${uncertainty}.`;
+      contexts.push(context);
+      return;
+    }
+
+    const domestic = isDomestic(leg);
+    const boardingMinutes = domestic ? 30 : 45;
+    const arrivalMinutes = domestic ? 120 : 180;
+    const clearanceMinutes = previous ? (isDomestic(previous) ? 30 : 60) : 0;
+    const end = timing.departure - boardingMinutes * MINUTE;
+    const start = kind === 'transit' && previousTiming
+      ? previousTiming.arrival + clearanceMinutes * MINUTE
+      : Math.max(timing.departure - arrivalMinutes * MINUTE,
+        previousTiming ? previousTiming.arrival + clearanceMinutes * MINUTE : Number.NEGATIVE_INFINITY);
+
+    if (end <= start) {
+      context.windowStatus = 'unavailable';
+      context.note = 'No usable lounge time remains after arrival and boarding allowances.';
+    } else {
+      context.start = new Date(start).toISOString();
+      context.end = new Date(end).toISOString();
+      context.minutes = Math.floor((end - start) / MINUTE);
+      context.windowStatus = context.minutes < 60 ? 'limited' : 'estimated';
+      context.note = `Only ${context.minutes} minutes remain after ${clearanceMinutes} minutes for arrival formalities and ${boardingMinutes} minutes for boarding.`;
+    }
+    contexts.push(context);
+  });
+
+  return contexts;
 }

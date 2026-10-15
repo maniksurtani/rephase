@@ -99,6 +99,12 @@ test('Today and the full plan retain all five flights with both local clocks and
   const outbound = flightCard(page, 'qf103');
   await expect(outbound).toBeVisible();
   await expect(page.locator('.action-card.current').getByRole('heading', { name: /Rest or nap/ })).toBeVisible();
+  const flightDetails = outbound.locator('details.flight-details');
+  await expect(flightDetails).not.toHaveAttribute('open', '');
+  await expect(outbound.locator('[aria-label="Departure"]')).toBeHidden();
+  await flightDetails.locator('summary').focus();
+  await page.keyboard.press('Enter');
+  await expect(flightDetails).toHaveAttribute('open', '');
   const departure = outbound.locator('[aria-label="Departure"]');
   await expect(departure.locator('.flight-clock-origin')).toContainText('20:15');
   await expect(departure.locator('.flight-clock-origin')).toContainText('17 Oct');
@@ -167,7 +173,9 @@ test('mobile travel cards and dual clocks fit a 390-pixel screen', async ({ page
   await planDay(page, '2026-10-24', 'America/Los_Angeles').click();
   await expect(flightCard(page, 'aa6276')).toBeVisible();
   await expect(flightCard(page, 'qf94')).toBeVisible();
+  await flightCard(page, 'qf94').locator('.flight-details > summary').click();
   const flightEvents = flightCard(page, 'qf94').locator('.flight-segment-events');
+  await expect(flightEvents).toBeVisible();
   await expect(flightEvents.locator('.flight-clock-origin')).toHaveCount(2);
   await expect(flightEvents.locator('.flight-clock-destination')).toHaveCount(2);
   await expectMealAdvice(page, 'aa6276');

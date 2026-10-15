@@ -16,8 +16,8 @@ import './timeline.css';
 import './lounges.css';
 import { LoungeExplorer } from './components/LoungeExplorer';
 import { LoungeOpportunityLink } from './components/LoungeOpportunityLink';
-import { buildLoungeOpportunities, type LoungeOpportunity } from './lib/lounge-windows';
-import { loungeDataFor } from './lib/lounge-data';
+import { buildFlightLoungeContexts, type LoungeFlightContext } from './lib/lounge-windows';
+import { LoungeMembershipSettings } from './components/LoungeMembershipSettings';
 import { actionTravelSegment, travelClock } from './lib/travel-clocks';
 import { groupPlanDays, isCalendarDayCurrent } from './lib/plan-calendar';
 import { AdherenceForm } from './components/AdherenceForm';
@@ -140,7 +140,8 @@ function ActionCard({ action, compact = false, timeline = false, isCurrent = fal
 export default function App(props: AppProps) {
   const { data, onChange, account, authConfig, saveStatus, storageError } = props;
   const [tab, setTab] = useState<Tab>('today');
-  const [loungeContext, setLoungeContext] = useState<LoungeOpportunity | undefined>();
+  const [loungeContext, setLoungeContext] = useState<LoungeFlightContext | undefined>();
+  const [profileSection, setProfileSection] = useState<'lounges' | null>(null);
   const [loungeSession, setLoungeSession] = useState(0);
   const [selectedDayId, setSelectedDayId] = useState<string | null>(null);
   const [scienceOpen, setScienceOpen] = useState(false);
@@ -151,7 +152,7 @@ export default function App(props: AppProps) {
   const [notice, setNotice] = useState<string | null>(null);
   const [now, setNow] = useState(() => new Date());
   const trip = data.trips.find(t => t.id === data.selectedTripId) ?? data.trips[0] ?? null;
-  const loungeOpportunities = useMemo(() => trip ? buildLoungeOpportunities(trip).filter(value => loungeDataFor(value.airport)) : [], [trip]);
+  const loungeOpportunities = useMemo(() => trip ? buildFlightLoungeContexts(trip) : [], [trip]);
   const result = usePlanning(trip, data.preferences);
   const [recordAction,setRecordAction] = useState<PlanAction|null>(null);
   const plan = result.plan;
@@ -190,6 +191,12 @@ export default function App(props: AppProps) {
       setLoungeContext(current); setLoungeSession(value => value + 1);
     }
   }, [loungeOpportunities, loungeContext]);
+  useEffect(() => {
+    if (tab !== 'profile' || profileSection !== 'lounges') return;
+    const section = document.getElementById('lounge-membership-settings-title');
+    section?.scrollIntoView({ block: 'start' }); section?.focus({ preventScroll: true });
+    setProfileSection(null);
+  }, [tab, profileSection]);
   useEffect(() => { if (notice) { const timer = window.setTimeout(() => setNotice(null), 4500); return () => window.clearTimeout(timer); } }, [notice]);
   useEffect(() => {
     const open = scienceOpen || Boolean(draftTrip) || Boolean(deleteTripId);
@@ -199,16 +206,16 @@ export default function App(props: AppProps) {
     return () => { document.body.style.overflow = previous; };
   }, [scienceOpen, draftTrip, deleteTripId]);
 
-  function exploreLounges(opportunity?: LoungeOpportunity) {
+  function exploreLounges(opportunity?: LoungeFlightContext) {
     setLoungeContext(opportunity); setLoungeSession(value => value + 1); setTab('lounges');
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
-  function flightWithLounges(segment: PlanTravelSegment, collapseMeals = false) {
+  function flightWithLounges(segment: PlanTravelSegment, inPlan = false) {
     const opportunity = loungeOpportunities.find(value => value.legId === segment.id);
-    const showOpportunity = opportunity && (collapseMeals
+    const showOpportunity = opportunity && (inPlan
       ? selectedDay?.date === localDate(segment.departure, segment.departureTimeZone)
-      : now.getTime() < Date.parse(opportunity.end));
-    return <><FlightSegmentCard segment={segment} collapseMeals={collapseMeals}/>{showOpportunity && <LoungeOpportunityLink opportunity={opportunity} onExplore={exploreLounges}/>}</>;
+      : now.getTime() < Date.parse(opportunity.departure));
+    return <>{showOpportunity && <LoungeOpportunityLink opportunity={opportunity} onExplore={exploreLounges}/>}<FlightSegmentCard segment={segment} collapseMeals={inPlan}/></>;
   }
 
   function editTrip(value: Trip) { draftAccountId.current = account?.id ?? null; setDraftTrip({ ...value, legs: value.legs.map(l => ({ ...l })) }); setTripErrors([]); }
@@ -299,7 +306,7 @@ export default function App(props: AppProps) {
           </div><div className="manual-entry-note"><Info size={16}/><p>Look up a flight by number and departure date, or enter it manually.</p></div>
         </>}
 
-        {tab === 'lounges' && <LoungeExplorer key={`${account?.id ?? 'guest'}:${loungeSession}`} preferences={data.preferences} onPreferences={preferences => onChange({ ...data, preferences })} opportunity={loungeContext} onClearContext={() => exploreLounges()}/>}
+        {tab === 'lounges' && <LoungeExplorer key={`${account?.id ?? 'guest'}:${loungeSession}`} preferences={data.preferences} onPreferences={preferences => onChange({ ...data, preferences })} opportunity={loungeContext} onEditMemberships={() => { setProfileSection('lounges'); setTab('profile'); }} onClearContext={() => exploreLounges()}/>}
         {tab === 'profile' && <Profile {...props} onNotice={setNotice}/>}
         <footer className="page-footer"><span><Moon size={12}/>A better rhythm, wherever life takes you.</span><div className="footer-links"><a href="/science.html">Science & further reading <ArrowUpRight size={12}/></a><a href="https://aerodatabox.com/" target="_blank" rel="noopener">Flight data by AeroDataBox <ExternalLink size={12}/></a></div></footer>
       </main>
@@ -422,7 +429,7 @@ function Profile(props: AppProps & { onNotice: (message: string) => void }) {
     try { new Intl.DateTimeFormat('en', { timeZone: preferences.homeTimeZone }).format(new Date()); } catch { nextErrors.push('Enter a valid home time zone, such as Europe/London.'); }
     if (!Number.isFinite(preferences.sleepHours) || preferences.sleepHours < 4 || preferences.sleepHours > 12) nextErrors.push('Choose a sleep duration between 4 and 12 hours.');
     if (nextErrors.length) { setErrors(nextErrors); return; }
-    onChange({ ...data, preferences }); setErrors([]); onNotice('Preferences saved. Your plans have been regenerated.');
+    onChange({ ...data, preferences }); setErrors([]); onNotice('Preferences saved.');
   }
   async function authAction(name: string, action: () => Promise<void>) {
     setBusy(name); setAuthError(null);
@@ -436,7 +443,7 @@ function Profile(props: AppProps & { onNotice: (message: string) => void }) {
       <section className="form-section"><div className="form-section-title"><span className="small-icon"><Sparkles size={19}/></span><div><h2>Your planning preferences</h2><p>Choose the tools that feel right for you.</p></div></div><Toggle checked={preferences.caffeine} onChange={value => update('caffeine', value)} icon={Coffee} title="Include caffeine windows" description="Optional timing guidance for coffee, tea, and other caffeine."/><Toggle checked={preferences.melatonin} onChange={value => update('melatonin', value)} icon={Sparkles} title="Include melatonin guidance" description="Optional timing windows and an informational 0.5–1 mg range."/>
         <Toggle checked={preferences.calendarAlarms!==false} onChange={value=>update('calendarAlarms',value)} icon={CalendarDays} title="Calendar reminders" description="Include reminders 10 minutes before actions in calendar exports."/>
         <label className="field preparation-field"><span>Start preparing before departure</span><select value={preferences.preparationDays} onChange={event => update('preparationDays', Number(event.target.value))}><option value="0">On departure day</option><option value="1">1 day before</option><option value="2">2 days before</option><option value="3">3 days before</option></select><small>More preparation time can make the first travel day easier.</small></label>
-      </section><div className="preferences-save"><span>{dirty ? 'You have unsaved changes' : account ? saveStatus || 'Changes save to your account automatically' : 'Preferences saved on this device'}</span><button type="submit" className="button primary" disabled={!dirty}><Check size={16}/>Save preferences</button></div>
+      </section><LoungeMembershipSettings memberships={preferences.loungeMemberships ?? []} onChange={memberships => update('loungeMemberships', memberships)}/><div className="preferences-save"><span>{dirty ? 'You have unsaved changes' : account ? saveStatus || 'Changes save to your account automatically' : 'Preferences saved on this device'}</span><button type="submit" className="button primary" disabled={!dirty}><Check size={16}/>Save preferences</button></div>
     </form><aside className={`profile-aside ${account ? 'has-account' : ''}`}>
       {!account && <section className="account-card">
         <span className="eyebrow muted"><ShieldCheck size={14}/>Your account</span>

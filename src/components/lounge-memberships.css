@@ -1,0 +1,6 @@
+.lounge-preferences-row{display:flex;align-items:center;justify-content:space-between;gap:24px;margin:20px 0 25px;min-width:0}
+.lounge-membership-summary{min-width:0;flex:1}.lounge-membership-summary p{font-size:12px;line-height:1.8;color:#b9b5cc;margin:0 0 4px;overflow-wrap:anywhere}.lounge-membership-summary .text-button{font-size:12px;white-space:normal;text-align:left;min-height:32px}
+.lounge-preferences-row .lounge-priority{width:200px;flex-shrink:0}
+.lounge-membership-settings .lounge-programs{padding-top:0}.lounge-membership-settings .lounge-programs label{min-height:40px}
+.lounge-settings-note{font-size:12px;line-height:1.7;color:var(--muted);margin:18px 0 0}
+@media(max-width:760px){.lounge-preferences-row{align-items:stretch;flex-direction:column;gap:14px;margin:17px 0 23px}.lounge-preferences-row .lounge-priority{width:100%}.lounge-membership-settings .lounge-programs{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px}.lounge-membership-settings .lounge-programs label{font-size:12px;min-height:44px;line-height:1.5}}

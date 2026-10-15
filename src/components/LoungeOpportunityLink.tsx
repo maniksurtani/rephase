@@ -1,15 +1,11 @@
 import { Armchair, ArrowUpRight } from 'lucide-react';
-import type { LoungeOpportunity } from '../lib/lounge-windows';
-import { travelClock } from '../lib/travel-clocks';
+import type { LoungeFlightContext } from '../lib/lounge-windows';
 
-export function LoungeOpportunityLink({ opportunity, onExplore }: { opportunity: LoungeOpportunity; onExplore: (opportunity: LoungeOpportunity) => void }) {
-  const from = travelClock(opportunity.start, opportunity.timeZone), until = travelClock(opportunity.end, opportunity.timeZone);
-  return <div className="lounge-opportunity">
-    <Armchair size={19} aria-hidden="true"/>
-    <div><strong>{opportunity.kind === 'transit' ? 'Time to recharge in transit' : 'Before your flight'}</strong>
-      <span>{from.date} · {from.time}–{until.time}{from.dateKey !== until.dateKey ? `, ${until.date}` : ''} · {from.zone}</span>
-      <small>{opportunity.kind === 'transit' ? 'Estimated time after arrival formalities and before boarding.' : 'Assuming you arrive early; adjust your visit in Lounge Explorer.'}</small>
-      <button type="button" className="text-button" onClick={() => onExplore(opportunity)}>Explore lounges in {opportunity.airport}<ArrowUpRight size={14}/></button>
-    </div>
+/** A quiet shortcut; visit assumptions belong in Explorer rather than the plan. */
+export function LoungeOpportunityLink({ opportunity, onExplore }: { opportunity: LoungeFlightContext; onExplore: (opportunity: LoungeFlightContext) => void }) {
+  return <div className="flight-lounge-link" data-flight-id={opportunity.legId}>
+    <button type="button" className="lounge-plan-link" aria-label={`Explore lounges in ${opportunity.airport}`} onClick={() => onExplore(opportunity)}>
+      <Armchair size={15} aria-hidden="true"/><span>Lounge Explorer <span className="lounge-link-airport">· {opportunity.airport}</span></span><ArrowUpRight size={13} aria-hidden="true"/>
+    </button>
   </div>;
 }
