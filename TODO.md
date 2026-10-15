@@ -150,7 +150,7 @@ Amadeus Self-Service is discontinued. AirLabs's near-term schedules and Skyscann
 - [x] Use **Bedtime** and concise lie-flat/seated guidance in both engines; retain existing sleep timings and 30/60-minute airborne buffers.
 - [x] Update existing planner/calendar and browser regressions for the simplified flow.
 - [x] Complete final mobile/desktop browser verification, including all 16 targeted lookup/aircraft/travel/mobile-date scenarios.
-- [ ] Publish the copy update after full deployment checks.
+- [x] Publish the copy update after full deployment checks.
 
 ## Launch, GitHub, and Cloudflare preparation
 
@@ -188,6 +188,7 @@ Amadeus Self-Service is discontinued. AirLabs's near-term schedules and Skyscann
 - [ ] Run Bun comparisons if adopting that toolchain is desired.
 - [ ] Consider Web Push only after a product decision and mobile delivery testing; calendar reminders are implemented.
 - [ ] Consider measured phase/light inputs, richer sleep/fatigue models, and cross-tab live editing as separate enhancements.
+- [ ] Evaluate running the full browser suite once per code commit in CI, reusing that exact commit's verified result/artifact during deployment and excluding documentation-only changes.
 
 Previous planner feedback verification (2026-10-15): frontend and Worker TypeScript passed; all 238 Vitest tests passed across 21 suites using one worker. The production build contains 24 precached assets. All 15 Chromium scenarios passed, including one calendar tile per date, oval window styling, varied modeled changes and explicit unavailable history, per-leg meal policies and both meal clocks, the five-flight itinerary/date-line transit, minute-only arrival defaulting, saved-arrival preservation, mobile overflow, and existing offline/account/flight/adherence behavior. Unit coverage includes missed/actual sleep history, connection/airborne meal constraints, deduplicated alarm-free meal calendar events, and all source clocks contributing to Today. Initial implementation checks also verified local D1 migrations/API responses, scheduled cache purging, launcher startup/shutdown, and real Wrangler dry-run bundling; no Worker behavior changed in this refinement.
 
@@ -210,3 +211,7 @@ Aircraft update verification (2026-10-15): frontend/Worker TypeScript, all 375 V
 Separate secure diagnostic [38699851931](https://github.com/maniksurtani/rephase/actions/runs/38699851931) confirmed HTTP 200, one real QF103 record with a model, one normalized candidate retaining its model and no warnings. It made exactly one provider request, leaving 388/400 units, with only safe presence counts logged. Account daily/monthly reservations remained 0 and the global monthly counter remained 10. Real-account import and wider dated-flight/equipment coverage remain acceptance checks.
 
 Anonymous production smoke passed at 390px after the aircraft release: exact new JS/CSS/offline assets returned HTTP 200, public Google/account/lookup configuration was healthy, lookup-first/manual entry preserved dates and stayed within the viewport, and no page errors occurred. This check made no provider request or Google sign-in. Its browser was closed afterward; no preview server was started.
+
+Flight/sleep copy update verification (2026-10-15): 54 targeted planner/model/meal tests, frontend/Worker TypeScript and the production build passed locally. All 16 affected browser scenarios passed after correcting a renamed-field test selector, including direct flight selection, unchanged aircraft/cabin persistence, Final Destination/Transit controls, Bedtime/Rest or nap headings, the five-flight itinerary and both mobile WebKit date checks. Screenshots verify the cleaner editor and a single footer attribution link at 390px. Successful [deployment 38704795693](https://github.com/maniksurtani/rephase/actions/runs/38704795693), source `dc7db34a`, passed all 375 unit tests and 33 browser scenarios, uploaded Worker version `d57a263c-fe0d-4ec5-a189-80771037f42a`, installed the configured secret and published 24 offline assets (version `ab1c864750ad6c3b`). The full CI browser suite took 1.8 minutes. No provider requests or Google sign-ins were made by these checks; no configuration or database changes were required.
+
+The copy release also passed a bounded anonymous production check at 390px: exact new assets/configuration, Bedtime guidance, one visible footer attribution link, concise destination/transit/strategy labels and no removed import/booking/crew reminders in the editor. No page errors, horizontal overflow, auth calls or provider requests occurred; the browser was closed afterward. Standard hosted GitHub Actions runners are free for this public repository; duplicate suite runs still add waiting time. Release-note-only commits skip CI, while the implementation release retained its full checks.
