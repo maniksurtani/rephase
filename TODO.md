@@ -8,7 +8,7 @@ Updated 2026-10-15. Checked items record completed implementation; verification 
 - [x] Depict compressed periods with a dotted timeline and activity bands, removing visual ellipses while retaining accessible elapsed duration.
 - [x] Label awake periods Awake and remove redundant free-time and lie-flat comfort copy.
 - [x] Verify compact chronology, dotted/solid rendering, account-menu keyboard controls and responsive screenshots.
-- [ ] Publish the exact verified CI artifact and check the live app.
+- [x] Publish the exact verified CI artifact and check the live app.
 
 ## Compact flight cards and lounge settings
 
@@ -319,3 +319,9 @@ Compact flight/settings release: source `a0329a85e9890082f48f423d069d5e7cef0d8f4
 Successful [deployment 38820339292](https://github.com/maniksurtani/rephase/actions/runs/38820339292) reused the verified artifact without rebuilding/retesting and finished in **24 seconds**, with no migrations to apply. Uploaded Worker version before configured-secret installation: `3145694a-a561-4529-85f0-49511410c625`.
 
 Anonymous Chromium production checks at 1440px and 390px passed against that exact entry. They verified compact links before both 24 October flights, collapsed/independent flight and meal details, both airport clocks after expansion, LAX airport/date/cabin/visit prefills, Profile membership editing, read-only Explorer summaries and retained guest settings after reload, with no overflow/page errors. Only public config and static assets reached the network; guest changes used an ephemeral local IndexedDB namespace, with no Google sign-in, real account write or provider request. Local WebKit remains unavailable because of its missing system library; the CI's existing mobile WebKit cases passed. Browser/preview processes were closed afterward.
+
+Timeline/settings polish verification: frontend/Worker TypeScript, production build, 55 focused planner/timeline tests and four focused Chromium scenarios passed locally. Reviewed desktop/mobile screenshots confirm dotted compressed rails and concurrent activity bands, solid ordinary spans, no visual ellipses, preserved UTC/date-line/DST boundaries and accessible account-menu keyboard controls.
+
+Source `2e8ed7d2c3c27e972fef43d0b189096983795b15` passed [Checks 38826070323](https://github.com/maniksurtani/rephase/actions/runs/38826070323): **532 tests in 38 suites** and **44 browser scenarios**, with browsers run once in CI for this commit (2.4 minutes). [Deployment 38826655105](https://github.com/maniksurtani/rephase/actions/runs/38826655105) reused immutable artifact **12015695079** without rebuilding/retesting and completed in **28 seconds**, with no migrations to apply. Uploaded Worker version before configured-secret installation: `39063a0b-ea9a-4baa-be34-8197d70c2c7c`. The 25-asset offline shell is `882442309e06c61b`, entry `index-BtIubTt8.js`.
+
+Anonymous live Chromium checks at 1440px/390px verified that exact entry, dotted compressed rails/bands, solid ordinary spans, intact chronology, Awake copy, Your settings heading and no overflow/page errors. The >6-hour awake stretch occupies 92px/88px respectively. The checks used ephemeral guest-local fixture data, intercepted account requests and made no real Google sign-in, account write or provider request. Browsers were closed afterward. Local WebKit remains unavailable; CI's three mobile WebKit cases passed.
