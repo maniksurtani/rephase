@@ -90,6 +90,8 @@ describe('Worker account API', () => {
       sqlite.prepare('INSERT INTO sessions (token_hash, user_id, expires_at) VALUES (?, ?, ?)')
         .run(await hashToken(token), account.id, NOW / 1000 + 600);
     }
+    // Apply the new migration after seeding legacy accounts and their sessions.
+    sqlite.exec(readFileSync(new URL('../migrations/0003_google_avatar.sql', import.meta.url), 'utf8'));
   });
   afterEach(() => sqlite.close());
 
@@ -132,6 +134,62 @@ describe('Worker account API', () => {
     expect(verifyToken).toHaveBeenCalledTimes(1);
   });
 
+  it('reuses an unconsumed challenge across tabs without invalidating an open Google popup', async () => {
+    const first = await invoke(request('/api/auth/challenge'));
+    const challenge = cookieValue(first, '__Host-rephase_challenge')!;
+    const { nonce } = await first.json() as { nonce: string };
+    const challengeCookie = `__Host-rephase_challenge=${challenge}`;
+    const refreshed = await handleApi(request('/api/auth/challenge', 'GET', undefined, challengeCookie), env,
+      { now: () => NOW + 240_000 });
+    expect(refreshed.status).toBe(200);
+    expect(cookieValue(refreshed, '__Host-rephase_challenge')).toBe(challenge);
+    expect(await refreshed.json()).toEqual({ nonce });
+    expect(sqlite.prepare('SELECT nonce_hash, expires_at FROM auth_challenges WHERE challenge_hash = ?')
+      .get(await hashToken(challenge))).toEqual({ nonce_hash: await hashToken(nonce), expires_at: NOW / 1000 + 540 });
+    expect(sqlite.prepare('SELECT COUNT(*) AS count FROM auth_challenges').get()).toEqual({ count: 1 });
+    expect(refreshed.headers.get('Set-Cookie')).toContain('Max-Age=300');
+
+    // A popup started with the original nonce remains usable after another tab refreshes.
+    const verifyToken = vi.fn(async () => ACCOUNT_A);
+    const login = await handleApi(request('/api/auth/google', 'POST', { credential: 'original-popup-credential' }, challengeCookie),
+      env, { now: () => NOW + 420_000, verifyToken });
+    expect(login.status).toBe(200);
+    expect(verifyToken).toHaveBeenCalledWith('original-popup-credential', CLIENT_ID, await hashToken(nonce));
+
+    // Refreshing a consumed cookie must create a new challenge, never revive the old one.
+    const next = await handleApi(request('/api/auth/challenge', 'GET', undefined, challengeCookie), env,
+      { now: () => NOW + 421_000 });
+    expect(cookieValue(next, '__Host-rephase_challenge')).not.toBe(challenge);
+    expect(await next.json()).not.toEqual({ nonce });
+    expect(sqlite.prepare('SELECT challenge_hash FROM auth_challenges WHERE challenge_hash = ?').get(await hashToken(challenge))).toBeUndefined();
+    const replay = await handleApi(request('/api/auth/google', 'POST', { credential: 'original-popup-credential' }, challengeCookie),
+      env, { now: () => NOW + 421_000, verifyToken });
+    expect(replay.status).toBe(401);
+    expect(verifyToken).toHaveBeenCalledTimes(1);
+  });
+
+  it('replaces expired and legacy challenges rather than extending their validity', async () => {
+    const first = await invoke(request('/api/auth/challenge'));
+    const expiredChallenge = cookieValue(first, '__Host-rephase_challenge')!;
+    const { nonce } = await first.json() as { nonce: string };
+    const expired = await handleApi(request('/api/auth/challenge', 'GET', undefined, `__Host-rephase_challenge=${expiredChallenge}`),
+      env, { now: () => NOW + 300_000 });
+    expect(expired.status).toBe(200);
+    expect(cookieValue(expired, '__Host-rephase_challenge')).not.toBe(expiredChallenge);
+    expect(await expired.json()).not.toEqual({ nonce });
+    expect(sqlite.prepare('SELECT challenge_hash FROM auth_challenges WHERE challenge_hash = ?').get(await hashToken(expiredChallenge))).toBeUndefined();
+
+    const legacyChallenge = 'f'.repeat(64);
+    const legacyNonce = 'legacy-independent-random-nonce';
+    sqlite.prepare('INSERT INTO auth_challenges (challenge_hash, nonce_hash, expires_at) VALUES (?, ?, ?)')
+      .run(await hashToken(legacyChallenge), await hashToken(legacyNonce), NOW / 1000 + 600);
+    const replacement = await invoke(request('/api/auth/challenge', 'GET', undefined, `__Host-rephase_challenge=${legacyChallenge}`));
+    expect(replacement.status).toBe(200);
+    expect(cookieValue(replacement, '__Host-rephase_challenge')).not.toBe(legacyChallenge);
+    expect(await replacement.json()).not.toEqual({ nonce: legacyNonce });
+    expect(sqlite.prepare('SELECT challenge_hash FROM auth_challenges WHERE challenge_hash = ?').get(await hashToken(legacyChallenge))).toBeUndefined();
+  });
+
   it('rejects unverifiable credentials and expired or absent login challenges', async () => {
     expect((await invoke(request('/api/auth/google', 'POST', { credential: 'token' }))).status).toBe(401);
     const challengeResponse = await invoke(request('/api/auth/challenge'));
@@ -141,6 +199,34 @@ describe('Worker account API', () => {
     expect((await handleApi(req(), env, { now: () => NOW, verifyToken })).status).toBe(401);
     expect((await handleApi(req(), env, { now: () => NOW + 301_000, verifyToken })).status).toBe(401);
     expect(verifyToken).toHaveBeenCalledTimes(1);
+  });
+
+  it('persists the verified Google avatar across sessions and updates only its account', async () => {
+    const signIn = async (picture?: string) => {
+      const challengeResponse = await invoke(request('/api/auth/challenge'));
+      const challenge = cookieValue(challengeResponse, '__Host-rephase_challenge')!;
+      const identity = { ...ACCOUNT_A, ...(picture ? { picture } : {}) };
+      return handleApi(request('/api/auth/google', 'POST', { credential: 'signed-google-token' },
+        `__Host-rephase_challenge=${challenge}`), env, { now: () => NOW, verifyToken: async () => identity });
+    };
+    const picture = 'https://lh3.googleusercontent.com/a/example-avatar=s96-c';
+    const login = await signIn(picture);
+    expect(login.status).toBe(200);
+    expect(await login.json()).toEqual({ ...ACCOUNT_A, picture });
+    expect(sqlite.prepare('SELECT picture FROM users WHERE id = ?').get(ACCOUNT_A.id)).toEqual({ picture });
+    const newToken = cookieValue(login, '__Host-rephase_session')!;
+    for (const token of [SESSION_A, newToken]) {
+      expect(await (await invoke(request('/api/me', 'GET', undefined, accountCookie(token)))).json())
+        .toEqual({ ...ACCOUNT_A, picture });
+    }
+    expect(await (await invoke(request('/api/me', 'GET', undefined, accountCookie(SESSION_B)))).json()).toEqual(ACCOUNT_B);
+    const replacement = 'https://lh4.googleusercontent.com/a/replacement=s96-c';
+    await signIn(replacement);
+    expect(await (await invoke(request('/api/me', 'GET', undefined, accountCookie(SESSION_A)))).json())
+      .toEqual({ ...ACCOUNT_A, picture: replacement });
+    await signIn();
+    expect(await (await invoke(request('/api/me', 'GET', undefined, accountCookie(SESSION_A)))).json()).toEqual(ACCOUNT_A);
+    expect(sqlite.prepare('SELECT picture FROM users WHERE id = ?').get(ACCOUNT_A.id)).toEqual({ picture: null });
   });
 
   it('rejects cross-origin and missing-Origin mutations before storage changes', async () => {
@@ -237,6 +323,35 @@ describe('Worker account API', () => {
 });
 
 describe('Google token cryptography', () => {
+  it('accepts only HTTPS Google image URLs from a verified picture claim', async () => {
+    const { privateKey, publicKey } = await generateKeyPair('RS256');
+    const nonce = 'avatar-claim-nonce';
+    const nonceHash = await hashToken(nonce);
+    const identity = { id: 'google-avatar-user', name: 'Traveler', email: 'traveler@example.com' };
+    const verifyPicture = async (picture: unknown) => {
+      const credential = await new SignJWT({
+        sub: identity.id, name: identity.name, email: identity.email, picture, nonce,
+        iss: 'https://accounts.google.com', aud: CLIENT_ID,
+        iat: Math.floor(Date.now() / 1000), exp: Math.floor(Date.now() / 1000) + 300,
+      }).setProtectedHeader({ alg: 'RS256' }).sign(privateKey);
+      return verifyGoogleCredential(credential, CLIENT_ID, nonceHash, async () => publicKey);
+    };
+    for (const picture of ['https://lh3.googleusercontent.com/a/photo=s96-c', 'https://lh4.googleusercontent.com/a/photo?sz=96']) {
+      expect(await verifyPicture(picture)).toEqual({ ...identity, picture });
+    }
+    for (const picture of [
+      null, 123, {}, '', 'not a URL', '//lh3.googleusercontent.com/photo',
+      'http://lh3.googleusercontent.com/photo', 'data:image/svg+xml,avatar', 'javascript:alert(1)',
+      'https://googleusercontent.com.evil.example/photo', 'https://evilgoogleusercontent.com/photo',
+      'https://lh3.googleusercontent.com@evil.example/photo', 'https://evil@lh3.googleusercontent.com/photo',
+      'https://lh3.googleusercontent.com:444/photo', ' https://lh3.googleusercontent.com/photo',
+      'https://lh3.googleusercontent.com/line\nbreak', `https://lh3.googleusercontent.com/${'x'.repeat(2048)}`,
+    ]) {
+      // A missing or unsuitable image must not prevent a valid account from signing in.
+      expect(await verifyPicture(picture)).toEqual(identity);
+    }
+  });
+
   it('verifies signatures and claims rather than trusting decoded JWT fields', async () => {
     const { privateKey, publicKey } = await generateKeyPair('RS256');
     const nonce = 'one-use-browser-nonce';

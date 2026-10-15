@@ -11,9 +11,9 @@ export interface Env extends FlightEnv {
   ASSETS?: Fetcher;
 }
 
-interface GoogleIdentity { id: string; name: string; email: string }
+interface GoogleIdentity extends Account {}
 interface ChallengeRow { nonce_hash: string; expires_at: number }
-interface SessionRow extends Account { expires_at: number }
+interface SessionRow extends Omit<Account, 'picture'> { picture: string | null; expires_at: number }
 interface StateRow { data: string; revision: number }
 interface Dependencies extends FlightDependencies {
   now?: () => number;
@@ -38,6 +38,17 @@ function randomToken(): string {
   return Array.from(crypto.getRandomValues(new Uint8Array(32)), (byte) => byte.toString(16).padStart(2, '0')).join('');
 }
 
+/** Avatar URLs come from a verified Google claim and must remain on Google's image hosts. */
+function googlePicture(value: unknown): string | undefined {
+  if (typeof value !== 'string' || value.length > 2048 || value.trim() !== value || /[\u0000-\u0020\u007f]/.test(value)) return undefined;
+  try {
+    const url = new URL(value);
+    if (url.protocol !== 'https:' || url.username || url.password || url.port
+      || !(url.hostname === 'googleusercontent.com' || url.hostname.endsWith('.googleusercontent.com'))) return undefined;
+    return url.href;
+  } catch { return undefined; }
+}
+
 /** Signature verification is mandatory; decoding a browser credential is never authentication. */
 export async function verifyGoogleCredential(
   credential: string,
@@ -57,10 +68,12 @@ export async function verifyGoogleCredential(
     || typeof payload.sub !== 'string' || payload.sub.length === 0 || payload.sub.length > 255) {
     throw new Error('Invalid credential');
   }
+  const picture = googlePicture(payload.picture);
   return {
     id: payload.sub,
     name: typeof payload.name === 'string' ? payload.name.slice(0, 200) : 'Google account',
     email: typeof payload.email === 'string' ? payload.email.slice(0, 320) : '',
+    ...(picture ? { picture } : {}),
   };
 }
 
@@ -149,10 +162,11 @@ async function accountFor(request: Request, db: D1Database, now: number): Promis
   const token = readCookie(request, cookieName('session', request));
   if (!token || !/^[a-f0-9]{64}$/.test(token)) throw new ApiError(401, 'Sign in to access your saved data.');
   const account = await db.prepare(
-    'SELECT u.id, u.name, u.email, s.expires_at FROM sessions s JOIN users u ON u.id = s.user_id WHERE s.token_hash = ? AND s.expires_at > ?',
+    'SELECT u.id, u.name, u.email, u.picture, s.expires_at FROM sessions s JOIN users u ON u.id = s.user_id WHERE s.token_hash = ? AND s.expires_at > ?',
   ).bind(await hashToken(token), now).first<SessionRow>();
   if (!account) throw new ApiError(401, 'Your session has expired. Sign in again.');
-  return { id: account.id, name: account.name, email: account.email };
+  const picture = googlePicture(account.picture);
+  return { id: account.id, name: account.name, email: account.email, ...(picture ? { picture } : {}) };
 }
 
 /** Exported for focused route tests without deploying or contacting a Google account. */
@@ -171,12 +185,24 @@ export async function handleApi(request: Request, env: Env, dependencies: Depend
       if (!env.GOOGLE_CLIENT_ID?.trim()) throw new ApiError(503, 'Google sign-in is not configured. Add GOOGLE_CLIENT_ID to the Worker.');
       const db = requireDatabase(env);
       const existing = readCookie(request, cookieName('challenge', request));
+      const existingHash = existing && /^[a-f0-9]{64}$/.test(existing) ? await hashToken(existing) : null;
+      if (existingHash) {
+        // Tabs share this HttpOnly cookie. Reuse an unconsumed challenge so a
+        // background button refresh cannot invalidate another tab's Google popup.
+        // Domain-separated hashing derives the nonce without exposing the cookie.
+        const nonce = await hashToken(`rephase-google-nonce:${existing}`);
+        const renewed = await db.prepare('UPDATE auth_challenges SET expires_at = MAX(expires_at, ?) WHERE challenge_hash = ? AND nonce_hash = ? AND expires_at > ?')
+          .bind(now + CHALLENGE_SECONDS, existingHash, await hashToken(nonce), now).run();
+        if (renewed.meta.changes === 1) {
+          return response({ nonce }, 200, [makeCookie(request, 'challenge', existing!, CHALLENGE_SECONDS)]);
+        }
+      }
       const challenge = randomToken();
-      const nonce = randomToken();
+      const nonce = await hashToken(`rephase-google-nonce:${challenge}`);
       const setCookie = makeCookie(request, 'challenge', challenge, CHALLENGE_SECONDS);
       const statements = [db.prepare('DELETE FROM auth_challenges WHERE expires_at <= ?').bind(now)];
-      if (existing && /^[a-f0-9]{64}$/.test(existing)) {
-        statements.push(db.prepare('DELETE FROM auth_challenges WHERE challenge_hash = ?').bind(await hashToken(existing)));
+      if (existingHash) {
+        statements.push(db.prepare('DELETE FROM auth_challenges WHERE challenge_hash = ?').bind(existingHash));
       }
       statements.push(db.prepare('INSERT INTO auth_challenges (challenge_hash, nonce_hash, expires_at) VALUES (?, ?, ?)')
         .bind(await hashToken(challenge), await hashToken(nonce), now + CHALLENGE_SECONDS));
@@ -207,8 +233,8 @@ export async function handleApi(request: Request, env: Env, dependencies: Depend
       const token = randomToken();
       const setCookie = makeCookie(request, 'session', token, SESSION_SECONDS);
       await db.batch([
-        db.prepare('INSERT INTO users (id, name, email) VALUES (?, ?, ?) ON CONFLICT(id) DO UPDATE SET name = excluded.name, email = excluded.email')
-          .bind(identity.id, identity.name, identity.email),
+        db.prepare('INSERT INTO users (id, name, email, picture) VALUES (?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET name = excluded.name, email = excluded.email, picture = excluded.picture')
+          .bind(identity.id, identity.name, identity.email, identity.picture ?? null),
         db.prepare('DELETE FROM sessions WHERE expires_at <= ?').bind(now),
         db.prepare('INSERT INTO sessions (token_hash, user_id, expires_at) VALUES (?, ?, ?)')
           .bind(await hashToken(token), identity.id, now + SESSION_SECONDS),

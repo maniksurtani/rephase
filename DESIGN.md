@@ -10,13 +10,13 @@ Confirmed requirements:
 
 - Responsive web application with mobile navigation and desktop layouts.
 - Google authentication, with no password management.
-- Mostly static execution; Cloudflare Worker only for authentication, optional persistence, and optional flight-provider lookup.
+- Mostly static execution; Cloudflare Worker only for authentication, automatic signed-in account persistence, and optional flight-provider lookup. Guest planning remains device-only.
 - Chronotype, usual and preferred bed/wake times, required sleep hours, caffeine and melatonin preferences.
 - Complex itineraries with connections, multiple destination stays, and returns.
 - Optional melatonin timing and evidence-based dose information.
 - A working local preview before discussing Cloudflare deployment.
 
-Implementation choices: manual entry with optional AeroDataBox lookup, a minimal Worker/D1 API, optional account sync, a browser planning worker, and calendar reminders rather than Web Push. Provider access and real Google login require user configuration. This is an engineering implementation with numerical reference checks, not a clinically validated medical product.
+Implementation choices: manual entry with optional AeroDataBox lookup, a minimal Worker/D1 API, server-authoritative signed-in accounts with automatic saving, a browser planning worker, and calendar reminders rather than Web Push. Provider access and real Google login require user configuration. This is an engineering implementation with numerical reference checks, not a clinically validated medical product.
 
 ## Experience
 
@@ -25,7 +25,7 @@ Four main views:
 1. **Today**: current and next action when a plan is active; upcoming preparation when the trip is in the future. Demo trips are clearly labeled. A future or completed trip must not masquerade as a current recommendation.
 2. **Plan**: one airplane-window tile per calendar date, named timezones, preparation/travel/stay stages, and chronological action cards with reasons. Amber plane markers identify every flight day, including short flights with no usable rest window. Flight cards and travel-day recommendations show both origin and destination clocks with explicit local dates and timezone labels. Flight facts appear separately from recommendations; sleep can cross midnight.
 3. **Trips**: create/edit/delete itineraries. Every flight has airport-local departure and arrival dates/times, timezone, optional flight number, connection/destination classification, and strategy for the following stay. Flight inputs use HH:mm. A blank arrival initially follows the entered departure date/time until the traveler edits it; an existing or imported arrival remains intact. This is an editable wall-clock starting point, never a calculated schedule or an inference from route distance.
-4. **Profile**: habitual sleep for baseline estimation, preferred sleep for target scheduling, duration and fixed-bed/fixed-wake anchor, chronotype, preparation days, optional supplements, and Google/sync controls.
+4. **Profile**: habitual sleep for baseline estimation, preferred sleep for target scheduling, duration and fixed-bed/fixed-wake anchor, chronotype, preparation days, optional supplements, and data export/deletion controls. The header shows Google sign-in when signed out and the Google avatar with a Sign out menu when signed in.
 
 The default example route includes London, a Dubai connection, Singapore, and a return to San Francisco. Example dates are relative to the current date; this is not live flight data. Editing an example creates a personal itinerary.
 
@@ -46,14 +46,14 @@ flowchart LR
 
 - **Frontend**: React, TypeScript, Vite, Lucide icons. Static HTML/CSS/JavaScript, with no SSR or runtime framework server.
 - **Planner**: pure TypeScript functions executed in a dedicated browser Web Worker; obsolete requests are cancelled. No account or network dependency. The default experimental model ports published Forger99 dynamics and searches constrained advance/delay schedules. A conservative rules mode remains selectable.
-- **Local data**: IndexedDB, partitioned by guest or Google account. Local changes survive reload; private API responses and authentication credentials are never put in the service-worker cache.
-- **Offline**: a production-only service worker caches the static app shell and assets. Saved preferences/trips generate plans offline. Initial installation, Google sign-in, and sync need connectivity.
+- **Data ownership**: D1 is authoritative for verified signed-in accounts. IndexedDB provides a separate guest store and account-isolated offline caches with explicit pending edits and merge baselines. A legacy account copy can be shown offline but cannot replace existing server state or a deletion tombstone. Private API responses and authentication credentials are never put in the service-worker cache.
+- **Offline**: a production-only service worker caches the static app shell and assets. Saved preferences/trips generate plans offline. Initial installation, Google sign-in, and account reads/writes need connectivity. Cached plans and explicitly pending edits remain usable offline.
 - **API**: one Worker serves `/api/*`; static assets handle the rest. D1 stores account state, hashed revocable sessions, provider cache and request quotas. Auth is optional for local planning and required for provider lookup. An hourly scheduled handler purges expired provider cache.
-- **Hosting**: Cloudflare Worker Static Assets. The app is deployed at https://rephase.surtani.org with D1 migrations applied and a Custom Domain managing DNS/TLS. GitHub Actions deployments remain manual.
+- **Hosting**: Cloudflare Worker Static Assets. The app is deployed at https://rephase.surtani.org with D1 migrations applied and a Custom Domain managing DNS/TLS. GitHub Actions supports manual deployment and automatic main-branch deployment when the repository variable `DEPLOY_ENABLED=true`.
 
 ## Domain model
 
-`Preferences` holds home IANA timezone, chronotype, usual bedtime/wake time, preferred bedtime/wake time, `sleepHours`, `sleepAnchor`, supplement opt-ins, a melatonin suitability acknowledgement, and `preparationDays`, planning mode, opt-in automatic sync, and calendar-alarm preference.
+`Preferences` holds home IANA timezone, chronotype, usual bedtime/wake time, preferred bedtime/wake time, `sleepHours`, `sleepAnchor`, supplement opt-ins, a melatonin suitability acknowledgement, and `preparationDays`, planning mode, and calendar-alarm preference. Older stored `autoSync` values are ignored; saving signed-in edits is automatic.
 
 `Trip` holds an ID, name, timestamps, and ordered `FlightLeg[]`. Each leg contains original local timestamps and explicit IANA zones, airport codes, optional flight number, `stayAfter` (`connection` or `destination`), and `strategy` (`adapt`, `partial`, `home`). Airport selection supplies zones and coordinates from a pinned MIT global catalog of 7,884 IATA airports. Manual codes/zones remain supported for unlisted or ICAO airports. Suggestions are filtered and capped so the editor does not render thousands of DOM options. See DATA_SOURCES.md for provenance, update checks, and license.
 
@@ -135,7 +135,7 @@ The 2026 Huang itinerary model informs requirements, but its authors' code is av
 
 ## Authentication and persistence
 
-Google Identity Services supplies an ID token; merely decoding it in the browser does not authorize cloud data. The Worker issues a short-lived challenge, binds it to an HttpOnly cookie, and verifies Google's signature/JWKS, issuer, audience, expiration, and challenge nonce. Use Google `sub` as the stable account ID.
+Google Identity Services supplies an ID token; merely decoding it in the browser does not authorize cloud data. The Worker issues a short-lived challenge, binds it to an HttpOnly cookie, and verifies Google's signature/JWKS, issuer, audience, expiration, and challenge nonce. It renews an unused challenge without changing its nonce, and the browser serializes challenge acquisition with Web Locks when supported, so another tab preparing sign-in does not invalidate an open Google popup. The challenge remains one-use. Use Google `sub` as the stable account ID.
 
 Issue an opaque session cookie with HttpOnly, SameSite, HTTPS Secure, and expiry. Only hashed session tokens are stored in D1. Revoke on sign-out. Production requests remain same-origin; local Vite proxying has an explicit permitted localhost origin. Every database operation derives ownership from the verified session, not a browser-supplied user ID. Limit bodies and validate schema. Check Origin on mutations and bind login to a one-use challenge. Never log tokens or store them in localStorage.
 
@@ -143,7 +143,7 @@ API contracts:
 
 | Method/path | Result |
 | --- | --- |
-| `GET /api/config` | Public Google client ID or null, sync and flight-lookup availability/provider |
+| `GET /api/config` | Public Google client ID or null, account-storage and flight-lookup availability/provider (`syncAvailable` remains the API field name) |
 | `GET /api/auth/challenge` | Login nonce and challenge cookie |
 | `POST /api/auth/google` | Verify `{credential}`, establish session, return account |
 | `GET /api/me` | Current account or 401 |
@@ -153,17 +153,23 @@ API contracts:
 | `DELETE /api/state` | Delete saved cloud preferences/trips; return monotonic revision |
 | `GET /api/flights` | Authenticated normalized candidates for flightNumber/date/optional departureAirport |
 
-Local use works without credentials. Google/sync controls explain when configuration is unavailable; there is no fake sign-in. First sign-in requires an explicit choice to copy guest data to an account; downloaded cloud state never silently overwrites an edited guest itinerary. A persisted account-scoped sync snapshot supports three-way merging by preference field and trip/leg/action IDs. Flight identity and schedule edits are atomic, preventing a merged flight neither user entered. Independent edits can converge; same-field edits, delete/edit conflicts, and incompatible ordering require an explicit cloud/local choice. Manual sync remains available and automatic sync is opt-in, gated on verified account identity and pending choices. In-flight device edits are preserved and queued for another merge rather than silently replaced.
+Local guest use works without credentials. Google’s official sign-in button opens the Google account flow directly, without an application sign-in modal. Successful verification loads that account’s D1 preferences and trips automatically; a new account starts with default preferences and no trips. For compatibility, older same-account edits with a known saved baseline are reconciled through the normal three-way merge. Without that baseline, personal data can migrate once only when D1 is null at revision zero; demonstration trips are excluded, and existing cloud state or a deletion tombstone is never blindly replaced. Guest data remains separate and is never automatically imported. There is no starting-data chooser or manual sync step. The header avatar opens an accessible account menu with Sign out; unnecessary signed-in labels, repeat-sign-in links and account panels are removed. An expired session can show the standard Google sign-in action because cached display identity is not authorization.
 
-Automatic sync needs an open app. Write serialization applies within one tab; live editing propagation across tabs is a future enhancement. Cached or expired account copies have a Google reauthentication control. Device-only trip selection does not resume paused uploads after deletion.
+Committed account edits automatically save after an 800 ms debounce. The account cache records the last server baseline, revision and actual pending edits. IndexedDB transactions retain one draft journal per tab, generation tokens and the newest known server revision. Recovery combines independent edits from two or more tabs and surfaces overlapping edits as conflicts; resolving or deleting reviewed generations cannot discard newer, unseen drafts. Independent edits merge by preference field and trip/leg/action IDs. Flight identity and schedule edits are atomic, preventing a merged flight neither user entered. Same-field edits, delete/edit conflicts and incompatible ordering require a choice between the saved account version and the device version. In-flight edits are retained for a subsequent save. Optimistic revisions prevent silent stale-device overwrites.
+
+Background saving needs an open app. A reconnect/focus refresh and five-minute refresh while open re-verify the session and read the latest D1 state; transient failures retain pending changes and retry after 30 seconds, while an expired or mismatched account stops authorized saving. A small status message appears for loading, saving, offline, failure or conflict states. Writes are serialized within each tab and cache transactions coordinate multiple tabs; immediate live propagation between tabs remains a separate enhancement. Unsaved Profile fields rebase over same-account updates without losing edits and reset on an account switch. Selecting a trip alone does not recreate account data after deletion.
 
 State requests include an expected-account header, which the Worker compares with the verified session identity. The header never selects database ownership. This rejects a stale tab's request when another tab has switched the shared session to a different Google account. Client account operations are serialized; revisions remain bound to the account namespace across reload.
 
-D1 migrations define users, sessions/challenges, user state, flight cache, airport-zone cache, and atomic quota reservations. This keeps the API small while retaining schema/revision metadata. Future per-trip records can replace the aggregate state when concurrent editing warrants it.
+D1 migrations define users, sessions/challenges, user state, flight cache, airport-zone cache, and atomic quota reservations. The additive `0003_google_avatar.sql` migration adds a nullable `users.picture` field from the verified Google profile. Existing sessions remain valid; the avatar appears after the next Google sign-in, with an initials/icon fallback until then. This keeps the API small while retaining schema/revision metadata. Future per-trip records can replace the aggregate state when concurrent editing warrants it.
 
-Local logout switches to the guest namespace. Account-local data can be explicitly cleared. JSON export remains available. Delete-cloud-data is distinct from deleting the local copy and must clearly describe its result. Deletion retains only a monotonic revision tombstone so an old client cannot overwrite a recreated cloud record.
+Sign-out revokes the session and returns to the separate guest namespace. Clearing the account’s offline copy leaves D1 unchanged and reloads saved data when online; it must not discard explicitly pending changes. Deleting saved account data removes preferences/trips/history in D1, resets this device’s account cache and retains a monotonic revision tombstone so an old client cannot silently resurrect deleted records. Other devices may retain cached copies until they reconnect or clear them. JSON export remains available.
 
 An offline namespace pointer stores only the last account's local display identity, never a token. It lets that account's saved data reopen offline, but it does not authorize an API operation. The Worker still verifies sessions on every account request; online mutations require an account match.
+
+### Free-tier capacity
+
+Cloudflare D1’s free plan permits 500 MB per database, 5 GB across the account, 5 million row reads per day and 100,000 row writes per day. The Workers free plan permits 100,000 dynamic requests per day; static asset requests are free. A small indexed account document with debounced writes is suitable for personal use and an initial audience within those limits. Session checks, account reads/writes, flight cache and quotas share the same budgets, so database size and daily usage still need monitoring. A typed edit does not trigger a database write before it is committed and debounced. Flight-provider usage has separate quotas and licensing. See [D1 pricing](https://developers.cloudflare.com/d1/platform/pricing/), [D1 limits](https://developers.cloudflare.com/d1/platform/limits/) and [Workers pricing](https://developers.cloudflare.com/workers/platform/pricing/).
 
 ## Offline and exports
 
@@ -175,7 +181,7 @@ DM Sans and Manrope are bundled locally with their SIL Open Font Licenses. Typog
 
 ## Development and deployment boundary
 
-The selected production origin is `https://rephase.surtani.org`. Generated deployment configuration uses a Cloudflare Custom Domain with automatic DNS/TLS, while disabling workers.dev and preview URLs for that origin. Account/D1 IDs, the Google web client and deployment token are configured through the production GitHub environment; deployments remain manual.
+The selected production origin is `https://rephase.surtani.org`. Generated deployment configuration uses a Cloudflare Custom Domain with automatic DNS/TLS, while disabling workers.dev and preview URLs for that origin. Account/D1 IDs, the Google web client and deployment token are configured through the production GitHub environment; deployment runs manually or after a main-branch push when the repository variable `DEPLOY_ENABLED=true`.
 
 One-command local preview: `npm start`, then `http://localhost:5173`. The launcher installs missing locked dependencies, builds stale assets, applies local migrations, starts the UI/Worker, and cleans up owned processes on exit. `npm start -- --static` runs only the browser UI; `--production` tests the built app/API at `http://localhost:8787`. Without the API, trip/profile/planning/export work and sign-in shows configuration status.
 
@@ -215,7 +221,7 @@ The verified development workflow currently uses Node/npm, Vite, Vitest, Playwri
 
 ## Verification and known future work
 
-Require TypeScript checks, a production build, temporal/itinerary/opt-out tests, Worker rejection/ownership/revision tests, and local HTTP smoke checks. Browser QA uses Playwright/Chromium against the production build, including static science, flight confirmation, and offline shell behavior; API scenarios use controlled responses. Production desktop/mobile guest checks, offline assets and unauthenticated API boundaries have passed. Google is configured but a real-account sign-in/sync test remains outstanding; provider coverage awaits a key. Engineering checks do not imply clinical validation.
+Require TypeScript checks, a production build, temporal/itinerary/opt-out tests, Worker rejection/ownership/revision tests, and local HTTP smoke checks. Browser QA uses Playwright/Chromium against the production build, including static science, flight confirmation, and offline shell behavior; API scenarios use controlled responses. Production desktop/mobile guest checks, offline assets and unauthenticated API boundaries have passed. The owner has verified real Google sign-in. The simplified account UX and automatic saving require updated automated checks and real-account acceptance after release; provider coverage awaits a key. Engineering checks do not imply clinical validation.
 
 The regression fixture [October 2026 Pacific itinerary](tests/fixtures/itineraries/oct2026.json) records the five user-supplied flight numbers with provisional public timetable times, source URLs, and conflicts. It covers SYD–HNL, HNL–SFO, SFO–LAX, LAX–MEL, and MEL–SYD; two flights on 24 October; QF94 in transit on 25 October before arriving on 26 October; and a short same-offset final flight. AA6276 has both directions on the supplied date and is resolved here using trip continuity. This fixture does not claim live provider or booking verification.
 

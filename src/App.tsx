@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import type { AppData, Account, AdherenceRecord, PlanAction, PlanTravelSegment, Preferences, Trip } from './lib/types';
 import { validateTrip } from './lib/plan';
 import { findAirport } from './lib/airports';
 import { createEmptyTrip } from './lib/defaults';
 import { exportCalendar, exportData } from './lib/export';
-import { ArrowRight, ArrowUpRight, CalendarDays, Check, CheckCircle2, ChevronLeft, ChevronRight, Clock3, Cloud, Coffee, Download, ExternalLink, EyeOff, Globe2, Info, LoaderCircle, LogOut, Moon, Pencil, Plane, Plus, ShieldCheck, Sparkles, Sun, Trash2, UserRound, X } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, CalendarDays, Check, CheckCircle2, ChevronLeft, ChevronRight, Clock3, Coffee, Download, ExternalLink, EyeOff, Globe2, Info, LoaderCircle, LogOut, Moon, Pencil, Plane, Plus, ShieldCheck, Sparkles, Sun, Trash2, UserRound, X } from 'lucide-react';
 import './styles.css';
 import { usePlanning } from './lib/usePlanning';
 import type { AuthConfig } from './lib/auth';
@@ -15,17 +15,19 @@ import { actionTravelSegment, travelClock } from './lib/travel-clocks';
 import { groupPlanDays, isCalendarDayCurrent } from './lib/plan-calendar';
 import { AdherenceForm } from './components/AdherenceForm';
 import { validateAppData } from './lib/validation';
+import { GoogleSignInButton } from './components/GoogleSignInButton';
 
 export interface AppProps {
   data: AppData;
   onChange: (data: AppData) => void;
   account: Account | null;
   authConfig: AuthConfig;
-  syncStatus: string;
-  onSignIn: () => Promise<void>;
+  saveStatus: string;
+  accountReady: boolean;
+  onGoogleSignIn: (account: Account) => void;
+  onSignInError: (error: Error) => void;
   onSignOut: () => Promise<void>;
-  onSync: () => Promise<void>;
-  onDeleteCloud: () => Promise<void>;
+  onDeleteAccountData: () => Promise<void>;
   onClearLocal: () => Promise<void>;
   storageError: string | null;
 }
@@ -121,7 +123,7 @@ function ActionCard({ action, compact = false, isCurrent = false, record, onReco
 }
 
 export default function App(props: AppProps) {
-  const { data, onChange, account, authConfig, syncStatus, storageError } = props;
+  const { data, onChange, account, authConfig, saveStatus, storageError } = props;
   const [tab, setTab] = useState<Tab>('today');
   const [selectedDayId, setSelectedDayId] = useState<string | null>(null);
   const [scienceOpen, setScienceOpen] = useState(false);
@@ -154,6 +156,7 @@ export default function App(props: AppProps) {
   const selectedDay = calendarDays.find(day => day.id === selectedDayId) ?? defaultDay;
   const timelineDay = today ?? upcomingDay;
   const itineraryFinished = Boolean(calendarDays.length && !upcomingDay);
+  const showSaveStatus = Boolean(saveStatus && !['Saved on this device', 'Saving on this device…', 'Opening your device data…', 'Device data cleared'].includes(saveStatus));
 
   useEffect(() => { const timer = window.setInterval(() => setNow(new Date()), 60000); return () => window.clearInterval(timer); }, []);
   useEffect(() => { setSelectedDayId(null); }, [trip?.id]);
@@ -190,7 +193,7 @@ export default function App(props: AppProps) {
   function removeTrip() {
     const remaining = data.trips.filter(t => t.id !== deleteTripId);
     onChange({ ...data, trips: remaining, selectedTripId: data.selectedTripId === deleteTripId ? remaining[0]?.id ?? null : data.selectedTripId });
-    setDeleteTripId(null); setNotice('Trip deleted from this device.');
+    setDeleteTripId(null); setNotice('Trip deleted.');
   }
 
   return <div className="app-shell">
@@ -200,13 +203,14 @@ export default function App(props: AppProps) {
       <p className="sidebar-caption">Find your travel rhythm</p>
       <nav className="main-navigation" aria-label="Main navigation">{tabs.map(({ id, label, icon: Icon }) => <button type="button" key={id} className={`nav-item ${tab === id ? 'active' : ''}`} aria-current={tab === id ? 'page' : undefined} onClick={() => setTab(id)}><Icon size={20}/><span>{label}</span>{tab === id && <span className="nav-dot"/>}</button>)}</nav>
       <div className="sidebar-bottom"><div className="science-teaser"><div className="science-orbit"><Sparkles size={18}/></div><p>A little science.<br/>A better arrival.</p><button type="button" onClick={() => setScienceOpen(true)}>The science behind Rephase <ArrowUpRight size={14}/></button></div>
-        <button type="button" className="account-shortcut" onClick={() => setTab('profile')}><span className="avatar">{account ? account.name.slice(0, 1).toUpperCase() : <UserRound size={18}/>}</span><span><strong>{account?.name ?? 'Your profile'}</strong><small>{account ? 'Google account' : 'Saved on this device'}</small></span><ChevronRight size={16}/></button>
+        <button type="button" className="account-shortcut" onClick={() => setTab('profile')}><span className="avatar"><AccountAvatar account={account}/></span><span><strong>{account?.name ?? 'Your profile'}</strong><small>{account ? 'Sleep preferences' : 'Saved on this device'}</small></span><ChevronRight size={16}/></button>
       </div>
     </aside>
     <div className="workspace">
-      <header className="topbar"><div className="mobile-brand"><Moon size={21}/><span>rephase.</span></div><span className="topbar-label">{tab === 'today' ? 'Your rhythm, wherever you go' : tabs.find(t => t.id === tab)?.label}</span><div className="topbar-actions"><span className="local-status"><span/>{account ? 'Connected' : 'On-device privacy'}</span><button type="button" className="icon-button" aria-label="Learn about the science" onClick={() => setScienceOpen(true)}><Info size={19}/></button><button type="button" className="topbar-avatar" aria-label="Open your profile" onClick={() => setTab('profile')}>{account ? account.name.slice(0, 1).toUpperCase() : <UserRound size={17}/>}</button></div></header>
+      <header className="topbar"><div className="mobile-brand"><Moon size={21}/><span>rephase.</span></div><span className="topbar-label">{tab === 'today' ? 'Your rhythm, wherever you go' : tabs.find(t => t.id === tab)?.label}</span><div className="topbar-actions"><button type="button" className="icon-button" aria-label="Learn about the science" onClick={() => setScienceOpen(true)}><Info size={19}/></button><AccountMenu account={account} accountReady={props.accountReady} clientId={authConfig.googleClientId} onProfile={() => setTab('profile')} onGoogleSignIn={props.onGoogleSignIn} onSignInError={props.onSignInError} onSignOut={props.onSignOut}/></div></header>
       <main id="main-content" className={`main-content page-${tab}`} tabIndex={-1}>
         {storageError && <div className="alert error-alert" role="alert"><Info size={17}/><span>{storageError}</span></div>}
+        {showSaveStatus && <div className="account-save-status" role="status">{saveStatus}</div>}
         {result.loading && <div className="alert" role="status"><LoaderCircle size={17} className="spin"/><span>Finding a practical light and sleep plan for your whole journey…</span></div>}
         {result.error && <div className="alert error-alert"><Info size={17}/><span>{result.error}</span>{trip && <button type="button" onClick={() => editTrip(trip)}>Edit trip</button>}</div>}
         {tab === 'today' && <>
@@ -261,9 +265,74 @@ export default function App(props: AppProps) {
     {notice && <div className="toast" role="status"><CheckCircle2 size={17}/>{notice}<button type="button" aria-label="Dismiss notification" onClick={() => setNotice(null)}><X size={15}/></button></div>}
     {scienceOpen && <ScienceModal onClose={() => setScienceOpen(false)}/>}
     {draftTrip && <TripEditor trip={draftTrip} setTrip={setDraftTrip} errors={tripErrors} onSave={saveTrip} onClose={() => setDraftTrip(null)} existing={data.trips.some(t => t.id === draftTrip.id)} accountId={account?.id??null} flightLookupAvailable={Boolean(authConfig.flightLookupAvailable)}/>}
-    {deleteTripId && <Modal title="Delete this trip?" onClose={() => setDeleteTripId(null)} className="small-modal"><p className="modal-intro">The itinerary, recorded history, and imported flight details will be removed from this device. Sync to remove this trip from your cloud copy too.</p><div className="modal-footer"><button type="button" className="button secondary" onClick={() => setDeleteTripId(null)}>Keep trip</button><button type="button" className="button danger" onClick={removeTrip}><Trash2 size={15}/>Delete trip</button></div></Modal>}
+    {deleteTripId && <Modal title="Delete this trip?" onClose={() => setDeleteTripId(null)} className="small-modal"><p className="modal-intro">The itinerary, recorded history, and imported flight details will be removed{account ? ' from your account' : ' from this device'}. This cannot be undone.</p><div className="modal-footer"><button type="button" className="button secondary" onClick={() => setDeleteTripId(null)}>Keep trip</button><button type="button" className="button danger" onClick={removeTrip}><Trash2 size={15}/>Delete trip</button></div></Modal>}
     {recordAction && trip && <Modal title="Record your actual experience" onClose={()=>setRecordAction(null)} className="small-modal"><AdherenceForm action={recordAction} tripId={trip.id} existing={trip.adherence?.find(entry=>entry.actionId===recordAction.id)} onSave={saveRecord} onClose={()=>setRecordAction(null)}/></Modal>}
     <datalist id="time-zones">{commonZones.map(zone => <option key={zone} value={zone}/>)}</datalist>
+  </div>;
+}
+
+function AccountAvatar({ account }: { account: Account | null }) {
+  const [failedPicture, setFailedPicture] = useState<string | null>(null);
+  const initials = account?.name.trim().split(/\s+/).filter(Boolean).map(part => part[0]).slice(0, 2).join('').toUpperCase() || 'R';
+  return account?.picture && failedPicture !== account.picture
+    ? <img className="account-avatar-image" src={account.picture} alt="" referrerPolicy="no-referrer" onError={() => setFailedPicture(account.picture ?? null)}/>
+    : account ? <span aria-hidden="true">{initials}</span> : <UserRound size={19} aria-hidden="true"/>;
+}
+
+function AccountMenu({ account, accountReady, clientId, onProfile, onGoogleSignIn, onSignInError, onSignOut }: {
+  account: Account | null;
+  accountReady: boolean;
+  clientId: string | null;
+  onProfile: () => void;
+  onGoogleSignIn: (account: Account) => void;
+  onSignInError: (error: Error) => void;
+  onSignOut: () => Promise<void>;
+}) {
+  const [open, setOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const container = useRef<HTMLDivElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const menu = useRef<HTMLDivElement>(null);
+  const menuId = useId();
+  useEffect(() => {
+    if (!open) return;
+    menu.current?.querySelector<HTMLButtonElement>('[role="menuitem"]')?.focus();
+    const dismiss = (event: PointerEvent) => { if (!container.current?.contains(event.target as Node)) setOpen(false); };
+    document.addEventListener('pointerdown', dismiss);
+    return () => document.removeEventListener('pointerdown', dismiss);
+  }, [open]);
+  useEffect(() => { setOpen(false); setError(null); }, [account?.id]);
+  async function act(action: () => Promise<void>) {
+    setBusy(true); setError(null);
+    try { await action(); setOpen(false); } catch (cause) { setError(cause instanceof Error ? cause.message : 'Please try again.'); } finally { setBusy(false); }
+  }
+  return <div className="account-menu" ref={container} onBlur={event => {
+    if (event.relatedTarget && !event.currentTarget.contains(event.relatedTarget as Node)) setOpen(false);
+  }}>
+    {account ? <button ref={trigger} type="button" className={`topbar-avatar ${account.picture ? 'has-picture' : ''}`} aria-label={`${account.name}'s account menu`} aria-haspopup="menu" aria-expanded={open} aria-controls={open ? menuId : undefined} disabled={busy} onClick={() => setOpen(value => !value)} onKeyDown={event => {
+      if (event.key === 'ArrowDown' || event.key === 'ArrowUp') { event.preventDefault(); setOpen(true); }
+    }}>{busy ? <LoaderCircle size={19} className="spin"/> : <AccountAvatar account={account}/>}</button>
+      : clientId ? <GoogleSignInButton clientId={clientId} onSuccess={onGoogleSignIn} onError={onSignInError} compact/>
+        : <button type="button" className="topbar-avatar" aria-label="Open your profile" onClick={onProfile}><UserRound size={19}/></button>}
+    {open && account && <div className="account-dropdown">
+      <div className="account-menu-identity"><strong>{account.name}</strong><span>{account.email}</span></div>
+      <div id={menuId} role="menu" aria-label="Your account" ref={menu} onKeyDown={event => {
+        if (event.key === 'Escape') { event.preventDefault(); setOpen(false); trigger.current?.focus(); return; }
+        const items = Array.from(menu.current?.querySelectorAll<HTMLButtonElement>('[role="menuitem"]:not(:disabled)') ?? []);
+        if (!items.length || !['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) return;
+        event.preventDefault();
+        const index = items.indexOf(document.activeElement as HTMLButtonElement);
+        const target = event.key === 'Home' ? 0 : event.key === 'End' ? items.length - 1 : (index + (event.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length;
+        items[target]?.focus();
+      }}>
+        <button type="button" role="menuitem" tabIndex={-1} disabled={busy} onClick={() => { onProfile(); setOpen(false); trigger.current?.focus(); }}><UserRound size={17}/>Sleep preferences</button>
+        <button type="button" role="menuitem" tabIndex={-1} disabled={busy} onClick={() => void act(onSignOut)}><LogOut size={17}/>Sign out</button>
+      </div>
+      {!accountReady && clientId && <div className="account-menu-signin"><GoogleSignInButton clientId={clientId} onSuccess={onGoogleSignIn} onError={onSignInError}/></div>}
+      {error && <p className="account-menu-error" role="alert">{error}</p>}
+    </div>}
+    {!open && error && <p className="account-menu-error standalone" role="alert">{error}</p>}
   </div>;
 }
 
@@ -272,17 +341,37 @@ function EmptyPlan({ onCreate }: { onCreate: () => void }) {
 }
 
 function Profile(props: AppProps & { onNotice: (message: string) => void }) {
-  const { data, onChange, account, authConfig, syncStatus, onNotice } = props;
+  const { data, onChange, account, authConfig, saveStatus, onNotice } = props;
   const [preferences, setPreferences] = useState<Preferences>({ ...data.preferences });
   const [errors, setErrors] = useState<string[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
   const [deleteCloud, setDeleteCloud] = useState(false);
   const [clearLocal, setClearLocal] = useState(false);
+  const committedPreferences = useRef({ accountId: account?.id ?? null, preferences: data.preferences });
   const dirty = JSON.stringify(preferences) !== JSON.stringify(data.preferences);
   const duration = sleepSpan(preferences.preferredBedtime, preferences.preferredWakeTime);
   const conflicting = Math.abs(duration - preferences.sleepHours) > 0.1;
-  useEffect(() => { setPreferences({ ...data.preferences }); }, [data.preferences]);
+  useEffect(() => {
+    const accountId = account?.id ?? null;
+    const previous = committedPreferences.current;
+    committedPreferences.current = { accountId, preferences: data.preferences };
+    if (previous.accountId !== accountId) {
+      setPreferences({ ...data.preferences });
+      setErrors([]); setAuthError(null); setDeleteCloud(false); setClearLocal(false);
+      return;
+    }
+    // A background account refresh updates untouched fields without discarding
+    // edits that have not yet been submitted with Save preferences.
+    setPreferences(draft => {
+      const next = { ...data.preferences };
+      const preserveEdit = <K extends keyof Preferences>(key: K) => {
+        if (!Object.is(draft[key], previous.preferences[key])) next[key] = draft[key];
+      };
+      (Object.keys(draft) as (keyof Preferences)[]).forEach(preserveEdit);
+      return next;
+    });
+  }, [account?.id, data.preferences]);
   function update<K extends keyof Preferences>(key: K, value: Preferences[K]) { setPreferences(p => ({ ...p, [key]: value })); }
   function save(event: React.FormEvent) {
     event.preventDefault();
@@ -295,7 +384,7 @@ function Profile(props: AppProps & { onNotice: (message: string) => void }) {
   }
   async function authAction(name: string, action: () => Promise<void>) {
     setBusy(name); setAuthError(null);
-    try { await action(); } catch (error) { setAuthError(error instanceof Error ? error.message : 'The account action could not be completed. Please try again.'); } finally { setBusy(null); }
+    try { await action(); return true; } catch (error) { setAuthError(error instanceof Error ? error.message : 'The account action could not be completed. Please try again.'); return false; } finally { setBusy(null); }
   }
   return <><div className="page-heading"><div><span className="eyebrow muted">Personal by design</span><h1>Your natural rhythm</h1><p>A better travel plan starts with how you sleep at home.</p></div><span className="profile-heading-icon"><UserRound size={24}/></span></div>
     <div className="profile-layout"><form className="preferences-form" onSubmit={save}>
@@ -304,16 +393,31 @@ function Profile(props: AppProps & { onNotice: (message: string) => void }) {
       <section className="form-section"><div className="form-section-title"><span className="small-icon"><Moon size={19}/></span><div><h2>Your sleep, your way</h2><p>Your usual schedule estimates your starting body clock.</p></div></div><div className="field-grid"><label className="field"><span>Usual bedtime</span><input type="time" value={preferences.usualBedtime} onChange={event => update('usualBedtime', event.target.value)} required/></label><label className="field"><span>Usual wake time</span><input type="time" value={preferences.usualWakeTime} onChange={event => update('usualWakeTime', event.target.value)} required/></label></div><div className="field-grid"><label className="field"><span>Preferred travel bedtime</span><input type="time" value={preferences.preferredBedtime} onChange={event => update('preferredBedtime', event.target.value)} required/></label><label className="field"><span>Preferred travel wake time</span><input type="time" value={preferences.preferredWakeTime} onChange={event => update('preferredWakeTime', event.target.value)} required/></label></div><div className="field-grid"><label className="field"><span>Hours of sleep you need</span><div className="input-with-unit"><input type="number" min="4" max="12" step="0.5" value={preferences.sleepHours} onChange={event => update('sleepHours', Number(event.target.value))} required/><span>hours</span></div></label><label className="field"><span>Keep this preference fixed</span><select value={preferences.sleepAnchor} onChange={event => update('sleepAnchor', event.target.value as 'wake' | 'bed')}><option value="wake">Wake time — adjust bedtime</option><option value="bed">Bedtime — adjust wake time</option></select></label></div>{conflicting && <div className="inline-note"><Info size={16}/><p>Your preferred times allow {duration} hours. The plan will preserve your {preferences.sleepAnchor === 'wake' ? 'wake time' : 'bedtime'} and adjust the other time to provide {preferences.sleepHours} hours.</p></div>}</section>
       <section className="form-section"><div className="form-section-title"><span className="small-icon"><Sparkles size={19}/></span><div><h2>Your planning preferences</h2><p>Choose the tools that feel right for you.</p></div></div><Toggle checked={preferences.caffeine} onChange={value => update('caffeine', value)} icon={Coffee} title="Include caffeine windows" description="Optional timing guidance for coffee, tea, and other caffeine."/><Toggle checked={preferences.melatonin} onChange={value => update('melatonin', value)} icon={Sparkles} title="Include melatonin guidance" description="Optional timing windows and an informational 0.5–1 mg range."/>
         {preferences.melatonin && <div className="melatonin-info"><h3>Before including melatonin</h3><p>Timing matters. Melatonin can cause drowsiness, interact with medicines, and vary in quality. Check suitability with a clinician, especially if pregnant, breastfeeding, taking medicines, or managing a health condition. Guidance is for adults and is not a personal prescription.</p><a href="https://www.nccih.nih.gov/health/melatonin-what-you-need-to-know" target="_blank" rel="noreferrer">Read NCCIH guidance <ExternalLink size={12}/></a><label className="checkbox-label"><input type="checkbox" checked={preferences.melatoninAcknowledged} onChange={event => update('melatoninAcknowledged', event.target.checked)} required={preferences.melatonin}/><span>I have reviewed this information and will check whether melatonin is suitable for me.</span></label></div>}
-        <label className="field"><span>Planning approach</span><select value={preferences.planningMode??'model'} onChange={event=>update('planningMode',event.target.value as 'model'|'rules')}><option value="model">Published circadian model (experimental)</option><option value="rules">Conservative planning rules</option></select><small>The model compares gradual advance and delay plans; personal phase and light exposure remain estimates. <a href="/science.html#limits">Read how it works.</a></small></label><Toggle checked={preferences.calendarAlarms!==false} onChange={value=>update('calendarAlarms',value)} icon={CalendarDays} title="Calendar reminders" description="Include reminders 10 minutes before actions in calendar exports."/><Toggle checked={Boolean(preferences.autoSync)} onChange={value=>update('autoSync',value)} icon={Cloud} title="Automatically sync my account" description="When signed in and online, merge separate edits and upload changes. Conflicting edits need your choice."/>
+        <label className="field"><span>Planning approach</span><select value={preferences.planningMode??'model'} onChange={event=>update('planningMode',event.target.value as 'model'|'rules')}><option value="model">Published circadian model (experimental)</option><option value="rules">Conservative planning rules</option></select><small>The model compares gradual advance and delay plans; personal phase and light exposure remain estimates. <a href="/science.html#limits">Read how it works.</a></small></label><Toggle checked={preferences.calendarAlarms!==false} onChange={value=>update('calendarAlarms',value)} icon={CalendarDays} title="Calendar reminders" description="Include reminders 10 minutes before actions in calendar exports."/>
         <label className="field preparation-field"><span>Start preparing before departure</span><select value={preferences.preparationDays} onChange={event => update('preparationDays', Number(event.target.value))}><option value="0">On departure day</option><option value="1">1 day before</option><option value="2">2 days before</option><option value="3">3 days before</option></select><small>More preparation time can make the first travel day easier.</small></label>
-      </section><div className="preferences-save"><span>{dirty ? 'You have unsaved changes' : 'Preferences saved on this device'}</span><button type="submit" className="button primary" disabled={!dirty}><Check size={16}/>Save preferences</button></div>
-    </form><aside className="profile-aside"><section className="account-card"><span className="eyebrow muted"><ShieldCheck size={14}/>Your account</span><h2>{account ? `Hello, ${account.name.split(' ')[0]}` : 'Take your rhythm with you'}</h2><p>{account ? account.email : 'Use Google to access your account. Your plan also works without signing in.'}</p>{authError && <div className="inline-error" role="alert">{authError}</div>}{!account ? <><button type="button" className="google-button" disabled={!authConfig.googleClientId || Boolean(busy)} onClick={() => authAction('signin', props.onSignIn)}>{busy === 'signin' ? <LoaderCircle size={17} className="spin"/> : <GoogleMark/>}Continue with Google</button>{!authConfig.googleClientId && <p className="small-copy auth-config-note">Google sign-in needs a client ID configured for this deployment.</p>}</> : <><div className="account-sync-state"><Cloud size={17}/><span>{syncStatus || 'Signed in with Google'}</span></div>{authConfig.syncAvailable && <button type="button" className="button secondary full-width" disabled={Boolean(busy)} onClick={() => authAction('sync', props.onSync)}>{busy === 'sync' ? <LoaderCircle size={15} className="spin"/> : <Cloud size={15}/>}Sync my data</button>}{authConfig.googleClientId && <button type="button" className="text-button" disabled={Boolean(busy)} onClick={()=>authAction('signin',props.onSignIn)}>Sign in with Google again</button>}<button type="button" className="text-button sign-out" disabled={Boolean(busy)} onClick={() => authAction('signout', props.onSignOut)}><LogOut size={14}/>Sign out</button></>}</section><section className="privacy-card"><span className="small-icon"><ShieldCheck size={20}/></span><h3>Designed to travel light</h3><p>Trips and plans stay in this browser. {authConfig.syncAvailable ? 'When you sign in, your trips and preferences can sync to your account.' : 'Cloud sync is not enabled for this deployment.'}</p><p className="small-copy">Your saved plan stays available offline after the app has loaded. Keep a calendar or data export for a backup.</p><button type="button" className="button secondary full-width" onClick={() => exportData(data)}><Download size={15}/>Export your data</button><button type="button" className="text-button danger-text cloud-delete-button" disabled={Boolean(busy)} onClick={() => setClearLocal(true)}><Trash2 size={13}/>Clear data on this device</button>{account && authConfig.syncAvailable && <button type="button" className="text-button danger-text cloud-delete-button" disabled={Boolean(busy)} onClick={() => setDeleteCloud(true)}><Trash2 size={13}/>Delete cloud data</button>}</section></aside></div>
-    {clearLocal && <Modal title="Clear data on this device?" className="small-modal" onClose={() => setClearLocal(false)}><p className="modal-intro">This deletes locally saved trips, sleep preferences, and your cached plans. Cloud data remains saved in your account. Export your data first if you want a backup.</p><div className="modal-footer"><button type="button" className="button secondary" onClick={() => setClearLocal(false)}>Keep my data</button><button type="button" className="button danger" disabled={Boolean(busy)} onClick={async () => { await authAction('clear', props.onClearLocal); setClearLocal(false); }}>{busy === 'clear' && <LoaderCircle size={15} className="spin"/>}Clear local data</button></div></Modal>}
-    {deleteCloud && <Modal title="Delete cloud data?" className="small-modal" onClose={() => setDeleteCloud(false)}><p className="modal-intro">This removes all synced trips and preferences from your Google-linked account. Your trips and preferences on this device remain available.</p><div className="modal-footer"><button type="button" className="button secondary" onClick={() => setDeleteCloud(false)}>Cancel</button><button type="button" className="button danger" disabled={Boolean(busy)} onClick={async () => { await authAction('delete', props.onDeleteCloud); setDeleteCloud(false); }}>{busy === 'delete' && <LoaderCircle size={15} className="spin"/>}Delete cloud data</button></div></Modal>}
+      </section><div className="preferences-save"><span>{dirty ? 'You have unsaved changes' : account ? saveStatus || 'Changes save to your account automatically' : 'Preferences saved on this device'}</span><button type="submit" className="button primary" disabled={!dirty}><Check size={16}/>Save preferences</button></div>
+    </form><aside className={`profile-aside ${account ? 'has-account' : ''}`}>
+      {!account && <section className="account-card">
+        <span className="eyebrow muted"><ShieldCheck size={14}/>Your account</span>
+        <h2>Take your rhythm with you</h2>
+        <p>Save your preferences and trips to your Google-linked account.</p>
+        {authConfig.googleClientId ? <GoogleSignInButton clientId={authConfig.googleClientId} onSuccess={props.onGoogleSignIn} onError={props.onSignInError}/> : <p className="small-copy auth-config-note">Google sign-in is unavailable. You can still plan trips on this device.</p>}
+      </section>}
+      <section className="privacy-card"><span className="small-icon"><ShieldCheck size={20}/></span>
+        <h3>{account ? 'Your plans, wherever you go' : 'Designed to travel light'}</h3>
+        <p>{account ? 'Your preferences and trips save to your account automatically and are ready when you sign in on another device.' : 'Your preferences and trips stay on this device until you sign in.'}</p>
+        <p className="small-copy">{account ? 'An offline copy keeps your plans available when you travel. Changes made offline save to your account when you reconnect.' : 'Your saved plan stays available offline after the app has loaded.'} You can export a backup at any time.</p>
+        {authError && <div className="inline-error" role="alert">{authError}</div>}
+        <button type="button" className="button secondary full-width" onClick={() => exportData(data)}><Download size={15}/>Export your data</button>
+        <button type="button" className="text-button cloud-delete-button" disabled={Boolean(busy)} onClick={() => { setAuthError(null); setClearLocal(true); }}><Trash2 size={13}/>{account ? 'Clear offline copy' : 'Clear data on this device'}</button>
+        {account && authConfig.syncAvailable && <button type="button" className="text-button danger-text cloud-delete-button" disabled={Boolean(busy) || !props.accountReady} onClick={() => { setAuthError(null); setDeleteCloud(true); }}><Trash2 size={13}/>Delete saved account data</button>}
+      </section>
+    </aside></div>
+    {clearLocal && <Modal title={account ? 'Clear your offline copy?' : 'Clear data on this device?'} className="small-modal" onClose={() => setClearLocal(false)}><p className="modal-intro">{account ? 'Your saved preferences and trips stay in your account. Rephase will reload them when you are online.' : 'This deletes trips, sleep preferences, and cached plans saved on this device. Export your data first if you want a backup.'}</p>{authError && <div className="inline-error" role="alert">{authError}</div>}<div className="modal-footer"><button type="button" className="button secondary" onClick={() => setClearLocal(false)}>Cancel</button><button type="button" className="button danger" disabled={Boolean(busy)} onClick={async () => { if (await authAction('clear', props.onClearLocal)) setClearLocal(false); }}>{busy === 'clear' && <LoaderCircle size={15} className="spin"/>}{account ? 'Clear offline copy' : 'Clear local data'}</button></div></Modal>}
+    {deleteCloud && <Modal title="Delete saved account data?" className="small-modal" onClose={() => setDeleteCloud(false)}><p className="modal-intro">This deletes your saved preferences, trips, and recorded history from your account and clears their offline copy on this device. This cannot be undone.</p>{authError && <div className="inline-error" role="alert">{authError}</div>}<div className="modal-footer"><button type="button" className="button secondary" onClick={() => setDeleteCloud(false)}>Cancel</button><button type="button" className="button danger" disabled={Boolean(busy)} onClick={async () => { if (await authAction('delete', props.onDeleteAccountData)) setDeleteCloud(false); }}>{busy === 'delete' && <LoaderCircle size={15} className="spin"/>}Delete account data</button></div></Modal>}
   </>;
 }
 
-function GoogleMark() { return <svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24"><path fill="#4285F4" d="M21.6 12.23c0-.71-.06-1.39-.18-2.05H12v3.88h5.38a4.6 4.6 0 0 1-2 3.02v2.51h3.24c1.89-1.74 2.98-4.31 2.98-7.36Z"/><path fill="#34A853" d="M12 22c2.7 0 4.96-.9 6.62-2.41l-3.24-2.51c-.9.6-2.04.97-3.38.97-2.6 0-4.81-1.76-5.6-4.12H3.05v2.59A10 10 0 0 0 12 22Z"/><path fill="#FBBC05" d="M6.4 13.93A6 6 0 0 1 6.09 12c0-.67.11-1.32.31-1.93V7.48H3.05A10 10 0 0 0 2 12c0 1.61.38 3.13 1.05 4.52l3.35-2.59Z"/><path fill="#EA4335" d="M12 5.95c1.47 0 2.78.5 3.82 1.49l2.86-2.86A9.56 9.56 0 0 0 12 2a10 10 0 0 0-8.95 5.48l3.35 2.59C7.19 7.71 9.4 5.95 12 5.95Z"/></svg>; }
 function Toggle({ checked, onChange, icon: Icon, title, description }: { checked: boolean; onChange: (v: boolean) => void; icon: typeof Sun; title: string; description: string }) {
   return <label className="toggle-row"><span className="toggle-icon"><Icon size={20}/></span><span className="toggle-copy"><strong>{title}</strong><small>{description}</small></span><span className={`toggle ${checked ? 'on' : ''}`}><input type="checkbox" checked={checked} onChange={event => onChange(event.target.checked)}/><span/></span></label>;
 }

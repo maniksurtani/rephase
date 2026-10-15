@@ -1,6 +1,6 @@
 # Rephase build tasks
 
-Updated 2026-10-15. Checked items are implemented and engineering-verified. External credentials, publication, and clinical/outcome research are separate gates; they cannot be completed by local tests.
+Updated 2026-10-15. Checked items record completed implementation; verification status for each release is recorded below. External credentials, publication, and clinical/outcome research are separate gates; they cannot be completed by local tests.
 
 ## Foundation and design
 
@@ -39,7 +39,24 @@ Updated 2026-10-15. Checked items are implemented and engineering-verified. Exte
 - [x] Implement Google GIS and Worker signature/audience/issuer/expiry/nonce verification with hashed revocable sessions.
 - [x] Enforce ownership, expected-account headers, same-origin mutations, payload limits, and optimistic revisions.
 - [x] Persist atomic sync snapshots; merge independent preference/trip/leg edits and preserve conflicting/in-flight changes.
-- [x] Add opt-in automatic sync, bounded retries, offline behavior, deletion pauses, and account reauthentication controls.
+- [x] Automatically save verified account edits with bounded retries and offline caching; preserve deletion tombstones and account reauthentication boundaries.
+
+## Account experience and automatic saving
+
+- [x] Replace the verbose application sign-in popup with Google’s official sign-in button opening Google directly.
+- [x] Show the verified Google avatar in the header, with a compact account menu containing Sign out and a fallback for missing images.
+- [x] Remove the cluttered signed-in panel, redundant signed-in/repeat-sign-in labels, manual sync button and automatic-sync toggle.
+- [x] Load D1 account preferences/trips automatically, with no starting-data chooser; new accounts start empty and guest data never imports automatically.
+- [x] Reconcile older same-account edits against their saved baseline; restrict unknown-baseline personal-data migration to never-initialized D1 accounts, excluding guest/demo data and retaining deletion tombstones.
+- [x] Automatically debounce committed account edits, retain atomic offline pending edits/baselines, merge independent device changes and ask only about genuine conflicts.
+- [x] Reverify sessions, isolate account namespaces, refresh on reconnect/focus, retry transient failures and retain offline planning.
+- [x] Preserve recoverable multi-tab draft journals through transactional generation-aware writes; merge independent drafts without regressing server revisions or discarding unseen edits during review/deletion.
+- [x] Rebase unsaved Profile fields over same-account updates and reset drafts on account switches.
+- [x] Renew unused Google challenges without rotating their nonce, serialize acquisition with Web Locks when supported and retain one-use verification.
+- [x] Add the backward-compatible nullable Google picture migration and document the next-sign-in requirement for existing sessions.
+- [x] Document D1/Workers free-tier capacity and distinguish server account data from its offline cache.
+- [x] Complete updated TypeScript, account/API unit tests, production build and desktop/mobile browser checks; record exact results below.
+- [ ] Deploy this account update with `0003_google_avatar.sql` and verify real Google avatar, automatic save/reload and another-device account loading.
 
 ## Flight-entry and travel-day feedback
 
@@ -93,10 +110,10 @@ Amadeus Self-Service is discontinued. AirLabs's near-term schedules and Skyscann
 - [x] Prepare a verified Git bundle containing the complete history for a local SSH push.
 - [x] Complete the initial push to [maniksurtani/rephase](https://github.com/maniksurtani/rephase), with local `main` tracking `origin/main`.
 - [x] Select `https://rephase.surtani.org` and prepare generated Custom Domain routing with Cloudflare-managed DNS/TLS and no alternate deployment URLs.
-- [x] Configure the production Google client ID and expose the sign-in/sync controls.
-- [ ] Verify real Google sign-in and trip sync end to end with the owner's account.
+- [x] Configure the production Google client ID and verify real sign-in with the owner’s account.
+- [ ] Verify the revised automatic account-saving experience end to end with the owner’s account after its release.
 - [ ] Choose an AeroDataBox plan, configure its key, and verify representative routes at +60/+90/+150 days; record missing coverage.
-- [x] Configure the Cloudflare account, D1 and production GitHub variables/secret; keep deployments manual.
+- [x] Configure the Cloudflare account, D1 and production GitHub variables/secret; support manual dispatch and optional main-push deployment through the repository variable `DEPLOY_ENABLED=true`.
 - [x] Deploy to https://rephase.surtani.org with D1 migrations, Custom Domain DNS/TLS and hourly purge.
 - [x] Verify production guest planning/calendar, mobile layout, Science/no-JavaScript, all offline assets, offline behavior and unauthenticated API rejection.
 - [x] Allow first-time DNS/TLS provisioning in the bounded post-deploy verification retry window.
@@ -112,6 +129,8 @@ Amadeus Self-Service is discontinued. AirLabs's near-term schedules and Skyscann
 - [ ] Consider Web Push only after a product decision and mobile delivery testing; calendar reminders are implemented.
 - [ ] Consider measured phase/light inputs, richer sleep/fatigue models, and cross-tab live editing as separate enhancements.
 
-Latest feedback verification (2026-10-15): frontend and Worker TypeScript passed; all 238 Vitest tests passed across 21 suites using one worker. The production build contains 24 precached assets. All 15 Chromium scenarios passed, including one calendar tile per date, oval window styling, varied modeled changes and explicit unavailable history, per-leg meal policies and both meal clocks, the five-flight itinerary/date-line transit, minute-only arrival defaulting, saved-arrival preservation, mobile overflow, and existing offline/account/flight/adherence behavior. Unit coverage includes missed/actual sleep history, connection/airborne meal constraints, deduplicated alarm-free meal calendar events, and all source clocks contributing to Today. Initial implementation checks also verified local D1 migrations/API responses, scheduled cache purging, launcher startup/shutdown, and real Wrangler dry-run bundling; no Worker behavior changed in this refinement.
+Previous planner feedback verification (2026-10-15): frontend and Worker TypeScript passed; all 238 Vitest tests passed across 21 suites using one worker. The production build contains 24 precached assets. All 15 Chromium scenarios passed, including one calendar tile per date, oval window styling, varied modeled changes and explicit unavailable history, per-leg meal policies and both meal clocks, the five-flight itinerary/date-line transit, minute-only arrival defaulting, saved-arrival preservation, mobile overflow, and existing offline/account/flight/adherence behavior. Unit coverage includes missed/actual sleep history, connection/airborne meal constraints, deduplicated alarm-free meal calendar events, and all source clocks contributing to Today. Initial implementation checks also verified local D1 migrations/API responses, scheduled cache purging, launcher startup/shutdown, and real Wrangler dry-run bundling; no Worker behavior changed in this refinement.
 
-Real OAuth/provider coverage and clinical efficacy are not implied by these checks. The code is synced to [maniksurtani/rephase](https://github.com/maniksurtani/rephase), and local `main` tracks `origin/main`. Production is live at https://rephase.surtani.org; Google account sync awaits user verification and provider lookup remains disabled without its key.
+Real OAuth/provider coverage and clinical efficacy are not implied by these checks. The code is synced to [maniksurtani/rephase](https://github.com/maniksurtani/rephase), and local `main` tracks `origin/main`. Production is live at https://rephase.surtani.org; the owner has verified real Google sign-in, the revised automatic account-saving flow awaits release acceptance, and provider lookup remains disabled without its key.
+
+Account update verification (2026-10-15): frontend and Worker TypeScript passed, all 319 Vitest tests passed across 25 suites, the production build prepared 24 offline assets, and all 23 Chromium scenarios passed. Coverage includes automatic server saving/reload/new-device loading, direct Google button flow, avatar/Sign out menu, expired sessions, offline retries, persistent conflicts, unsaved form preservation and account switches, and three-tab draft recovery. Local `0003_google_avatar.sql` migration and Wrangler dry-run bundling also passed. Google SDK/account APIs are mocked in browser checks; deployment and real-account acceptance remain pending.

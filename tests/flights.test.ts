@@ -108,11 +108,11 @@ describe('Authenticated flight lookup, retention and quota', () => {
   const invoke = (req = flightRequest(), now = NOW, overrides: Partial<Env> = {}) => handleApi(req, { ...env, ...overrides }, { now: () => now, fetch: provider });
   beforeEach(async () => {
     sqlite = new DatabaseSync(':memory:');
-    for (const migration of ['0001_accounts.sql', '0002_flight_cache.sql']) sqlite.exec(readFileSync(new URL('../migrations/' + migration, import.meta.url), 'utf8'));
+    for (const migration of ['0001_accounts.sql', '0002_flight_cache.sql', '0003_google_avatar.sql']) sqlite.exec(readFileSync(new URL('../migrations/' + migration, import.meta.url), 'utf8'));
     env = { DB: d1For(sqlite), GOOGLE_CLIENT_ID: 'client.apps.googleusercontent.com', RAPIDAPI_KEY: 'test-secret-never-exposed' };
     provider = vi.fn<typeof fetch>(async () => providerResponse());
     for (const [id, token] of [['user-a', SESSION_A], ['user-b', SESSION_B]]) {
-      sqlite.prepare('INSERT INTO users VALUES (?, ?, ?)').run(id, id, id + '@example.com');
+      sqlite.prepare('INSERT INTO users (id, name, email) VALUES (?, ?, ?)').run(id, id, id + '@example.com');
       sqlite.prepare('INSERT INTO sessions VALUES (?, ?, ?)').run(await hashToken(token), id, NOW / 1000 + 366 * 86_400);
     }
   });

@@ -1,6 +1,6 @@
 # Running and deploying Rephase
 
-**Production is live at https://rephase.surtani.org**, deployed on 15 October 2026 using a Cloudflare Worker Custom Domain, static assets and D1. Both database migrations and the hourly cache-purge schedule are applied. Google sign-in is configured; live flight lookup is disabled until `RAPIDAPI_KEY` is supplied. A real Google sign-in and trip sync still need user verification.
+**Production is live at https://rephase.surtani.org**, deployed on 15 October 2026 using a Cloudflare Worker Custom Domain, static assets and D1. The original `0001`/`0002` database migrations and the hourly cache-purge schedule are applied. The owner has verified real Google sign-in; live flight lookup is disabled until `RAPIDAPI_KEY` is supplied. The revised account UX/automatic-saving update and additive `0003_google_avatar.sql` migration are being prepared for the next release, with acceptance still pending.
 
 ## Production configuration at rephase.surtani.org
 
@@ -25,7 +25,15 @@ The Worker upload, migrations, DNS and TLS succeeded. The deployment workflow's 
 
 Verification allows over three minutes for transient DNS/TLS or edge readiness failures, with a five-second timeout per request. A confirmed Cloudflare challenge instead stops immediately with a diagnostic and Security Events guidance. Neither case is silently treated as a successful check.
 
-Production smoke checks passed: desktop and 390px mobile guest planning, unique date tiles, both airport clocks, meal advice, calendar export, all 24 offline assets, offline planner/Science, Science without JavaScript, and HTTP 401 for unauthenticated account/state APIs. These checks do not complete Google sign-in or spend provider credits. Deployments remain manual until the owner enables `DEPLOY_ENABLED`.
+Production smoke checks passed: desktop and 390px mobile guest planning, unique date tiles, both airport clocks, meal advice, calendar export, all 24 offline assets, offline planner/Science, Science without JavaScript, and HTTP 401 for unauthenticated account/state APIs. These checks do not complete Google sign-in or spend provider credits. Manual deployment is always available; automatic main-push deployment depends on the repository variable `DEPLOY_ENABLED=true`.
+
+## Account storage and the next migration
+
+Signed-in preferences and trips live in D1 and save automatically after committed edits are debounced. IndexedDB is an offline cache with pending edits and revision merge metadata; it is not the authoritative account store. Guest data stays separate and is never automatically copied into an account. Older same-account edits with a saved baseline use three-way merging. Without that baseline, personal data can migrate once only into a never-initialized D1 account, excluding demonstration trips; existing server data and deletion tombstones are never blindly replaced. Transactional per-tab journals keep unsaved drafts recoverable when multiple tabs are used. Google’s official button opens Google directly, and the header avatar menu contains Sign out. No application starting-data chooser or manual sync step is required.
+
+The next deployment applies `0003_google_avatar.sql` before publishing the updated Worker. It adds a nullable `users.picture` column and remains compatible with the previous Worker. Existing sessions keep working, but their avatar is populated by the next Google sign-in; users can sign out and sign in once if the fallback image remains. No additional secret, OAuth scope or Cloudflare resource is needed.
+
+This account storage fits Cloudflare’s free tier for personal use and an initial audience. D1 currently allows **500 MB per database**, **5 GB per account**, **5 million row reads/day** and **100,000 row writes/day**. Workers allow **100,000 dynamic requests/day** on the free plan; static asset requests are free. Session verification, account operations, provider cache and quota records share these budgets. Debouncing avoids a write for every typed change, but database size and usage must still be monitored. Separate provider limits continue to apply. See [D1 pricing](https://developers.cloudflare.com/d1/platform/pricing/), [D1 limits](https://developers.cloudflare.com/d1/platform/limits/) and [Workers pricing](https://developers.cloudflare.com/workers/platform/pricing/).
 
 ## Cloudflare challenges during verification
 
@@ -45,7 +53,7 @@ Place a skip rule before any challenging custom rules it must skip, and keep mat
 
 **Bot Fight Mode is different:** the free product cannot be bypassed with WAF Skip rules. If that is the reported service, a scoped exception requires a product that supports one, such as Super Bot Fight Mode. Disabling free Bot Fight Mode affects the whole zone and is an explicit owner decision. Do not change unrelated zone protections to make the check pass.
 
-After the relevant exception is configured, rerun **Verify production**, then **Deploy to Cloudflare**, and verify real Google sign-in and trip sync. The deployment token is intentionally scoped to Workers/D1; adjusting zone security belongs in the owner's Cloudflare dashboard.
+After the relevant exception is configured, rerun **Verify production**, then **Deploy to Cloudflare**, and verify real Google sign-in and automatic account save/reload. The deployment token is intentionally scoped to Workers/D1; adjusting zone security belongs in the owner's Cloudflare dashboard.
 
 ## Start the app locally
 
@@ -66,7 +74,7 @@ npm start -- --no-open
 Useful variants:
 
 ```sh
-# Browser-only app; Google sync and live flight lookup require the Worker.
+# Browser-only app; Google account storage and live flight lookup require the Worker.
 npm start -- --static --no-open
 
 # Serve the built PWA and API from one local origin on port 8787.
@@ -92,7 +100,7 @@ The launcher supplies the correct local origin when you choose another port. Reg
 
 ## Connect an empty GitHub repository
 
-Current workspace: the code is synced to [maniksurtani/rephase](https://github.com/maniksurtani/rephase). `origin` points to `git@github.com:maniksurtani/rephase.git`, and local `main` tracks `origin/main`. The initial push is complete. GitHub Actions checks run on pushes to `main`; production is live and future deployments remain gated for manual dispatch.
+Current workspace: the code is synced to [maniksurtani/rephase](https://github.com/maniksurtani/rephase). `origin` points to `git@github.com:maniksurtani/rephase.git`, and local `main` tracks `origin/main`. The initial push is complete. GitHub Actions checks run on pushes to `main`; production is live, and the deployment workflow runs manually or on main pushes when the repository variable `DEPLOY_ENABLED=true`.
 
 Create an empty GitHub repository, choosing its name and visibility. Leave GitHub's README, license and `.gitignore` initialization options unchecked so the remote stays empty and can receive this repository's existing history.
 
@@ -206,7 +214,7 @@ For an actual deployment after account setup and login:
 node --env-file=.deployment.env scripts/deploy.mjs --apply
 ```
 
-This command applies remote D1 migrations **before** deploying. A failed code upload does not roll those migrations back; migrations should remain compatible with the prior Worker version. Wrangler may ask for confirmation when applying migrations in a local interactive terminal; CI applies them without that prompt. The API check confirms public configuration and, when a provider key was uploaded, that flight lookup is enabled. It does not test complete Google authentication or live provider coverage. Finish by signing in with a real Google account, saving/reloading a trip, testing a representative future flight, and loading a saved plan offline on desktop and mobile.
+This command applies remote D1 migrations **before** deploying. A failed code upload does not roll those migrations back; migrations should remain compatible with the prior Worker version. Wrangler may ask for confirmation when applying migrations in a local interactive terminal; CI applies them without that prompt. The API check confirms public configuration and, when a provider key was uploaded, that flight lookup is enabled. It does not test complete Google authentication or live provider coverage. Finish by signing in with a real Google account, checking the avatar/Sign out menu, saving and reloading preferences and a trip without a sync action, opening the same account on another device, testing a representative future flight when its key is configured, and loading a saved plan offline on desktop and mobile.
 
 To add a provider key without recording it in a shell argument or file, use Wrangler's interactive secret prompt after configuration:
 

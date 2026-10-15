@@ -2,7 +2,7 @@
 
 **Live app: [rephase.surtani.org](https://rephase.surtani.org)**
 
-A mobile-first jet lag planner with a dark sleep theme, complex itineraries, optional Google sync, and flight-number/date lookup. Planning runs in the browser, including offline. A small Cloudflare Worker handles authentication, optional persistence, and flight-provider requests.
+A mobile-first jet lag planner with a dark sleep theme, complex itineraries, Google-linked account storage, and flight-number/date lookup. Planning runs in the browser, including offline. A small Cloudflare Worker handles authentication, account persistence, and flight-provider requests. Guest planning works entirely on the device.
 
 The default experimental planner uses the published Forger99 light-driven circadian model and compares constrained advance/delay schedules across the itinerary. Its equations have been checked against an independent Python/SciPy reference. **Numerical verification is not clinical validation:** personal phase, received light, and actual sleep remain uncertain. Conservative planning rules are also available in Profile. Read the standalone [Science page](public/science.html) at `/science.html` for plain-language explanations and original sources.
 
@@ -27,7 +27,7 @@ npm start -- --help
 
 If this workspace is remote, forward port **5173** (or **8787** in production mode) through your IDE/workspace. The remote machine's loopback address is not your device's localhost.
 
-The London → Dubai connection → Singapore → San Francisco example uses relative future dates and is labeled as an example. Create a trip or edit it to make a personal itinerary. Profile controls habitual/preferred sleep, duration, chronotype, supplements, planning mode, calendar reminders, and optional automatic sync.
+The London → Dubai connection → Singapore → San Francisco example uses relative future dates and is labeled as an example. Create a trip or edit it to make a personal itinerary. Profile controls habitual/preferred sleep, duration, chronotype, supplements, planning mode, and calendar reminders. Signed-in preferences and trips save to your account automatically after edits are committed.
 
 Flight inputs use HH:mm, with a blank arrival initially matching departure until you adjust it. The planner has one airplane-window tile per date. Travel days have plane markers, explicit flight cards, and recommendation times in both origin and destination zones with local dates. Short flights remain visible even without a usable rest window.
 
@@ -35,7 +35,7 @@ Flight editing supports travel class and **separately confirmed** lie-flat avail
 
 Every flight includes a meal-service recommendation: protect planned rest by asking not to be woken, or use service while awake. Suggested meal windows fit around sleep, cabin restrictions, and connections, with both airport clocks. Service times are not known; windows are flexible, and meal calendar entries never have alarms. The [Science page](public/science.html#meals) explains the evidence and limits. Daily body-clock changes now compare successive simulated low points, with unavailable history labeled explicitly.
 
-## Google sign-in and account sync
+## Google sign-in and saved accounts
 
 Local planning, manual trips, exports, and saved preferences work without credentials. The launcher creates an ignored `.dev.vars` with empty credentials if the file is absent. To test real Google sign-in, create an OAuth **Web application** client and register `http://localhost:5173` as an authorized JavaScript origin, then set:
 
@@ -46,9 +46,13 @@ ALLOWED_ORIGIN="http://localhost:5173"
 
 Restart the launcher after changes. Register `http://localhost:8787` too if testing production mode. This GIS ID-token flow needs no OAuth client secret and requests no Gmail or Calendar access.
 
-Guest and account storage remain separate. First sign-in offers an explicit choice before copying guest data into an account. Sync uses revisions and a persisted three-way merge base: separate edits can merge; conflicting edits require a choice. Automatic sync is opt-in. Cached offline identity never authorizes the API. Clearing local data and deleting cloud data are distinct operations; account copies can persist on other devices until those devices sync or clear them.
+Google’s official sign-in button opens Google’s account flow directly. Signed-in accounts load saved preferences and trips from Cloudflare D1 automatically, and committed edits save after a short debounce. There is no manual sync button, automatic-save toggle, or starting-data chooser. Your Google avatar opens a small account menu with Sign out; existing sessions gain an avatar after the next Google sign-in.
 
-Production has a Google client ID configured. Complete a real Google sign-in and save/reload a synced trip to verify account behavior end to end; this has not been tested using a real account.
+D1 is authoritative for signed-in accounts. IndexedDB retains an account-isolated offline copy and explicitly pending edits, so plans remain usable in flight and edits retry when connectivity returns while the app is open. Revisions and three-way merging protect edits from different devices; only genuine conflicts ask which version to keep. Cached identity never authorizes the API. Guest data stays separate and is never copied into an account automatically. A new account starts with default preferences and no trips. Older same-account edits merge automatically when a saved server baseline is known. Without that baseline, a one-time migration can retain personal preferences/trips only if D1 has no state and revision zero; example trips and guest data are excluded. Independent unsaved edits from multiple tabs remain recoverable, and overlapping edits require a choice. Clearing the offline copy leaves saved account data intact; deleting saved account data removes it from D1 and clears this device’s account copy. Other devices learn of deletion when they reconnect.
+
+This fits Cloudflare’s free tier for personal use and an initial audience: D1 allows 500 MB per database, 5 GB per account, 5 million row reads/day and 100,000 row writes/day. Workers allow 100,000 dynamic requests/day on the free plan; static asset requests are free. Debounced account saves use a small shared database and do not write on every keystroke. These are limits, not an unlimited-storage promise; flight-provider quotas are separate. See [D1 pricing](https://developers.cloudflare.com/d1/platform/pricing/), [D1 limits](https://developers.cloudflare.com/d1/platform/limits/) and [Workers pricing](https://developers.cloudflare.com/workers/platform/pricing/).
+
+Production has a Google client ID configured, and the owner has confirmed real sign-in. The simplified account experience and automatic saving described above passed local verification and are ready for deployment; release acceptance is tracked in TODO.md. The normal deployment script will apply the additive `0003_google_avatar.sql` migration.
 
 ## Optional flight lookup
 
@@ -86,7 +90,7 @@ npm run test:e2e
 
 Playwright uses `/usr/bin/chromium` when present, or `PLAYWRIGHT_CHROMIUM_EXECUTABLE`; otherwise install it with `npx playwright install chromium`. Engineering checks cover numerical reference trajectories, temporal/itinerary constraints, adherence replay, daylight, API ownership/nonce/session/revision security, cache/quotas, sync merges, calendar export, and deployment/launcher configuration. Browser checks use controlled API responses for account and flight scenarios.
 
-Verified locally: frontend/Worker TypeScript, all 238 unit/model/API tests, production build, 15 Chromium scenarios, local D1/API/scheduled-handler smoke checks, launcher setup/shutdown, and real Wrangler dry-run bundling. The five-flight October itinerary, date-line transit days, unique date tiles, corrected modeled shifts, meal policies/windows, short flights, dual clocks, arrival defaults, and mobile layout have dedicated regressions. Meal tests cover missed/actual sleep logs and calendar exports without meal alarms. Production desktop/mobile, guest planner/calendar, Science without JavaScript, all 24 offline assets, offline behavior, and unauthenticated API rejection passed live smoke checks on 15 October 2026. Real Google account sync still needs user verification; live lookup remains disabled until a provider key is configured. QA servers are stopped after verification.
+Verified locally: frontend/Worker TypeScript, all 238 unit/model/API tests, production build, 15 Chromium scenarios, local D1/API/scheduled-handler smoke checks, launcher setup/shutdown, and real Wrangler dry-run bundling. The five-flight October itinerary, date-line transit days, unique date tiles, corrected modeled shifts, meal policies/windows, short flights, dual clocks, arrival defaults, and mobile layout have dedicated regressions. Meal tests cover missed/actual sleep logs and calendar exports without meal alarms. Production desktop/mobile, guest planner/calendar, Science without JavaScript, all 24 offline assets, offline behavior, and unauthenticated API rejection passed live smoke checks on 15 October 2026. The revised automatic account-saving flow still needs real-account acceptance after deployment; live lookup remains disabled until a provider key is configured. QA servers are stopped after verification.
 
 For the independent numerical fixture reproduction, see [the kernel notes](src/lib/circadian/README.md). The airport source and optional Bun benchmark are documented in [DATA_SOURCES.md](DATA_SOURCES.md). `npm run benchmark:bun` reports honestly if Bun is absent; Node/npm remain the authoritative toolchain and lockfile.
 
@@ -100,6 +104,6 @@ For another checkout, inspect the remote helper:
 npm run github:remote -- --help
 ```
 
-[DEPLOYMENT.md](DEPLOYMENT.md) describes remote setup, the local/CI scripts, required Cloudflare/Google configuration, optional provider secret, and the deployment workflow. PR/main CI runs checks; deployment is manual initially. Automatic main-branch deployment can be enabled after the first verified release.
+[DEPLOYMENT.md](DEPLOYMENT.md) describes remote setup, the local/CI scripts, required Cloudflare/Google configuration, optional provider secret, and the deployment workflow. PR/main CI runs checks. Deployment supports manual dispatch and main-branch pushes when the repository variable `DEPLOY_ENABLED=true`; leaving it unset or false keeps deployment manual. The outstanding GitHub-runner Cloudflare challenge is documented in DEPLOYMENT.md.
 
 [DESIGN.md](DESIGN.md) describes the architecture, scientific assumptions, API and storage contracts. [TODO.md](TODO.md) tracks completed implementation and external setup/research gates. [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and the bundled licenses preserve attribution.

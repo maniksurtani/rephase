@@ -30,7 +30,7 @@ test('mobile preferences persist after reload without overflow',async({page})=> 
   await page.getByRole('navigation',{name:'Mobile navigation'}).getByRole('button',{name:'Profile',exact:true}).click();
   await expect(page.getByLabel('Hours of sleep you need')).toHaveValue('9');
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
-  await expect(page.getByText('Google sign-in needs a client ID',{exact:false})).toBeVisible();
+  await expect(page.getByText('Google sign-in is unavailable.',{exact:false})).toBeVisible();
   await page.evaluate(()=>window.scrollTo(0,0));
   await page.screenshot({path:'artifacts/preview-mobile.png'});
 });
@@ -76,38 +76,11 @@ test('production shell and a saved account namespace reopen offline',async({page
   await context.setOffline(true);await page.reload();
   await page.getByRole('button',{name:'Profile',exact:true}).first().click();
   await expect(page.getByLabel('Hours of sleep you need')).toHaveValue('9.5');
-  await expect(page.getByText('Offline account copy',{exact:false})).toBeVisible();
+  await expect(page.getByRole('status').filter({hasText:/offline/i}).first()).toBeVisible();
   const cached=await page.evaluate(async()=> {const names=await caches.keys();const all=await Promise.all(names.map(async name=>(await (await caches.open(name)).keys()).map(request=>new URL(request.url).pathname)));return all.flat();});
   expect(cached.some(path=>path.startsWith('/api/'))).toBe(false);
   await page.goto('/science.html');
   await expect(page.getByRole('heading',{level:1})).toContainText('Your body clock.');
-});
-
-test('stale cloud revisions preserve local edits across reload until a choice is made',async({page})=> {
-  let revision=1;
-  let cloud={schemaVersion:1,preferences:{...DEFAULT_PREFERENCES},trips:[],selectedTripId:null};
-  await page.route('**/api/config',route=>route.fulfill({json:{googleClientId:'test-client',syncAvailable:true}}));
-  await page.route('**/api/me',route=>route.fulfill({json:{id:'account-a',name:'Traveler',email:'traveler@example.com'}}));
-  await page.route('**/api/state',async route=> {
-    expect(route.request().headers()['x-rephase-account']).toBe('account-a');
-    if(route.request().method()==='GET')return route.fulfill({json:{data:cloud,revision}});
-    const body=route.request().postDataJSON();
-    if(body.revision!==revision)return route.fulfill({status:409,json:{error:'Changed on another device'}});
-    cloud=body.data;revision+=1;return route.fulfill({json:{revision}});
-  });
-  await page.goto('/');await page.getByRole('button',{name:'Profile',exact:true}).first().click();
-  await expect(page.getByText('traveler@example.com',{exact:true})).toBeVisible();
-  await page.getByLabel('Hours of sleep you need').fill('9');await page.getByRole('button',{name:'Save preferences'}).click();
-  revision=2;cloud={...cloud,preferences:{...cloud.preferences,sleepHours:7.5}};
-  await page.getByRole('button',{name:'Sync my data'}).click();
-  await expect(page.getByRole('dialog',{name:'Two copies, one choice'})).toBeVisible();
-  await page.getByRole('button',{name:'Keep working locally'}).click();
-  await page.reload();await page.getByRole('button',{name:'Profile',exact:true}).first().click();
-  await expect(page.getByLabel('Hours of sleep you need')).toHaveValue('9');
-  await page.getByRole('button',{name:'Sync my data'}).click();
-  await expect(page.getByRole('dialog',{name:'Two copies, one choice'})).toBeVisible();
-  await page.getByRole('button',{name:'Use cloud copy',exact:true}).click();
-  await expect(page.getByLabel('Hours of sleep you need')).toHaveValue('7.5');
 });
 
 test('static science page works without JavaScript and fits a mobile screen',async({browser})=> {
@@ -122,16 +95,26 @@ test('static science page works without JavaScript and fits a mobile screen',asy
 
 test('flight lookup confirms a candidate without changing cabin choices',async({page})=> {
   const account={id:'lookup-account',name:'Flight traveler',email:'flight@example.com'};
+  let accountData={schemaVersion:1,preferences:DEFAULT_PREFERENCES,trips:[],selectedTripId:null};
+  let revision=0;
+  await page.route('https://accounts.google.com/gsi/client',route=>route.fulfill({contentType:'application/javascript',body:'window.google={accounts:{id:{initialize(){},renderButton(){},disableAutoSelect(){}}}};'}));
+  await page.route('**/api/auth/challenge',route=>route.fulfill({json:{nonce:'flight-test-nonce'}}));
   await page.route('**/api/config',route=>route.fulfill({json:{googleClientId:'test-client',syncAvailable:true,flightLookupAvailable:true,flightProvider:'aerodatabox'}}));
   await page.route('**/api/me',route=>route.fulfill({json:account}));
-  await page.route('**/api/state',route=>route.fulfill({json:{data:{schemaVersion:1,preferences:DEFAULT_PREFERENCES,trips:[],selectedTripId:null},revision:0}}));
+  await page.route('**/api/state',route=> {
+    if(route.request().method()==='GET')return route.fulfill({json:{data:accountData,revision}});
+    const body=route.request().postDataJSON();
+    if(body.revision!==revision)return route.fulfill({status:409,json:{error:'Changed on another device'}});
+    accountData=body.data;revision++;
+    return route.fulfill({json:{revision}});
+  });
   await page.route('**/api/flights?*',route=> {
     expect(route.request().headers()['x-rephase-account']).toBe(account.id);
     expect(new URL(route.request().url()).searchParams.get('date')).toBe('2026-12-01');
     return route.fulfill({json:{provider:'aerodatabox',candidates:[{id:'ba286',flightNumber:'BA286',airline:'British Airways',departureAirport:'SFO',arrivalAirport:'LHR',departureDateTime:'2026-12-01T20:00',arrivalDateTime:'2026-12-02T14:00',departureTimeZone:'America/Los_Angeles',arrivalTimeZone:'Europe/London',departureUtc:'2026-12-02T04:00:00Z',arrivalUtc:'2026-12-02T14:00:00Z',durationMinutes:600}],fetchedAt:'2026-10-14T12:00:00Z',expiresAt:'2026-10-15T12:00:00Z',stale:false,attribution:'Flight data by AeroDataBox',warnings:[]}});
   });
   await page.goto('/');await page.getByRole('button',{name:'Profile',exact:true}).first().click();
-  await expect(page.getByText(account.email,{exact:true})).toBeVisible();
+  await expect(page.getByRole('button',{name:`${account.name}'s account menu`})).toBeVisible();
   await page.getByRole('button',{name:'Trips',exact:true}).first().click();
   await page.getByRole('button',{name:'New trip',exact:true}).click();
   await page.getByLabel('Flight number').fill('BA286');

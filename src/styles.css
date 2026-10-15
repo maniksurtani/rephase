@@ -84,5 +84,37 @@
 .meal-flexibility a{color:#c9b7d8;text-decoration:underline;text-underline-offset:2px}
 @media(max-width:1100px){.meal-window-clocks{grid-template-columns:1fr}}
 @media(max-width:760px){.day-button,.day-button.travel-day{min-width:85px;min-height:132px;padding:16px 9px 14px}.meal-policy{font-size:12px}.meal-window-clocks{grid-template-columns:1fr}}
+
+/* Account controls stay compact while the itinerary remains the focus. */
+.account-menu{position:relative;flex-shrink:0}
+.account-menu .topbar-avatar{width:44px;height:44px;overflow:hidden;padding:0;flex-shrink:0;font-weight:600;font-size:14px}
+.account-menu .topbar-avatar:hover{border-color:#9d84c3}
+.account-menu .topbar-avatar[aria-expanded=true]{border-color:#bda2e3;box-shadow:0 0 0 3px #bda2e31a}
+.account-avatar-image{display:block;width:100%;height:100%;object-fit:cover;border-radius:inherit}
+.account-shortcut .avatar{overflow:hidden;flex-shrink:0}
+.account-dropdown{position:absolute;top:calc(100% + 12px);right:0;z-index:60;width:min(292px,calc(100vw - 32px));padding:8px;border:1px solid #453b58;border-radius:16px;background:#1c1d2d;box-shadow:0 18px 55px #0007;text-align:left}
+.account-menu-identity{display:flex;flex-direction:column;gap:5px;padding:12px 12px 15px;margin-bottom:5px;border-bottom:1px solid #373247;overflow-wrap:anywhere}
+.account-menu-identity strong{font-size:14px;font-weight:600;color:#e7e1f3;line-height:1.5}
+.account-menu-identity span{font-size:12px;color:#a8a0bb;line-height:1.6}
+.account-dropdown [role=menuitem]{display:flex;align-items:center;gap:12px;min-height:46px;width:100%;padding:11px 12px;border-radius:9px;text-align:left;color:#d3c9e2;font-size:13px}
+.account-dropdown [role=menuitem]:hover,.account-dropdown [role=menuitem]:focus-visible{background:#30293f;color:#f0e8fa}
+.account-dropdown [role=menuitem] svg{color:#b9a2d9}
+.account-menu-signin{padding:10px 4px 4px;border-top:1px solid #373247;margin-top:5px}
+.account-menu-error{font-size:12px;line-height:1.6;color:#edb5b5;padding:10px 12px;overflow-wrap:anywhere}
+.account-menu-error.standalone{position:absolute;top:calc(100% + 12px);right:0;z-index:60;width:min(292px,calc(100vw - 32px));border:1px solid #664455;border-radius:12px;background:#28202c;box-shadow:0 18px 55px #0007}
+.account-save-status{font-size:12px;line-height:1.7;color:#b4a8c6;margin:0 0 18px;padding:10px 13px;border:1px solid #393147;border-radius:9px;background:#201e2c;overflow-wrap:anywhere}
+.profile-aside.has-account{display:flex;flex-direction:column;align-items:stretch}
+.google-sign-in{position:relative;display:flex;justify-content:center;align-items:center;min-height:44px;min-width:0;width:100%}
+.google-sign-in>div{width:100%;min-width:0}
+.google-sign-in.compact{width:44px;height:44px;min-width:44px;padding:2px}
+.google-sign-in.compact>div{width:40px}
+.google-loading{position:absolute;inset:0;display:grid;place-items:center;color:#aaa0bb;font-size:12px;line-height:1.6}
+.google-sign-in.compact .google-loading{position:absolute;inset:0;display:grid;place-items:center;background:#28263a;border:1px solid #3a354d;border-radius:50%}
+.google-sign-in .text-button{position:absolute;inset:0;justify-content:center;min-height:44px;white-space:normal}
+.account-card .google-sign-in{margin-top:20px}
+.privacy-card .inline-error{margin:16px 0}
+.privacy-card .cloud-delete-button{white-space:normal;text-align:left;line-height:1.7;min-height:44px}
+.preferences-save>span{line-height:1.7;max-width:65%}
+@media(max-width:540px){.account-dropdown{top:calc(100% + 10px)}.preferences-save>span{max-width:48%;font-size:11px}.account-menu-identity strong{font-size:15px}.account-save-status{margin-bottom:16px}}
 .phase-meter{flex-direction:column;align-items:flex-start;gap:8px}
 .phase-meter>span{max-width:none}
