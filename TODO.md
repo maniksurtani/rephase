@@ -101,7 +101,20 @@ Updated 2026-10-15. Checked items record completed implementation; verification 
 - [x] Enable targeted, redacted provider failure diagnostics and document support references.
 - [x] Complete TypeScript, all 332 unit/model/API/runtime tests, the build, Wrangler dry run and 30 browser scenarios (28 Chromium plus 2 mobile WebKit).
 - [x] Publish the Safari/provider repair and confirm normal deployment completes without a public HTTP gate.
-- [ ] Confirm successful real booked-flight lookup and date-control sizing on the owner’s physical iPhone after this repair.
+- [x] Receive the owner’s confirmation that mobile date sizing now looks good.
+- [ ] Confirm successful signed-in booked-flight import after the allowance recovery below.
+
+## Application allowance recovery
+
+- [x] Inspect production allowance aggregates without account identifiers; confirm Rephase’s 10-request daily limit caused the block.
+- [x] Make a secure real provider probe; confirm HTTP 200, one complete QF103 schedule and 396/400 provider units remaining.
+- [x] Make daily/monthly/global budget reservation atomic, validate local request construction before spending and keep unknown network attempts conservative.
+- [x] Add explicit app-versus-provider allowance messages, UTC reset and safe scope/reference diagnostics.
+- [x] Prepare and locally apply a one-time incident-scoped account allowance recovery that preserves global counters and newer usage.
+- [x] Detect and repair space-separated UTC timestamp handling using the real provider normalizer diagnostic, retaining all timezone/date checks.
+- [x] Review current official provider alternatives; document why switching would not fix this app limit.
+- [ ] Validate a real response through the actual normalizer and complete required release checks.
+- [ ] Deploy the recovery and verify production account counters are restored while global usage is preserved.
 
 ## Dynamic flight lookup — AeroDataBox
 
@@ -167,3 +180,5 @@ Lookup-first editor verification (2026-10-15): frontend and Worker TypeScript pa
 Provider activation verification (2026-10-15): the owner confirmed `RAPIDAPI_KEY` saved in GitHub. Deployment [38691252414](https://github.com/maniksurtani/rephase/actions/runs/38691252414), at commit `e8e7be2`, passed TypeScript, all 319 unit tests across 25 suites, the build and all 28 browser scenarios; the Worker upload and secret installation succeeded. The final runner check hit the existing Cloudflare challenge (Ray `a4acb2522d8b442f-ORD`, 17:16 AEDT). Subsequent public browser checks received HTTP 200 with Google/account storage/flight lookup all configured and verified healthy mobile lookup/manual entry without overflow. No Google sign-in or live provider requests were made: the flag establishes configured key presence, not provider credential validity, subscription allowance or future-flight coverage.
 
 Safari/provider repair verification (2026-10-15): frontend/Worker TypeScript, all 332 Vitest tests across 26 suites, the production build (24 offline assets) and real Wrangler dry-run bundling passed. All 28 Chromium scenarios and both dedicated mobile WebKit scenarios passed. The WebKit cases verify empty/filled date inputs and manual departure/arrival/takeoff/landing controls at 375px and 390px, minute values, paired airborne-clock retention and gate-change invalidation. Real workerd adapter tests use local D1 and intercepted outbound requests to verify the supported fetch mode and reject redirects without forwarding credentials. Safe diagnostics have redaction/category/reference regressions. Linux mobile WebKit did not reproduce the physical iPhone overflow with the CSS fix removed; these checks establish control bounds and value preservation, with physical Safari acceptance remaining useful. No live provider calls or real Google sign-in were performed. Deployment [38693556714](https://github.com/maniksurtani/rephase/actions/runs/38693556714), commit `8e5d13e`, passed all 332 tests and all 30 browser scenarios again in GitHub and completed successfully, including the Worker upload and provider secret installation. It published Worker version `801848c3-b5be-4a74-a036-514915d53943` before updating the secret. The public HTTP verification was not invoked; no zone security settings were changed. A subsequent anonymous production WebKit check at 390px confirmed the exact new JS/CSS/offline version, HTTP 200 public configuration with Google/account storage/lookup enabled, and bounded lookup/manual date-time controls without overflow or page errors. No Google login or provider request was made.
+
+Allowance recovery verification (2026-10-15): frontend/Worker TypeScript and all 357 Vitest tests across 28 suites passed locally. Real workerd/D1 tests cover all-or-none concurrent reservation; regression tests cover local preflight failures, app/provider distinction, exact reset/reference diagnostics, retained global/newer counters during incident recovery and explicit UTC timestamp variants. The recovery migration applied successfully to local D1. Secure production diagnostics confirmed the 10/10 app daily counter, available provider units and a real QF103 response; the follow-up real-normalizer check detected the UTC separator issue fixed in this release. Deployment, real-normalizer recheck and restored production counters remain pending.

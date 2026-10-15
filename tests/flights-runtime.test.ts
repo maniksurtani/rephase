@@ -58,4 +58,24 @@ describe('Cloudflare flight adapter runtime', () => {
     expect(requests).toHaveLength(2);
     expect(requests.every(request => new URL(request.url).hostname === 'aerodatabox.p.rapidapi.com')).toBe(true);
   });
+
+  it('reserves all budgets atomically under concurrent D1 requests and explains an app limit', async () => {
+    const db = await runtime.getD1Database('DB');
+    await db.prepare("UPDATE flight_usage SET requests = 149 WHERE principal = 'global' AND bucket = 'month:2026-10'").run();
+    const results = await Promise.all([
+      runtime.dispatchFetch('http://localhost/?flightNumber=BA288'),
+      runtime.dispatchFetch('http://localhost/?flightNumber=BA289'),
+    ]);
+    expect(results.map(result => result.status).sort()).toEqual([200, 429]);
+    const denied = results.find(result => result.status === 429)!;
+    const body = await denied.text();
+    expect(body).toContain('shared monthly allowance');
+    expect(body).toContain('separate from RapidAPI usage');
+    expect(body).toContain('1 November 2026 at 00:00 UTC');
+    expect(body).toMatch(/Reference: FLT-[0-9a-f]{12}/);
+    expect(requests).toHaveLength(3);
+    expect(await db.prepare("SELECT requests FROM flight_usage WHERE principal = 'global'").first()).toEqual({ requests: 150 });
+    const account = await db.prepare("SELECT requests FROM flight_usage WHERE principal = 'user:runtime-test-account'").all();
+    expect(account.results).toEqual([{ requests: 3 }, { requests: 3 }]);
+  });
 });

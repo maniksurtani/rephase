@@ -18,6 +18,7 @@ function d1For(sqlite: DatabaseSync): D1Database {
     const statement = {
       bind(...args: (string | number | null)[]) { values = args; return statement; },
       async first() { return sqlite.prepare(sql).get(...values) ?? null; },
+      async all() { return { success: true, results: sqlite.prepare(sql).all(...values), meta: {} }; },
       _run() { const result = sqlite.prepare(sql).run(...values); return { success: true, results: [], meta: { changes: Number(result.changes) } }; },
       async run() { return statement._run(); },
     };
@@ -55,6 +56,22 @@ describe('AeroDataBox normalization', () => {
     const copy = fixture();
     copy[0].departure.runwayTime = { utc: '2026-11-06T04:20:45Z', local: '2026-11-05 20:20:45-08:00' };
     expect((await normalizeFlights(copy, QUERY, resolver)).candidates[0].takeoffDateTime).toBe('2026-11-05T20:20:45');
+  });
+  it('accepts provider space-separated explicit UTC while preserving seconds and validating local schedules', async () => {
+    const copy = fixture();
+    copy[0].departure.scheduledTime.utc = '2026-11-06 04:00:00Z';
+    copy[0].arrival.scheduledTime.utc = '2026-11-06 14:00:00+00:00';
+    copy[0].departure.runwayTime = { utc: '2026-11-06 04:20:45Z', local: '2026-11-05 20:20:45-08:00' };
+    copy[0].arrival.runwayTime.utc = '2026-11-06 13:50:00Z';
+    const result = await normalizeFlights(copy, QUERY, resolver);
+    expect(result.candidates).toHaveLength(1);
+    expect(result.candidates[0]).toMatchObject({ departureUtc: '2026-11-06T04:00:00.000Z', arrivalUtc: '2026-11-06T14:00:00.000Z', durationMinutes: 600, takeoffDateTime: '2026-11-05T20:20:45' });
+    for (const invalid of ['2026-11-06 04:00:00', '2026-11-06 04:00:00+01:00', '2026-11-31 04:00:00Z', '2026-11-06 24:00:00Z']) {
+      const rejected = structuredClone(copy); rejected[0].departure.scheduledTime.utc = invalid;
+      expect((await normalizeFlights(rejected, QUERY, resolver)).candidates).toEqual([]);
+    }
+    copy[0].departure.scheduledTime.local = '2026-11-05 21:00-08:00';
+    expect((await normalizeFlights(copy, QUERY, resolver)).candidates).toEqual([]);
   });
   it('keeps ambiguous revised gate times out of takeoff/landing fields', async () => {
     const payload = fixture(); delete payload[0].departure.runwayTime; delete payload[0].arrival.runwayTime;
@@ -136,10 +153,12 @@ describe('Authenticated flight lookup, retention and quota', () => {
   });
   it('calls exact provider endpoint with departure-only dates and secrets in headers', async () => {
     const result = await invoke(); expect(result.status).toBe(200);
-    const [url, options] = provider.mock.calls[0];
-    expect(String(url)).toBe('https://aerodatabox.p.rapidapi.com/flights/number/BA286/2026-11-05?dateLocalRole=Departure&withAircraftImage=false&withLocation=false&withFlightPlan=false');
-    expect(String(url)).not.toContain(env.RAPIDAPI_KEY); expect(options?.headers).toMatchObject({ 'X-RapidAPI-Key': env.RAPIDAPI_KEY, 'X-RapidAPI-Host': 'aerodatabox.p.rapidapi.com' });
-    expect(options?.redirect).toBe('manual'); expect(options?.cache).toBe('no-store'); expect(await result.text()).not.toContain(env.RAPIDAPI_KEY);
+    const [request] = provider.mock.calls[0] as [Request];
+    expect(request).toBeInstanceOf(Request);
+    expect(request.url).toBe('https://aerodatabox.p.rapidapi.com/flights/number/BA286/2026-11-05?dateLocalRole=Departure&withAircraftImage=false&withLocation=false&withFlightPlan=false');
+    expect(request.url).not.toContain(env.RAPIDAPI_KEY);
+    expect(request.headers.get('X-RapidAPI-Key')).toBe(env.RAPIDAPI_KEY); expect(request.headers.get('X-RapidAPI-Host')).toBe('aerodatabox.p.rapidapi.com');
+    expect(request.redirect).toBe('manual'); expect(request.cache).toBe('no-store'); expect(await result.text()).not.toContain(env.RAPIDAPI_KEY);
   });
   it('serves fresh public cache across accounts without reading saved owner trips or spending credits', async () => {
     const first = await (await invoke()).json(); const other = await invoke(flightRequest(undefined, 'user-b', SESSION_B));
@@ -177,6 +196,54 @@ describe('Authenticated flight lookup, retention and quota', () => {
     env.FLIGHT_GLOBAL_MONTHLY_LIMIT = '1';
     expect((await invoke(flightRequest('?flightNumber=BA287&date=2026-11-05', 'user-b', SESSION_B))).status).toBe(429);
     expect(provider).toHaveBeenCalledTimes(1);
+    expect(sqlite.prepare("SELECT * FROM flight_usage WHERE principal = 'user:user-b'").all()).toEqual([]);
+    expect(sqlite.prepare("SELECT requests FROM flight_usage WHERE principal = 'user:user-a'").all()).toEqual([{ requests: 1 }, { requests: 1 }]);
+  });
+  it.each([
+    ['account_day', 'user:user-a', 'day:2026-10-14', 'FLIGHT_DAILY_LIMIT', '15 October 2026', '2026-10-15T00:00:00.000Z'],
+    ['account_month', 'user:user-a', 'month:2026-10', 'FLIGHT_MONTHLY_LIMIT', '1 November 2026', '2026-11-01T00:00:00.000Z'],
+    ['global_month', 'global', 'month:2026-10', 'FLIGHT_GLOBAL_MONTHLY_LIMIT', '1 November 2026', '2026-11-01T00:00:00.000Z'],
+  ] as const)('identifies the %s app limit and exact UTC reset without spending any other budget', async (scope, principal, bucket, setting, readableReset, resetsAt) => {
+    env[setting] = '1';
+    sqlite.prepare('INSERT INTO flight_usage VALUES (?, ?, 1, ?)').run(principal, bucket, NOW / 1000 + 40 * 86_400);
+    const before = sqlite.prepare('SELECT * FROM flight_usage ORDER BY principal, bucket').all();
+    const result = await invoke(); const body = await result.text();
+    expect(result.status).toBe(429);
+    expect(body).toContain("Rephase's"); expect(body).toContain('separate from RapidAPI usage');
+    expect(body).toContain(`${readableReset} at 00:00 UTC`);
+    expect(provider).not.toHaveBeenCalled();
+    expect(sqlite.prepare('SELECT * FROM flight_usage ORDER BY principal, bucket').all()).toEqual(before);
+    expect(warnings).toHaveBeenCalledTimes(1);
+    const record = JSON.parse(warnings.mock.calls[0][0] as string);
+    expect(record).toEqual({ event: 'flight_lookup_allowance_reached', reference: expect.stringMatching(/^FLT-[0-9a-f]{12}$/), scope, used: 1, maximum: 1, resetsAt });
+    expect(body).toContain(record.reference);
+    expect(body + JSON.stringify(warnings.mock.calls)).not.toMatch(/test-secret|user-a|BA286|2026-11-05/);
+  });
+  it('a denied monthly reservation does not consume the following day allowance', async () => {
+    env.FLIGHT_DAILY_LIMIT = '1'; env.FLIGHT_MONTHLY_LIMIT = '1';
+    await invoke();
+    const result = await invoke(flightRequest('?flightNumber=BA287&date=2026-11-05'), NOW + 86_400_000);
+    expect(result.status).toBe(429);
+    expect(sqlite.prepare("SELECT * FROM flight_usage WHERE bucket = 'day:2026-10-15'").all()).toEqual([]);
+    expect(sqlite.prepare("SELECT requests FROM flight_usage WHERE principal = 'global'").get()).toEqual({ requests: 1 });
+    expect(provider).toHaveBeenCalledTimes(1);
+  });
+  it('makes the daily allowance available at midnight UTC, irrespective of departure airport time zone', async () => {
+    env.FLIGHT_DAILY_LIMIT = '1';
+    const immediatelyBefore = Date.parse('2026-10-14T23:59:59Z');
+    expect((await invoke(undefined, immediatelyBefore)).status).toBe(200);
+    expect((await invoke(flightRequest('?flightNumber=BA287&date=2026-11-05'), immediatelyBefore)).status).toBe(429);
+    expect((await invoke(flightRequest('?flightNumber=BA287&date=2026-11-05'), immediatelyBefore + 1000)).status).toBe(200);
+    expect(provider).toHaveBeenCalledTimes(2);
+  });
+  it('validates provider headers before reserving or sending a known-invalid local request', async () => {
+    const result = await invoke(undefined, NOW, { RAPIDAPI_KEY: 'private\ninvalid-key' });
+    const body = await result.text();
+    expect(result.status).toBe(503); expect(body).toContain('not configured correctly');
+    expect(provider).not.toHaveBeenCalled();
+    expect(sqlite.prepare('SELECT * FROM flight_usage').all()).toEqual([]);
+    expect(JSON.parse(warnings.mock.calls[0][0] as string)).toMatchObject({ event: 'flight_provider_failure', category: 'configuration' });
+    expect(body + JSON.stringify(warnings.mock.calls)).not.toMatch(/private|invalid-key/);
   });
   it('bounds monthly usage and does not retry failed provider calls automatically', async () => {
     env.FLIGHT_MONTHLY_LIMIT = '1'; provider.mockImplementation(async () => { throw new Error('key=' + env.RAPIDAPI_KEY); });
@@ -228,7 +295,7 @@ describe('Authenticated flight lookup, retention and quota', () => {
   });
   it('resolves unknown airports through verified provider IANA zones and caches only reduced airport fields', async () => {
     const copy = fixture(); copy[0].departure.airport = { iata: 'ZZZ', icao: 'KZZZ', name: 'Synthetic test airport' };
-    provider.mockImplementation(async (url) => String(url).includes('/airports/') ? providerResponse({ iata: 'ZZZ', icao: 'KZZZ', timeZone: 'America/Los_Angeles', unwanted: 'never-store' }) : providerResponse(copy));
+    provider.mockImplementation(async (request) => (request as Request).url.includes('/airports/') ? providerResponse({ iata: 'ZZZ', icao: 'KZZZ', timeZone: 'America/Los_Angeles', unwanted: 'never-store' }) : providerResponse(copy));
     const result = await (await invoke()).json() as FlightLookupResult;
     expect(result.candidates[0].departureTimeZone).toBe('America/Los_Angeles'); expect(provider).toHaveBeenCalledTimes(2);
     expect(sqlite.prepare('SELECT time_zone FROM flight_airport_cache').get()).toEqual({ time_zone: 'America/Los_Angeles' });
@@ -239,7 +306,7 @@ describe('Authenticated flight lookup, retention and quota', () => {
     const copy = fixture(); delete copy[0].departure.airport.timeZone; provider.mockImplementation(async () => providerResponse(copy));
     expect((await (await invoke()).json() as FlightLookupResult).candidates).toHaveLength(1); expect(provider).toHaveBeenCalledTimes(1);
     copy[0].departure.airport = { iata: 'XYZ', name: 'Unresolved' };
-    provider.mockImplementation(async url => String(url).includes('/airports/') ? new Response(null, { status: 204 }) : providerResponse(copy));
+    provider.mockImplementation(async request => (request as Request).url.includes('/airports/') ? new Response(null, { status: 204 }) : providerResponse(copy));
     expect((await (await invoke(flightRequest('?flightNumber=BA287&date=2026-11-05'))).json() as FlightLookupResult).candidates).toEqual([]);
   });
   it('rejects malformed, large, non-JSON and oversized provider collections without exposing provider body', async () => {
@@ -261,7 +328,7 @@ describe('Authenticated flight lookup, retention and quota', () => {
 
   it('rejects unrelated airport identity responses and does not invent a time zone', async () => {
     const copy = fixture(); copy[0].departure.airport = { icao: 'KZZZ', name: 'Synthetic test airport' };
-    provider.mockImplementation(async url => String(url).includes('/airports/') ? providerResponse({ icao: 'KYYY', timeZone: 'America/Los_Angeles' }) : providerResponse(copy));
+    provider.mockImplementation(async request => (request as Request).url.includes('/airports/') ? providerResponse({ icao: 'KYYY', timeZone: 'America/Los_Angeles' }) : providerResponse(copy));
     const result = await (await invoke()).json() as FlightLookupResult;
     expect(result.candidates).toEqual([]);
     expect(sqlite.prepare('SELECT COUNT(*) AS count FROM flight_airport_cache').get()).toEqual({ count: 0 });
@@ -276,8 +343,8 @@ describe('Authenticated flight lookup, retention and quota', () => {
     } finally { clock.mockRestore(); }
   });
   it('aborts slow provider calls and returns a bounded generic error', async () => {
-    provider.mockImplementation(async (_url, options) => new Promise<Response>((_resolve, reject) => {
-      options?.signal?.addEventListener('abort', () => reject(new Error('key=' + env.RAPIDAPI_KEY)), { once: true });
+    provider.mockImplementation(async request => new Promise<Response>((_resolve, reject) => {
+      (request as Request).signal.addEventListener('abort', () => reject(new Error('key=' + env.RAPIDAPI_KEY)), { once: true });
     }));
     const result = await handleApi(flightRequest(), env, { now: () => NOW, fetch: provider, timeoutMs: 5 });
     const body = await result.text();

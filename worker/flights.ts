@@ -28,7 +28,7 @@ export class FlightApiError extends Error {
   constructor(public status: number, message: string) { super(message); }
 }
 
-type ProviderFailure = 'timeout' | 'network' | 'redirect' | 'access_denied' | 'rate_limit' | 'http' | 'response';
+type ProviderFailure = 'configuration' | 'timeout' | 'network' | 'redirect' | 'access_denied' | 'rate_limit' | 'http' | 'response';
 function providerFailure(path: string, category: ProviderFailure, started: number, status: number, message: string, providerStatus?: number): FlightApiError {
   const reference = 'FLT-' + crypto.randomUUID().replace(/-/g, '').slice(0, 12);
   // This allowlist deliberately excludes the URL, flight/date, account, headers,
@@ -91,19 +91,47 @@ function limit(value: string | undefined, fallback: number, max: number): number
 }
 async function reserveRequest(db: D1Database, env: FlightEnv, accountId: string, now: number): Promise<void> {
   const date = new Date(now * 1000).toISOString();
+  const nextDay = new Date(Date.parse(date.slice(0, 10) + 'T00:00:00Z') + 86_400_000).toISOString();
+  const nextMonth = new Date(Date.UTC(Number(date.slice(0, 4)), Number(date.slice(5, 7)), 1)).toISOString();
   const reservations = [
-    [`user:${accountId}`, `day:${date.slice(0, 10)}`, limit(env.FLIGHT_DAILY_LIMIT, 10, 1000)],
-    [`user:${accountId}`, `month:${date.slice(0, 7)}`, limit(env.FLIGHT_MONTHLY_LIMIT, 40, 10_000)],
-    ['global', `month:${date.slice(0, 7)}`, limit(env.FLIGHT_GLOBAL_MONTHLY_LIMIT, 150, 1_000_000)],
+    { principal: `user:${accountId}`, bucket: `day:${date.slice(0, 10)}`, maximum: limit(env.FLIGHT_DAILY_LIMIT, 10, 1000), scope: 'account_day', resetsAt: nextDay },
+    { principal: `user:${accountId}`, bucket: `month:${date.slice(0, 7)}`, maximum: limit(env.FLIGHT_MONTHLY_LIMIT, 40, 10_000), scope: 'account_month', resetsAt: nextMonth },
+    { principal: 'global', bucket: `month:${date.slice(0, 7)}`, maximum: limit(env.FLIGHT_GLOBAL_MONTHLY_LIMIT, 150, 1_000_000), scope: 'global_month', resetsAt: nextMonth },
   ] as const;
-  for (const [principal, bucket, maximum] of reservations) {
-    // Single-statement conditional writes remain atomic across Worker isolates.
-    // A failed later reservation conservatively leaves earlier counters spent.
-    const reserved = await db.prepare(
-      'INSERT INTO flight_usage (principal, bucket, requests, retain_until) VALUES (?, ?, 1, ?) ON CONFLICT(principal, bucket) DO UPDATE SET requests = flight_usage.requests + 1 WHERE flight_usage.requests < ? RETURNING requests',
-    ).bind(principal, bucket, now + 40 * 86_400, maximum).first<{ requests: number }>();
-    if (!reserved) throw new FlightApiError(429, 'Flight lookup allowance reached. Use manual entry or try again after the allowance resets.');
+  // One SQLite write is atomic across Worker isolates. Materialize the shared
+  // capacity decision before modifying any row: all three budgets advance, or
+  // none do. Separate upserts would spend a daily/monthly allowance even when a
+  // later budget refuses the request and no provider call can be made.
+  const reserved = await db.prepare(`
+    WITH reservations(principal, bucket, maximum, retain_until) AS (VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)),
+    permit(allowed) AS MATERIALIZED (
+      SELECT NOT EXISTS (
+        SELECT 1 FROM reservations r JOIN flight_usage u ON u.principal = r.principal AND u.bucket = r.bucket
+        WHERE u.requests >= r.maximum
+      )
+    )
+    INSERT INTO flight_usage (principal, bucket, requests, retain_until)
+    SELECT principal, bucket, 1, retain_until FROM reservations WHERE (SELECT allowed FROM permit)
+    ON CONFLICT(principal, bucket) DO UPDATE SET requests = flight_usage.requests + 1
+    RETURNING principal, bucket
+  `).bind(...reservations.flatMap(value => [value.principal, value.bucket, value.maximum, now + 40 * 86_400])).all();
+  if (reserved.results.length === reservations.length) return;
+  // Counters only increase during their active bucket, so a second read can
+  // identify an exhausted scope without placing private principal IDs in logs.
+  for (const reservation of reservations) {
+    const current = await db.prepare('SELECT requests FROM flight_usage WHERE principal = ? AND bucket = ?')
+      .bind(reservation.principal, reservation.bucket).first<{ requests: number }>();
+    if (!current || current.requests < reservation.maximum) continue;
+    const reference = 'FLT-' + crypto.randomUUID().replace(/-/g, '').slice(0, 12);
+    console.warn(JSON.stringify({ event: 'flight_lookup_allowance_reached', reference, scope: reservation.scope, used: current.requests, maximum: reservation.maximum, resetsAt: reservation.resetsAt }));
+    const description = reservation.scope === 'account_day' ? 'daily allowance for this account'
+      : reservation.scope === 'account_month' ? 'monthly allowance for this account' : 'shared monthly allowance';
+    const reset = new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(reservation.resetsAt));
+    throw new FlightApiError(429, `Rephase's ${description} for flight lookup has been reached. This is an app safety limit, separate from RapidAPI usage. It resets on ${reset} at 00:00 UTC. Use manual entry until then. Reference: ${reference}.`);
   }
+  // Defensive fallback for an unexpected database result; never send a provider
+  // request unless all three reservations were confirmed.
+  throw new FlightApiError(503, 'Flight lookup allowance could not be checked. Use manual entry or try again later.');
 }
 
 async function readProviderJson(response: Response): Promise<unknown> {
@@ -134,18 +162,30 @@ async function providerRequest(path: string, db: D1Database, env: FlightEnv, acc
   const started = Date.now();
   const remaining = (dependencies.deadlineMs ?? (Date.now() + 15_000)) - Date.now();
   if (remaining <= 0) throw providerFailure(path, 'timeout', started, 503, 'Flight lookup timed out. Use manual entry or try again later.');
-  await reserveRequest(db, env, accountId, now);
   const controller = new AbortController();
+  const url = PROVIDER + path;
+  const options: RequestInit = {
+    method: 'GET', headers: { 'X-RapidAPI-Key': env.RAPIDAPI_KEY?.trim() ?? '', 'X-RapidAPI-Host': HOST, Accept: 'application/json' },
+    // Workers rejects redirect:'error' before sending the request. Manual mode
+    // plus an explicit status check also keeps credentials off redirect hosts.
+    signal: controller.signal, redirect: 'manual', cache: 'no-store',
+  };
+  let request: Request;
+  try {
+    // Catch known local URL/header/options errors before reserving any budget.
+    // A fetch exception after this point might follow a billable network call,
+    // so those reservations remain spent rather than blindly refunding errors.
+    if (!env.RAPIDAPI_KEY?.trim()) throw new Error('Missing provider key');
+    request = new Request(url, options);
+  } catch {
+    throw providerFailure(path, 'configuration', started, 503, 'Flight lookup is not configured correctly. Use manual entry while the API configuration is checked.');
+  }
+  await reserveRequest(db, env, accountId, now);
   const timeout = setTimeout(() => controller.abort(), Math.max(1, Math.min(dependencies.timeoutMs ?? 8_000, 10_000, remaining)));
   let category: ProviderFailure = 'network';
   let providerStatus: number | undefined;
   try {
-    const result = await (dependencies.fetch ?? fetch)(PROVIDER + path, {
-      method: 'GET', headers: { 'X-RapidAPI-Key': env.RAPIDAPI_KEY!.trim(), 'X-RapidAPI-Host': HOST, Accept: 'application/json' },
-      // Workers rejects redirect:'error' before sending the request. Manual mode
-      // plus an explicit status check also keeps credentials off redirect hosts.
-      signal: controller.signal, redirect: 'manual', cache: 'no-store',
-    });
+    const result = await (dependencies.fetch ?? fetch)(request);
     providerStatus = result.status;
     category = 'http';
     if (result.status >= 300 && result.status < 400) {
@@ -198,11 +238,14 @@ async function airportZone(airport: JsonRecord, db: D1Database, env: FlightEnv, 
 function timePair(value: unknown, timeZone: string): { utc: string; local: string; epoch: number; disambiguation?: 'earlier' | 'later' } | null {
   if (!object(value) || typeof value.utc !== 'string' || typeof value.local !== 'string'
     || value.utc.length > 40 || value.local.length > 40
-    || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,3})?)?(?:Z|\+00:00)$/.test(value.utc)
+    || !/^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}(?::\d{2}(?:\.\d{1,3})?)?(?:Z|\+00:00)$/.test(value.utc)
     || !/^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}(?::\d{2}(?:\.\d{1,3})?)?(?:Z|[+-]\d{2}:\d{2})?$/.test(value.local)) return null;
-  const epoch = Date.parse(value.utc);
+  // AeroDataBox uses both separators in explicit UTC fields. Normalize only
+  // the separator; the required UTC suffix and all calendar/zone checks stay.
+  const utcValue = value.utc.replace(' ', 'T');
+  const epoch = Date.parse(utcValue);
   if (!Number.isFinite(epoch)) return null;
-  const utcClock = value.utc.replace(/(?:Z|\+00:00)$/, '').replace(/\.\d{1,3}$/, '');
+  const utcClock = utcValue.replace(/(?:Z|\+00:00)$/, '').replace(/\.\d{1,3}$/, '');
   if (new Date(epoch).toISOString().slice(0, 19) !== (utcClock.length === 16 ? utcClock + ':00' : utcClock)) return null;
   const parts = new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' }).formatToParts(new Date(epoch));
   const get = (type: string) => parts.find(p => p.type === type)?.value;
