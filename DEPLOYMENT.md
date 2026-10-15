@@ -21,9 +21,31 @@ Confirm `rephase.surtani.org` has no existing DNS record or service before the f
 
 Once settings are complete, run **Actions → Deploy to Cloudflare → Run workflow**, selecting `main`. The workflow runs checks, migrates D1, deploys assets/API, and verifies the public configuration. Leave `DEPLOY_ENABLED` unset for the first deployment; setting it to `true` later enables deployment on every main push.
 
-The first Custom Domain upload succeeded before its public HTTPS/config endpoint became reachable. Deployment verification now retries for over three minutes of fast failures, allowing initial DNS/TLS setup without marking a healthy upload as failed too early. Each request retains a five-second timeout, and exhaustion explicitly distinguishes an uploaded Worker from an origin that has not verified.
+The Worker upload, migrations, DNS and TLS succeeded. The deployment workflow's final public check is currently blocked because Cloudflare challenges GitHub-hosted runners: the separate verification run received HTTP 403, HTML and `cf-mitigated: challenge`. Public browser and guest/offline checks passed. This is a security-rule issue, not evidence of a failed upload or an unprovisioned domain. See the troubleshooting steps below before rerunning deployment.
+
+Verification allows over three minutes for transient DNS/TLS or edge readiness failures, with a five-second timeout per request. A confirmed Cloudflare challenge instead stops immediately with a diagnostic and Security Events guidance. Neither case is silently treated as a successful check.
 
 Production smoke checks passed: desktop and 390px mobile guest planning, unique date tiles, both airport clocks, meal advice, calendar export, all 24 offline assets, offline planner/Science, Science without JavaScript, and HTTP 401 for unauthenticated account/state APIs. These checks do not complete Google sign-in or spend provider credits. Deployments remain manual until the owner enables `DEPLOY_ENABLED`.
+
+## Cloudflare challenges during verification
+
+Run **Actions → Verify production → Run workflow** on `main` to check DNS, public HTTPS and API configuration without deploying or using a Cloudflare API token. This workflow does not change the Worker, D1 or security settings. Its diagnostics print only response categories, readiness booleans, allowlisted errors and a validated Cloudflare Ray ID when available. Configuration values and response bodies are not printed by the verifier.
+
+Cloudflare's [`cf-mitigated: challenge` response header](https://developers.cloudflare.com/cloudflare-challenges/challenge-types/challenge-pages/detect-response/) identifies a browser challenge. It does not identify which product or rule issued it. In the Cloudflare dashboard, select **surtani.org → Security → Analytics → Events** (navigation may appear as **Security → Events**). Filter by host `rephase.surtani.org`, path `/api/config`, the verification time or its Ray ID. Expand the event and inspect **Service** and the matched rule. The initial diagnostic run was [38683737612](https://github.com/maniksurtani/rephase/actions/runs/38683737612), around 04:52 UTC on 15 October 2026.
+
+If a custom WAF rule caused the challenge, exclude this exact public request from that rule. If a managed feature supports exceptions, create a custom **Skip** rule targeting only that feature, using:
+
+```text
+(http.host eq "rephase.surtani.org"
+ and http.request.uri.path eq "/api/config"
+ and http.request.method eq "GET")
+```
+
+Place a skip rule before any challenging custom rules it must skip, and keep matching-request logging enabled. This narrowly scoped endpoint contains public configuration; account and state APIs still require authentication. Do not skip all security products or allowlist the changing GitHub runner IP ranges.
+
+**Bot Fight Mode is different:** the free product cannot be bypassed with WAF Skip rules. If that is the reported service, a scoped exception requires a product that supports one, such as Super Bot Fight Mode. Disabling free Bot Fight Mode affects the whole zone and is an explicit owner decision. Do not change unrelated zone protections to make the check pass.
+
+After the relevant exception is configured, rerun **Verify production**, then **Deploy to Cloudflare**, and verify real Google sign-in and trip sync. The deployment token is intentionally scoped to Workers/D1; adjusting zone security belongs in the owner's Cloudflare dashboard.
 
 ## Start the app locally
 
@@ -202,3 +224,6 @@ Existing Cloudflare secrets are preserved when a deployment omits `RAPIDAPI_KEY`
 - [Cloudflare API token permission reference](https://developers.cloudflare.com/fundamentals/api/reference/permissions/)
 - [GitHub Actions secrets](https://docs.github.com/en/actions/how-tos/security-for-github-actions/security-guides/using-secrets-in-github-actions)
 - [Google Identity Services setup](https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid)
+- [Cloudflare Security Events](https://developers.cloudflare.com/waf/analytics/security-events/)
+- [Cloudflare skip rules](https://developers.cloudflare.com/waf/custom-rules/skip/) and [supported skip options](https://developers.cloudflare.com/waf/custom-rules/skip/options/)
+- [Bot Fight Mode limitations](https://developers.cloudflare.com/bots/get-started/bot-fight-mode/#rules) and [Super Bot Fight Mode exceptions](https://developers.cloudflare.com/bots/get-started/super-bot-fight-mode/#configure-exceptions-to-super-bot-fight-mode)

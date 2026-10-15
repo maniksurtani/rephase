@@ -100,6 +100,9 @@ Amadeus Self-Service is discontinued. AirLabs's near-term schedules and Skyscann
 - [x] Deploy to https://rephase.surtani.org with D1 migrations, Custom Domain DNS/TLS and hourly purge.
 - [x] Verify production guest planning/calendar, mobile layout, Science/no-JavaScript, all offline assets, offline behavior and unauthenticated API rejection.
 - [x] Allow first-time DNS/TLS provisioning in the bounded post-deploy verification retry window.
+- [x] Isolate public verification in a read-only manual workflow and diagnose GitHub-runner HTTP 403 Cloudflare challenges without exposing response bodies or credentials.
+- [x] Stop confirmed browser challenges immediately with safe diagnostics and document service-specific, narrowly scoped exceptions.
+- [ ] Identify the challenging Cloudflare security service/rule in the owner's dashboard, configure the appropriate exception, and obtain green public verification/deployment runs.
 - [ ] Arrange qualified review of melatonin timing/dose suitability and evaluate usability/real-world outcomes before claiming clinical efficacy.
 
 ## Optional future decisions

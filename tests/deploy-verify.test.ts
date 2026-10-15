@@ -43,7 +43,7 @@ describe('public deployment verification', () => {
 
     await expect(verifyDeployment(settings, false, {
       fetch: fetchPublicConfig, wait, attempts: 2, retryDelay: 0,
-    })).rejects.toThrow('Worker uploaded, but public origin verification is not ready');
+    })).rejects.toThrow('Public origin verification is not ready');
 
     expect(fetchPublicConfig).toHaveBeenCalledTimes(2);
     expect(wait).toHaveBeenCalledTimes(1);
@@ -98,21 +98,44 @@ describe('public deployment verification', () => {
     expect(logs).not.toContain('private');
   });
 
-  it('categorizes an HTML challenge without printing its body or arbitrary response headers', async () => {
+  it('stops immediately on a Cloudflare challenge with safe diagnostics and Security Events guidance', async () => {
     const fetchPublicConfig = vi.fn().mockResolvedValueOnce(new Response('<html>private response body</html>', {
       status: 403,
-      headers: { 'Content-Type': 'text/html; private-parameter=secret', 'cf-mitigated': 'challenge', 'x-private': 'secret header' },
+      headers: {
+        'Content-Type': 'text/html; private-parameter=secret', 'cf-mitigated': 'challenge',
+        'cf-ray': '1234567890abcdef-SYD', 'x-private': 'secret header',
+      },
     })).mockResolvedValueOnce(readyResponse());
     const wait = vi.fn().mockResolvedValue(undefined);
 
-    await verifyDeployment(settings, false, { fetch: fetchPublicConfig, wait, attempts: 2, retryDelay: 0 });
+    await expect(verifyDeployment(settings, false, { fetch: fetchPublicConfig, wait }))
+      .rejects.toThrow('Security Events in the Cloudflare dashboard');
 
     const logs = JSON.stringify(vi.mocked(console.log).mock.calls);
     expect(logs).toContain('403');
     expect(logs).toContain('HTML');
     expect(logs).toContain('challenge\\\":true');
+    expect(logs).toContain('1234567890abcdef-SYD');
     expect(logs).not.toContain('private');
     expect(logs).not.toContain('secret');
+    expect(logs).not.toContain('Worker uploaded');
+    expect(fetchPublicConfig).toHaveBeenCalledTimes(1);
+    expect(wait).not.toHaveBeenCalled();
+  });
+
+  it.each(['private-ray-id', '1234567890abcdef-SYD private'])('omits an invalid Cloudflare trace header: %s', async (cfRay) => {
+    const fetchPublicConfig = vi.fn().mockResolvedValueOnce(new Response('private challenge body', {
+      status: 403, headers: { 'content-type': 'text/html', 'cf-mitigated': 'challenge', 'cf-ray': cfRay },
+    }));
+    const wait = vi.fn();
+
+    await expect(verifyDeployment(settings, false, { fetch: fetchPublicConfig, wait }))
+      .rejects.toThrow('Security Events');
+
+    const logs = JSON.stringify(vi.mocked(console.log).mock.calls);
+    expect(logs).not.toContain('cfRay');
+    expect(logs).not.toContain('private');
+    expect(wait).not.toHaveBeenCalled();
   });
 
   it('uses fixed diagnostic categories when error names, codes or MIME types contain arbitrary text', async () => {

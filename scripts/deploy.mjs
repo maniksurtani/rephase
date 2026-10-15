@@ -44,7 +44,7 @@ export async function verifyDeployment(settings, expectFlightLookup = false, opt
   }
   // A first Custom Domain needs time for DNS and TLS as well as edge propagation.
   // Forty checks provide over three minutes even when every request fails quickly.
-  console.log('Worker uploaded. Waiting for its public configuration to become ready.');
+  console.log('Checking public configuration and HTTPS readiness.');
   const errorNames = new Set(['Error', 'TypeError', 'AbortError', 'TimeoutError', 'SyntaxError']);
   const networkCodes = new Set([
     'ENOTFOUND', 'EAI_AGAIN', 'ECONNREFUSED', 'ECONNRESET', 'ETIMEDOUT',
@@ -63,15 +63,23 @@ export async function verifyDeployment(settings, expectFlightLookup = false, opt
           : ['text/html', 'application/xhtml+xml'].includes(mimeType) ? 'HTML' : 'other',
         challenge: response.headers.get('cf-mitigated') === 'challenge',
       };
-      const config = await response.json();
-      const clientMatches = config?.googleClientId === settings.clientId;
-      const syncReady = config?.syncAvailable === true;
-      const flightReady = !expectFlightLookup || config?.flightLookupAvailable === true;
-      diagnostic = { ...diagnostic, clientMatches, syncReady, flightReady };
-      if (response.ok && clientMatches && syncReady && flightReady) {
-        console.log(`Deployment responds at ${settings.origin}. Google client and database bindings are configured.`);
-        console.log('Complete a real Google sign-in and save/reload a trip to verify account sync.');
-        return;
+      if (diagnostic.challenge) {
+        const cfRay = response.headers.get('cf-ray');
+        if (cfRay && /^[a-f0-9]{16}-[a-z]{3}$/i.test(cfRay)) diagnostic.cfRay = cfRay;
+        // A challenge cannot be solved by a noninteractive deployment check.
+        // Discard its body without parsing or logging any challenge content.
+        await response.body?.cancel();
+      } else {
+        const config = await response.json();
+        const clientMatches = config?.googleClientId === settings.clientId;
+        const syncReady = config?.syncAvailable === true;
+        const flightReady = !expectFlightLookup || config?.flightLookupAvailable === true;
+        diagnostic = { ...diagnostic, clientMatches, syncReady, flightReady };
+        if (response.ok && clientMatches && syncReady && flightReady) {
+          console.log(`Public configuration responds at ${settings.origin}. Google client and database bindings are configured.`);
+          console.log('Complete a real Google sign-in and save/reload a trip to verify account sync.');
+          return;
+        }
       }
     } catch (error) {
       // Log only categories from fixed allowlists, never server bodies or error messages.
@@ -81,13 +89,17 @@ export async function verifyDeployment(settings, expectFlightLookup = false, opt
         networkCode: networkCodes.has(error?.cause?.code) ? error.cause.code : 'other',
       };
     }
-    if (attempt === 0 || (attempt + 1) % 6 === 0) {
-      const nextStep = attempt < attempts - 1 ? 'retrying.' : 'no checks remain.';
+    if (diagnostic.challenge || attempt === 0 || (attempt + 1) % 6 === 0) {
+      const nextStep = diagnostic.challenge ? 'blocked by a Cloudflare security challenge.'
+        : attempt < attempts - 1 ? 'retrying.' : 'no checks remain.';
       console.log(`Public configuration is not ready (check ${attempt + 1}/${attempts}; ${JSON.stringify(diagnostic)}); ${nextStep}`);
+    }
+    if (diagnostic.challenge) {
+      throw new Error('Cloudflare security challenge blocked GET /api/config. Open the zone\'s Security Events in the Cloudflare dashboard, filter by the configured public origin and GET /api/config, and review the matching rule before rerunning verification. Guidance: https://developers.cloudflare.com/waf/analytics/security-events/');
     }
     if (attempt < attempts - 1) await wait(retryDelay);
   }
-  throw new Error('Worker uploaded, but public origin verification is not ready. Check DNS/TLS readiness, PUBLIC_APP_ORIGIN, the Worker route and Google/database configuration before retrying verification.');
+  throw new Error('Public origin verification is not ready. Check DNS/TLS readiness, PUBLIC_APP_ORIGIN, the Worker route and Google/database configuration before retrying verification.');
 }
 
 export async function deploy(args = process.argv.slice(2)) {
