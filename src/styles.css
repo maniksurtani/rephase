@@ -28,3 +28,33 @@
 .flight-lookup .field{margin:14px 0}.flight-results{margin-top:16px;font-size:12px;line-height:1.6}.flight-result{display:flex;flex-direction:column;gap:7px;margin:14px 0;padding:14px;background:var(--bg);border-radius:10px}.flight-result .button{align-self:flex-start;margin-top:6px}.flight-result span{overflow-wrap:anywhere}
 .model-disclosure{margin:22px 0;padding:18px 20px;border:1px solid var(--border);border-radius:12px;font-size:13px;line-height:1.7}.model-disclosure p{color:var(--muted);margin:7px 0}.model-disclosure a,.page-footer a,.field small a,.science-modal a{color:var(--violet)}
 .feasibility-label{display:inline-block;color:var(--muted);font-size:11px;margin:5px 0}.record-button{display:block;margin-top:7px}.record-button:disabled{opacity:.4;cursor:default}.fold-choice{padding:10px;border:1px solid rgba(233,185,133,.35);border-radius:8px}.flight-operations .field-grid{margin-top:12px}.page-footer a{font-size:11px;display:flex;gap:6px;align-items:center;text-decoration:none}
+
+/* Flight facts remain visible even when the flight has no usable rest window. */
+.day-button.travel-day{border-color:#65503d;background:#252027}
+.day-button.travel-day small{display:flex;align-items:center;gap:4px;color:#e5b581}
+.day-button.travel-day.selected{border-color:#d2a676;background:#382c30}
+.day-button .day-zone{font-size:9px;max-width:84px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#a5a1b7}
+.day-flights{display:flex;flex-direction:column;gap:12px;margin-bottom:20px;min-width:0}
+.agenda-section-title{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:500;color:#d7bb9a;margin:0 0 2px}
+.flight-segment-card{background:linear-gradient(115deg,#29232b,#201f2d);border:1px solid #5f493b;border-left:3px solid #d6a774;border-radius:11px;padding:18px 20px;min-width:0}
+.flight-segment-header{display:flex;gap:12px;align-items:center;color:#e5b581;margin-bottom:17px}
+.flight-segment-label{font-size:11px;letter-spacing:.03em;color:#d0ae88}
+.flight-segment-header h3{font-size:18px;font-weight:600;color:#efe5dd;margin:3px 0 0}
+.flight-segment-header h3 span{color:#b79983;font-size:16px;padding:0 7px}
+.flight-segment-events{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px}
+.flight-segment-event{min-width:0}
+.flight-segment-event h4{font-size:11px;font-weight:500;color:#a9a0af;margin:0 0 10px}
+.flight-clock{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:9px 0;min-width:0}
+.flight-clock-label{font-size:10px;color:#b0a8ba;max-width:95px}
+.flight-clock time{display:flex;flex-direction:column;align-items:flex-end;gap:2px;font-variant-numeric:tabular-nums;flex-shrink:0}
+.flight-clock time strong{font-size:14px;font-weight:600;color:#ece4e6}
+.flight-clock time span{font-size:10px;color:#a49bad;white-space:nowrap}
+.flight-clock-destination time strong{color:#e5b581}
+.travel-action-clocks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 14px;border-top:1px solid #373344;padding-top:10px;margin:12px 0 3px}
+.travel-action-clock{display:flex;flex-direction:column;gap:4px;min-width:0;font-variant-numeric:tabular-nums}
+.travel-action-clock>span{font-size:10px;color:#bca8cf}
+.travel-action-clock strong{font-size:11px;line-height:1.6;font-weight:500;color:#dbd4e4}
+.travel-action-clock small{font-size:10px;color:#a5a0b5}
+@media(max-width:1100px){.flight-segment-events{gap:15px}.flight-clock{flex-direction:column;gap:4px}.flight-clock time{align-items:flex-start}.travel-action-clocks{grid-template-columns:1fr}}
+@media(max-width:760px){.flight-segment-card{padding:16px}.flight-segment-events{gap:18px}.flight-clock{flex-direction:row}.flight-clock-label{max-width:76px}.flight-clock time{align-items:flex-end}.travel-action-clocks{grid-template-columns:1fr}.action-card .travel-action-clock strong{font-size:11px}.day-button.travel-day{min-width:84px}}
+@media(max-width:400px){.flight-clock{flex-direction:column;gap:3px}.flight-clock time{align-items:flex-start}.flight-segment-header h3{font-size:17px}}

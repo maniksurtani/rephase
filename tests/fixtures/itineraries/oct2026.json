@@ -1,0 +1,61 @@
+{
+  "research": {
+    "checkedDate": "2026-10-15",
+    "status": "Provisional published third-party timetable; not booking- or airline-confirmed",
+    "sources": [
+      "https://www.flight.info/QF103",
+      "https://planefinder.net/data/flight/QF103",
+      "https://www.flight.info/AS812",
+      "https://www.flight.info/AA6276",
+      "https://www.flight.info/QF94",
+      "https://www.flightsfrom.com/LAX/departures?departureDate=2026-10-24",
+      "https://www.flight.info/QF490"
+    ],
+    "caveats": [
+      "These times are reproducible test data, not an assertion that a live provider or airline has verified the traveler's booking.",
+      "AA6276 has both LAX-to-SFO and SFO-to-LAX occurrences on 24 October; this itinerary uses SFO-to-LAX 16:07-to-17:44. Flight number and date alone are ambiguous.",
+      "QF94's 23:40 departure and 26 October 09:30 arrival are corroborated by Flight.info and FlightsFrom. https://info.flightmapper.net/flight/Qantas_QF_94 lists a conflicting older 20:55-to-06:45 (+2 days) schedule. Confirm with the booking before travel.",
+      "QF94 remains in transit on 25 October and arrives two local calendar dates after departure.",
+      "AA6276's operating carrier on this exact date was not independently verified; do not infer it from historical codeshare records.",
+      "AS812 timestamps from UTC-based trackers must be converted to departure-local dates before being used."
+    ]
+  },
+  "trip": {
+    "id": "october-2026-pacific",
+    "name": "October Pacific journey",
+    "createdAt": "2026-10-15T00:00:00.000Z",
+    "updatedAt": "2026-10-15T00:00:00.000Z",
+    "legs": [
+      {
+        "id": "qf103", "flightNumber": "QF103", "departureAirport": "SYD", "arrivalAirport": "HNL",
+        "departureDateTime": "2026-10-17T20:15", "arrivalDateTime": "2026-10-17T08:55",
+        "departureTimeZone": "Australia/Sydney", "arrivalTimeZone": "Pacific/Honolulu",
+        "stayAfter": "destination", "strategy": "adapt", "travelClass": "economy", "lieFlat": false
+      },
+      {
+        "id": "as812", "flightNumber": "AS812", "departureAirport": "HNL", "arrivalAirport": "SFO",
+        "departureDateTime": "2026-10-19T14:40", "arrivalDateTime": "2026-10-19T22:52",
+        "departureTimeZone": "Pacific/Honolulu", "arrivalTimeZone": "America/Los_Angeles",
+        "stayAfter": "destination", "strategy": "adapt", "travelClass": "economy", "lieFlat": false
+      },
+      {
+        "id": "aa6276", "flightNumber": "AA6276", "departureAirport": "SFO", "arrivalAirport": "LAX",
+        "departureDateTime": "2026-10-24T16:07", "arrivalDateTime": "2026-10-24T17:44",
+        "departureTimeZone": "America/Los_Angeles", "arrivalTimeZone": "America/Los_Angeles",
+        "stayAfter": "connection", "strategy": "adapt", "travelClass": "economy", "lieFlat": false
+      },
+      {
+        "id": "qf94", "flightNumber": "QF94", "departureAirport": "LAX", "arrivalAirport": "MEL",
+        "departureDateTime": "2026-10-24T23:40", "arrivalDateTime": "2026-10-26T09:30",
+        "departureTimeZone": "America/Los_Angeles", "arrivalTimeZone": "Australia/Melbourne",
+        "stayAfter": "destination", "strategy": "adapt", "travelClass": "economy", "lieFlat": false
+      },
+      {
+        "id": "qf490", "flightNumber": "QF490", "departureAirport": "MEL", "arrivalAirport": "SYD",
+        "departureDateTime": "2026-10-27T20:10", "arrivalDateTime": "2026-10-27T21:35",
+        "departureTimeZone": "Australia/Melbourne", "arrivalTimeZone": "Australia/Sydney",
+        "stayAfter": "destination", "strategy": "adapt", "travelClass": "economy", "lieFlat": false
+      }
+    ]
+  }
+}

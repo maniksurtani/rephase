@@ -41,6 +41,17 @@ Updated 2026-10-15. Checked items are implemented and engineering-verified. Exte
 - [x] Persist atomic sync snapshots; merge independent preference/trip/leg edits and preserve conflicting/in-flight changes.
 - [x] Add opt-in automatic sync, bounded retries, offline behavior, deletion pauses, and account reauthentication controls.
 
+## Flight-entry and travel-day feedback
+
+- [x] Use minute-resolution flight and airborne inputs while preserving unedited provider precision.
+- [x] Seed a blank arrival from departure and preserve explicitly edited or previously saved arrivals.
+- [x] Derive flight markers from itinerary intervals, independent of rest recommendations, in both engines.
+- [x] Display flights and travel-day recommendations in both origin and destination zones with explicit local dates.
+- [x] Keep flight-only days in Today and hide unavailable phase estimates.
+- [x] Research and retain a sourced, provisional five-flight October 2026 regression fixture, including flight-number ambiguity.
+- [x] Verify the real itinerary, editor behavior, date-line travel, and mobile layout in Chromium.
+- [x] Complete final checks, update documentation, and sync the feedback changes to GitHub.
+
 ## Dynamic flight lookup — AeroDataBox
 
 Amadeus Self-Service is discontinued. AirLabs's near-term schedules and Skyscanner's route-search API do not meet the known-flight/date requirement months ahead. Provider evidence, current plan limits, and terms are linked in DESIGN.md.
@@ -84,6 +95,6 @@ Amadeus Self-Service is discontinued. AirLabs's near-term schedules and Skyscann
 - [ ] Consider Web Push only after a product decision and mobile delivery testing; calendar reminders are implemented.
 - [ ] Consider measured phase/light inputs, richer sleep/fatigue models, and cross-tab live editing as separate enhancements.
 
-Verification: frontend and Worker TypeScript passed; all 173 Vitest tests passed across 14 suites using one worker and a 30-second timeout on this shared environment. The initial full run had one five-second storage timeout during parallel compiler load; the final run passed. Production build contains 24 precached assets. All ten Chromium scenarios are verified: desktop agenda/calendar, mobile persistence/overflow, example-to-personal editing/focus/cabin choices, invalid itinerary rejection, offline account namespace and Science page, cloud conflict/reload behavior, static Science without JavaScript, flight confirmation, DST occurrence selection, and adherence/reload. Two new browser selectors were corrected (internal citation vs external CDC link; history item vs a limitation containing “missed”); affected scenarios and mobile/offline checks passed the focused final rerun (4/4). Local D1 migration 0002, API 200/401/403 checks, production Science URL without a redirect, scheduled purge, launcher startup/shutdown and real Wrangler dry runs succeeded.
+Latest feedback verification (2026-10-15): frontend and Worker TypeScript passed; all 199 Vitest tests passed across 17 suites using one worker; the production build contains 24 precached assets. All 14 Chromium scenarios passed (10 existing and four feedback regressions). The new scenarios cover the sourced five-flight itinerary, both airport clocks and local dates, two flights on 24 October, QF94 in transit on 25 October, the short same-offset final flight, active rest alongside a flight, flights with no active recommendation, minute-only input/defaulting, saved-arrival preservation, and mobile overflow. Source times remain explicitly provisional. Initial implementation checks also verified local D1 migrations/API responses, scheduled cache purging, launcher startup/shutdown, and real Wrangler dry-run bundling; no Worker behavior changed in this feedback update.
 
 Real OAuth/provider coverage and clinical efficacy are not implied by these checks. The code is synced to [maniksurtani/rephase](https://github.com/maniksurtani/rephase), and local `main` tracks `origin/main`. No Cloudflare deployment exists yet.

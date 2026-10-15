@@ -2,6 +2,7 @@ import { Temporal } from '@js-temporal/polyfill';
 import type { AdaptationStrategy, Plan, PlanAction, PlanDay, Preferences, Trip } from './types';
 import { dateInZone, localToInstant } from './time';
 import { generateModelPlan, type ModelPlanOptions } from './model-plan';
+import { decoratePlanWithTravel } from './plan-travel';
 
 export const PLAN_VERSION = 'rules-1.2.0';
 const HOUR = 3_600_000;
@@ -413,5 +414,5 @@ export function generatePlan(trip: Trip, prefs: Preferences, options?: ModelPlan
   const errors = validateTrip(trip);
   if (errors.length) throw new RangeError(errors.join('\n'));
   validatePreferences(prefs);
-  return prefs.planningMode === 'rules' ? generateRulesPlan(trip, prefs) : generateModelPlan(trip, prefs, options);
+  return decoratePlanWithTravel(prefs.planningMode === 'rules' ? generateRulesPlan(trip, prefs) : generateModelPlan(trip, prefs, options), trip);
 }

@@ -77,6 +77,17 @@ export interface PlanAction {
   evidenceUrl?: string;
   feasibility?: 'daylight' | 'indoor' | 'unknown';
 }
+/** Gate-to-gate itinerary facts, independent of optional sleep/light recommendations. */
+export interface PlanTravelSegment {
+  id: string;
+  flightNumber: string;
+  departureAirport: string;
+  arrivalAirport: string;
+  departure: string;
+  arrival: string;
+  departureTimeZone: string;
+  arrivalTimeZone: string;
+}
 export interface PlanDay {
   id: string;
   date: string;
@@ -87,6 +98,9 @@ export interface PlanDay {
   phaseShiftHours: number;
   remainingShiftHours: number;
   note: string;
+  travelSegments?: PlanTravelSegment[];
+  /** False for a schedule-only calendar day that has no model/rules estimate. */
+  phaseEstimateAvailable?: boolean;
 }
 export interface Plan {
   version: string;

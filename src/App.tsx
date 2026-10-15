@@ -1,16 +1,17 @@
-import { useEffect, useRef, useState } from 'react';
-import type { AppData, Account, AdherenceRecord, FlightLeg, PlanAction, Preferences, Trip } from './lib/types';
+import { useEffect, useState } from 'react';
+import type { AppData, Account, AdherenceRecord, PlanAction, PlanTravelSegment, Preferences, Trip } from './lib/types';
 import { validateTrip } from './lib/plan';
 import { findAirport } from './lib/airports';
-import { createEmptyTrip, createLeg } from './lib/defaults';
+import { createEmptyTrip } from './lib/defaults';
 import { exportCalendar, exportData } from './lib/export';
-import { ArrowDown, ArrowRight, ArrowUpRight, CalendarDays, Check, CheckCircle2, ChevronLeft, ChevronRight, Clock3, Cloud, Coffee, Download, ExternalLink, EyeOff, Globe2, Info, LoaderCircle, LogOut, Moon, Pencil, Plane, Plus, ShieldCheck, Sparkles, Sun, Trash2, UserRound, X } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, CalendarDays, Check, CheckCircle2, ChevronLeft, ChevronRight, Clock3, Cloud, Coffee, Download, ExternalLink, EyeOff, Globe2, Info, LoaderCircle, LogOut, Moon, Pencil, Plane, Plus, ShieldCheck, Sparkles, Sun, Trash2, UserRound, X } from 'lucide-react';
 import './styles.css';
 import { usePlanning } from './lib/usePlanning';
 import type { AuthConfig } from './lib/auth';
-import { AirportInput } from './components/AirportInput';
-import { FoldChoice } from './components/FoldChoice';
-import { FlightLookup } from './components/FlightLookup';
+import { TripEditor } from './components/TripEditor';
+import { Modal } from './components/Modal';
+import { FlightSegmentCard } from './components/FlightSegmentCard';
+import { actionTravelSegment, travelClock } from './lib/travel-clocks';
 import { AdherenceForm } from './components/AdherenceForm';
 import { validateAppData } from './lib/validation';
 
@@ -80,15 +81,30 @@ function MoonScene() {
   </svg>;
 }
 
-function ActionCard({ action, compact = false, isCurrent = false, record, onRecord }: { action: PlanAction; compact?: boolean; isCurrent?: boolean; record?: AdherenceRecord; onRecord?: (action:PlanAction)=>void }) {
+function ActionTravelClocks({ action, segment }: { action: PlanAction; segment: PlanTravelSegment }) {
+  return <div className="travel-action-clocks" aria-label="Recommendation in origin and destination time">
+    {[{ role: 'Origin', airport: segment.departureAirport, zone: segment.departureTimeZone }, { role: 'Destination', airport: segment.arrivalAirport, zone: segment.arrivalTimeZone }].map(clock => {
+      const start = travelClock(action.start, clock.zone), end = travelClock(action.end, clock.zone);
+      return <div className="travel-action-clock" key={clock.role}>
+        <span>{clock.role} · {clock.airport}</span>
+        <strong><time dateTime={action.start}>{start.date} {start.time}</time> – <time dateTime={action.end}>{end.date} {end.time}</time></strong>
+        <small>{start.zone}{start.zone !== end.zone ? ` → ${end.zone}` : ''}</small>
+      </div>;
+    })}
+  </div>;
+}
+
+function ActionCard({ action, compact = false, isCurrent = false, record, onRecord, travelSegments }: { travelSegments?: PlanTravelSegment[]; action: PlanAction; compact?: boolean; isCurrent?: boolean; record?: AdherenceRecord; onRecord?: (action:PlanAction)=>void }) {
   const [expanded, setExpanded] = useState(false);
+  const segment = actionTravelSegment(action, travelSegments);
   const meta = actionMeta[action.type];
   const Icon = meta.icon;
   const differentDay = localDate(action.start, action.timeZone) !== localDate(action.end, action.timeZone);
   return <article className={`action-card ${meta.color} ${compact ? 'compact' : ''} ${isCurrent ? 'current' : ''}`}>
-    <div className="action-time"><strong>{time(action.start, action.timeZone)}</strong><span>{time(action.end, action.timeZone)}{differentDay && <small> +1 day</small>}</span></div>
+    <div className="action-time"><strong>{time(action.start, action.timeZone)}</strong><span>{time(action.end, action.timeZone)}{differentDay && <small> +1 day</small>}</span>{segment && <small>{zoneName(action.timeZone, action.start)}</small>}</div>
     <div className="action-symbol"><Icon size={20}/></div>
     <div className="action-content"><div className="action-title-line"><h3>{action.title}</h3>{isCurrent && <span className="live-label">Now</span>}</div><p>{action.detail}</p>{action.feasibility && <span className="feasibility-label">{action.feasibility === 'daylight' ? 'Daylight available' : action.feasibility === 'indoor' ? 'Indoor light needed' : 'Daylight uncertain'}</span>}{action.dose && <span className="dose-label">Informational dose range: {action.dose}</span>}
+      {segment && <ActionTravelClocks action={action} segment={segment}/>}
       {!compact && <button type="button" className="why-button" aria-expanded={expanded} onClick={() => setExpanded(!expanded)}><Info size={13}/>{expanded ? 'Hide explanation' : 'Why this helps'}<ChevronRight size={13} className={expanded ? 'rotated' : ''}/></button>}
       {onRecord && <button type="button" className="why-button record-button" disabled={Date.parse(action.start)>Date.now()} onClick={()=>onRecord(action)}>{record ? `Recorded: ${record.status} · edit` : 'Record what happened'}</button>}
       {expanded && <div className="action-explanation"><p>{action.reason}</p>{action.evidenceUrl && <a href={action.evidenceUrl} target="_blank" rel="noreferrer">Read the source <ExternalLink size={12}/></a>}</div>}
@@ -114,8 +130,12 @@ export default function App(props: AppProps) {
   const allActions = plan?.days.flatMap(day => day.actions).sort((a, b) => Date.parse(a.start) - Date.parse(b.start)) ?? [];
   const currentAction = allActions.find(a => Date.parse(a.start) <= now.getTime() && Date.parse(a.end) > now.getTime());
   const nextAction = allActions.find(a => Date.parse(a.start) > now.getTime());
-  const currentDay = plan?.days.find(day => day.actions.some(action => action.id === currentAction?.id));
-  const nextDay = plan?.days.find(day => day.actions.some(action => action.id === nextAction?.id));
+  const flights = [...new Map(plan?.days.flatMap(day => (day.travelSegments ?? []).map(segment => [segment.id, segment] as const))).values()].sort((a, b) => Date.parse(a.departure) - Date.parse(b.departure));
+  const currentFlight = flights.find(flight => Date.parse(flight.departure) <= now.getTime() && Date.parse(flight.arrival) > now.getTime());
+  const nextFlight = flights.find(flight => Date.parse(flight.departure) > now.getTime());
+  const flightDay = (flight: PlanTravelSegment) => plan?.days.find(day => day.travelSegments?.some(segment => segment.id === flight.id) && day.date === localDate(currentFlight?.id === flight.id ? now : flight.departure, day.timeZone));
+  const currentDay = plan?.days.find(day => day.actions.some(action => action.id === currentAction?.id)) ?? (currentFlight ? flightDay(currentFlight) : undefined);
+  const nextDay = nextFlight && (!nextAction || Date.parse(nextFlight.departure) < Date.parse(nextAction.start)) ? flightDay(nextFlight) : plan?.days.find(day => day.actions.some(action => action.id === nextAction?.id));
   const today = currentDay ?? (nextDay?.date === localDate(now, nextDay?.timeZone ?? 'UTC') ? nextDay : plan?.days.filter(day => day.date === localDate(now, day.timeZone)).at(-1));
   const upcomingDay = currentDay ?? nextDay;
   const defaultDay = today ?? upcomingDay ?? plan?.days[0];
@@ -184,9 +204,10 @@ export default function App(props: AppProps) {
             {trip ? <section className="trip-summary-card"><div className="trip-route">{trip.legs.slice(0, 5).map((leg, i) => <div className="route-segment" key={leg.id}>{i === 0 && <><div className="route-point"><span className="route-airport">{leg.departureAirport}</span><span>{airportCity(leg.departureAirport)}</span></div><div className="route-connector"><span/><Plane size={15}/><span/></div></>}<div className="route-point"><span className="route-airport">{leg.arrivalAirport}</span><span>{airportCity(leg.arrivalAirport)}</span>{leg.stayAfter === 'connection' && <small>Connection</small>}</div>{i < Math.min(trip.legs.length, 5) - 1 && <div className="route-connector"><span/><Plane size={15}/><span/></div>}</div>)}{trip.legs.length > 5 && <span className="more-stops">+{trip.legs.length - 5}</span>}</div><div className="trip-summary-footer"><span><CalendarDays size={15}/>{dateLabel(trip.legs[0]?.departureDateTime ?? '')}{trip.legs.length > 1 && ` – ${dateLabel(trip.legs.at(-1)?.arrivalDateTime ?? '')}`}</span><button type="button" className="text-button" onClick={() => setTab('trips')}>Trip details <ArrowUpRight size={15}/></button></div></section> : <section className="empty-card"><Plane size={28}/><h3>Start with your flights</h3><p>Add each stop, and we’ll connect the whole journey into one plan.</p><button type="button" className="button primary" onClick={createTrip}><Plus size={16}/>Add a trip</button></section>}
             {plan && <section className="today-section"><div className="section-heading"><div><span className="eyebrow muted">{today ? 'Your daily rhythm' : itineraryFinished ? 'Your journey' : 'A little preparation goes a long way'}</span><h2>{today ? 'Today, at a glance' : itineraryFinished ? 'This plan is complete' : 'Your first steps'}</h2></div>{timelineDay && <span className="subtle-label">{dateLabel(timelineDay.date)}</span>}</div>
               {isDemo && <div className="demo-note"><Info size={16}/><p>This is a sample itinerary. Add your flights and sleep preferences for a personal plan.</p><button type="button" onClick={createTrip}>Make it yours <ArrowRight size={14}/></button></div>}
-              {!today && timelineDay && <div className="upcoming-note"><CalendarDays size={17}/><span>Your {timelineDay.stage === 'preparation' ? 'preparation' : 'next plan day'} begins <strong>{dateLabel(timelineDay.date, 'long')}</strong>. Times below are in {city(timelineDay.timeZone)} ({zoneName(timelineDay.timeZone, timelineDay.actions[0]?.start)}).</span></div>}
+              {!today && timelineDay && <div className="upcoming-note"><CalendarDays size={17}/><span>Your {timelineDay.stage === 'preparation' ? 'preparation' : 'next plan day'} begins <strong>{dateLabel(timelineDay.date, 'long')}</strong>. {timelineDay.travelSegments?.length ? 'Flight and recommendation times include both origin and destination clocks.' : `Times below are in ${city(timelineDay.timeZone)} (${zoneName(timelineDay.timeZone, timelineDay.actions[0]?.start)}).`}</span></div>}
               {today && <p className="timezone-caption"><Globe2 size={14}/>{city(today.timeZone)} local time · {zoneName(today.timeZone, today.actions[0]?.start)}</p>}
-              {timelineDay && <div className="action-list">{timelineDay.actions.slice(0, 3).map(action => <ActionCard key={action.id} action={action} compact isCurrent={!isDemo && action.id === currentAction?.id}/>)}</div>}
+              {timelineDay?.travelSegments?.length ? <div className="day-flights">{timelineDay.travelSegments.map(segment => <FlightSegmentCard key={segment.id} segment={segment}/>)}</div> : null}
+              {timelineDay && <div className="action-list">{timelineDay.actions.slice(0, 3).map(action => <ActionCard key={action.id} action={action} compact travelSegments={timelineDay.travelSegments} isCurrent={!isDemo && action.id === currentAction?.id}/>)}</div>}
               {itineraryFinished && <div className="empty-card subtle"><CheckCircle2 size={28}/><p>Your saved itinerary has ended. Create your next trip whenever you’re ready.</p></div>}
               <button type="button" className="button quiet full-plan-button" onClick={() => setTab('plan')}>See the full timeline <ArrowRight size={16}/></button>
             </section>}
@@ -202,10 +223,11 @@ export default function App(props: AppProps) {
           {!trip || !plan ? (result.loading ? <p className="small-copy">You can keep editing your trip while your plan is calculated.</p> : <EmptyPlan onCreate={createTrip}/>) : <>
             <div className="plan-trip-bar"><div className="plan-trip-name"><span className="small-icon"><Plane size={19}/></span><div><h2>{trip.name}</h2><span>{plural(plan.summary.destinations, 'destination')} · {plural(plan.summary.timeZoneChanges, 'time zone change')}</span></div></div><button type="button" className="text-button" onClick={() => editTrip(trip)}><Pencil size={14}/>Edit trip</button></div>
             {isDemo && <div className="demo-note"><Info size={16}/><p>Explore the example plan, then replace it with your own trip.</p><button type="button" onClick={createTrip}>Add your flights <ArrowRight size={14}/></button></div>}
-            <div className="day-navigation" role="group" aria-label="Choose a plan day">{plan.days.map(day => <button type="button" key={day.id} className={`day-button ${day.id === selectedDay?.id ? 'selected' : ''}`} aria-pressed={day.id === selectedDay?.id} onClick={() => setSelectedDayId(day.id)}><span>{dateLabel(day.date).split(',')[0].split(' ')[0]}</span><strong>{Number(day.date.slice(8, 10))}</strong><small>{day.stage === 'preparation' ? 'Prepare' : day.stage === 'travel' ? 'Travel' : day.stage === 'home' ? 'Home' : city(day.timeZone)}</small></button>)}</div>
-            {selectedDay && <div className="plan-layout"><section><div className="agenda-heading"><div><span className={`stage-label ${selectedDay.stage}`}><span/>{selectedDay.label}</span><h2>{dateLabel(selectedDay.date, 'long')}</h2><p className="timezone-caption"><Globe2 size={14}/>All times in {city(selectedDay.timeZone)} · {zoneName(selectedDay.timeZone, selectedDay.actions[0]?.start)}</p></div><div className="day-arrows"><button type="button" className="icon-button" aria-label="Previous plan day" disabled={plan.days.indexOf(selectedDay) === 0} onClick={() => setSelectedDayId(plan.days[plan.days.indexOf(selectedDay) - 1]?.id)}><ChevronLeft size={18}/></button><button type="button" className="icon-button" aria-label="Next plan day" disabled={plan.days.indexOf(selectedDay) === plan.days.length - 1} onClick={() => setSelectedDayId(plan.days[plan.days.indexOf(selectedDay) + 1]?.id)}><ChevronRight size={18}/></button></div></div>
-              <div className="agenda-list">{selectedDay.actions.map(action => <ActionCard key={action.id} action={action} isCurrent={!isDemo && action.id === currentAction?.id} record={trip.adherence?.find(entry=>entry.actionId===action.id)} onRecord={isDemo?undefined:setRecordAction}/>)}</div>{selectedDay.actions.length === 0 && <div className="empty-card subtle"><Moon size={25}/><p>No special actions on this day. Keep your regular sleep routine.</p></div>}
-            </section><aside className="plan-aside"><section className="plan-note-card"><span className="eyebrow muted"><Sparkles size={14}/>Your body clock</span><h3>A gradual adjustment</h3><p>{selectedDay.note}</p><div className="phase-meter"><span>Estimated shift this day</span><strong>{Math.abs(selectedDay.phaseShiftHours).toFixed(1)}<small> hours</small></strong></div><p className="small-copy">Estimates start from your usual sleep schedule and continue through every destination.</p></section><section className="plan-note-card muted-card"><h3>Make the plan work for you</h3><p>Seek outdoor light when you can. For light avoidance, dim indoor lighting and reduce bright screens.</p><button type="button" className="text-button" onClick={() => setScienceOpen(true)}>Understand the timing <ArrowUpRight size={14}/></button></section></aside></div>}
+            <div className="day-navigation" role="group" aria-label="Choose a plan day">{plan.days.map(day => <button type="button" key={day.id} className={`day-button ${day.travelSegments?.length ? 'travel-day' : ''} ${day.id === selectedDay?.id ? 'selected' : ''}`} data-date={day.date} data-zone={day.timeZone} title={`${dateLabel(day.date, 'long')} · ${city(day.timeZone)}${day.travelSegments?.length ? ` · ${day.travelSegments.map(segment => segment.flightNumber || `${segment.departureAirport} → ${segment.arrivalAirport}`).join(', ')}` : ''}`} aria-pressed={day.id === selectedDay?.id} onClick={() => setSelectedDayId(day.id)}><span>{dateLabel(day.date).split(',')[0].split(' ')[0]}</span><strong>{Number(day.date.slice(8, 10))}</strong><small>{day.travelSegments?.length ? <><Plane size={11}/>Travel</> : day.stage === 'preparation' ? 'Prepare' : day.stage === 'home' ? 'Home' : city(day.timeZone)}</small>{Boolean(day.travelSegments?.length) && <span className="day-zone">{city(day.timeZone)}</span>}</button>)}</div>
+            {selectedDay && <div className="plan-layout"><section><div className="agenda-heading"><div><span className={`stage-label ${selectedDay.stage}`}>{selectedDay.travelSegments?.length ? <Plane size={13}/> : <span/>}{selectedDay.label}</span><h2>{dateLabel(selectedDay.date, 'long')}</h2><p className="timezone-caption"><Globe2 size={14}/>{selectedDay.travelSegments?.length ? 'Both origin and destination times shown, with local dates.' : `All times in ${city(selectedDay.timeZone)} · ${zoneName(selectedDay.timeZone, selectedDay.actions[0]?.start)}`}</p></div><div className="day-arrows"><button type="button" className="icon-button" aria-label="Previous plan day" disabled={plan.days.indexOf(selectedDay) === 0} onClick={() => setSelectedDayId(plan.days[plan.days.indexOf(selectedDay) - 1]?.id)}><ChevronLeft size={18}/></button><button type="button" className="icon-button" aria-label="Next plan day" disabled={plan.days.indexOf(selectedDay) === plan.days.length - 1} onClick={() => setSelectedDayId(plan.days[plan.days.indexOf(selectedDay) + 1]?.id)}><ChevronRight size={18}/></button></div></div>
+              {selectedDay.travelSegments?.length ? <section className="day-flights" aria-label="Flights on this plan day"><h3 className="agenda-section-title"><Plane size={15}/>Flights on this day</h3>{selectedDay.travelSegments.map(segment => <FlightSegmentCard key={segment.id} segment={segment}/>)}</section> : null}
+              <div className="agenda-list">{selectedDay.actions.map(action => <ActionCard key={action.id} action={action} travelSegments={selectedDay.travelSegments} isCurrent={!isDemo && action.id === currentAction?.id} record={trip.adherence?.find(entry=>entry.actionId===action.id)} onRecord={isDemo?undefined:setRecordAction}/>)}</div>{selectedDay.actions.length === 0 && <div className="empty-card subtle"><Moon size={25}/><p>{selectedDay.travelSegments?.length ? 'Your flights are shown above. There are no additional recommendations on this day; short flights may have no usable rest window.' : 'No special actions on this day. Keep your regular sleep routine.'}</p></div>}
+            </section><aside className="plan-aside"><section className="plan-note-card"><span className="eyebrow muted"><Sparkles size={14}/>Your body clock</span><h3>A gradual adjustment</h3><p>{selectedDay.note}</p>{selectedDay.phaseEstimateAvailable !== false && <div className="phase-meter"><span>Estimated shift this day</span><strong>{Math.abs(selectedDay.phaseShiftHours).toFixed(1)}<small> hours</small></strong></div>}<p className="small-copy">Estimates start from your usual sleep schedule and continue through every destination.</p></section><section className="plan-note-card muted-card"><h3>Make the plan work for you</h3><p>Seek outdoor light when you can. For light avoidance, dim indoor lighting and reduce bright screens.</p><button type="button" className="text-button" onClick={() => setScienceOpen(true)}>Understand the timing <ArrowUpRight size={14}/></button></section></aside></div>}
             {plan.model && <div className="model-disclosure"><strong>Published circadian model · {plan.model.strategy} timing</strong><p>Numerically checked against the reference implementation. Personal phase and light exposure are estimates; this app has not been clinically validated.</p><a href="/science.html#limits">How the model works</a></div>}
             {trip.adherence?.length ? <details className="plan-warnings"><summary>Your recorded history <span>{trip.adherence.length}</span></summary><ul>{trip.adherence.slice().reverse().map(entry=><li key={entry.id}>{actionMeta[entry.type].label} · {dateLabel(entry.scheduledStart)} {time(entry.scheduledStart,entry.timeZone)} · {entry.status}</li>)}</ul></details> : null}
             {plan.warnings.length > 0 && <details className="plan-warnings"><summary><Info size={16}/>Plan notes & limitations <span>{plan.warnings.length}</span></summary><ul>{plan.warnings.map((warning, index) => <li key={index}>{warning}</li>)}</ul></details>}
@@ -282,83 +304,6 @@ function Profile(props: AppProps & { onNotice: (message: string) => void }) {
 function GoogleMark() { return <svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24"><path fill="#4285F4" d="M21.6 12.23c0-.71-.06-1.39-.18-2.05H12v3.88h5.38a4.6 4.6 0 0 1-2 3.02v2.51h3.24c1.89-1.74 2.98-4.31 2.98-7.36Z"/><path fill="#34A853" d="M12 22c2.7 0 4.96-.9 6.62-2.41l-3.24-2.51c-.9.6-2.04.97-3.38.97-2.6 0-4.81-1.76-5.6-4.12H3.05v2.59A10 10 0 0 0 12 22Z"/><path fill="#FBBC05" d="M6.4 13.93A6 6 0 0 1 6.09 12c0-.67.11-1.32.31-1.93V7.48H3.05A10 10 0 0 0 2 12c0 1.61.38 3.13 1.05 4.52l3.35-2.59Z"/><path fill="#EA4335" d="M12 5.95c1.47 0 2.78.5 3.82 1.49l2.86-2.86A9.56 9.56 0 0 0 12 2a10 10 0 0 0-8.95 5.48l3.35 2.59C7.19 7.71 9.4 5.95 12 5.95Z"/></svg>; }
 function Toggle({ checked, onChange, icon: Icon, title, description }: { checked: boolean; onChange: (v: boolean) => void; icon: typeof Sun; title: string; description: string }) {
   return <label className="toggle-row"><span className="toggle-icon"><Icon size={20}/></span><span className="toggle-copy"><strong>{title}</strong><small>{description}</small></span><span className={`toggle ${checked ? 'on' : ''}`}><input type="checkbox" checked={checked} onChange={event => onChange(event.target.checked)}/><span/></span></label>;
-}
-
-function TripEditor({ trip, setTrip, errors, onSave, onClose, existing, accountId, flightLookupAvailable }: { trip: Trip; setTrip: (value: Trip) => void; errors: string[]; onSave: () => void; onClose: () => void; existing: boolean; accountId:string|null; flightLookupAvailable:boolean }) {
-  function updateLeg(id: string, patch: Partial<FlightLeg>) {
-    const scheduleFields=['flightNumber','departureAirport','arrivalAirport','departureDateTime','arrivalDateTime','departureTimeZone','arrivalTimeZone','takeoffDateTime','landingDateTime','departureDisambiguation','arrivalDisambiguation'];
-    setTrip({ ...trip, legs: trip.legs.map(leg => {
-      if(leg.id!==id)return leg;
-      const updated={...leg,...patch};
-      if(!patch.flightSource && Object.keys(patch).some(key=>scheduleFields.includes(key))) {
-        if(updated.flightSource!=='aerodatabox')updated.flightSource='manual';
-        if(!('takeoffDateTime' in patch))delete updated.takeoffDateTime;
-        if(!('landingDateTime' in patch))delete updated.landingDateTime;
-      }
-      if('departureDateTime' in patch && !('departureDisambiguation' in patch))delete updated.departureDisambiguation;
-      if('arrivalDateTime' in patch && !('arrivalDisambiguation' in patch))delete updated.arrivalDisambiguation;
-      return Object.fromEntries(Object.entries(updated).filter(([,value])=>value!==undefined)) as unknown as FlightLeg;
-    }) });
-  }
-  function updateAirport(leg: FlightLeg, side: 'departure' | 'arrival', value: string) {
-    const code = value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4);
-    const airport = findAirport(code);
-    updateLeg(leg.id, { [`${side}Airport`]: code, ...(airport ? { [`${side}TimeZone`]: airport.timeZone } : {}) });
-  }
-  function addLeg() {
-    const last = trip.legs.at(-1);
-    const leg = createLeg();
-    if (last) { leg.departureAirport = last.arrivalAirport; leg.departureTimeZone = last.arrivalTimeZone; }
-    setTrip({ ...trip, legs: [...trip.legs, leg] });
-  }
-  function moveLeg(index: number, direction: number) {
-    const legs = [...trip.legs];
-    [legs[index], legs[index + direction]] = [legs[index + direction], legs[index]];
-    setTrip({ ...trip, legs });
-  }
-  return <Modal title={existing ? 'Edit your journey' : 'Plan a new journey'} onClose={onClose} className="trip-editor-modal">
-    <p className="modal-intro">Add flights in travel order. Mark airport connections separately from places you’ll stay.</p><form onSubmit={event => { event.preventDefault(); onSave(); }}>
-      <label className="field trip-name-field"><span>Trip name</span><input value={trip.name} onChange={event => setTrip({ ...trip, name: event.target.value })} placeholder="Tokyo, with a stop in Singapore" maxLength={100} required data-initial-focus/></label>
-      {errors.length > 0 && <div className="alert error-alert" role="alert"><ul>{errors.map((error, index) => <li key={index}>{error}</li>)}</ul></div>}
-      <div className="flight-editor-list">{trip.legs.map((leg, index) => <section className="flight-editor-card" key={leg.id}><div className="flight-editor-heading"><span className="flight-number-badge">{index + 1}</span><h3>Flight {index + 1}</h3><div className="flight-editor-tools"><button type="button" className="icon-button" aria-label={`Move flight ${index + 1} earlier`} disabled={index === 0} onClick={() => moveLeg(index, -1)}><ArrowUpRight size={15} className="move-up"/></button><button type="button" className="icon-button" aria-label={`Move flight ${index + 1} later`} disabled={index === trip.legs.length - 1} onClick={() => moveLeg(index, 1)}><ArrowDown size={15}/></button><button type="button" className="icon-button danger-icon" aria-label={`Remove flight ${index + 1}`} disabled={trip.legs.length === 1} onClick={() => setTrip({ ...trip, legs: trip.legs.filter(value => value.id !== leg.id) })}><Trash2 size={15}/></button></div></div>
-        <label className="field flight-number-field"><span>Flight number <small>optional</small></span><input value={leg.flightNumber} onChange={event => updateLeg(leg.id, { flightNumber: event.target.value })} placeholder="e.g. BA 282" maxLength={20}/></label>
-        <FlightLookup leg={leg} accountId={accountId} available={flightLookupAvailable} onApply={patch=>updateLeg(leg.id,patch)}/>
-        <div className="flight-endpoints"><div><span className="endpoint-label"><span/>Departure</span><label className="field"><span>Airport code</span><AirportInput value={leg.departureAirport} onChange={value=>updateAirport(leg, 'departure', value)} placeholder="LAX"/><small>{findAirport(leg.departureAirport)?.name ?? 'Enter an IATA code (3 letters) or ICAO code (4)'}</small></label><label className="field"><span>Local departure date & time</span><input type="datetime-local" step={1} value={leg.departureDateTime} onChange={event => updateLeg(leg.id, { departureDateTime: event.target.value })} required/></label><label className="field timezone-field"><span>Departure time zone</span><input list="time-zones" value={leg.departureTimeZone} onChange={event => updateLeg(leg.id, { departureTimeZone: event.target.value })} required/></label><FoldChoice local={leg.departureDateTime} zone={leg.departureTimeZone} value={leg.departureDisambiguation} onChange={value=>updateLeg(leg.id,{departureDisambiguation:value})} label="Departure"/></div>
-          <div><span className="endpoint-label arrival"><span/>Arrival</span><label className="field"><span>Airport code</span><AirportInput value={leg.arrivalAirport} onChange={value=>updateAirport(leg, 'arrival', value)} placeholder="LHR"/><small>{findAirport(leg.arrivalAirport)?.name ?? 'Enter an IATA code (3 letters) or ICAO code (4)'}</small></label><label className="field"><span>Local arrival date & time</span><input type="datetime-local" step={1} value={leg.arrivalDateTime} onChange={event => updateLeg(leg.id, { arrivalDateTime: event.target.value })} required/></label><label className="field timezone-field"><span>Arrival time zone</span><input list="time-zones" value={leg.arrivalTimeZone} onChange={event => updateLeg(leg.id, { arrivalTimeZone: event.target.value })} required/></label><FoldChoice local={leg.arrivalDateTime} zone={leg.arrivalTimeZone} value={leg.arrivalDisambiguation} onChange={value=>updateLeg(leg.id,{arrivalDisambiguation:value})} label="Arrival"/></div></div>
-        <details className="flight-operations"><summary>Taxi time and airborne times</summary><p className="small-copy">Bookings normally give gate times. Without airborne times, allow 30 minutes for taxi at each end, then protect the first 30 minutes after takeoff and last 60 before landing.</p><div className="field-grid"><label className="field"><span>Taxi-out allowance (minutes)</span><input type="number" min="0" max="180" value={leg.taxiOutMinutes??30} onChange={event=>updateLeg(leg.id,{taxiOutMinutes:Number(event.target.value)})}/></label><label className="field"><span>Taxi-in allowance (minutes)</span><input type="number" min="0" max="180" value={leg.taxiInMinutes??30} onChange={event=>updateLeg(leg.id,{taxiInMinutes:Number(event.target.value)})}/></label><label className="field"><span>Known takeoff time (departure local, optional)</span><input type="datetime-local" step={1} value={leg.takeoffDateTime??''} onChange={event=>updateLeg(leg.id,{takeoffDateTime:event.target.value||undefined})}/></label><label className="field"><span>Known landing time (arrival local, optional)</span><input type="datetime-local" step={1} value={leg.landingDateTime??''} onChange={event=>updateLeg(leg.id,{landingDateTime:event.target.value||undefined})}/></label></div></details>
-        <div className="cabin-editor field-grid"><label className="field"><span>Travel class</span><select value={leg.travelClass ?? 'economy'} onChange={event=>updateLeg(leg.id,{travelClass:event.target.value as FlightLeg['travelClass']})}><option value="economy">Economy</option><option value="premium-economy">Premium economy</option><option value="business">Business</option><option value="first">First</option></select></label><label className="field"><span>Lie-flat bed available?</span><select value={leg.lieFlat ? 'yes' : 'no'} onChange={event=>updateLeg(leg.id,{lieFlat:event.target.value==='yes'})}><option value="no">No / unsure — seated rest</option><option value="yes">Yes — confirmed lie-flat bed</option></select><small>Confirm your actual seat. Business class can have an upright or reclining seat.</small></label></div>
-        <div className="flight-rest-note"><Moon size={15}/><p>Rest windows exclude the first 30 minutes after takeoff and the final 60 minutes before landing. Crew instructions and seatbelt requirements take priority.</p></div>
-        <div className="stay-editor"><label className="field"><span>After this flight</span><select value={leg.stayAfter} onChange={event => updateLeg(leg.id, { stayAfter: event.target.value as FlightLeg['stayAfter'] })}><option value="destination">I’m staying at this destination</option><option value="connection">Airport connection / in transit</option></select></label>{leg.stayAfter === 'destination' ? <label className="field"><span>Adjustment strategy for this stay</span><select value={leg.strategy} onChange={event => updateLeg(leg.id, { strategy: event.target.value as FlightLeg['strategy'] })}><option value="adapt">Adjust toward local time</option><option value="partial">Partial adjustment for a short stay</option><option value="home">Keep my home rhythm</option></select><small>{leg.strategy === 'partial' ? 'Useful when you have a short stay before another destination.' : leg.strategy === 'home' ? 'Preserve your home body clock while planning in local time.' : 'Shift gradually toward your preferred destination sleep schedule.'}</small></label> : <div className="connection-info"><Info size={16}/><p>Your body-clock estimate continues through this connection. Add the onward flight below.</p></div>}</div>
-      </section>)}</div>
-      <button type="button" className="add-flight-button" onClick={addLeg}><Plus size={17}/>Add the next flight or return leg</button>
-      <div className="inline-note"><Globe2 size={16}/><p>Enter each airport’s local date and time exactly as shown on your booking. Time zones fill automatically for known airports and remain editable.</p></div>
-      <div className="modal-footer sticky-footer"><button type="button" className="button secondary" onClick={onClose}>Cancel</button><button type="submit" className="button primary">{existing ? 'Save & regenerate plan' : 'Create my plan'}<ArrowRight size={16}/></button></div>
-    </form>
-  </Modal>;
-}
-
-function Modal({ title, onClose, className = '', children }: { title: string; onClose: () => void; className?: string; children: React.ReactNode }) {
-  const onCloseRef = useRef(onClose);
-  const dialogRef = useRef<HTMLElement>(null);
-  onCloseRef.current = onClose;
-  useEffect(() => {
-    const previous = document.activeElement as HTMLElement | null;
-    const handleKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onCloseRef.current();
-      if (event.key === 'Tab') {
-        const modal = dialogRef.current;
-        const elements = modal?.querySelectorAll<HTMLElement>('button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex="0"]');
-        if (!elements?.length) return;
-        const first = elements[0], last = elements[elements.length - 1];
-        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
-        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
-      }
-    };
-    document.addEventListener('keydown', handleKey);
-    const timer = window.setTimeout(() => { const first = dialogRef.current?.querySelector<HTMLElement>('[data-initial-focus]') ?? dialogRef.current?.querySelector<HTMLElement>('button'); first?.focus(); }, 0);
-    return () => { document.removeEventListener('keydown', handleKey); window.clearTimeout(timer); previous?.focus(); };
-  }, []);
-  return <div className="modal-backdrop" onMouseDown={event => { if (event.target === event.currentTarget) onClose(); }}><section ref={dialogRef} className={`modal ${className}`} role="dialog" aria-modal="true" aria-label={title}><header className="modal-header"><h2>{title}</h2><button type="button" className="icon-button" aria-label="Close dialog" onClick={onClose}><X size={20}/></button></header>{children}</section></div>;
 }
 
 function ScienceModal({ onClose }: { onClose: () => void }) {

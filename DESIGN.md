@@ -23,8 +23,8 @@ Implementation choices: manual entry with optional AeroDataBox lookup, a minimal
 Four main views:
 
 1. **Today**: current and next action when a plan is active; upcoming preparation when the trip is in the future. Demo trips are clearly labeled. A future or completed trip must not masquerade as a current recommendation.
-2. **Plan**: a date selector, named timezone, preparation/travel/stay stages, and chronological action cards with reasons. Sleep can cross midnight; start and end dates remain visible when needed.
-3. **Trips**: create/edit/delete itineraries. Every flight has airport-local departure and arrival dates/times, timezone, optional flight number, connection/destination classification, and strategy for the following stay. Arrival time is entered separately, never inferred from route distance.
+2. **Plan**: a date selector, named timezone, preparation/travel/stay stages, and chronological action cards with reasons. Amber plane markers identify every flight day, including short flights with no usable rest window. Flight cards and travel-day recommendations show both origin and destination clocks with explicit local dates and timezone labels. Flight facts appear separately from recommendations; sleep can cross midnight.
+3. **Trips**: create/edit/delete itineraries. Every flight has airport-local departure and arrival dates/times, timezone, optional flight number, connection/destination classification, and strategy for the following stay. Flight inputs use HH:mm. A blank arrival initially follows the entered departure date/time until the traveler edits it; an existing or imported arrival remains intact. This is an editable wall-clock starting point, never a calculated schedule or an inference from route distance.
 4. **Profile**: habitual sleep for baseline estimation, preferred sleep for target scheduling, duration and fixed-bed/fixed-wake anchor, chronotype, preparation days, optional supplements, and Google/sync controls.
 
 The default example route includes London, a Dubai connection, Singapore, and a return to San Francisco. Example dates are relative to the current date; this is not live flight data. Editing an example creates a personal itinerary.
@@ -67,6 +67,8 @@ The itinerary is interpreted as home → flights/connections → destination sta
 
 `Plan` contains engine version, input trip ID, generation timestamp, warnings, summary, and ordered `PlanDay[]`. Every action records a UTC start/end, named display zone, type, instructions, reason, and optional evidence/dose information. Plans are regenerated from inputs rather than synced as authoritative biological observations.
 
+A shared post-processing step adds `PlanTravelSegment` gate-to-gate UTC intervals and both airport zones after either engine runs. Calendar overlap uses actual zoned midnight boundaries, including 23/25-hour DST days. Departure-origin, arrival-destination, and intervening destination dates remain visible even when there are no recommendation actions. Multiple flights on the same day retain separate cards. Schedule-only days have no invented actions or phase estimate, and create no extra medical calendar events. Today considers active/upcoming flights as well as recommendation windows.
+
 `AppData` has a schema version, preferences, trips, and selected trip ID. Local account namespaces are independent. Cloud state has an optimistic revision counter to prevent a stale device silently overwriting another device's changes.
 
 ## Time and validation
@@ -76,7 +78,7 @@ The itinerary is interpreted as home → flights/connections → destination sta
 - Compare flights and connections in UTC; a date-line crossing can arrive on an earlier local calendar date.
 - Validate timezones, required fields, positive elapsed durations, and departure ordering.
 - Bound itinerary length/horizon and API payload size to prevent runaway work or storage.
-- Preserve IANA zones and local timestamps so future timezone-rule changes can regenerate schedules.
+- Preserve IANA zones and local timestamps so future timezone-rule changes can regenerate schedules. Minute-resolution editor presentation does not truncate unedited provider seconds, including known airborne times used for operational exclusions.
 - Include meaningful tests for DST transitions, half/quarter-hour offsets, date-line travel, overlapping flights, multi-stop continuity, and preference opt-outs.
 
 ## Science, model, and limits
@@ -204,5 +206,7 @@ The verified development workflow currently uses Node/npm, Vite, Vitest, Playwri
 ## Verification and known future work
 
 Require TypeScript checks, a production build, temporal/itinerary/opt-out tests, Worker rejection/ownership/revision tests, and local HTTP smoke checks. Browser QA uses Playwright/Chromium against the production build, including static science, flight confirmation, and offline shell behavior; API scenarios use controlled responses. Real Google sign-in cannot be end-to-end verified without an OAuth client. No deployment or clinical validation is implied by passing engineering checks.
+
+The regression fixture [October 2026 Pacific itinerary](tests/fixtures/itineraries/oct2026.json) records the five user-supplied flight numbers with provisional public timetable times, source URLs, and conflicts. It covers SYD–HNL, HNL–SFO, SFO–LAX, LAX–MEL, and MEL–SYD; two flights on 24 October; QF94 in transit on 25 October before arriving on 26 October; and a short same-offset final flight. AA6276 has both directions on the supplied date and is resolved here using trip continuity. This fixture does not claim live provider or booking verification.
 
 See [TODO.md](TODO.md) for completed work, remaining implementation tasks, and research/deployment milestones.

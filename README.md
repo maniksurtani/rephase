@@ -27,6 +27,8 @@ If this workspace is remote, forward port **5173** (or **8787** in production mo
 
 The London → Dubai connection → Singapore → San Francisco example uses relative future dates and is labeled as an example. Create a trip or edit it to make a personal itinerary. Profile controls habitual/preferred sleep, duration, chronotype, supplements, planning mode, calendar reminders, and optional automatic sync.
 
+Flight inputs use HH:mm, with a blank arrival initially matching departure until you adjust it. Travel days have plane markers, explicit flight cards, and recommendation times in both origin and destination zones with local dates. Short flights remain visible even without a usable rest window.
+
 Flight editing supports travel class and **separately confirmed** lie-flat availability. Unknown airborne times use 30-minute taxi allowances at each end, then exclude the first 30 minutes after takeoff and the final 60 before landing. Short flights may have no rest window. Crew instructions take priority. Airline class alone does not imply a bed.
 
 ## Google sign-in and account sync
@@ -56,7 +58,7 @@ Never commit keys or put them in browser configuration. Lookup requires a verifi
 
 The Worker caches normalized schedules with freshness timestamps, labels stale results, deduplicates concurrent requests within an isolate, and reserves daily/monthly/global request quotas before provider calls. Defaults: 10 provider requests per account/day, 40/month, and 150 globally/month. Airport metadata calls count too. AeroDataBox's free plan is for noncommercial use; check current plan limits and terms before enabling it. Shared cache retention is six days with hourly cleanup, below the seven-day limit. Owner-specific trip records are never reused as a shared cache. Provider attribution remains visible after manual edits to imported records.
 
-Live route coverage at +60/+90/+150 days awaits your key; fixtures are synthetic and do not prove future coverage.
+Live route coverage at +60/+90/+150 days awaits your key; provider API fixtures are synthetic and do not prove future coverage. A separate [October 2026 itinerary regression](tests/fixtures/itineraries/oct2026.json) uses sourced, provisional third-party timetable times with explicit ambiguity/conflict notes.
 
 ## Offline and calendar export
 
@@ -80,7 +82,7 @@ npm run test:e2e
 
 Playwright uses `/usr/bin/chromium` when present, or `PLAYWRIGHT_CHROMIUM_EXECUTABLE`; otherwise install it with `npx playwright install chromium`. Engineering checks cover numerical reference trajectories, temporal/itinerary constraints, adherence replay, daylight, API ownership/nonce/session/revision security, cache/quotas, sync merges, calendar export, and deployment/launcher configuration. Browser checks use controlled API responses for account and flight scenarios.
 
-Verified locally: frontend/Worker TypeScript, all 173 unit/model/API tests, production build, ten Chromium scenarios, local D1/API/scheduled-handler smoke checks, launcher setup/shutdown, and real Wrangler dry-run bundling. Corrected browser selectors passed their affected rerun. Real Google and provider checks await credentials; no public deployment occurred. QA servers are stopped after verification.
+Verified locally: frontend/Worker TypeScript, all 199 unit/model/API tests, production build, 14 Chromium scenarios, local D1/API/scheduled-handler smoke checks, launcher setup/shutdown, and real Wrangler dry-run bundling. The five-flight October itinerary, date-line transit days, short flights, dual clocks, arrival defaults, and mobile layout have dedicated regressions. Real Google and provider checks await credentials; no public deployment occurred. QA servers are stopped after verification.
 
 For the independent numerical fixture reproduction, see [the kernel notes](src/lib/circadian/README.md). The airport source and optional Bun benchmark are documented in [DATA_SOURCES.md](DATA_SOURCES.md). `npm run benchmark:bun` reports honestly if Bun is absent; Node/npm remain the authoritative toolchain and lockfile.
 
