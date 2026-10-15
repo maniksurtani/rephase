@@ -57,6 +57,8 @@ This account storage fits Cloudflare’s free tier for personal use and an initi
 
 ## Debug flight lookup
 
+The Safari/provider repair was published by successful [deployment 38693556714](https://github.com/maniksurtani/rephase/actions/runs/38693556714), after all 332 unit/model/API/runtime tests and 30 browser scenarios passed in GitHub. The workflow finished after upload and secret installation, without a final public HTTP request. A subsequent public WebKit check at 390px confirmed the new assets, configured Google/account storage/lookup and date/time fields contained within their cards. Real provider credential/coverage acceptance still requires an authenticated booked-flight lookup, and physical iPhone Safari sizing needs the owner’s check.
+
 The first real lookup exposed a runtime incompatibility: Cloudflare Workers supports `redirect: "manual"` and `"follow"`, but rejects `"error"` before making a network request. Rephase now uses manual redirects and explicitly rejects 3xx responses so a provider redirect cannot forward its credential elsewhere. A regression runs the actual adapter in workerd/Miniflare with an intercepted provider, without live credentials or provider usage.
 
 Provider failures include a support reference. In the Cloudflare dashboard, open **Workers & Pages → rephase → Observability → Logs**, reproduce one lookup, and find the corresponding failure event/reference. Share the reference and safe event fields if the error persists. The event records only a fixed error category, elapsed time, request kind and numeric provider status when available; it excludes keys, cookies, headers, response bodies, flight numbers, dates and account identifiers. A thrown exception’s raw message is never recorded.
