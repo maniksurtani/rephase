@@ -1,8 +1,8 @@
 # Running and deploying Rephase
 
-The selected production origin is **https://rephase.surtani.org**, hosted by a Cloudflare Worker with static assets and a D1 database. The code is on GitHub; no Cloudflare resource or deployment has been created yet.
+**Production is live at https://rephase.surtani.org**, deployed on 15 October 2026 using a Cloudflare Worker Custom Domain, static assets and D1. Both database migrations and the hourly cache-purge schedule are applied. Google sign-in is configured; live flight lookup is disabled until `RAPIDAPI_KEY` is supplied. A real Google sign-in and trip sync still need user verification.
 
-## First launch at rephase.surtani.org
+## Production configuration at rephase.surtani.org
 
 Create a GitHub Actions environment named `production` at [repository environment settings](https://github.com/maniksurtani/rephase/settings/environments). Set these environment variables:
 
@@ -20,6 +20,10 @@ Enter `CLOUDFLARE_API_TOKEN` directly as a `production` environment secret. Keep
 Confirm `rephase.surtani.org` has no existing DNS record or service before the first run. A noninteractive Wrangler deployment can replace an existing origin or DNS assignment. The generated deployment config declares a Custom Domain, disables workers.dev/preview URLs for this target, and lets Cloudflare create DNS and HTTPS automatically. Do not create a manual CNAME for it.
 
 Once settings are complete, run **Actions → Deploy to Cloudflare → Run workflow**, selecting `main`. The workflow runs checks, migrates D1, deploys assets/API, and verifies the public configuration. Leave `DEPLOY_ENABLED` unset for the first deployment; setting it to `true` later enables deployment on every main push.
+
+The first Custom Domain upload succeeded before its public HTTPS/config endpoint became reachable. Deployment verification now retries for over three minutes of fast failures, allowing initial DNS/TLS setup without marking a healthy upload as failed too early. Each request retains a five-second timeout, and exhaustion explicitly distinguishes an uploaded Worker from an origin that has not verified.
+
+Production smoke checks passed: desktop and 390px mobile guest planning, unique date tiles, both airport clocks, meal advice, calendar export, all 24 offline assets, offline planner/Science, Science without JavaScript, and HTTP 401 for unauthenticated account/state APIs. These checks do not complete Google sign-in or spend provider credits. Deployments remain manual until the owner enables `DEPLOY_ENABLED`.
 
 ## Start the app locally
 
@@ -66,7 +70,7 @@ The launcher supplies the correct local origin when you choose another port. Reg
 
 ## Connect an empty GitHub repository
 
-Current workspace: the code is synced to [maniksurtani/rephase](https://github.com/maniksurtani/rephase). `origin` points to `git@github.com:maniksurtani/rephase.git`, and local `main` tracks `origin/main`. The initial push is complete. GitHub Actions checks run on pushes to `main`; the Cloudflare deployment job remains gated, and nothing has been deployed.
+Current workspace: the code is synced to [maniksurtani/rephase](https://github.com/maniksurtani/rephase). `origin` points to `git@github.com:maniksurtani/rephase.git`, and local `main` tracks `origin/main`. The initial push is complete. GitHub Actions checks run on pushes to `main`; production is live and future deployments remain gated for manual dispatch.
 
 Create an empty GitHub repository, choosing its name and visibility. Leave GitHub's README, license and `.gitignore` initialization options unchecked so the remote stays empty and can receive this repository's existing history.
 

@@ -1,6 +1,6 @@
 # Rephase system design
 
-Status: second local implementation; deployment intentionally deferred. Last updated: 2026-10-14.
+Status: deployed at https://rephase.surtani.org. Last updated: 2026-10-15.
 
 ## Product and scope
 
@@ -49,7 +49,7 @@ flowchart LR
 - **Local data**: IndexedDB, partitioned by guest or Google account. Local changes survive reload; private API responses and authentication credentials are never put in the service-worker cache.
 - **Offline**: a production-only service worker caches the static app shell and assets. Saved preferences/trips generate plans offline. Initial installation, Google sign-in, and sync need connectivity.
 - **API**: one Worker serves `/api/*`; static assets handle the rest. D1 stores account state, hashed revocable sessions, provider cache and request quotas. Auth is optional for local planning and required for provider lookup. An hourly scheduled handler purges expired provider cache.
-- **Hosting**: Cloudflare Worker Static Assets. Wrangler configuration and D1 migrations are prepared locally, but no remote resource is created or deployed in this implementation turn.
+- **Hosting**: Cloudflare Worker Static Assets. The app is deployed at https://rephase.surtani.org with D1 migrations applied and a Custom Domain managing DNS/TLS. GitHub Actions deployments remain manual.
 
 ## Domain model
 
@@ -175,13 +175,13 @@ DM Sans and Manrope are bundled locally with their SIL Open Font Licenses. Typog
 
 ## Development and deployment boundary
 
-The selected production origin is `https://rephase.surtani.org`. Generated deployment configuration uses a Cloudflare Custom Domain with automatic DNS/TLS, while disabling workers.dev and preview URLs for that origin. Account/D1 IDs, a Google web client, and production Actions credentials remain external setup prerequisites; first deployment is manual.
+The selected production origin is `https://rephase.surtani.org`. Generated deployment configuration uses a Cloudflare Custom Domain with automatic DNS/TLS, while disabling workers.dev and preview URLs for that origin. Account/D1 IDs, the Google web client and deployment token are configured through the production GitHub environment; deployments remain manual.
 
 One-command local preview: `npm start`, then `http://localhost:5173`. The launcher installs missing locked dependencies, builds stale assets, applies local migrations, starts the UI/Worker, and cleans up owned processes on exit. `npm start -- --static` runs only the browser UI; `--production` tests the built app/API at `http://localhost:8787`. Without the API, trip/profile/planning/export work and sign-in shows configuration status.
 
 Local full stack: build assets, initialize local D1, run Wrangler on 8787, and run Vite on 5173. A Google OAuth web client ID and registered localhost JavaScript origin enable real sign-in; no OAuth client secret is required for this GIS flow. `.dev.vars` is ignored. No Google credentials are supplied in this repository.
 
-Before Cloudflare deployment, select an account/domain, create a D1 database, replace the local database ID, apply remote migrations, configure the Google client ID/production origin, build, and then deploy. These external actions remain deferred. DEPLOYMENT.md and supporting scripts prepare them concretely: validate public settings, create resources/store secrets only with explicit invocation, apply remote migrations, and deploy through a gated GitHub workflow. A Wrangler dry run verifies bundling without publishing; no external resources were created.
+Before Cloudflare deployment, select an account/domain, create a D1 database, replace the local database ID, apply remote migrations, configure the Google client ID/production origin, build, and then deploy. Production setup is complete. DEPLOYMENT.md and supporting scripts document the process: validate public settings, create resources/store secrets only with explicit invocation, apply remote migrations, and deploy through a gated GitHub workflow. A Wrangler dry run verifies bundling without publishing; real deployment applies migrations before upload and verifies the public endpoint with a grace period for first-time DNS/TLS setup.
 
 Primary platform documentation: [Cloudflare Static Assets](https://developers.cloudflare.com/workers/static-assets/), [SPA routing](https://developers.cloudflare.com/workers/static-assets/routing/single-page-application/), [D1](https://developers.cloudflare.com/d1/), [Google token verification](https://developers.google.com/identity/gsi/web/guides/verify-google-id-token), and [Google OAuth client setup](https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid).
 
@@ -215,7 +215,7 @@ The verified development workflow currently uses Node/npm, Vite, Vitest, Playwri
 
 ## Verification and known future work
 
-Require TypeScript checks, a production build, temporal/itinerary/opt-out tests, Worker rejection/ownership/revision tests, and local HTTP smoke checks. Browser QA uses Playwright/Chromium against the production build, including static science, flight confirmation, and offline shell behavior; API scenarios use controlled responses. Real Google sign-in cannot be end-to-end verified without an OAuth client. No deployment or clinical validation is implied by passing engineering checks.
+Require TypeScript checks, a production build, temporal/itinerary/opt-out tests, Worker rejection/ownership/revision tests, and local HTTP smoke checks. Browser QA uses Playwright/Chromium against the production build, including static science, flight confirmation, and offline shell behavior; API scenarios use controlled responses. Production desktop/mobile guest checks, offline assets and unauthenticated API boundaries have passed. Google is configured but a real-account sign-in/sync test remains outstanding; provider coverage awaits a key. Engineering checks do not imply clinical validation.
 
 The regression fixture [October 2026 Pacific itinerary](tests/fixtures/itineraries/oct2026.json) records the five user-supplied flight numbers with provisional public timetable times, source URLs, and conflicts. It covers SYD–HNL, HNL–SFO, SFO–LAX, LAX–MEL, and MEL–SYD; two flights on 24 October; QF94 in transit on 25 October before arriving on 26 October; and a short same-offset final flight. AA6276 has both directions on the supplied date and is resolved here using trip continuity. This fixture does not claim live provider or booking verification.
 

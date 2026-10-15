@@ -1,5 +1,7 @@
 # Rephase
 
+**Live app: [rephase.surtani.org](https://rephase.surtani.org)**
+
 A mobile-first jet lag planner with a dark sleep theme, complex itineraries, optional Google sync, and flight-number/date lookup. Planning runs in the browser, including offline. A small Cloudflare Worker handles authentication, optional persistence, and flight-provider requests.
 
 The default experimental planner uses the published Forger99 light-driven circadian model and compares constrained advance/delay schedules across the itinerary. Its equations have been checked against an independent Python/SciPy reference. **Numerical verification is not clinical validation:** personal phase, received light, and actual sleep remain uncertain. Conservative planning rules are also available in Profile. Read the standalone [Science page](public/science.html) at `/science.html` for plain-language explanations and original sources.
@@ -46,7 +48,7 @@ Restart the launcher after changes. Register `http://localhost:8787` too if test
 
 Guest and account storage remain separate. First sign-in offers an explicit choice before copying guest data into an account. Sync uses revisions and a persisted three-way merge base: separate edits can merge; conflicting edits require a choice. Automatic sync is opt-in. Cached offline identity never authorizes the API. Clearing local data and deleting cloud data are distinct operations; account copies can persist on other devices until those devices sync or clear them.
 
-Real Google login is implemented but cannot be verified end to end without your OAuth client.
+Production has a Google client ID configured. Complete a real Google sign-in and save/reload a synced trip to verify account behavior end to end; this has not been tested using a real account.
 
 ## Optional flight lookup
 
@@ -84,13 +86,13 @@ npm run test:e2e
 
 Playwright uses `/usr/bin/chromium` when present, or `PLAYWRIGHT_CHROMIUM_EXECUTABLE`; otherwise install it with `npx playwright install chromium`. Engineering checks cover numerical reference trajectories, temporal/itinerary constraints, adherence replay, daylight, API ownership/nonce/session/revision security, cache/quotas, sync merges, calendar export, and deployment/launcher configuration. Browser checks use controlled API responses for account and flight scenarios.
 
-Verified locally: frontend/Worker TypeScript, all 238 unit/model/API tests, production build, 15 Chromium scenarios, local D1/API/scheduled-handler smoke checks, launcher setup/shutdown, and real Wrangler dry-run bundling. The five-flight October itinerary, date-line transit days, unique date tiles, corrected modeled shifts, meal policies/windows, short flights, dual clocks, arrival defaults, and mobile layout have dedicated regressions. Meal tests cover missed/actual sleep logs and calendar exports without meal alarms. Real Google and provider checks await credentials; no public deployment occurred. QA servers are stopped after verification.
+Verified locally: frontend/Worker TypeScript, all 238 unit/model/API tests, production build, 15 Chromium scenarios, local D1/API/scheduled-handler smoke checks, launcher setup/shutdown, and real Wrangler dry-run bundling. The five-flight October itinerary, date-line transit days, unique date tiles, corrected modeled shifts, meal policies/windows, short flights, dual clocks, arrival defaults, and mobile layout have dedicated regressions. Meal tests cover missed/actual sleep logs and calendar exports without meal alarms. Production desktop/mobile, guest planner/calendar, Science without JavaScript, all 24 offline assets, offline behavior, and unauthenticated API rejection passed live smoke checks on 15 October 2026. Real Google account sync still needs user verification; live lookup remains disabled until a provider key is configured. QA servers are stopped after verification.
 
 For the independent numerical fixture reproduction, see [the kernel notes](src/lib/circadian/README.md). The airport source and optional Bun benchmark are documented in [DATA_SOURCES.md](DATA_SOURCES.md). `npm run benchmark:bun` reports honestly if Bun is absent; Node/npm remain the authoritative toolchain and lockfile.
 
 ## GitHub and Cloudflare
 
-The code is synced to [maniksurtani/rephase](https://github.com/maniksurtani/rephase) on the `main` branch. The workspace has `origin` configured as `git@github.com:maniksurtani/rephase.git`, with `main` tracking `origin/main`. No Cloudflare resources have been created or deployed.
+The code is synced to [maniksurtani/rephase](https://github.com/maniksurtani/rephase) on the `main` branch. The workspace has `origin` configured as `git@github.com:maniksurtani/rephase.git`, with `main` tracking `origin/main`. Production is deployed at https://rephase.surtani.org using a Worker Custom Domain, D1, static assets and an hourly cache-purge schedule.
 
 For another checkout, inspect the remote helper:
 

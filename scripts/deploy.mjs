@@ -31,11 +31,23 @@ async function buildApp() {
   });
 }
 
-export async function verifyDeployment(settings, expectFlightLookup = false) {
-  // Retries allow Cloudflare's newly deployed version to reach the public edge.
-  for (let attempt = 0; attempt < 12; attempt += 1) {
+export async function verifyDeployment(settings, expectFlightLookup = false, options = {}) {
+  const {
+    fetch: fetchPublicConfig = globalThis.fetch,
+    wait = (delay) => new Promise((resolvePromise) => setTimeout(resolvePromise, delay)),
+    attempts = 40,
+    retryDelay = 5000,
+  } = options;
+  if (!Number.isSafeInteger(attempts) || attempts < 1
+      || !Number.isFinite(retryDelay) || retryDelay < 0 || retryDelay > 60_000) {
+    throw new Error('Public verification requires a positive attempt count and a retry delay between 0 and 60000 milliseconds.');
+  }
+  // A first Custom Domain needs time for DNS and TLS as well as edge propagation.
+  // Forty checks provide over three minutes even when every request fails quickly.
+  console.log('Worker uploaded. Waiting for its public configuration to become ready.');
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
     try {
-      const response = await fetch(`${settings.origin}/api/config`, { signal: AbortSignal.timeout(5000), cache: 'no-store' });
+      const response = await fetchPublicConfig(`${settings.origin}/api/config`, { signal: AbortSignal.timeout(5000), cache: 'no-store' });
       const config = await response.json();
       if (response.ok && config.googleClientId === settings.clientId && config.syncAvailable === true
           && (!expectFlightLookup || config.flightLookupAvailable === true)) {
@@ -44,9 +56,14 @@ export async function verifyDeployment(settings, expectFlightLookup = false) {
         return;
       }
     } catch { /* Network errors are retried without printing request internals. */ }
-    if (attempt < 11) await new Promise((resolvePromise) => setTimeout(resolvePromise, 1500));
+    if (attempt < attempts - 1) {
+      if (attempt === 0 || (attempt + 1) % 6 === 0) {
+        console.log(`Public configuration is not ready (check ${attempt + 1}/${attempts}); retrying.`);
+      }
+      await wait(retryDelay);
+    }
   }
-  throw new Error('Deployment finished, but the public configuration check did not pass. Check PUBLIC_APP_ORIGIN, the Worker route and Google configuration.');
+  throw new Error('Worker uploaded, but public origin verification is not ready. Check DNS/TLS readiness, PUBLIC_APP_ORIGIN, the Worker route and Google/database configuration before retrying verification.');
 }
 
 export async function deploy(args = process.argv.slice(2)) {

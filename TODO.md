@@ -93,10 +93,13 @@ Amadeus Self-Service is discontinued. AirLabs's near-term schedules and Skyscann
 - [x] Prepare a verified Git bundle containing the complete history for a local SSH push.
 - [x] Complete the initial push to [maniksurtani/rephase](https://github.com/maniksurtani/rephase), with local `main` tracking `origin/main`.
 - [x] Select `https://rephase.surtani.org` and prepare generated Custom Domain routing with Cloudflare-managed DNS/TLS and no alternate deployment URLs.
-- [ ] Configure a real Google OAuth web client and verify real sign-in/sync end to end.
+- [x] Configure the production Google client ID and expose the sign-in/sync controls.
+- [ ] Verify real Google sign-in and trip sync end to end with the owner's account.
 - [ ] Choose an AeroDataBox plan, configure its key, and verify representative routes at +60/+90/+150 days; record missing coverage.
-- [ ] Receive the Cloudflare account ID, create D1, configure the production GitHub environment variables/secrets, and decide when to enable automatic main deployment.
-- [ ] Deploy and verify publicly after the requested discussion.
+- [x] Configure the Cloudflare account, D1 and production GitHub variables/secret; keep deployments manual.
+- [x] Deploy to https://rephase.surtani.org with D1 migrations, Custom Domain DNS/TLS and hourly purge.
+- [x] Verify production guest planning/calendar, mobile layout, Science/no-JavaScript, all offline assets, offline behavior and unauthenticated API rejection.
+- [x] Allow first-time DNS/TLS provisioning in the bounded post-deploy verification retry window.
 - [ ] Arrange qualified review of melatonin timing/dose suitability and evaluate usability/real-world outcomes before claiming clinical efficacy.
 
 ## Optional future decisions
@@ -108,4 +111,4 @@ Amadeus Self-Service is discontinued. AirLabs's near-term schedules and Skyscann
 
 Latest feedback verification (2026-10-15): frontend and Worker TypeScript passed; all 238 Vitest tests passed across 21 suites using one worker. The production build contains 24 precached assets. All 15 Chromium scenarios passed, including one calendar tile per date, oval window styling, varied modeled changes and explicit unavailable history, per-leg meal policies and both meal clocks, the five-flight itinerary/date-line transit, minute-only arrival defaulting, saved-arrival preservation, mobile overflow, and existing offline/account/flight/adherence behavior. Unit coverage includes missed/actual sleep history, connection/airborne meal constraints, deduplicated alarm-free meal calendar events, and all source clocks contributing to Today. Initial implementation checks also verified local D1 migrations/API responses, scheduled cache purging, launcher startup/shutdown, and real Wrangler dry-run bundling; no Worker behavior changed in this refinement.
 
-Real OAuth/provider coverage and clinical efficacy are not implied by these checks. The code is synced to [maniksurtani/rephase](https://github.com/maniksurtani/rephase), and local `main` tracks `origin/main`. No Cloudflare deployment exists yet.
+Real OAuth/provider coverage and clinical efficacy are not implied by these checks. The code is synced to [maniksurtani/rephase](https://github.com/maniksurtani/rephase), and local `main` tracks `origin/main`. Production is live at https://rephase.surtani.org; Google account sync awaits user verification and provider lookup remains disabled without its key.
