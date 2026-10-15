@@ -2,8 +2,10 @@ name: Checks
 
 on:
   pull_request:
+    paths-ignore: ['**/*.md']
   push:
     branches: [main]
+    paths-ignore: ['**/*.md']
   workflow_dispatch:
 
 permissions:
@@ -31,6 +33,17 @@ jobs:
       - run: npm run build
       - run: npx playwright install --with-deps chromium webkit
       - run: npm run test:e2e
+      - name: Prepare the tested frontend and bundled Worker for release
+        if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+        run: node scripts/release-artifact.mjs create
+      - name: Publish the verified release for this exact commit and run attempt
+        if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: verified-release-${{ github.sha }}-${{ github.run_attempt }}
+          path: artifacts/release/
+          if-no-files-found: error
+          retention-days: 30
       - name: Browser failure report
         if: failure()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6

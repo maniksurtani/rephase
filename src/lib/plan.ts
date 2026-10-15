@@ -4,6 +4,7 @@ import { dateInZone, localToInstant } from './time';
 import { generateModelPlan, type ModelPlanOptions } from './model-plan';
 import { decoratePlanWithTravel } from './plan-travel';
 import { decoratePlanWithMeals } from './plan-meals';
+import { stayPlaceLabel } from './plan-places';
 
 export const PLAN_VERSION = 'rules-1.2.0';
 const HOUR = 3_600_000;
@@ -15,6 +16,7 @@ const scheduleClockCache = new Map<string, number>();
 type Range = { start: number; end: number };
 type Segment = Range & {
   zone: string;
+  airport: string;
   stage: PlanDay['stage'];
   label: string;
   strategy: AdaptationStrategy;
@@ -223,7 +225,7 @@ export function generateRulesPlan(trip: Trip, prefs: Preferences): Plan {
   const firstStrategy = preparationDestination.leg.strategy;
   if (prefs.preparationDays) segments.push({
     start: horizonStart, end: first.departure - 2 * HOUR,
-    zone: first.leg.departureTimeZone, stage: 'preparation', label: 'Before departure',
+    zone: first.leg.departureTimeZone, airport: first.leg.departureAirport, stage: 'preparation', label: 'Before departure',
     strategy: firstStrategy, adapt: firstStrategy !== 'home', flight: false,
   });
   for (let index = 0; index < flights.length; index++) {
@@ -235,16 +237,16 @@ export function generateRulesPlan(trip: Trip, prefs: Preferences): Plan {
     // Airport buffers are unavailable for sleeping, timed light, caffeine, or melatonin.
     if (flight.landing - flight.takeoff > 1.5 * HOUR) segments.push({
       start: Math.max(horizonStart, flight.takeoff + HOUR / 2), end: Math.min(horizonEnd, flight.landing - HOUR),
-      zone: flight.leg.arrivalTimeZone, stage: 'travel', label: `${flight.leg.departureAirport} → ${flight.leg.arrivalAirport}`,
+      zone: flight.leg.arrivalTimeZone, airport: flight.leg.arrivalAirport, stage: 'travel', label: `${flight.leg.departureAirport} → ${flight.leg.arrivalAirport}`,
       strategy: 'home', adapt: false, flight: true, lieFlat: flight.leg.lieFlat === true,
     });
     const groundStart = flight.arrival + HOUR;
     const groundEnd = Math.min(horizonEnd, flights[index + 1] ? flights[index + 1].departure - 2 * HOUR : horizonEnd);
     const destination = flight.leg.stayAfter === 'destination';
     if (groundEnd > groundStart) segments.push({
-      start: groundStart, end: groundEnd, zone: flight.leg.arrivalTimeZone,
+      start: groundStart, end: groundEnd, zone: flight.leg.arrivalTimeZone, airport: flight.leg.arrivalAirport,
       stage: destination ? (flight.leg.arrivalTimeZone === prefs.homeTimeZone ? 'home' : 'destination') : 'travel',
-      label: destination ? `Stay in ${flight.leg.arrivalAirport}` : `Connection in ${flight.leg.arrivalAirport}`,
+      label: stayPlaceLabel(flight.leg.arrivalAirport, destination),
       strategy: destination ? flight.leg.strategy : 'home', adapt: destination, flight: false,
     });
     if (destination && flights[index + 1] && flights[index + 1].departure - flight.arrival < 2 * DAY && flight.leg.strategy === 'adapt') {
@@ -278,7 +280,7 @@ export function generateRulesPlan(trip: Trip, prefs: Preferences): Plan {
       const key = `${piece.date}:${piece.zone}`;
       let day = dayMap.get(key);
       if (!day) {
-        day = { id: key, date: piece.date, timeZone: piece.zone, label: piece.label, stage: piece.stage,
+        day = { id: key, date: piece.date, timeZone: piece.zone, locationAirport: piece.airport, label: piece.label, stage: piece.stage,
           actions: [], phaseShiftHours: 0, remainingShiftHours: 0, note: '', raw: [], shifts: [] };
         dayMap.set(key, day);
       }

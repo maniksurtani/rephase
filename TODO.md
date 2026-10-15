@@ -162,6 +162,15 @@ Amadeus Self-Service is discontinued. AirLabs's near-term schedules and Skyscann
 - [x] Verify timezone search, saved preference compatibility, melatonin opt-in and compact phase summaries in unit/desktop/mobile WebKit checks.
 - [x] Publish the preferences/summary update and record deployment results.
 
+## Arrival-city labels and faster releases
+
+- [x] Resolve planner place labels from the itinerary airport city, independently of its IANA timezone, in both planning engines.
+- [x] Cover existing saved trips, same-timezone city changes, unknown airports, San Francisco stay tiles, Today and timezone/estimate captions.
+- [x] Run the full checks/browser suite once for a code commit and publish the tested frontend/Worker artifact with exact-commit provenance.
+- [x] Make manual and enabled automatic deployments reuse only a successful trusted main-branch Checks artifact for that exact commit; reject missing, expired or mismatched artifacts.
+- [x] Exclude documentation-only changes from automatic checks and document explicit recovery/reverification.
+- [ ] Verify the release path, deploy the city fix and record results without a public HTTP deployment gate.
+
 ## Launch, GitHub, and Cloudflare preparation
 
 - [x] Provide `npm start` with dependency/build/local migration setup, port checks, readiness, and owned-process cleanup.
@@ -198,7 +207,6 @@ Amadeus Self-Service is discontinued. AirLabs's near-term schedules and Skyscann
 - [ ] Run Bun comparisons if adopting that toolchain is desired.
 - [ ] Consider Web Push only after a product decision and mobile delivery testing; calendar reminders are implemented.
 - [ ] Consider measured phase/light inputs, richer sleep/fatigue models, and cross-tab live editing as separate enhancements.
-- [ ] Evaluate running the full browser suite once per code commit in CI, reusing that exact commit's verified result/artifact during deployment and excluding documentation-only changes.
 
 Previous planner feedback verification (2026-10-15): frontend and Worker TypeScript passed; all 238 Vitest tests passed across 21 suites using one worker. The production build contains 24 precached assets. All 15 Chromium scenarios passed, including one calendar tile per date, oval window styling, varied modeled changes and explicit unavailable history, per-leg meal policies and both meal clocks, the five-flight itinerary/date-line transit, minute-only arrival defaulting, saved-arrival preservation, mobile overflow, and existing offline/account/flight/adherence behavior. Unit coverage includes missed/actual sleep history, connection/airborne meal constraints, deduplicated alarm-free meal calendar events, and all source clocks contributing to Today. Initial implementation checks also verified local D1 migrations/API responses, scheduled cache purging, launcher startup/shutdown, and real Wrangler dry-run bundling; no Worker behavior changed in this refinement.
 

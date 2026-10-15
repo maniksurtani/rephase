@@ -116,6 +116,8 @@ export interface PlanDay {
   id: string;
   date: string;
   timeZone: string;
+  /** Actual itinerary location; a representative IANA zone city is not a place. */
+  locationAirport?: string;
   label: string;
   stage: 'preparation' | 'travel' | 'destination' | 'home';
   actions: PlanAction[];

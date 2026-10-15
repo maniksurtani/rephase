@@ -5,6 +5,7 @@ import { entrainHabitual, phaseHours, simulateForger, estimateNadir, FORGER99_ME
 import type { CircadianSample, CircadianState } from './circadian';
 import { dateInZone, localToInstant } from './time';
 import { flightAirborneTiming } from './plan';
+import { stayPlaceLabel } from './plan-places';
 import type { AdaptationStrategy, AdherenceRecord, Plan, PlanAction, PlanDay, Preferences, Trip } from './types';
 
 export const MODEL_PLAN_VERSION = 'model-2.0.0';
@@ -150,7 +151,7 @@ function tripStages(trip: Trip, prefs: Preferences): { stages: Stage[]; start: n
   flights.forEach((flight, index) => {
     add({ start: flight.takeoff + 30 * MINUTE, end: flight.landing - 60 * MINUTE, zone: flight.leg.arrivalTimeZone, airport: flight.leg.arrivalAirport, label: `${flight.leg.departureAirport} → ${flight.leg.arrivalAirport}`, stage: 'travel', kind: 'flight', strategy: 'home', adapt: false, lieFlat: flight.leg.lieFlat === true });
     const onwards = flights[index + 1], destination = flight.leg.stayAfter === 'destination';
-    add({ start: flight.arrival + HOUR, end: onwards ? onwards.departure - 2 * HOUR : end, zone: flight.leg.arrivalTimeZone, airport: flight.leg.arrivalAirport, label: destination ? `Stay in ${flight.leg.arrivalAirport}` : `Connection in ${flight.leg.arrivalAirport}`, stage: destination ? (flight.leg.arrivalTimeZone === prefs.homeTimeZone ? 'home' : 'destination') : 'travel', kind: 'ground', strategy: destination ? flight.leg.strategy : 'home', adapt: destination && flight.leg.strategy !== 'home', ...(destination ? { targetKey: flight.leg.id } : {}) });
+    add({ start: flight.arrival + HOUR, end: onwards ? onwards.departure - 2 * HOUR : end, zone: flight.leg.arrivalTimeZone, airport: flight.leg.arrivalAirport, label: stayPlaceLabel(flight.leg.arrivalAirport, destination), stage: destination ? (flight.leg.arrivalTimeZone === prefs.homeTimeZone ? 'home' : 'destination') : 'travel', kind: 'ground', strategy: destination ? flight.leg.strategy : 'home', adapt: destination && flight.leg.strategy !== 'home', ...(destination ? { targetKey: flight.leg.id } : {}) });
     if (onwards && flight.leg.arrivalAirport.toUpperCase() !== onwards.leg.departureAirport.toUpperCase()) warnings.push(`A surface transfer is required between ${flight.leg.arrivalAirport} and ${onwards.leg.departureAirport}. No transport-specific sleep or light access is known; review this gap.`);
     if (destination && onwards && onwards.departure - flight.arrival < 2 * DAY && flight.leg.strategy === 'adapt') warnings.push(`The stay after ${flight.leg.arrivalAirport} is under two days; maintaining home time or partial adjustment may be more practical.`);
   });
@@ -301,7 +302,7 @@ function displayDays(actions: PlanAction[], stages: Stage[], estimates: DayEstim
       const available = !!estimate && usable;
       // Positive means the next biological low is earlier; preserve small changes for honest display.
       const shift = available ? 24 - (todayNadirs[0].time - todayNadirs[0].previous) / HOUR : 0;
-      day = { id: key, date: piece.date, timeZone: action.timeZone, label: stage?.label ?? 'Saved observation', stage: stage?.stage ?? 'travel', actions: [], phaseShiftHours: shift, phaseEstimateAvailable: available, remainingShiftHours: estimate ? rounded(distance(estimate.endPhase, estimate.targetPhase)) : 0, note: `${estimate?.note ?? 'Saved history; future-only replanning.'} ${available ? 'Body-clock change is the difference between successive simulated biological low points, assigned to the local date of the later low. ' : 'No daily body-clock change is available without two unambiguous simulated biological low points and model coverage for this day. '}Body-clock phase is an unmeasured estimate, not a promised outcome.` }; map.set(key, day);
+      day = { id: key, date: piece.date, timeZone: action.timeZone, locationAirport: stage?.airport, label: stage?.label ?? 'Saved observation', stage: stage?.stage ?? 'travel', actions: [], phaseShiftHours: shift, phaseEstimateAvailable: available, remainingShiftHours: estimate ? rounded(distance(estimate.endPhase, estimate.targetPhase)) : 0, note: `${estimate?.note ?? 'Saved history; future-only replanning.'} ${available ? 'Body-clock change is the difference between successive simulated biological low points, assigned to the local date of the later low. ' : 'No daily body-clock change is available without two unambiguous simulated biological low points and model coverage for this day. '}Body-clock phase is an unmeasured estimate, not a promised outcome.` }; map.set(key, day);
     }
     const start = iso(piece.start), end = iso(piece.end);
     day.actions.push({ ...action, id: loggedIds.has(action.id) ? action.id : `${tripId}:${action.type}:${start}:${end}:${action.timeZone}`, start, end });

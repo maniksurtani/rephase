@@ -2,11 +2,14 @@ name: Deploy to Cloudflare
 
 on:
   workflow_dispatch:
-  push:
+  workflow_run:
+    workflows: [Checks]
+    types: [completed]
     branches: [main]
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: cloudflare-production
@@ -14,9 +17,15 @@ concurrency:
 
 jobs:
   deploy:
-    # Automatic pushes are disabled until the owner sets DEPLOY_ENABLED=true.
-    # Manual runs deploy main only; an optional production approval can protect both.
-    if: github.ref == 'refs/heads/main' && (github.event_name == 'workflow_dispatch' || vars.DEPLOY_ENABLED == 'true')
+    # Auto deployment follows successful main checks, never a PR/fork workflow.
+    # Manual runs reuse that same exact commit's release; no browser suite rerun.
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'workflow_dispatch' ||
+        (vars.DEPLOY_ENABLED == 'true' &&
+         github.event.workflow_run.conclusion == 'success' &&
+         github.event.workflow_run.head_repository.full_name == github.repository &&
+         (github.event.workflow_run.event == 'push' || github.event.workflow_run.event == 'workflow_dispatch')))
     environment: production
     runs-on: ubuntu-latest
     timeout-minutes: 25
@@ -28,26 +37,45 @@ jobs:
       FLIGHT_DAILY_LIMIT: ${{ vars.FLIGHT_DAILY_LIMIT }}
       FLIGHT_MONTHLY_LIMIT: ${{ vars.FLIGHT_MONTHLY_LIMIT }}
       FLIGHT_GLOBAL_MONTHLY_LIMIT: ${{ vars.FLIGHT_GLOBAL_MONTHLY_LIMIT }}
+      RELEASE_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
           persist-credentials: false
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: '24'
           cache: npm
-      - name: Validate target configuration before any remote change
-        run: node scripts/check-deploy-config.mjs
+      - name: Select the successful exact-commit Checks release
+        id: release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          RELEASE_TRIGGER_RUN_ID: ${{ github.event.workflow_run.id }}
+        run: node scripts/select-release.mjs
+      - name: Download only that verified release artifact
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
+        with:
+          artifact-ids: ${{ steps.release.outputs.artifact_id }}
+          run-id: ${{ steps.release.outputs.run_id }}
+          github-token: ${{ github.token }}
+          path: artifacts/release
+          merge-multiple: true
+      - name: Validate target and release before any remote change
+        env:
+          RELEASE_RUN_ID: ${{ steps.release.outputs.run_id }}
+          RELEASE_RUN_ATTEMPT: ${{ steps.release.outputs.run_attempt }}
+        run: |
+          node scripts/check-deploy-config.mjs
+          node scripts/release-artifact.mjs verify
       - run: npm ci
-      - run: npm run typecheck
-      - run: npm test
-      - run: npm run build
-      - run: npx playwright install --with-deps chromium webkit
-      - run: npm run test:e2e
       - name: Migrate D1, deploy Worker and install configured secrets
         env:
+          GITHUB_TOKEN: ${{ github.token }}
+          RELEASE_RUN_ID: ${{ steps.release.outputs.run_id }}
+          RELEASE_RUN_ATTEMPT: ${{ steps.release.outputs.run_attempt }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
         run: |
           node --input-type=module -e 'if (!process.env.CLOUDFLARE_API_TOKEN?.trim()) { console.error("Set the CLOUDFLARE_API_TOKEN environment secret before deploying."); process.exit(1); }'
-          npm run deploy -- --apply
+          npm run deploy -- --apply --verified-release

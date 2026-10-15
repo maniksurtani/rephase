@@ -53,6 +53,7 @@ export function decoratePlanWithTravel(plan: Plan, trip: Trip): Plan {
     if (days.has(key)) return;
     const day: PlanDay = {
       id: key, date: date.toString(), timeZone: zone,
+      locationAirport: zone === segment.arrivalTimeZone ? segment.arrivalAirport : segment.departureAirport,
       label: `${segment.departureAirport} → ${segment.arrivalAirport}`, stage: 'travel',
       actions: [], phaseShiftHours: 0, remainingShiftHours: 0, phaseEstimateAvailable: false,
       note: 'Flight schedule only. No body-clock estimate is available for this calendar day.',

@@ -62,6 +62,23 @@ async function expectMealAdvice(page: Page, id: string) {
   return count;
 }
 
+async function expectSanFranciscoStay(page: Page) {
+  // SFO shares America/Los_Angeles with LAX. Place labels must follow the
+  // itinerary airport while the clock continues to use the shared IANA zone.
+  for (const date of ['2026-10-20', '2026-10-21', '2026-10-22', '2026-10-23']) {
+    const day = planDay(page, date);
+    await expect(day).toContainText('San Francisco');
+    await expect(day).not.toContainText('Los Angeles');
+    await expect(day).toHaveAttribute('title', /San Francisco/);
+    await expect(day).toHaveAttribute('data-zone', 'America/Los_Angeles');
+  }
+  await planDay(page, '2026-10-20').click();
+  await expect(page.locator('.agenda-heading .stage-label')).toHaveText('Stay in San Francisco');
+  await expect(page.locator('.agenda-heading .timezone-caption')).toHaveText('All times in San Francisco · PDT');
+  await expect(page.locator('.plan-aside .eyebrow')).toContainText('San Francisco');
+  expect(await page.evaluate(() => Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) <= window.innerWidth)).toBe(true);
+}
+
 test.beforeEach(async ({ page }) => {
   await page.route('**/api/config', route => route.fulfill({ json: { googleClientId: null, syncAvailable: false, flightLookupAvailable: false } }));
 });
@@ -108,6 +125,8 @@ test('Today and the full plan retain all five flights with both local clocks and
   }
   expect(mealWindowCount).toBeGreaterThan(0);
 
+  await expectSanFranciscoStay(page);
+
   await planDay(page, '2026-10-24', 'America/Los_Angeles').click();
   await expect(flightCard(page, 'aa6276')).toBeVisible();
   await expect(flightCard(page, 'qf94')).toBeVisible();
@@ -126,6 +145,12 @@ test('Today and the full plan retain all five flights with both local clocks and
   await expect(actionClocks).toContainText('Destination · HNL');
   await expect(actionClocks.locator('time')).toHaveCount(4);
   await expect(actionClocks.locator('time').first()).toHaveText(/\d{1,2} Oct \d{2}:\d{2}/);
+
+  // Existing stored trips also need the itinerary city on Today after reopening.
+  await page.clock.setFixedTime(new Date('2026-10-20T19:00:00.000Z'));
+  await page.reload();
+  await expect(page.getByRole('heading', { name: 'Today, at a glance', exact: true })).toBeVisible();
+  await expect(page.locator('.timezone-caption').first()).toHaveText('San Francisco local time · PDT');
   expect(errors).toEqual([]);
 });
 
@@ -134,6 +159,7 @@ test('mobile travel cards and dual clocks fit a 390-pixel screen', async ({ page
   await openPersonalData(page);
   await expect(flightCard(page, 'qf103')).toBeVisible();
   await page.getByRole('navigation', { name: 'Mobile navigation' }).getByRole('button', { name: 'Your plan', exact: true }).click();
+  await expectSanFranciscoStay(page);
   await planDay(page, '2026-10-24', 'America/Los_Angeles').click();
   await expect(flightCard(page, 'aa6276')).toBeVisible();
   await expect(flightCard(page, 'qf94')).toBeVisible();
