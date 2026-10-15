@@ -2,7 +2,7 @@ import { Temporal } from '@js-temporal/polyfill';
 import { findAirport } from './airports';
 import { splitDaylight } from './daylight';
 import { entrainHabitual, phaseHours, simulateForger, estimateNadir, FORGER99_METADATA } from './circadian';
-import type { CircadianState } from './circadian';
+import type { CircadianSample, CircadianState } from './circadian';
 import { dateInZone, localToInstant } from './time';
 import { flightAirborneTiming } from './plan';
 import type { AdaptationStrategy, AdherenceRecord, Plan, PlanAction, PlanDay, Preferences, Trip } from './types';
@@ -13,14 +13,13 @@ const CDC = 'https://www.cdc.gov/yellow-book/hcp/travel-air-sea/jet-lag-disorder
 const LIGHT_SOURCE = 'https://pmc.ncbi.nlm.nih.gov/articles/PMC5852019/';
 const wrap = (n: number) => ((n % 24) + 24) % 24;
 const distance = (a: number, b: number) => Math.abs(wrap(a - b + 12) - 12);
-const signed = (a: number, b: number) => wrap(a - b + 12) - 12;
 const iso = (n: number) => new Date(Math.round(n)).toISOString();
 const rounded = (n: number) => Math.round(n * 10) / 10;
 type Range = { start: number; end: number };
 type Input = Range & { lux: number; priority: number };
 type Direction = 'advance' | 'delay';
 type Stage = Range & { zone: string; airport: string; label: string; stage: PlanDay['stage']; kind: 'ground' | 'flight' | 'blocked'; strategy: AdaptationStrategy; adapt: boolean; lieFlat?: boolean; preparationTargetZone?: string; targetKey?: string };
-type DayEstimate = { time: number; startPhase: number; endPhase: number; targetPhase: number; routeHours: number; targetKey?: string; zone: string; note: string };
+type DayEstimate = { start: number; time: number; startPhase: number; endPhase: number; targetPhase: number; routeHours: number; targetKey?: string; zone: string; note: string };
 type Beam = { state: CircadianState; score: number; inputs: Input[]; actions: PlanAction[]; estimates: DayEstimate[]; directions: Direction[]; partialTargets: Record<string, number> };
 export interface ModelPlanOptions { now?: number }
 export interface ModelSearchDiagnostics { evaluatedCandidates: number; beamWidth: number; candidateStepMinutes: number; selectedDirections: Direction[]; finalists: { score: number; directions: Direction[] }[]; replayedUntil: number | null; partialTargets: Record<string, number>; partialTargetReferences: Record<string, { establishedAt: number; targetHours: number }[]> }
@@ -244,7 +243,7 @@ function runCandidate(beam: Beam, stage: Stage, prefs: Preferences, trip: Trip, 
     const actualNadir = estimateNadir(trajectory, cursor);
     const phaseStart = wrap(nadir / HOUR), phaseEnd = actualNadir === null ? estimatedNadirHours(next.state, end) : wrap(actualNadir / HOUR);
     if (stage.kind === 'ground') next.score += distance(phaseEnd, desiredTarget) * (end - cursor) / DAY + lightBurden;
-    next.estimates.push({ time: end, startPhase: phaseStart, endPhase: phaseEnd, targetPhase: desiredTarget, routeHours: schedule.routeHours, ...(stage.strategy === 'partial' && stage.targetKey ? { targetKey: stage.targetKey } : {}), zone: stage.zone, note: stage.kind === 'blocked' ? 'Airport/transfer buffers have no timed recommendations.' : stage.kind === 'flight' ? 'Only a protected rest opportunity is offered in flight; seat comfort does not change the body-clock model.' : stage.adapt ? `${direction === 'advance' ? 'Earlier' : 'Later'} adjustment was selected by simulating feasible candidate schedules. Sleep changes by at most 1 hour/day; estimated response can vary by hours.` : 'Maintain the home sleep schedule when practical; the simulated state continues through connections and previous destinations.' });
+    next.estimates.push({ start: cursor, time: end, startPhase: phaseStart, endPhase: phaseEnd, targetPhase: desiredTarget, routeHours: schedule.routeHours, ...(stage.strategy === 'partial' && stage.targetKey ? { targetKey: stage.targetKey } : {}), zone: stage.zone, note: stage.kind === 'blocked' ? 'Airport/transfer buffers have no timed recommendations.' : stage.kind === 'flight' ? 'Only a protected rest opportunity is offered in flight; seat comfort does not change the body-clock model.' : stage.adapt ? `${direction === 'advance' ? 'Earlier' : 'Later'} adjustment was selected by simulating feasible candidate schedules. Sleep changes by at most 1 hour/day; estimated response can vary by hours.` : 'Maintain the home sleep schedule when practical; the simulated state continues through connections and previous destinations.' });
     next.inputs.push(...localInputs.filter(input => input.end > cursor && input.start < end).map(input => ({ ...input, start: Math.max(cursor, input.start), end: Math.min(end, input.end) })));
     cursor = end;
   }
@@ -273,14 +272,33 @@ function auxiliaryActions(actions: PlanAction[], stages: Stage[], trip: Trip, pr
   const blocks = sleeps;
   return result.flatMap(action => action.type === 'light' || action.type === 'avoid-light' || action.type === 'melatonin' ? subtract({ start: Date.parse(action.start), end: Date.parse(action.end) }, blocks).map(part => ({ ...action, start: iso(part.start), end: iso(part.end) })) : [action]);
 }
-function displayDays(actions: PlanAction[], stages: Stage[], estimates: DayEstimate[], tripId: string, loggedIds: Set<string>): PlanDay[] {
+/** Genuine modeled low points, using the kernel's existing interpolation on each local minimum. */
+function trajectoryNadirs(samples: CircadianSample[]): number[] {
+  const nadirs: number[] = [];
+  for (let i = 1; i < samples.length - 1; i++) {
+    if (samples[i].x > samples[i - 1].x || samples[i].x >= samples[i + 1].x) continue;
+    const nadir = estimateNadir(samples.slice(i - 1, i + 2), samples[i - 1].time);
+    if (nadir !== null) nadirs.push(nadir);
+  }
+  return nadirs;
+}
+function displayDays(actions: PlanAction[], stages: Stage[], estimates: DayEstimate[], nadirs: number[], tripId: string, loggedIds: Set<string>): PlanDay[] {
   const map = new Map<string, PlanDay>();
   for (const action of actions) for (const piece of chunks({ start: Date.parse(action.start), end: Date.parse(action.end) }, action.timeZone)) {
     const key = `${piece.date}:${action.timeZone}`; let day = map.get(key);
     if (!day) {
       const stage = stages.find(stage => piece.start >= stage.start && piece.start < stage.end) ?? stages[stages.length - 1];
-      const estimate = estimates.find(estimate => estimate.zone === action.timeZone && estimate.time >= piece.end) ?? estimates[estimates.length - 1];
-      day = { id: key, date: piece.date, timeZone: action.timeZone, label: stage?.label ?? 'Saved observation', stage: stage?.stage ?? 'travel', actions: [], phaseShiftHours: estimate ? rounded(signed(estimate.startPhase, estimate.endPhase)) : 0, remainingShiftHours: estimate ? rounded(distance(estimate.endPhase, estimate.targetPhase)) : 0, note: `${estimate?.note ?? 'Saved history; future-only replanning.'} Body-clock phase is an unmeasured estimate, not a promised outcome.` }; map.set(key, day);
+      const dayStart = clock(piece.date, '00:00', action.timeZone), dayEnd = clock(addDate(piece.date, 1), '00:00', action.timeZone);
+      const estimate = estimates.filter(estimate => estimate.zone === action.timeZone && estimate.start < dayEnd && estimate.time > dayStart).at(-1);
+      const todayNadirs = nadirs.map((time, index) => ({ time, previous: nadirs[index - 1] })).filter(nadir => nadir.time >= dayStart && nadir.time < dayEnd);
+      // A day without two successive low points has no daily change estimate. Close cusp minima or
+      // a missing cycle are ambiguous, so do not turn them into a large apparent circadian shift.
+      const usable = todayNadirs.length === 1 && todayNadirs[0].previous !== undefined
+        && todayNadirs[0].time - todayNadirs[0].previous > 12 * HOUR && todayNadirs[0].time - todayNadirs[0].previous < 36 * HOUR;
+      const available = !!estimate && usable;
+      // Positive means the next biological low is earlier; preserve small changes for honest display.
+      const shift = available ? 24 - (todayNadirs[0].time - todayNadirs[0].previous) / HOUR : 0;
+      day = { id: key, date: piece.date, timeZone: action.timeZone, label: stage?.label ?? 'Saved observation', stage: stage?.stage ?? 'travel', actions: [], phaseShiftHours: shift, phaseEstimateAvailable: available, remainingShiftHours: estimate ? rounded(distance(estimate.endPhase, estimate.targetPhase)) : 0, note: `${estimate?.note ?? 'Saved history; future-only replanning.'} ${available ? 'Body-clock change is the difference between successive simulated biological low points, assigned to the local date of the later low. ' : 'No daily body-clock change is available without two unambiguous simulated biological low points and model coverage for this day. '}Body-clock phase is an unmeasured estimate, not a promised outcome.` }; map.set(key, day);
     }
     const start = iso(piece.start), end = iso(piece.end);
     day.actions.push({ ...action, id: loggedIds.has(action.id) ? action.id : `${tripId}:${action.type}:${start}:${end}:${action.timeZone}`, start, end });
@@ -304,7 +322,7 @@ export function generateModelPlanWithDiagnostics(trip: Trip, prefs: Preferences,
   }
   const selected = beam[0], finalInputs = [...past, ...selected.inputs];
   // Replay the selected route at a finer integration step and with +/-2 h baseline states.
-  const nominal = advanceState(initial, start, end, finalInputs, 5);
+  const nominalTrajectory = simulateForger(initial, start, end, lightCurve(finalInputs, start, end), 5), nominal = nominalTrajectory[nominalTrajectory.length - 1];
   const earlier = advanceState(initialState(start, prefs, -2), start, end, finalInputs, 5), later = advanceState(initialState(start, prefs, 2), start, end, finalInputs, 5);
   const spread = Math.max(distance(estimatedNadirHours(nominal, end), estimatedNadirHours(earlier, end)), distance(estimatedNadirHours(nominal, end), estimatedNadirHours(later, end)));
   const warnings = [
@@ -324,7 +342,7 @@ export function generateModelPlanWithDiagnostics(trip: Trip, prefs: Preferences,
   const allActions = [...loggedActions({ ...trip, adherence: validLogs }, cutoff), ...auxiliaryActions(selected.actions, stages, trip, prefs, selected.estimates)];
   if (!allActions.some(action => action.type === 'sleep')) warnings.push('No protected sleep opportunity fits. Allow recovery sleep and review transfers.');
   const uniqueDirections = [...new Set(selected.directions)], strategy = uniqueDirections.length > 1 ? 'mixed' : uniqueDirections[0] ?? 'mixed';
-  return { plan: { version: MODEL_PLAN_VERSION, tripId: trip.id, generatedAt: iso(options.now ?? Date.now()), days: displayDays(allActions, originalStages, selected.estimates, trip.id, new Set(validLogs.map(record => record.actionId))), warnings,
+  return { plan: { version: MODEL_PLAN_VERSION, tripId: trip.id, generatedAt: iso(options.now ?? Date.now()), days: displayDays(allActions, originalStages, selected.estimates, trajectoryNadirs(nominalTrajectory), trip.id, new Set(validLogs.map(record => record.actionId))), warnings,
     summary: { destinations: trip.legs.filter(leg => leg.stayAfter === 'destination').length, flightHours: rounded(flights.reduce((sum, flight) => sum + (flight.arrival - flight.departure) / HOUR, 0)), timeZoneChanges: trip.legs.filter(leg => leg.departureTimeZone !== leg.arrivalTimeZone).length },
     model: { name: FORGER99_METADATA.name, numericallyVerified: FORGER99_METADATA.numericallyVerified, clinicallyValidated: false, strategy, assumptions: [`Habitual 150 lux waking / 0 lux sleep baseline uses usual bedtime/wake duration (${rounded(baselineSleepHours(prefs))} hours), initialized through 21 repeated days; biological entrainment is not established for every person or schedule.`, 'Fixed published light-only model parameters; no personalized biological measurements. Target x-minimum timing is derived from the target habitual sleep/light oscillator, not a fixed wake-minus-hours rule.', 'Two directional candidates per adapting stage, beam width 3, 15-minute search integration and 5-minute selected-route sensitivity replay. Light windows forecast actual modeled x minima; an angular phase proxy is used only if a trajectory has no minimum.', 'At most one hour/day planned sleep changes, preserving requested elapsed sleep duration when unconstrained. Partial targets are established once per stay and shared by preparation and that destination.', 'Gate times include default 30-minute taxi allowances; explicit airborne times override them.', 'No phase-shift benefit from seat class, sleep quality, caffeine, or melatonin is inferred.'] },
   }, diagnostics: { evaluatedCandidates, beamWidth: 3, candidateStepMinutes: 15, selectedDirections: selected.directions, finalists: beam.map(candidate => ({ score: rounded(candidate.score), directions: candidate.directions })), replayedUntil: cutoff > start ? cutoff : null, partialTargets: selected.partialTargets, partialTargetReferences: selected.estimates.reduce<Record<string, { establishedAt: number; targetHours: number }[]>>((references, estimate) => { if (estimate.targetKey) (references[estimate.targetKey] ??= []).push({ establishedAt: estimate.time, targetHours: estimate.targetPhase }); return references; }, {}) } };

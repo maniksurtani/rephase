@@ -27,9 +27,11 @@ If this workspace is remote, forward port **5173** (or **8787** in production mo
 
 The London → Dubai connection → Singapore → San Francisco example uses relative future dates and is labeled as an example. Create a trip or edit it to make a personal itinerary. Profile controls habitual/preferred sleep, duration, chronotype, supplements, planning mode, calendar reminders, and optional automatic sync.
 
-Flight inputs use HH:mm, with a blank arrival initially matching departure until you adjust it. Travel days have plane markers, explicit flight cards, and recommendation times in both origin and destination zones with local dates. Short flights remain visible even without a usable rest window.
+Flight inputs use HH:mm, with a blank arrival initially matching departure until you adjust it. The planner has one airplane-window tile per date. Travel days have plane markers, explicit flight cards, and recommendation times in both origin and destination zones with local dates. Short flights remain visible even without a usable rest window.
 
 Flight editing supports travel class and **separately confirmed** lie-flat availability. Unknown airborne times use 30-minute taxi allowances at each end, then exclude the first 30 minutes after takeoff and the final 60 before landing. Short flights may have no rest window. Crew instructions take priority. Airline class alone does not imply a bed.
+
+Every flight includes a meal-service recommendation: protect planned rest by asking not to be woken, or use service while awake. Suggested meal windows fit around sleep, cabin restrictions, and connections, with both airport clocks. Service times are not known; windows are flexible, and meal calendar entries never have alarms. The [Science page](public/science.html#meals) explains the evidence and limits. Daily body-clock changes now compare successive simulated low points, with unavailable history labeled explicitly.
 
 ## Google sign-in and account sync
 
@@ -82,7 +84,7 @@ npm run test:e2e
 
 Playwright uses `/usr/bin/chromium` when present, or `PLAYWRIGHT_CHROMIUM_EXECUTABLE`; otherwise install it with `npx playwright install chromium`. Engineering checks cover numerical reference trajectories, temporal/itinerary constraints, adherence replay, daylight, API ownership/nonce/session/revision security, cache/quotas, sync merges, calendar export, and deployment/launcher configuration. Browser checks use controlled API responses for account and flight scenarios.
 
-Verified locally: frontend/Worker TypeScript, all 199 unit/model/API tests, production build, 14 Chromium scenarios, local D1/API/scheduled-handler smoke checks, launcher setup/shutdown, and real Wrangler dry-run bundling. The five-flight October itinerary, date-line transit days, short flights, dual clocks, arrival defaults, and mobile layout have dedicated regressions. Real Google and provider checks await credentials; no public deployment occurred. QA servers are stopped after verification.
+Verified locally: frontend/Worker TypeScript, all 238 unit/model/API tests, production build, 15 Chromium scenarios, local D1/API/scheduled-handler smoke checks, launcher setup/shutdown, and real Wrangler dry-run bundling. The five-flight October itinerary, date-line transit days, unique date tiles, corrected modeled shifts, meal policies/windows, short flights, dual clocks, arrival defaults, and mobile layout have dedicated regressions. Meal tests cover missed/actual sleep logs and calendar exports without meal alarms. Real Google and provider checks await credentials; no public deployment occurred. QA servers are stopped after verification.
 
 For the independent numerical fixture reproduction, see [the kernel notes](src/lib/circadian/README.md). The airport source and optional Bun benchmark are documented in [DATA_SOURCES.md](DATA_SOURCES.md). `npm run benchmark:bun` reports honestly if Bun is absent; Node/npm remain the authoritative toolchain and lockfile.
 

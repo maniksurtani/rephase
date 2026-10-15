@@ -1,4 +1,4 @@
-import { Plane } from 'lucide-react';
+import { Moon, Plane, Utensils } from 'lucide-react';
 import type { PlanTravelSegment } from '../lib/types';
 import { travelClock } from '../lib/travel-clocks';
 
@@ -16,5 +16,17 @@ export function FlightSegmentCard({ segment }: { segment: PlanTravelSegment }) {
       <section className="flight-segment-event" aria-label="Gate departure"><h4>Gate departure</h4>{clockRow(segment.departure, segment.departureAirport, segment.departureTimeZone, 'origin')}{clockRow(segment.departure, segment.arrivalAirport, segment.arrivalTimeZone, 'destination')}</section>
       <section className="flight-segment-event" aria-label="Gate arrival"><h4>Gate arrival</h4>{clockRow(segment.arrival, segment.departureAirport, segment.departureTimeZone, 'origin')}{clockRow(segment.arrival, segment.arrivalAirport, segment.arrivalTimeZone, 'destination')}</section>
     </div>
+    {segment.mealPlan && <section className="meal-plan" aria-label="Meals and sleep for this flight">
+      <div className="meal-policy-heading">{segment.mealPlan.wakeForMeals ? <Utensils size={17}/> : <Moon size={17}/>}<div><span>Meals & sleep</span><h4 className="meal-policy">{segment.mealPlan.advice}</h4></div></div>
+      <p className="meal-reason">{segment.mealPlan.reason}</p>
+      {segment.mealPlan.windows.length ? <ul className="meal-windows">{segment.mealPlan.windows.map(window => <li className="meal-window" key={window.id}>
+        <h5><Utensils size={13}/>{window.title}</h5>
+        <div className="meal-window-clocks">{[{ airport: segment.departureAirport, zone: segment.departureTimeZone, role: 'Origin' }, { airport: segment.arrivalAirport, zone: segment.arrivalTimeZone, role: 'Destination' }].map(clock => {
+          const start = travelClock(window.start, clock.zone), end = travelClock(window.end, clock.zone);
+          return <div className="meal-clock" key={clock.role}><span>{clock.airport} · {clock.role} · {start.zone}{start.zone !== end.zone ? ` → ${end.zone}` : ''}</span><strong><time dateTime={window.start}>{start.date} {start.time}</time> – <time dateTime={window.end}>{end.date} {end.time}</time></strong></div>;
+        })}</div>
+      </li>)}</ul> : <p className="meal-no-window">No practical meal window fits around this leg. Eat when awake and able; there is no need to skip food to follow this plan.</p>}
+      <p className="meal-flexibility">Suggested windows, with no meal alarms. Confirm service with the crew; choose a light snack close to sleep. <a href="/science.html#meals">Why these timings?</a></p>
+    </section>}
   </article>;
 }

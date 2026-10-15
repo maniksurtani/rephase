@@ -1,4 +1,5 @@
 import type { AppData, Plan, PlanAction, Trip } from './types';
+import { effectiveSleepIntervals } from './plan-meals';
 
 export const escapeIcs = (s: string) => s.replace(/\\/g,'\\\\').replace(/\r\n|\r|\n/g,'\\n').replace(/;/g,'\\;').replace(/,/g,'\\,');
 const utcStamp = (s: string) => new Date(s).toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');
@@ -34,6 +35,40 @@ export function buildCalendar(plan: Plan, trip: Trip, withAlarms = true): string
       'TRANSP:TRANSPARENT');
     if (withAlarms) lines.push('BEGIN:VALARM','TRIGGER:-PT10M','ACTION:DISPLAY',`DESCRIPTION:${escapeIcs(action.title)}`,'END:VALARM');
     lines.push('END:VEVENT');
+  }
+  // Flight segments can appear on several calendar days. Meals are practical
+  // suggestions, and must never introduce reminders that interrupt planned sleep.
+  const mealIds = new Set<string>();
+  const mealIntervals = new Set<string>();
+  const sleep = effectiveSleepIntervals(plan, trip);
+  for (const segment of plan.days.flatMap(day => day.travelSegments ?? [])) {
+    const mealPlan = segment.mealPlan;
+    if (!mealPlan) continue;
+    for (const meal of mealPlan.windows) {
+      // An explicit offset is necessary: a floating local clock must not acquire
+      // the timezone of the computer performing the export.
+      if (![meal.start, meal.end].every(value => /(?:Z|[+-]\d{2}:\d{2})$/i.test(value))) continue;
+      const start = Date.parse(meal.start), end = Date.parse(meal.end);
+      if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) continue;
+      const interval = `${start}:${end}`;
+      if (mealIds.has(meal.id) || mealIntervals.has(interval)
+        || sleep.some(rest => start < rest.end && end > rest.start)) continue;
+      mealIds.add(meal.id); mealIntervals.add(interval);
+      const location = meal.location === 'before-flight' ? 'Before departure'
+        : meal.location === 'after-flight' ? 'After arrival' : 'During the flight';
+      lines.push('BEGIN:VEVENT',
+        `UID:meal-${utcStamp(meal.start)}-${utcStamp(meal.end)}-${trip.id.replace(/[^a-zA-Z0-9._-]/g,'-')}@rephase.local`,
+        `DTSTAMP:${utcStamp(plan.generatedAt)}`,`DTSTART:${utcStamp(meal.start)}`,`DTEND:${utcStamp(meal.end)}`,
+        `SUMMARY:${escapeIcs(`Suggested meal · ${meal.title}`)}`,
+        `DESCRIPTION:${escapeIcs([
+          `${segment.flightNumber} · ${segment.departureAirport} → ${segment.arrivalAirport}`,
+          location, meal.detail, mealPlan.advice, mealPlan.reason,
+          'Practical suggestion; airline meal service times are not known. No reminder is set, to avoid interrupting sleep.',
+          `Origin zone: ${segment.departureTimeZone}. Destination zone: ${segment.arrivalTimeZone}. Calendar times are absolute UTC instants.`,
+          `Engine: ${plan.version}. Estimated guidance.`,
+        ].filter(Boolean).join('\n'))}`,
+        'TRANSP:TRANSPARENT','END:VEVENT');
+    }
   }
   lines.push('END:VCALENDAR');
   return lines.map(foldLine).join('\r\n') + '\r\n';

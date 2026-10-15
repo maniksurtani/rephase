@@ -52,6 +52,16 @@ Updated 2026-10-15. Checked items are implemented and engineering-verified. Exte
 - [x] Verify the real itinerary, editor behavior, date-line travel, and mobile layout in Chromium.
 - [x] Complete final checks, update documentation, and sync the feedback changes to GitHub.
 
+## Planner refinements and meals
+
+- [x] Remove the repeated model disclosure from the daily plan; keep the scientific explanation on the Science page.
+- [x] Repair modeled daily shift calculations and show missing history explicitly, with readable approximate change labels.
+- [x] Consolidate timezone-specific source days into one calendar-date tile while preserving action clocks and both airport times.
+- [x] Shape date tiles like airplane windows.
+- [x] Add per-flight wake-for-meals advice and practical meal windows around sleep and cabin/connection constraints.
+- [x] Export meal windows without sleep-interrupting alarms and explain the evidence on the Science page.
+- [x] Verify five-flight regression, model estimates, meal policies, unique dates, and mobile layout; sync to GitHub.
+
 ## Dynamic flight lookup — AeroDataBox
 
 Amadeus Self-Service is discontinued. AirLabs's near-term schedules and Skyscanner's route-search API do not meet the known-flight/date requirement months ahead. Provider evidence, current plan limits, and terms are linked in DESIGN.md.
@@ -95,6 +105,6 @@ Amadeus Self-Service is discontinued. AirLabs's near-term schedules and Skyscann
 - [ ] Consider Web Push only after a product decision and mobile delivery testing; calendar reminders are implemented.
 - [ ] Consider measured phase/light inputs, richer sleep/fatigue models, and cross-tab live editing as separate enhancements.
 
-Latest feedback verification (2026-10-15): frontend and Worker TypeScript passed; all 199 Vitest tests passed across 17 suites using one worker; the production build contains 24 precached assets. All 14 Chromium scenarios passed (10 existing and four feedback regressions). The new scenarios cover the sourced five-flight itinerary, both airport clocks and local dates, two flights on 24 October, QF94 in transit on 25 October, the short same-offset final flight, active rest alongside a flight, flights with no active recommendation, minute-only input/defaulting, saved-arrival preservation, and mobile overflow. Source times remain explicitly provisional. Initial implementation checks also verified local D1 migrations/API responses, scheduled cache purging, launcher startup/shutdown, and real Wrangler dry-run bundling; no Worker behavior changed in this feedback update.
+Latest feedback verification (2026-10-15): frontend and Worker TypeScript passed; all 238 Vitest tests passed across 21 suites using one worker. The production build contains 24 precached assets. All 15 Chromium scenarios passed, including one calendar tile per date, oval window styling, varied modeled changes and explicit unavailable history, per-leg meal policies and both meal clocks, the five-flight itinerary/date-line transit, minute-only arrival defaulting, saved-arrival preservation, mobile overflow, and existing offline/account/flight/adherence behavior. Unit coverage includes missed/actual sleep history, connection/airborne meal constraints, deduplicated alarm-free meal calendar events, and all source clocks contributing to Today. Initial implementation checks also verified local D1 migrations/API responses, scheduled cache purging, launcher startup/shutdown, and real Wrangler dry-run bundling; no Worker behavior changed in this refinement.
 
 Real OAuth/provider coverage and clinical efficacy are not implied by these checks. The code is synced to [maniksurtani/rephase](https://github.com/maniksurtani/rephase), and local `main` tracks `origin/main`. No Cloudflare deployment exists yet.

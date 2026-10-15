@@ -58,3 +58,31 @@
 @media(max-width:1100px){.flight-segment-events{gap:15px}.flight-clock{flex-direction:column;gap:4px}.flight-clock time{align-items:flex-start}.travel-action-clocks{grid-template-columns:1fr}}
 @media(max-width:760px){.flight-segment-card{padding:16px}.flight-segment-events{gap:18px}.flight-clock{flex-direction:row}.flight-clock-label{max-width:76px}.flight-clock time{align-items:flex-end}.travel-action-clocks{grid-template-columns:1fr}.action-card .travel-action-clock strong{font-size:11px}.day-button.travel-day{min-width:84px}}
 @media(max-width:400px){.flight-clock{flex-direction:column;gap:3px}.flight-clock time{align-items:flex-start}.flight-segment-header h3{font-size:17px}}
+
+/* One calendar tile per date, with the shape of an airplane window. */
+.day-button,.day-button.travel-day{border-radius:30px;min-width:88px;max-width:108px;min-height:136px;padding:17px 10px 15px;gap:6px}
+.day-button .day-zone{max-width:86px;font-size:9px}
+.phase-meter strong{font-size:19px;line-height:1.5}
+.phase-unavailable{margin:18px 0;padding-top:15px;border-top:1px solid #373145}
+.phase-unavailable>span{font-size:11px;color:#a9a1ba}
+.phase-unavailable p{font-size:12px!important;margin:8px 0 0;color:#c7bcd7}
+.meal-plan{border-top:1px solid #514035;margin-top:18px;padding-top:17px}
+.meal-policy-heading{display:flex;align-items:flex-start;gap:10px;color:#e6bb90}
+.meal-policy-heading>svg{flex-shrink:0;margin-top:4px}
+.meal-policy-heading span{font-size:10px;color:#b7a08e;letter-spacing:.03em}
+.meal-policy{font-size:13px;line-height:1.6;font-weight:600;color:#eee1d8;margin:3px 0 0}
+.meal-reason,.meal-flexibility,.meal-no-window{font-size:11px;line-height:1.75;color:#b4aab8;margin:10px 0 0}
+.meal-windows{list-style:none;padding:0;margin:15px 0 0;display:flex;flex-direction:column;gap:10px}
+.meal-window{padding:12px 13px;background:#17192490;border:1px solid #41383d;border-radius:8px}
+.meal-window h5{display:flex;align-items:center;gap:7px;color:#dfc0a1;font-size:11px;font-weight:500;margin:0}
+.meal-window>p{font-size:10px;line-height:1.75;color:#a69cab;margin:7px 0}
+.meal-window-clocks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:9px}
+.meal-clock{display:flex;flex-direction:column;gap:4px;min-width:0}
+.meal-clock>span{font-size:9px;color:#a99ab4;line-height:1.6}
+.meal-clock strong{font-size:10px;font-weight:500;color:#d7cbd7;line-height:1.7;font-variant-numeric:tabular-nums}
+.meal-flexibility{font-size:10px;color:#a298aa}
+.meal-flexibility a{color:#c9b7d8;text-decoration:underline;text-underline-offset:2px}
+@media(max-width:1100px){.meal-window-clocks{grid-template-columns:1fr}}
+@media(max-width:760px){.day-button,.day-button.travel-day{min-width:85px;min-height:132px;padding:16px 9px 14px}.meal-policy{font-size:12px}.meal-window-clocks{grid-template-columns:1fr}}
+.phase-meter{flex-direction:column;align-items:flex-start;gap:8px}
+.phase-meter>span{max-width:none}

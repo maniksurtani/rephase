@@ -3,6 +3,7 @@ import type { AdaptationStrategy, Plan, PlanAction, PlanDay, Preferences, Trip }
 import { dateInZone, localToInstant } from './time';
 import { generateModelPlan, type ModelPlanOptions } from './model-plan';
 import { decoratePlanWithTravel } from './plan-travel';
+import { decoratePlanWithMeals } from './plan-meals';
 
 export const PLAN_VERSION = 'rules-1.2.0';
 const HOUR = 3_600_000;
@@ -414,5 +415,5 @@ export function generatePlan(trip: Trip, prefs: Preferences, options?: ModelPlan
   const errors = validateTrip(trip);
   if (errors.length) throw new RangeError(errors.join('\n'));
   validatePreferences(prefs);
-  return decoratePlanWithTravel(prefs.planningMode === 'rules' ? generateRulesPlan(trip, prefs) : generateModelPlan(trip, prefs, options), trip);
+  return decoratePlanWithMeals(decoratePlanWithTravel(prefs.planningMode === 'rules' ? generateRulesPlan(trip, prefs) : generateModelPlan(trip, prefs, options), trip), trip);
 }

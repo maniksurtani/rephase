@@ -77,6 +77,22 @@ export interface PlanAction {
   evidenceUrl?: string;
   feasibility?: 'daylight' | 'indoor' | 'unknown';
 }
+export interface MealWindow {
+  id: string;
+  start: string;
+  end: string;
+  location: 'before-flight' | 'in-flight' | 'after-flight';
+  title: string;
+  detail: string;
+}
+export interface FlightMealPlan {
+  wakeForMeals: boolean;
+  advice: string;
+  reason: string;
+  sleepStart?: string;
+  sleepEnd?: string;
+  windows: MealWindow[];
+}
 /** Gate-to-gate itinerary facts, independent of optional sleep/light recommendations. */
 export interface PlanTravelSegment {
   id: string;
@@ -87,6 +103,7 @@ export interface PlanTravelSegment {
   arrival: string;
   departureTimeZone: string;
   arrivalTimeZone: string;
+  mealPlan?: FlightMealPlan;
 }
 export interface PlanDay {
   id: string;
@@ -99,7 +116,7 @@ export interface PlanDay {
   remainingShiftHours: number;
   note: string;
   travelSegments?: PlanTravelSegment[];
-  /** False for a schedule-only calendar day that has no model/rules estimate. */
+  /** False for schedule-only days or missing/ambiguous model history. */
   phaseEstimateAvailable?: boolean;
 }
 export interface Plan {

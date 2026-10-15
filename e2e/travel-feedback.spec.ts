@@ -38,12 +38,28 @@ async function openPersonalData(page: Page, data = personalData) {
   if (data.trips.length) await expect(page.getByRole('heading', { name: data.trips[0].name, exact: true })).toBeVisible();
 }
 
-function planDay(page: Page, date: string, zone: string) {
-  return page.locator(`.day-button[data-date="${date}"][data-zone="${zone}"]`);
+function planDay(page: Page, date: string, _zone?: string) {
+  return page.locator(`.day-button[data-date="${date}"]`);
 }
 
 function flightCard(page: Page, id: string) {
   return page.locator(`.flight-segment-card[data-flight-id="${id}"]`);
+}
+
+async function expectMealAdvice(page: Page, id: string) {
+  const meals = flightCard(page, id).locator('.meal-plan');
+  await expect(meals).toBeVisible();
+  await expect(meals.locator('.meal-policy')).toHaveText(/Let me sleep through meal service|Meal service can fit while awake/);
+  const windows = meals.locator('.meal-window');
+  const count = await windows.count();
+  for (let index = 0; index < count; index++) {
+    const window = windows.nth(index);
+    await expect(window).toBeVisible();
+    await expect(window.locator('.meal-clock')).toHaveCount(2);
+    await expect(window.locator('time')).toHaveCount(4);
+    await expect(window.locator('time').first()).toHaveAttribute('datetime', /T/);
+  }
+  return count;
 }
 
 test.beforeEach(async ({ page }) => {
@@ -74,6 +90,13 @@ test('Today and the full plan retain all five flights with both local clocks and
   await expect(arrival.locator('.flight-clock-destination')).toContainText('17 Oct');
 
   await page.getByRole('button', { name: 'Explore your plan', exact: true }).click();
+  // Date-line travel can have multiple source-zone days, but navigation has
+  // one calendar-date tile with all of their flights and recommendations.
+  for (const date of ['2026-10-17', '2026-10-19', '2026-10-24']) {
+    await expect(planDay(page, date)).toHaveCount(1);
+  }
+  await expect(page.locator('.model-disclosure')).toHaveCount(0);
+  let mealWindowCount = 0;
   for (const leg of itinerary.legs) {
     const day = planDay(page, leg.arrivalDateTime.slice(0, 10), leg.arrivalTimeZone);
     await expect(day).toHaveClass(/travel-day/);
@@ -81,7 +104,9 @@ test('Today and the full plan retain all five flights with both local clocks and
     await day.click();
     await expect(flightCard(page, leg.id)).toBeVisible();
     await expect(flightCard(page, leg.id)).toContainText(leg.flightNumber);
+    mealWindowCount += await expectMealAdvice(page, leg.id);
   }
+  expect(mealWindowCount).toBeGreaterThan(0);
 
   await planDay(page, '2026-10-24', 'America/Los_Angeles').click();
   await expect(flightCard(page, 'aa6276')).toBeVisible();
@@ -93,6 +118,7 @@ test('Today and the full plan retain all five flights with both local clocks and
   await expect(planDay(page, '2026-10-16', 'Pacific/Honolulu')).toHaveCount(0);
 
   await planDay(page, '2026-10-17', 'Pacific/Honolulu').click();
+  await expect(flightCard(page, 'qf103').locator('.meal-policy')).toHaveText('Let me sleep through meal service');
   const actionClocks = page.locator('.travel-action-clocks').first();
   await expect(actionClocks).toBeVisible();
   await expect(actionClocks.locator('.travel-action-clock')).toHaveCount(2);
@@ -111,13 +137,48 @@ test('mobile travel cards and dual clocks fit a 390-pixel screen', async ({ page
   await planDay(page, '2026-10-24', 'America/Los_Angeles').click();
   await expect(flightCard(page, 'aa6276')).toBeVisible();
   await expect(flightCard(page, 'qf94')).toBeVisible();
-  await expect(flightCard(page, 'qf94').locator('.flight-clock-origin')).toHaveCount(2);
-  await expect(flightCard(page, 'qf94').locator('.flight-clock-destination')).toHaveCount(2);
+  const flightEvents = flightCard(page, 'qf94').locator('.flight-segment-events');
+  await expect(flightEvents.locator('.flight-clock-origin')).toHaveCount(2);
+  await expect(flightEvents.locator('.flight-clock-destination')).toHaveCount(2);
+  await expectMealAdvice(page, 'aa6276');
+  await expectMealAdvice(page, 'qf94');
+  for (const date of ['2026-10-17', '2026-10-19', '2026-10-24']) {
+    await expect(planDay(page, date)).toHaveCount(1);
+  }
+  const radius = await planDay(page, '2026-10-24').evaluate(element => parseFloat(getComputedStyle(element).borderTopLeftRadius));
+  expect(radius).toBeGreaterThanOrEqual(25);
   expect(await page.evaluate(() => Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) <= window.innerWidth)).toBe(true);
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: 'artifacts/travel-feedback-mobile.png' });
   await flightCard(page, 'qf94').scrollIntoViewIfNeeded();
   await page.screenshot({ path: 'artifacts/travel-clocks-mobile.png' });
+});
+
+test('body-clock estimates show modeled movement rather than a repeated zero', async ({ page }) => {
+  await openPersonalData(page, { ...personalData, preferences: { ...preferences, preparationDays: 3 } });
+  await page.getByRole('button', { name: 'Explore your plan', exact: true }).click();
+  await planDay(page, '2026-10-14').click();
+  await expect(page.locator('.phase-meter')).toHaveCount(0);
+  await expect(page.locator('.phase-unavailable')).toContainText('Not enough modeled history for this date.');
+  const estimates: string[] = [];
+  for (const date of ['2026-10-16', '2026-10-18', '2026-10-20', '2026-10-21']) {
+    await planDay(page, date).click();
+    const meter = page.locator('.phase-meter');
+    if (await meter.count()) {
+      await expect(meter).toContainText('Modeled body-clock change');
+      const estimate = await meter.locator('strong').innerText();
+      expect(estimate).not.toMatch(/^0\.0\b/);
+      expect(estimate).toMatch(/earlier|later|Nearly steady/);
+      estimates.push(estimate);
+    } else {
+      await expect(page.locator('.phase-unavailable')).toContainText('Not enough modeled history for this date.');
+    }
+    await expect(page.locator('.model-disclosure')).toHaveCount(0);
+  }
+  expect(estimates.length).toBeGreaterThan(0);
+  expect(new Set(estimates).size).toBeGreaterThan(1);
+  expect(estimates.some(estimate => /(?:About|Under).*\b(?:earlier|later)\b/.test(estimate))).toBe(true);
+  await page.screenshot({ path: 'artifacts/planner-phase-desktop.png' });
 });
 
 test('minute-only flight entry defaults arrival until edited and preserves existing arrival on reopening', async ({ page }) => {

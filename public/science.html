@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#10121c">
-    <meta name="description" content="The science behind Rephase: understand jet lag, timed light, sleep, caffeine, melatonin, and the limits of estimated circadian travel plans.">
+    <meta name="description" content="The science behind Rephase: understand jet lag, timed light, sleep, meals, caffeine, melatonin, and the limits of estimated circadian travel plans.">
     <title>The science of traveling in rhythm · Rephase</title>
     <link rel="icon" type="image/svg+xml" href="/icon.svg">
     <link rel="stylesheet" href="/science.css">
@@ -34,7 +34,7 @@
 
       <nav class="contents" aria-label="On this page">
         <span>On this page</span>
-        <a href="#body-clock">Body clock</a><a href="#light">Light</a><a href="#sleep">Sleep</a><a href="#melatonin">Melatonin</a><a href="#caffeine">Caffeine</a><a href="#itinerary">Whole trip</a><a href="#limits">What we can estimate</a><a href="#sources">Sources</a>
+        <a href="#body-clock">Body clock</a><a href="#light">Light</a><a href="#sleep">Sleep</a><a href="#meals">Meals</a><a href="#melatonin">Melatonin</a><a href="#caffeine">Caffeine</a><a href="#itinerary">Whole trip</a><a href="#limits">What we can estimate</a><a href="#sources">Sources</a>
       </nav>
 
       <div class="article-layout">
@@ -76,6 +76,15 @@
             <div class="takeaway"><span aria-hidden="true">✦</span><p><strong>Keep it achievable.</strong> Research on travelers shows that people often cannot follow mathematically ideal schedules. A workable plan matters. <a class="citation" href="#source-christensen" aria-label="Source 5: Christensen real-world scheduling study">[5]</a></p></div>
           </section>
 
+          <section id="meals" class="science-section">
+            <p class="section-label">Meals · Protect your rest</p>
+            <h2>Let sleep set the meal-service plan</h2>
+            <p>The CDC recommends using destination time for meals, sleep, and light where practical, and warns that sleep loss can worsen jet lag. We protect the sleep opportunities in your flight plan: if a flight includes planned rest, ask the crew to let you sleep through meal service. Eat while awake before boarding, after resting, or after arrival instead. <a class="citation" href="#source-cdc" aria-label="Source 1: CDC Yellow Book">[1]</a></p>
+            <p>Each flight shows a meal-service recommendation and suggested eating windows in both airport clocks. These fit around planned sleep, taxi and takeoff/landing restrictions, and nearby connections. Airline service times and food availability are unknown. A suggested window is flexible; it is not a reason to go hungry or to interrupt needed sleep. Meal calendar entries have no alarms.</p>
+            <p>A light snack can be more comfortable close to sleep than a heavy meal. The U.S. National Heart, Lung, and Blood Institute recommends avoiding large meals within a few hours of bedtime and says a light snack is fine. <a class="citation" href="#source-nhlbi" aria-label="Source 12: NHLBI healthy sleep habits">[12]</a></p>
+            <p>Food timing can affect metabolic clocks. A small human experiment shifted glucose rhythms without shifting melatonin or cortisol rhythms; a separate simulated night-work study found benefits for glucose regulation from daytime eating. These were not trials showing faster jet-lag recovery in travelers. We do not prescribe fasting or claim that precisely timed meals reset your main body clock. Food effects are not part of the light-driven model. <a class="citation" href="#source-wehrens" aria-label="Source 13: Wehrens meal timing study">[13]</a> <a class="citation" href="#source-chellappa" aria-label="Source 14: Chellappa daytime eating study">[14]</a></p>
+          </section>
+
           <section id="melatonin" class="science-section">
             <p class="section-label">04 · An optional timing signal</p>
             <h2>Melatonin: timing matters more than “more”</h2>
@@ -108,6 +117,7 @@
             <p>Rephase includes an experimental planner based on <strong>Forger99</strong>, a published mathematical model of the light-driven human body clock. It compares achievable earlier- and later-adjustment schedules across the itinerary, then checks the selected schedule under different starting-phase assumptions. <a class="citation" href="#source-forger" aria-label="Source 10: Forger published model">[10]</a></p>
             <p>The implementation uses an attributed, open-source reference. Its equations and numerical trajectories have been compared with independent reference calculations for a set of test scenarios. This verifies that the software calculates those model equations consistently. It does <strong>not</strong> show that the model predicts your clock accurately or that the app reduces real-world jet lag. <a class="citation" href="#source-arcascope" aria-label="Source 11: Arcascope model reference">[11]</a></p>
             <p>The model assumes light levels and habitual sleep timing. A sleep opportunity represents darkness; it does not calculate sleep debt or sleep quality. Caffeine and melatonin guidance is separate general information: their biological effects are not simulated. Completion logs can update assumed past light or darkness, but do not measure your actual exposure or circadian phase.</p>
+            <p>The plan's body-clock change compares successive simulated daily low points. It is not a measured change in your body. A date with too little modeled history shows an unavailable estimate. When a travel date includes multiple timezones, it has one date tile and uses one labeled timezone's estimate rather than adding overlapping estimates together.</p>
             <p>A sensitivity check shifts the starting-phase assumption by two hours in either direction. Those alternative simulations illustrate uncertainty; they are not a medical confidence interval or a guarantee that your actual timing falls inside that range.</p>
             <p>Rephase remains an evidence-informed prototype. It does not directly measure your body clock, know how well you slept, or provide medical diagnosis or treatment. Clinical validation and individual prediction accuracy remain separate work.</p>
             <p>Rephase is independently developed and is not affiliated with Timeshifter. It does not reproduce or claim equivalence to that app's proprietary algorithm.</p>
@@ -120,7 +130,7 @@
           <h2 id="reading-note-title">Small signals.<br>Steady adjustment.</h2>
           <p>Light sets the clock. Sleep restores you. Optional caffeine and melatonin need thoughtful timing.</p>
           <a href="/">Build your travel plan <span aria-hidden="true">→</span></a>
-          <p class="checked">Sources checked<br><time datetime="2026-10-14">14 October 2026</time></p>
+          <p class="checked">Sources checked<br><time datetime="2026-10-15">15 October 2026</time></p>
         </aside>
       </div>
 
@@ -140,6 +150,9 @@
           <li id="source-gardiner"><a rel="noopener" href="https://pubmed.ncbi.nlm.nih.gov/36870101/">Gardiner et al., 2023 · The effect of caffeine on subsequent sleep: a systematic review and meta-analysis <span aria-hidden="true">↗</span></a><p>A synthesis of sleep studies; caffeine dose and timing both influence sleep disruption.</p></li>
           <li id="source-forger"><a rel="noopener" href="https://doi.org/10.1177/074873099129000867">Forger, Jewett &amp; Kronauer, 1999 · A simpler model of the human circadian pacemaker <span aria-hidden="true">↗</span></a><p>The original publication behind the experimental light-driven oscillator. A population model is not a measurement of an individual's clock.</p></li>
           <li id="source-arcascope"><a rel="noopener" href="https://github.com/Arcascope/circadian/tree/db6eb08b6c0b0586cdac7795bf10bbbbfd323c1a">Arcascope circadian · Pinned open-source model reference <span aria-hidden="true">↗</span></a><p>The MIT-licensed Forger99 reference used for the port and numerical comparisons. <a href="/data-licenses/circadian-MIT.txt">Reference license and attribution</a>.</p></li>
+          <li id="source-nhlbi"><a rel="noopener" href="https://www.nhlbi.nih.gov/health/sleep-deprivation/healthy-sleep-habits">NHLBI · Healthy Sleep Habits <span aria-hidden="true">↗</span></a><p>Public-health guidance on protecting sleep, avoiding heavy meals near bedtime, and choosing a light snack if needed.</p></li>
+          <li id="source-wehrens"><a rel="noopener" href="https://pubmed.ncbi.nlm.nih.gov/28578930/">Wehrens et al., 2017 · Meal Timing Regulates the Human Circadian System <span aria-hidden="true">↗</span></a><p>A small laboratory study of metabolic and peripheral rhythms. It did not establish a traveler jet-lag treatment or a shift in melatonin/cortisol timing.</p></li>
+          <li id="source-chellappa"><a rel="noopener" href="https://pubmed.ncbi.nlm.nih.gov/34860550/">Chellappa et al., 2021 · Daytime eating prevents internal circadian misalignment and glucose intolerance in night work <span aria-hidden="true">↗</span></a><p>A small randomized simulated-night-work experiment, relevant to metabolic timing rather than proof of jet-lag recovery. <a rel="noopener" href="https://www.nih.gov/news-events/nih-research-matters/daytime-meals-may-reduce-health-risks-night-shift-work">NIH plain-language summary</a>.</p></li>
         </ol>
       </section>
     </main>

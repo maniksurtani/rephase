@@ -150,6 +150,9 @@ describe('itinerary-derived travel days', () => {
     expect(result.days.find(value => value.id === '2026-10-25:Australia/Melbourne')?.travelSegments?.some(segment => segment.flightNumber === 'QF94')).toBe(true);
     expect(result.days.some(value => value.id === '2026-10-16:Pacific/Honolulu')).toBe(false);
     expect(result.days.filter(value => value.date === '2026-10-27' && value.travelSegments?.some(segment => segment.flightNumber === 'QF490')).length).toBeGreaterThan(0);
-    expect(result.days.filter(value => value.phaseEstimateAvailable === false).every(value => value.actions.length === 0)).toBe(true);
+    // Missing model history can now accompany real recommendations. Only a
+    // synthetic schedule-only day promises to have no scientific actions.
+    expect(result.days.filter(value => value.note.startsWith('Flight schedule only.'))
+      .every(value => value.phaseEstimateAvailable === false && value.actions.length === 0)).toBe(true);
   }, 30_000);
 });
