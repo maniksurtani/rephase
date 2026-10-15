@@ -152,6 +152,16 @@ Amadeus Self-Service is discontinued. AirLabs's near-term schedules and Skyscann
 - [x] Complete final mobile/desktop browser verification, including all 16 targeted lookup/aircraft/travel/mobile-date scenarios.
 - [x] Publish the copy update after full deployment checks.
 
+## Clearer plan summaries and preferences
+
+- [x] Rename the practical-light card to **Light tips** and replace repetitive model notes with daily change/remaining-adjustment values and one Science link.
+- [x] Show unavailable daily history concisely without displaying an invented adjustment value.
+- [x] Remove the melatonin preference warning/acknowledgement gate; use the existing toggle as the sole opt-in while preserving timing/dose restrictions.
+- [x] Hide the technical planning-engine picker, keeping the default circadian model and existing saved-mode compatibility.
+- [x] Add offline home-timezone autocomplete for cities/IANA names, keyboard/touch selection, UTC and valid aliases.
+- [x] Verify timezone search, saved preference compatibility, melatonin opt-in and compact phase summaries in unit/desktop/mobile WebKit checks.
+- [ ] Publish the preferences/summary update and record deployment results.
+
 ## Launch, GitHub, and Cloudflare preparation
 
 - [x] Provide `npm start` with dependency/build/local migration setup, port checks, readiness, and owned-process cleanup.

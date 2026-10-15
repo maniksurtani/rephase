@@ -27,7 +27,7 @@ npm start -- --help
 
 If this workspace is remote, forward port **5173** (or **8787** in production mode) through your IDE/workspace. The remote machine's loopback address is not your device's localhost.
 
-The London → Dubai connection → Singapore → San Francisco example uses relative future dates and is labeled as an example. Create a trip or edit it to make a personal itinerary. Profile controls habitual/preferred sleep, duration, chronotype, supplements, planning mode, and calendar reminders. Signed-in preferences and trips save to your account automatically after edits are committed.
+The London → Dubai connection → Singapore → San Francisco example uses relative future dates and is labeled as an example. Create a trip or edit it to make a personal itinerary. Profile controls habitual/preferred sleep, duration, chronotype, supplements and calendar reminders. Home timezone suggestions filter by city or IANA name as you type, with keyboard/touch selection and offline support. Melatonin uses one opt-in toggle. New accounts use the circadian model; existing saved planner choices remain intact. Signed-in preferences and trips save to your account automatically after edits are committed.
 
 Flight entry starts with a flight number and departure date. Find and confirm the matching flight, or choose **Enter manually** to reveal airports, local dates/times and timezones. Existing legs show their selected-flight summary and retain cabin choices; changing a lookup query requires a new confirmation or an explicit manual-entry choice before saving. Manual time inputs use HH:mm, with a blank arrival initially matching departure until adjusted. This editor is deployed; verification and publication are recorded in TODO.md.
 

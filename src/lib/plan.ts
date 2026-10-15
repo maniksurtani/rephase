@@ -208,9 +208,6 @@ export function generateRulesPlan(trip: Trip, prefs: Preferences): Plan {
   if (horizonStart > requestedStart) warnings.add('Some preparation time is omitted so every flight fits inside the 90-day planning horizon.');
   if (horizonEnd < last.arrival + 7 * DAY) warnings.add('The complete plan is capped at 90 days, so some post-trip days are omitted.');
   if (prefs.sleepHours < 7) warnings.add('Most adults need at least 7 hours of sleep. Your chosen duration may leave sleep debt that timing advice cannot resolve.');
-  if (prefs.melatonin && !prefs.melatoninAcknowledged) {
-    warnings.add('Melatonin guidance is disabled until you acknowledge suitability and medication precautions.');
-  }
   if (prefs.melatonin) {
     warnings.add('The optional 0.5–1 mg melatonin range is general CDC information, not a personal dose prescription. Guidance is omitted for delays, large uncertain shifts, flights, transfers, and daytime dosing. Never wake solely to take it.');
   }
@@ -357,7 +354,7 @@ export function generateRulesPlan(trip: Trip, prefs: Preferences): Plan {
           'Optional caffeine', 'Use your usual modest amount for alertness only. This window stops at least 8 hours before any planned sleep; skip it if you are sensitive or avoiding caffeine.',
           'Caffeine can support alertness but does not substitute for sleep and can delay sleep or the body clock.');
       }
-      if (prefs.melatonin && prefs.melatoninAcknowledged && !segment.flight && !segmentUncertain && segment.adapt && remaining >= 1) {
+      if (prefs.melatonin && !segment.flight && !segmentUncertain && segment.adapt && remaining >= 1) {
         for (const sleep of sleeps) {
           const candidate = sleep.start - HOUR;
           const localHour = Temporal.Instant.fromEpochMilliseconds(candidate).toZonedDateTimeISO(piece.zone).hour;

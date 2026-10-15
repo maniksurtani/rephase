@@ -15,7 +15,7 @@ export default defineConfig({
   projects:[
     {
       name:'chromium',
-      testIgnore:'**/mobile-date.spec.ts',
+      testIgnore:['**/mobile-date.spec.ts','**/mobile-timezone.spec.ts'],
       use:{
         browserName:'chromium',
         launchOptions:{executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE || (existsSync('/usr/bin/chromium') ? '/usr/bin/chromium' : undefined),args:['--no-sandbox','--disable-gpu']},
@@ -23,7 +23,7 @@ export default defineConfig({
     },
     {
       name:'mobile-webkit',
-      testMatch:'**/mobile-date.spec.ts',
+      testMatch:['**/mobile-date.spec.ts','**/mobile-timezone.spec.ts'],
       use:{...devices['iPhone 13'],browserName:'webkit'},
     },
   ],

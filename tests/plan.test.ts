@@ -136,15 +136,19 @@ describe('planning rules', () => {
       }
     }
   });
-  it('respects caffeine and melatonin opt-outs and requires melatonin acknowledgement', () => {
-    const off = actions(generatePlan(trip(), { ...preferences, caffeine: false, melatonin: false }));
-    expect(off.some(action => action.type === 'caffeine' || action.type === 'melatonin')).toBe(false);
-    const unacknowledged = generatePlan(trip(), { ...preferences, melatonin: true, melatoninAcknowledged: false });
-    expect(actions(unacknowledged).some(action => action.type === 'melatonin')).toBe(false);
-    expect(unacknowledged.warnings.join(' ')).toContain('disabled until');
-    const acknowledged = actions(generatePlan(trip(), { ...preferences, melatonin: true, melatoninAcknowledged: true }));
-    expect(acknowledged.some(action => action.type === 'melatonin')).toBe(true);
-    for (const action of acknowledged.filter(action => action.type === 'melatonin')) {
+  it('uses the melatonin toggle as the sole opt-in and ignores the legacy acknowledgement value', () => {
+    for (const melatoninAcknowledged of [false, true]) {
+      const off = actions(generatePlan(trip(), { ...preferences, caffeine: false, melatonin: false, melatoninAcknowledged }));
+      expect(off.some(action => action.type === 'caffeine' || action.type === 'melatonin')).toBe(false);
+    }
+    const enabled = generatePlan(trip(), { ...preferences, melatonin: true, melatoninAcknowledged: false });
+    const legacyEnabled = generatePlan(trip(), { ...preferences, melatonin: true, melatoninAcknowledged: true });
+    expect(enabled.days).toEqual(legacyEnabled.days);
+    expect(enabled.warnings).toEqual(legacyEnabled.warnings);
+    expect(enabled.warnings.join(' ')).not.toContain('disabled until');
+    const doses = actions(enabled).filter(action => action.type === 'melatonin');
+    expect(doses.length).toBeGreaterThan(0);
+    for (const action of doses) {
       expect(action.dose).toContain('0.5–1 mg');
       expect(action.detail).toContain('not a personalized dose');
     }
@@ -153,7 +157,7 @@ describe('planning rules', () => {
     const onwards: FlightLeg = { ...first, id: 'early-onwards', departureAirport: 'LHR', arrivalAirport: 'CDG',
       departureDateTime: '2026-10-16T04:00', arrivalDateTime: '2026-10-16T06:30',
       departureTimeZone: 'Europe/London', arrivalTimeZone: 'Europe/Paris' };
-    const result = generatePlan(trip([first, onwards]), { ...preferences, preparationDays: 0, melatonin: true, melatoninAcknowledged: true });
+    const result = generatePlan(trip([first, onwards]), { ...preferences, preparationDays: 0, melatonin: true, melatoninAcknowledged: false });
     const dosesOnFirstNight = actions(result).filter(action => action.type === 'melatonin' && action.start < '2026-10-16T03:00:00.000Z');
     expect(dosesOnFirstNight).toEqual([]);
   });
@@ -181,7 +185,7 @@ describe('planning rules', () => {
   });
   it('warns about large shifts and omits their precise phase interventions', () => {
     const tokyo: FlightLeg = { ...first, arrivalAirport: 'HND', arrivalDateTime: '2026-10-16T00:00', arrivalTimeZone: 'Asia/Tokyo' };
-    const result = generatePlan(trip([tokyo]), { ...preferences, preparationDays: 0, melatonin: true, melatoninAcknowledged: true });
+    const result = generatePlan(trip([tokyo]), { ...preferences, preparationDays: 0, melatonin: true, melatoninAcknowledged: false });
     expect(result.warnings.join(' ')).toContain('uncertain advance/delay route');
     expect(actions(result).some(action => ['light', 'avoid-light', 'melatonin'].includes(action.type))).toBe(false);
     const prepared = generatePlan(trip([tokyo]), { ...preferences, preparationDays: 7, melatonin: true, melatoninAcknowledged: true });

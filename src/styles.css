@@ -163,3 +163,14 @@
 .footer-links{display:flex;align-items:center;flex-wrap:wrap;gap:4px 20px;min-width:0;max-width:100%}
 .page-footer .footer-links a{min-height:44px;line-height:1.7;overflow-wrap:anywhere}
 @media(max-width:760px){.page-footer{padding-bottom:calc(112px + env(safe-area-inset-bottom,0px))}}
+.home-timezone-field>label{font-size:13px;color:#b9b5cc;font-weight:500;line-height:1.5}
+.time-zone-input{position:relative;min-width:0;width:100%}
+.time-zone-input>input{min-width:0;max-width:100%;min-height:44px}
+.time-zone-popup{position:absolute;inset-inline:0;top:calc(100% + 6px);z-index:30;padding:6px;border:1px solid #51435f;border-radius:11px;background:#1c1d2d;box-shadow:0 16px 36px #0007;overflow:hidden}
+.time-zone-options{max-height:280px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+.time-zone-options>[role=option]{display:flex;flex-direction:column;align-items:flex-start;gap:3px;min-width:0;min-height:54px;width:100%;padding:9px 11px;border-radius:7px;text-align:left;white-space:normal;overflow-wrap:anywhere}
+.time-zone-options>[role=option]:hover,.time-zone-options>[role=option].active{background:#352b45}
+.time-zone-options strong{font-size:13px;font-weight:500;line-height:1.5;color:#e4daef}
+.time-zone-options span{font-size:11px;line-height:1.6;color:#b3a4c4}
+.time-zone-no-results{padding:10px 11px;font-size:12px;line-height:1.7;color:#b3a4c4}
+@media(max-width:540px){.home-timezone-field>label{font-size:12px}.time-zone-options{max-height:240px}.time-zone-options>[role=option]{min-height:56px}}

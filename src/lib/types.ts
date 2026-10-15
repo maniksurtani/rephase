@@ -12,6 +12,7 @@ export interface Preferences {
   sleepAnchor: 'wake' | 'bed';
   caffeine: boolean;
   melatonin: boolean;
+  /** Legacy saved field; melatonin is the sole opt-in and this flag is ignored. */
   melatoninAcknowledged: boolean;
   preparationDays: number;
   planningMode?: 'rules' | 'model';

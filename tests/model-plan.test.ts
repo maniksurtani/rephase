@@ -35,7 +35,7 @@ describe('light-driven itinerary model', () => {
   it('protects airborne buffers separately from gate times and preserves ground transfers', () => {
     const first = { ...leg, stayAfter: 'connection' as const, takeoffDateTime: '2026-10-14T18:40', landingDateTime: '2026-10-15T05:40' };
     const next = { ...leg, id: 'next', departureAirport: 'LHR', arrivalAirport: 'CDG', departureDateTime: '2026-10-15T08:00', arrivalDateTime: '2026-10-15T10:20', departureTimeZone: 'Europe/London', arrivalTimeZone: 'Europe/Paris' };
-    const itinerary = trip([first, next]), plan = generatePlan(itinerary, { ...prefs, preparationDays: 0 });
+    const itinerary = trip([first, next]), plan = generatePlan(itinerary, { ...prefs, preparationDays: 0, melatonin: true, melatoninAcknowledged: false });
     for (const flight of itinerary.legs) {
       const departure = localToInstant(flight.departureDateTime, flight.departureTimeZone), arrival = localToInstant(flight.arrivalDateTime, flight.arrivalTimeZone), airborne = flightAirborneTiming(flight);
       for (const action of all(plan)) {
@@ -128,13 +128,20 @@ describe('light-driven itinerary model', () => {
     const invalidHabit = generatePlan(trip(), { ...prefs, usualBedtime: '06:00', usualWakeTime: '06:00' });
     expect(invalidHabit.warnings.join(' ')).toContain('Initialization falls back');
   }, 30_000);
-  it('omits melatonin on a large uncertain route and requires acknowledgement', () => {
+  it('uses the melatonin toggle alone while preserving uncertain-route exclusions', () => {
     const tokyo = { ...leg, arrivalAirport: 'HND', arrivalTimeZone: 'Asia/Tokyo', arrivalDateTime: '2026-10-16T00:00' };
-    const large = generatePlan(trip([tokyo]), { ...prefs, preparationDays: 0, melatonin: true, melatoninAcknowledged: true });
+    const large = generatePlan(trip([tokyo]), { ...prefs, preparationDays: 0, melatonin: true, melatoninAcknowledged: false });
     expect(all(large).some(action => action.type === 'melatonin')).toBe(false);
-    const unacknowledged = generatePlan(trip(), { ...prefs, melatonin: true, melatoninAcknowledged: false });
-    expect(all(unacknowledged).some(action => action.type === 'melatonin')).toBe(false);
-    expect(unacknowledged.warnings.join(' ')).toContain('disabled until');
+    const enabled = generatePlan(trip(), { ...prefs, melatonin: true, melatoninAcknowledged: false });
+    const legacyEnabled = generatePlan(trip(), { ...prefs, melatonin: true, melatoninAcknowledged: true });
+    expect(enabled.days).toEqual(legacyEnabled.days);
+    expect(enabled.warnings).toEqual(legacyEnabled.warnings);
+    expect(enabled.warnings.join(' ')).not.toContain('disabled until');
+    expect(all(enabled).some(action => action.type === 'melatonin')).toBe(true);
+    for (const melatoninAcknowledged of [false, true]) {
+      const off = generatePlan(trip(), { ...prefs, melatonin: false, melatoninAcknowledged });
+      expect(all(off).some(action => action.type === 'melatonin')).toBe(false);
+    }
   }, 30_000);
   it('treats missed sleep as uncertain wake light and partial actual sleep as darkness only', () => {
     const original = generatePlan(trip(), prefs), sleep = all(original).find(action => action.type === 'sleep')!;

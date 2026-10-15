@@ -53,7 +53,11 @@ flowchart LR
 
 ## Domain model
 
-`Preferences` holds home IANA timezone, chronotype, usual bedtime/wake time, preferred bedtime/wake time, `sleepHours`, `sleepAnchor`, supplement opt-ins, a melatonin suitability acknowledgement, and `preparationDays`, planning mode, and calendar-alarm preference. Older stored `autoSync` values are ignored; saving signed-in edits is automatic.
+`Preferences` holds home IANA timezone, chronotype, usual bedtime/wake time, preferred bedtime/wake time, `sleepHours`, `sleepAnchor`, supplement opt-ins, `preparationDays`, a stored planning mode and the calendar-alarm preference. The obsolete `melatoninAcknowledged` and `autoSync` fields remain readable for saved-data compatibility and no longer control behavior. The melatonin toggle is the sole opt-in. The planner-selection dropdown is omitted from everyday preferences: new accounts use the published circadian model, while an existing saved rules-mode choice remains intact. Saving signed-in edits is automatic.
+
+The home timezone field is an accessible local autocomplete over browser-supported IANA zones, bundled airport cities/zones and UTC. It filters as the traveler types, caps suggestions, supports keyboard and touch selection and keeps valid manual aliases unchanged unless the traveler explicitly chooses a canonical suggestion. It works offline and falls back to bundled airport zones if the browser lacks `Intl.supportedValuesOf`; parent form validation rejects invalid free text. Flight timezone fields retain their existing manual controls.
+
+The plan's body-clock card shows only the estimated daily change, remaining adjustment and the selected estimate's city. Unavailable daily history receives a short explanation and no invented remaining value. Long internal model notes are omitted from this card; a single Science link provides the calculation details. The adjacent **Light tips** card gives practical light advice.
 
 `Trip` holds an ID, name, timestamps, and ordered `FlightLeg[]`. Each leg contains original local timestamps and explicit IANA zones, airport codes, optional flight number, `stayAfter` (`connection` or `destination`), and `strategy` (`adapt`, `partial`, `home`). Airport selection supplies zones and coordinates from a pinned MIT global catalog of 7,884 IATA airports. Manual codes/zones remain supported for unlisted or ICAO airports. Suggestions are filtered and capped so the editor does not render thousands of DOM options. See DATA_SOURCES.md for provenance, update checks, and license.
 
@@ -115,7 +119,7 @@ In-flight rest starts at least **30 minutes after takeoff** and ends at least **
 
 Caffeine windows are optional and stay at least eight hours from planned sleep. This is a conservative practical cutoff, not a guarantee for all doses or individuals. The model does not simulate caffeine's alertness or phase effects.
 
-Melatonin is disabled by default and requires a suitability acknowledgement. Eligible cards show **0.5–1 mg as general adult CDC information**, not an optimized personal prescription. Guidance is constrained to ground nighttime sleep with conservative biological-phase and advance-route checks; large or uncertain shifts and travel/transfer windows omit it. The numerical model does not simulate melatonin or optimize dose. A checkbox cannot determine medical suitability. Do not wake solely to take it or treat it as safe before driving/working.
+Melatonin is disabled by default and enabled with one preference toggle, without a warning panel or separate acknowledgement. Eligible cards show **0.5–1 mg as general adult CDC information**, not an optimized personal prescription. Guidance is constrained to ground nighttime sleep with conservative biological-phase and advance-route checks; large or uncertain shifts and travel/transfer windows omit it. The numerical model does not simulate melatonin or optimize dose. The Science page retains suitability and source information. Do not wake solely to take it or treat it as safe before driving/working.
 
 ### Conservative rules mode and research boundary
 

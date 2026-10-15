@@ -159,19 +159,24 @@ test('body-clock estimates show modeled movement rather than a repeated zero', a
   await page.getByRole('button', { name: 'Explore your plan', exact: true }).click();
   await planDay(page, '2026-10-14').click();
   await expect(page.locator('.phase-meter')).toHaveCount(0);
-  await expect(page.locator('.phase-unavailable')).toContainText('Not enough modeled history for this date.');
+  await expect(page.locator('.phase-unavailable')).toContainText('Not enough history for a daily estimate.');
+  const summary=page.locator('.plan-note-card').filter({has:page.getByRole('heading',{name:'Estimated adjustment',exact:true})});
+  await expect(summary.getByText(/^Remaining adjustment:/)).toHaveCount(0);
+  await expect(summary.getByRole('link',{name:'How estimates work',exact:true})).toHaveCount(1);
+  await expect(page.getByRole('heading',{name:'Light tips',exact:true})).toBeVisible();
   const estimates: string[] = [];
   for (const date of ['2026-10-16', '2026-10-18', '2026-10-20', '2026-10-21']) {
     await planDay(page, date).click();
     const meter = page.locator('.phase-meter');
     if (await meter.count()) {
-      await expect(meter).toContainText('Modeled body-clock change');
+      await expect(meter).toContainText('Change today');
+      await expect(summary.getByText(/^Remaining adjustment:/)).toBeVisible();
       const estimate = await meter.locator('strong').innerText();
       expect(estimate).not.toMatch(/^0\.0\b/);
       expect(estimate).toMatch(/earlier|later|Nearly steady/);
       estimates.push(estimate);
     } else {
-      await expect(page.locator('.phase-unavailable')).toContainText('Not enough modeled history for this date.');
+      await expect(page.locator('.phase-unavailable')).toContainText('Not enough history for a daily estimate.');
     }
     await expect(page.locator('.model-disclosure')).toHaveCount(0);
   }
