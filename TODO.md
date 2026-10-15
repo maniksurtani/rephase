@@ -92,9 +92,10 @@ Amadeus Self-Service is discontinued. AirLabs's near-term schedules and Skyscann
 - [x] Receive the SSH remote `git@github.com:maniksurtani/rephase.git`, confirm it is empty, and configure `origin`.
 - [x] Prepare a verified Git bundle containing the complete history for a local SSH push.
 - [x] Complete the initial push to [maniksurtani/rephase](https://github.com/maniksurtani/rephase), with local `main` tracking `origin/main`.
+- [x] Select `https://rephase.surtani.org` and prepare generated Custom Domain routing with Cloudflare-managed DNS/TLS and no alternate deployment URLs.
 - [ ] Configure a real Google OAuth web client and verify real sign-in/sync end to end.
 - [ ] Choose an AeroDataBox plan, configure its key, and verify representative routes at +60/+90/+150 days; record missing coverage.
-- [ ] Choose the Cloudflare account/origin, create D1, set deployment configuration/secrets, and decide when to enable automatic main deployment.
+- [ ] Receive the Cloudflare account ID, create D1, configure the production GitHub environment variables/secrets, and decide when to enable automatic main deployment.
 - [ ] Deploy and verify publicly after the requested discussion.
 - [ ] Arrange qualified review of melatonin timing/dose suitability and evaluate usability/real-world outcomes before claiming clinical efficacy.
 

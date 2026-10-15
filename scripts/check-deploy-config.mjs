@@ -22,10 +22,10 @@ export function validateDeploymentEnvironment(env = process.env) {
   }
   try {
     const url = new URL(origin);
-    if (url.protocol !== 'https:' || url.origin !== origin || url.username || url.password
+    if (url.protocol !== 'https:' || url.origin !== origin || url.username || url.password || url.port
         || ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname)) throw new Error();
   } catch {
-    errors.push('PUBLIC_APP_ORIGIN must be an exact public HTTPS origin, with no path or trailing slash.');
+    errors.push('PUBLIC_APP_ORIGIN must be an exact public HTTPS origin on the standard port, with no path or trailing slash.');
   }
   if (!/^[a-z0-9_-]+\.apps\.googleusercontent\.com$/i.test(clientId)) {
     errors.push('GOOGLE_CLIENT_ID must be a Google OAuth Web application client ID.');
@@ -76,10 +76,16 @@ export function buildDeploymentConfig(base, env = process.env) {
     budgets[name] = supplied;
   }
   // Explicit allowlist: public vars only. API tokens/provider keys never enter the JSON.
+  const hostname = new URL(settings.origin).hostname;
+  const workersDev = hostname.endsWith('.workers.dev');
   return {
     ...base,
     account_id: settings.accountId,
-    workers_dev: true,
+    // Use one canonical public endpoint. Custom Domains create their DNS and
+    // certificate on Cloudflare; portable local development stays unchanged.
+    workers_dev: workersDev,
+    preview_urls: false,
+    routes: workersDev ? [] : [{ pattern: hostname, custom_domain: true }],
     vars: { GOOGLE_CLIENT_ID: settings.clientId, ALLOWED_ORIGIN: settings.origin, ...budgets },
     d1_databases: base.d1_databases.map((db) => db.binding === 'DB'
       ? { ...db, database_id: settings.databaseId } : db),

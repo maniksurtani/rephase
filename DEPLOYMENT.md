@@ -1,6 +1,25 @@
 # Running and deploying Rephase
 
-No GitHub repository, Cloudflare resource or public deployment is created by installing this project. The deployment tools below are prepared for when an account and destination have been chosen.
+The selected production origin is **https://rephase.surtani.org**, hosted by a Cloudflare Worker with static assets and a D1 database. The code is on GitHub; no Cloudflare resource or deployment has been created yet.
+
+## First launch at rephase.surtani.org
+
+Create a GitHub Actions environment named `production` at [repository environment settings](https://github.com/maniksurtani/rephase/settings/environments). Set these environment variables:
+
+| Variable | Value |
+|---|---|
+| `PUBLIC_APP_ORIGIN` | `https://rephase.surtani.org` |
+| `CLOUDFLARE_ACCOUNT_ID` | Your Cloudflare account ID |
+| `CLOUDFLARE_D1_DATABASE_ID` | UUID of the D1 database named `rephase` |
+| `GOOGLE_CLIENT_ID` | Your public Google OAuth Web application client ID |
+
+Create the D1 database once through Cloudflare's dashboard or `npx wrangler d1 create rephase` after local login. Add `https://rephase.surtani.org` as an authorized JavaScript origin on the Google client, and `surtani.org` as its authorized domain where required by the Google branding/consent settings. This GIS flow uses no Google client secret or redirect URI.
+
+Enter `CLOUDFLARE_API_TOKEN` directly as a `production` environment secret. Keep it out of chat and source control. An optional `RAPIDAPI_KEY` secret enables AeroDataBox flight lookup; manual flight entry works without it. The current workspace GitHub integration can push and dispatch workflows but cannot read or write Actions variables/secrets, so these settings require the repository owner's one-time setup.
+
+Confirm `rephase.surtani.org` has no existing DNS record or service before the first run. A noninteractive Wrangler deployment can replace an existing origin or DNS assignment. The generated deployment config declares a Custom Domain, disables workers.dev/preview URLs for this target, and lets Cloudflare create DNS and HTTPS automatically. Do not create a manual CNAME for it.
+
+Once settings are complete, run **Actions → Deploy to Cloudflare → Run workflow**, selecting `main`. The workflow runs checks, migrates D1, deploys assets/API, and verifies the public configuration. Leave `DEPLOY_ENABLED` unset for the first deployment; setting it to `true` later enables deployment on every main push.
 
 ## Start the app locally
 
@@ -101,9 +120,9 @@ npx wrangler d1 create rephase
 
 Keep the resulting database UUID for configuration. The all-zero UUID in the checked-in `wrangler.jsonc` is exclusively for local development. The deployment scripts generate an ignored `wrangler.deploy.json` from that base, so the repository retains its portable local configuration.
 
-Choose the production HTTPS origin before deploying, such as `https://rephase.YOUR_WORKERS_SUBDOMAIN.workers.dev`. Your account's Workers dashboard identifies its workers.dev subdomain. A custom domain can be configured later in the Worker's domain settings; update the configured origin and Google authorized origins together. Record that domain in the base Wrangler `routes` configuration when adopting it, so future deployments preserve the intended hosting configuration. Do not configure a URL path, trailing slash or plain HTTP.
+The selected origin is `https://rephase.surtani.org`. Deployment configuration derives its Custom Domain route from `PUBLIC_APP_ORIGIN`; Cloudflare manages DNS and the certificate. The domain must belong to an active Cloudflare zone in the selected account. A `*.workers.dev` origin remains supported for a separate deployment target; it enables workers.dev instead of a Custom Domain. Custom-domain deployments disable workers.dev and preview URLs. Use a standard-port HTTPS origin without a URL path or trailing slash.
 
-Create a production Google OAuth **Web application** client, or add the production origin to the existing client's authorized JavaScript origins. Configure the Google consent screen's audience/test users as required for your intended users. The Google client ID is public configuration, while the Cloudflare API token and RapidAPI key are secrets.
+Create a production Google OAuth **Web application** client, or add the production origin to the existing client's authorized JavaScript origins. Configure the Google consent screen audience for your intended users. Basic GIS sign-in using only OpenID/profile/email is exempt from the Testing test-user allowlist; Testing alone does not make the app private. A private beta needs an application allowlist or Cloudflare Access. The Google client ID is public configuration, while the Cloudflare API token and RapidAPI key are secrets.
 
 ## GitHub Actions deployment
 
@@ -126,7 +145,7 @@ Add these production-environment **secrets**:
 | `CLOUDFLARE_API_TOKEN` | Authenticate Wrangler's deployment and remote D1 migrations |
 | `RAPIDAPI_KEY` | Optional AeroDataBox/RapidAPI key; omit to leave live lookup unavailable |
 
-Create a Cloudflare API token scoped to the chosen account with **Account → Workers Scripts → Edit**, **Account → D1 → Edit**, and **Account → Account Settings → Read** for account identification. The final permission's internal/API name is `Account Settings Read`; the exact label shown in the dashboard may differ. The workers.dev setup needs no zone permission. Managing a custom domain/zone via automation would require separately scoped permissions; configuring it through the dashboard avoids granting this workflow those permissions. Use the relevant [Cloudflare permission reference](https://developers.cloudflare.com/fundamentals/api/reference/permissions/) when creating the token.
+Create a Cloudflare API token scoped to the selected account and the `surtani.org` zone. Current [Workers authorization guidance](https://developers.cloudflare.com/workers/authorization/workers/) uses product-level **Workers Admin** to create the first Worker, with **Editor** sufficient for subsequent updates; legacy **Workers Scripts Edit** tokens remain supported. Add **D1 Edit/Write** for migrations and **Zone → Workers Routes → Write/Edit** scoped only to `surtani.org` for the Custom Domain. Per-Worker roles currently do not support Custom Domains. No separate DNS Edit or SSL permission is needed: Cloudflare creates the DNS record and certificate. Account discovery permission is unnecessary because the scripts supply the explicit account ID. Dashboard labels can vary; see the [permission reference](https://developers.cloudflare.com/fundamentals/api/reference/permissions/) and [Custom Domain guidance](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/).
 
 The workflow initially runs deployment only when you choose **Actions → Deploy to Cloudflare → Run workflow**, on the `main` branch. It validates all target settings, runs checks and browser scenarios, applies remote migrations, uploads the Worker/static bundle, optionally uploads the provider secret via Wrangler stdin, and checks the public configuration endpoint. Secrets are not written to configuration files, command-line arguments or logs.
 
@@ -141,7 +160,7 @@ Create an ignored `.deployment.env` file containing only the public deployment s
 ```dotenv
 CLOUDFLARE_ACCOUNT_ID=your_32_character_account_id
 CLOUDFLARE_D1_DATABASE_ID=your_database_uuid
-PUBLIC_APP_ORIGIN=https://rephase.YOUR_WORKERS_SUBDOMAIN.workers.dev
+PUBLIC_APP_ORIGIN=https://rephase.surtani.org
 GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
 ```
 

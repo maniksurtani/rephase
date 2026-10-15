@@ -49,12 +49,28 @@ describe('deployment configuration', () => {
     expect(config.vars.FLIGHT_DAILY_LIMIT).toBe('10');
   });
 
+  it('binds the selected custom domain and disables alternate deployment URLs', () => {
+    const origin = 'https://rephase.surtani.org';
+    const config = buildDeploymentConfig(base, { ...environment, PUBLIC_APP_ORIGIN: origin });
+    expect(config.routes).toEqual([{ pattern: 'rephase.surtani.org', custom_domain: true }]);
+    expect(config.workers_dev).toBe(false);
+    expect(config.preview_urls).toBe(false);
+    expect(config.vars.ALLOWED_ORIGIN).toBe(origin);
+  });
+
+  it('retains workers.dev hosting when it is the chosen origin', () => {
+    const config = buildDeploymentConfig(base, environment);
+    expect(config.workers_dev).toBe(true);
+    expect(config.routes).toEqual([]);
+    expect(config.preview_urls).toBe(false);
+  });
+
   it('rejects local-only placeholder IDs before producing a deployable configuration', () => {
     expect(() => buildDeploymentConfig(base, { ...environment, CLOUDFLARE_D1_DATABASE_ID: base.d1_databases[0].database_id })).toThrow('placeholder');
     expect(() => validateDeploymentEnvironment({ ...environment, CLOUDFLARE_ACCOUNT_ID: '00000000000000000000000000000000' })).toThrow('CLOUDFLARE_ACCOUNT_ID');
   });
 
-  it.each(['http://rephase.example', 'https://rephase.example/', 'https://rephase.example/path', 'https://user:password@rephase.example', 'https://localhost', 'https://rephase.example?token=secret'])('rejects unsafe/non-origin target %s', (origin) => {
+  it.each(['http://rephase.example', 'https://rephase.example/', 'https://rephase.example/path', 'https://user:password@rephase.example', 'https://localhost', 'https://rephase.example?token=secret', 'https://rephase.surtani.org:8443'])('rejects unsafe/non-origin target %s', (origin) => {
     expect(() => validateDeploymentEnvironment({ ...environment, PUBLIC_APP_ORIGIN: origin })).toThrow('PUBLIC_APP_ORIGIN');
   });
 

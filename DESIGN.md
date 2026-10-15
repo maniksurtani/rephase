@@ -175,6 +175,8 @@ DM Sans and Manrope are bundled locally with their SIL Open Font Licenses. Typog
 
 ## Development and deployment boundary
 
+The selected production origin is `https://rephase.surtani.org`. Generated deployment configuration uses a Cloudflare Custom Domain with automatic DNS/TLS, while disabling workers.dev and preview URLs for that origin. Account/D1 IDs, a Google web client, and production Actions credentials remain external setup prerequisites; first deployment is manual.
+
 One-command local preview: `npm start`, then `http://localhost:5173`. The launcher installs missing locked dependencies, builds stale assets, applies local migrations, starts the UI/Worker, and cleans up owned processes on exit. `npm start -- --static` runs only the browser UI; `--production` tests the built app/API at `http://localhost:8787`. Without the API, trip/profile/planning/export work and sign-in shows configuration status.
 
 Local full stack: build assets, initialize local D1, run Wrangler on 8787, and run Vite on 5173. A Google OAuth web client ID and registered localhost JavaScript origin enable real sign-in; no OAuth client secret is required for this GIS flow. `.dev.vars` is ignored. No Google credentials are supplied in this repository.
