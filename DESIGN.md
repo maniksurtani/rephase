@@ -79,6 +79,12 @@ A shared post-processing step adds `PlanTravelSegment` gate-to-gate UTC interval
 
 `AppData` has a schema version, preferences, trips, and selected trip ID. Local account namespaces are independent. Cloud state has an optimistic revision counter to prevent a stale device silently overwriting another device's changes.
 
+### Daily visual timeline
+
+The Plan view renders each calendar-date tile as a vertical timeline instead of separate flight and recommendation lists. One UTC-ordered rail carries concurrent bands for sleep/rest, light/darkness, caffeine, melatonin and flights, with free time filling intervals without scheduled sleep/rest. Free time is a presentation gap rather than a measured awake state or an instruction to stay awake. The axis shows the actual local date and timezone at each boundary; DST folds never reverse UTC order. Date-line days retain source-clock intervals even if they extend beyond midnight in the representative clock. Existing action IDs, intervals, physiology, logging and calendar exports are unchanged.
+
+Inline cards appear at their start boundary, retain both airport clocks on travel days and show the interval duration and end time. Long periods receive longer rail sections; rows expand to fit readable cards and opened details, so the rail does not claim a fixed pixels-per-hour scale. Explanations and adherence controls remain on recommendations. Flight cards show departure/arrival times and aircraft, omit gate assignments/wording, keep meal advice visible and let travelers expand meal times/details in the timeline. Today retains its compact existing cards.
+
 ### Meals around planned sleep
 
 A separate deterministic post-processing step adds a `FlightMealPlan` to each flight's generated metadata. Flights with planned in-flight sleep/rest recommend asking the crew not to wake the traveler for meals. Other flights allow meal service while awake. Flexible before-flight, in-flight, and after-arrival windows fit around all planned sleep, operational exclusion periods, other legs, and transfer buffers. Recorded missed sleep is excluded; recorded actual sleep bounds replace scheduled history, and uncertain partial records retain an explicitly uncertain buffer. Calendar export uses the same effective-sleep resolver. Meals do not modify sleep recommendations or simulate a physiological food effect. Actual airline service and food availability remain unknown. With insufficient awake time, the app explains that no practical window fits instead of inventing one or recommending fasting.

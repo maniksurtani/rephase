@@ -4,6 +4,8 @@
 
 A mobile-first jet lag planner with a dark sleep theme, complex itineraries, Google-linked account storage, and flight-number/date lookup. Planning runs in the browser, including offline. A small Cloudflare Worker handles authentication, account persistence, and flight-provider requests. Guest planning works entirely on the device.
 
+Each plan day is a vertical timeline with concurrent flight, sleep/rest, light/darkness, caffeine and melatonin bands. Cards appear where activities begin, with expandable explanations and meal details. Travel days retain both airport clocks; free time fills intervals without scheduled sleep or rest. Flight cards show departure/arrival times without gate details.
+
 The default experimental planner uses the published Forger99 light-driven circadian model and compares constrained advance/delay schedules across the itinerary. Its equations have been checked against an independent Python/SciPy reference. **Numerical verification is not clinical validation:** personal phase, received light, and actual sleep remain uncertain. Conservative planning rules are also available in Profile. Read the standalone [Science page](public/science.html) at `/science.html` for plain-language explanations and original sources.
 
 ## Start locally

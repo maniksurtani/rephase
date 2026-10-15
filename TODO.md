@@ -162,6 +162,15 @@ Amadeus Self-Service is discontinued. AirLabs's near-term schedules and Skyscann
 - [x] Verify timezone search, saved preference compatibility, melatonin opt-in and compact phase summaries in unit/desktop/mobile WebKit checks.
 - [x] Publish the preferences/summary update and record deployment results.
 
+## Daily visual timeline
+
+- [x] Remove gate wording from departure/arrival cards; retain scheduled flight times and protected airborne sleep buffers, without fetching gate assignments.
+- [x] Build chronological day geometry for overlapping flight/sleep/rest/light/darkness/caffeine/melatonin bands and inferred free time.
+- [x] Render a continuous vertical day timeline with time/date/zone labels, inline flight/recommendation cards and mobile layout.
+- [x] Preserve dual airport clocks, aircraft, meal advice/details, explanations and adherence recording.
+- [x] Verify overlap, midnight/DST/date-line travel, five-flight itinerary, short flights and mobile readability.
+- [ ] Publish the timeline through the single-check verified-artifact release path and record live checks.
+
 ## Arrival-city labels and faster releases
 
 - [x] Resolve planner place labels from the itinerary airport city, independently of its IANA timezone, in both planning engines.

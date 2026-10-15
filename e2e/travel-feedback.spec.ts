@@ -50,6 +50,10 @@ async function expectMealAdvice(page: Page, id: string) {
   const meals = flightCard(page, id).locator('.meal-plan');
   await expect(meals).toBeVisible();
   await expect(meals.locator('.meal-policy')).toHaveText(/Let me sleep through meal service|Meal service can fit while awake/);
+  const details = meals.locator('details.meal-details');
+  await expect(details).toBeVisible();
+  await details.getByText('Meal times & details', { exact: true }).click();
+  await expect(details).toHaveAttribute('open', '');
   const windows = meals.locator('.meal-window');
   const count = await windows.count();
   for (let index = 0; index < count; index++) {
@@ -95,12 +99,12 @@ test('Today and the full plan retain all five flights with both local clocks and
   const outbound = flightCard(page, 'qf103');
   await expect(outbound).toBeVisible();
   await expect(page.locator('.action-card.current').getByRole('heading', { name: /Rest or nap/ })).toBeVisible();
-  const departure = outbound.locator('[aria-label="Gate departure"]');
+  const departure = outbound.locator('[aria-label="Departure"]');
   await expect(departure.locator('.flight-clock-origin')).toContainText('20:15');
   await expect(departure.locator('.flight-clock-origin')).toContainText('17 Oct');
   await expect(departure.locator('.flight-clock-destination')).toContainText('23:15');
   await expect(departure.locator('.flight-clock-destination')).toContainText('16 Oct');
-  const arrival = outbound.locator('[aria-label="Gate arrival"]');
+  const arrival = outbound.locator('[aria-label="Arrival"]');
   await expect(arrival.locator('.flight-clock-origin')).toContainText('05:55');
   await expect(arrival.locator('.flight-clock-origin')).toContainText('18 Oct');
   await expect(arrival.locator('.flight-clock-destination')).toContainText('08:55');
@@ -270,19 +274,14 @@ test('Today keeps a short daytime flight visible when no recommendation is curre
   await planDay(page, '2026-10-17', 'UTC').click();
   await expect(flightCard(page, 'short-flight')).toBeVisible();
   await expect(page.getByRole('heading', { name: /Rest or nap/ })).toHaveCount(0);
-  const displayedIntervals = await page.locator('.agenda-list .action-time').evaluateAll(nodes => nodes.map(node => ({
-    start: node.querySelector('strong')?.textContent ?? '',
-    end: node.querySelector('span')?.textContent ?? '',
+  await expect(page.locator('.day-timeline')).toBeVisible();
+  const displayedIntervals = await page.locator('.timeline-entry:not([data-kind="flight"])').evaluateAll(nodes => nodes.map(node => ({
+    start: Number(node.getAttribute('data-start')),
+    end: Number(node.getAttribute('data-end')),
   })));
-  const clockMinutes = (clock: string) => {
-    const match = /^(\d{2}):(\d{2})/.exec(clock);
-    expect(match, `Expected a minute-resolution action clock: ${clock}`).not.toBeNull();
-    return Number(match![1]) * 60 + Number(match![2]);
-  };
+  expect(displayedIntervals.length).toBeGreaterThan(0);
   for (const interval of displayedIntervals) {
-    const start = clockMinutes(interval.start);
-    let end = clockMinutes(interval.end);
-    if (end <= start) end += 24 * 60;
-    expect(start < 12 * 60 + 45 && end > 11 * 60 + 30).toBe(false);
+    expect(interval.end).toBeGreaterThan(interval.start);
+    expect(interval.start < Date.parse('2026-10-17T12:45:00Z') && interval.end > Date.parse('2026-10-17T11:30:00Z')).toBe(false);
   }
 });
