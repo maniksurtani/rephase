@@ -1,0 +1,277 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "SYD",
+  "timeZone": "Australia/Sydney",
+  "updatedAt": "2026-10-15",
+  "lounges": [
+    {
+      "id": "syd-qantas-first",
+      "name": "Qantas First Lounge",
+      "terminal": "T1",
+      "location": "International departures, airside Level 4; enter from Level 3 after immigration.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [{ "days": [1, 2, 3, 4, 5, 6, 7], "open": "05:00", "close": "22:00" }]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "restaurant",
+        "spa": "yes",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "qantas-platinum-oneworld",
+          "label": "Qantas Platinum or Platinum One on a oneworld flight",
+          "membershipsAnyOf": ["qantas-platinum", "qantas-platinum-one"],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "international",
+          "note": "Same-day departing boarding pass and membership card required. Spa appointments depend on availability.",
+          "sourceIds": ["qantas-access", "oneworld-access"]
+        },
+        {
+          "id": "oneworld-emerald",
+          "label": "oneworld Emerald on a oneworld flight",
+          "membershipsAnyOf": ["oneworld-emerald"],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "international",
+          "conditions": ["Verify the issuing program's exceptions and the spa policy for reciprocal guests."],
+          "sourceIds": ["oneworld-access"]
+        },
+        {
+          "id": "qantas-first",
+          "label": "Qantas international First",
+          "cabinsAnyOf": ["first"],
+          "operatingCarriersAnyOf": ["QF"],
+          "marketingCarriersAnyOf": ["QF"],
+          "route": "international",
+          "sourceIds": ["qantas-access"]
+        },
+        {
+          "id": "oneworld-first",
+          "label": "International First on a oneworld flight",
+          "cabinsAnyOf": ["first"],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "international",
+          "conditions": ["Confirm the airline's First fare includes lounge access; reciprocal spa access is separate."],
+          "sourceIds": ["oneworld-access"]
+        }
+      ],
+      "sources": [
+        {
+          "id": "qantas-location",
+          "title": "Qantas Sydney First Lounge: location, hours and facilities",
+          "url": "https://www.qantas.com/en-au/at-the-airport/lounges/locations/sydney-first",
+          "checkedOn": "2026-10-15"
+        },
+        {
+          "id": "qantas-access",
+          "title": "Qantas lounge access and eligibility",
+          "url": "https://www.qantas.com/en-au/at-the-airport/lounges/access",
+          "checkedOn": "2026-10-15"
+        },
+        {
+          "id": "oneworld-access",
+          "title": "oneworld lounge access policy and exceptions",
+          "url": "https://www.oneworld.com/airport-lounges",
+          "checkedOn": "2026-10-15"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "A useful choice for a shower and restaurant meal before an international flight, when your ticket or status gives access.",
+        "bestFor": ["showers", "dining"]
+      },
+      "note": "Restaurant dining and showers make this a useful choice before a long flight. Spa availability and reciprocal access need a separate check. Codeshares and Emirates arrangements are not fully covered by these seed rules."
+    },
+    {
+      "id": "syd-qantas-business",
+      "name": "Qantas International Business Lounge",
+      "terminal": "T1",
+      "location": "Temporary lounge in international departures, airside Level 2.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [{ "days": [1, 2, 3, 4, 5, 6, 7], "open": "05:00", "close": "22:00" }]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "qantas-status-oneworld",
+          "label": "Qantas Gold, Platinum or Platinum One on a oneworld flight",
+          "membershipsAnyOf": ["qantas-gold", "qantas-platinum", "qantas-platinum-one"],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "international",
+          "sourceIds": ["qantas-access", "oneworld-access"]
+        },
+        {
+          "id": "oneworld-status",
+          "label": "oneworld Sapphire or Emerald on a oneworld flight",
+          "membershipsAnyOf": ["oneworld-sapphire", "oneworld-emerald"],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "international",
+          "conditions": ["Verify the issuing program's route and lounge exceptions."],
+          "sourceIds": ["oneworld-access"]
+        },
+        {
+          "id": "qantas-club-qantas",
+          "label": "Qantas Club on a Qantas flight",
+          "membershipsAnyOf": ["qantas-club"],
+          "operatingCarriersAnyOf": ["QF"],
+          "marketingCarriersAnyOf": ["QF"],
+          "route": "international",
+          "sourceIds": ["qantas-access"]
+        },
+        {
+          "id": "qantas-premium",
+          "label": "Qantas international Business or First",
+          "cabinsAnyOf": ["business", "first"],
+          "operatingCarriersAnyOf": ["QF"],
+          "marketingCarriersAnyOf": ["QF"],
+          "route": "international",
+          "sourceIds": ["qantas-access"]
+        },
+        {
+          "id": "oneworld-premium",
+          "label": "International Business or First on a oneworld flight",
+          "cabinsAnyOf": ["business", "first"],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "international",
+          "conditions": ["Confirm lounge access is included in the fare; some Business Light or Lite fares exclude it."],
+          "sourceIds": ["oneworld-access"]
+        }
+      ],
+      "sources": [
+        {
+          "id": "qantas-location",
+          "title": "Qantas Sydney International Business Lounge: current location, hours and facilities",
+          "url": "https://www.qantas.com/en-au/at-the-airport/lounges/locations/sydney-international-business",
+          "checkedOn": "2026-10-15"
+        },
+        {
+          "id": "qantas-relocation",
+          "title": "Qantas lounge investment and temporary Sydney relocation",
+          "url": "https://agencyconnect.qantas.com/en-nz/news/nov-2025/investing-in-our-lounge-network",
+          "checkedOn": "2026-10-15"
+        },
+        {
+          "id": "qantas-access",
+          "title": "Qantas lounge access and eligibility",
+          "url": "https://www.qantas.com/en-au/at-the-airport/lounges/access",
+          "checkedOn": "2026-10-15"
+        },
+        {
+          "id": "oneworld-access",
+          "title": "oneworld lounge access policy and exceptions",
+          "url": "https://www.oneworld.com/airport-lounges",
+          "checkedOn": "2026-10-15"
+        }
+      ],
+      "photos": [],
+      "note": "Operating from a temporary space during refurbishment. Lounge dining is confirmed, but its service format and shower availability need review; historical facilities should not be assumed. International Jetstar access changed in July 2026; codeshares, Emirates and other exceptions are outside these seed rules."
+    },
+    {
+      "id": "syd-the-house",
+      "name": "The House",
+      "terminal": "T1",
+      "location": "International departures, after security; follow signs to The House.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [{ "days": [1, 2, 3, 4, 5, 6, 7], "open": "05:00", "close": "22:00" }]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "restaurant",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass before an international departure",
+          "membershipsAnyOf": ["priority-pass"],
+          "route": "international",
+          "maxMinutesBeforeDeparture": 180,
+          "note": "Showers, à la carte dining and premium alcohol require an additional AUD20 per person. Visit and guest charges depend on your Priority Pass membership.",
+          "sourceIds": ["priority-pass"]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass: The House, Sydney access, hours and upgrade conditions",
+          "url": "https://www.prioritypass.com/en-GB/lounges/australia/sydney-kingsford-smith/syd16l-the-house",
+          "checkedOn": "2026-10-15"
+        }
+      ],
+      "photos": [],
+      "note": "Self-service food is available with standard entry. The restaurant and shower facilities are paid upgrades for Priority Pass visitors."
+    },
+    {
+      "id": "syd-plaza-premium-departures",
+      "name": "Plaza Premium Lounge — International Departures",
+      "terminal": "T1",
+      "location": "International departures, after security and passport control.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [{ "days": [1, 2, 3, 4, 5, 6, 7], "open": "06:00", "close": "22:00" }]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass before an international departure",
+          "membershipsAnyOf": ["priority-pass"],
+          "route": "international",
+          "maxVisitMinutes": 120,
+          "note": "Priority Pass visits are limited to two hours. Showers cost extra; visit and guest charges depend on your membership.",
+          "sourceIds": ["priority-pass", "operator"]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass: Plaza Premium Sydney International Departures",
+          "url": "https://www.prioritypass.com/en-GB/lounges/australia/sydney-kingsford-smith/syd18-plaza-premium-lounge-international-departures",
+          "checkedOn": "2026-10-15"
+        },
+        {
+          "id": "operator",
+          "title": "Plaza Premium Sydney International Departures: hours, facilities and direct bookings",
+          "url": "https://www.plazapremiumlounge.com/en-uk/find/asia/australia/sydney/sydney-airport/international-departures-terminal-one",
+          "checkedOn": "2026-10-15"
+        }
+      ],
+      "photos": [],
+      "note": "Food, charging and paid shower facilities are confirmed. Direct paid entry can be booked with the operator; a paid booking is not assumed by these access rules."
+    }
+  ]
+}

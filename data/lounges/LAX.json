@@ -1,0 +1,271 @@
+{
+  "schemaVersion": 1,
+  "airport": "LAX",
+  "timeZone": "America/Los_Angeles",
+  "updatedAt": "2026-10-15",
+  "lounges": [
+    {
+      "id": "lax-qantas-business",
+      "name": "The Los Angeles Business Lounge",
+      "terminal": "Tom Bradley International Terminal",
+      "location": "Airside departures, Level 5.",
+      "airside": true,
+      "status": "open",
+      "hours": { "type": "weekly", "periods": [{ "days": [1, 2, 3, 4, 5, 6, 7], "open": "06:30", "close": "00:00" }] },
+      "amenities": { "showers": "yes", "dining": "buffet", "spa": "unknown", "quietArea": "unknown", "wifi": "yes" },
+      "accessRules": [
+        {
+          "id": "qantas-status",
+          "label": "Qantas Gold, Platinum or Platinum One on oneworld",
+          "membershipsAnyOf": ["qantas-gold", "qantas-platinum", "qantas-platinum-one"],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "sourceIds": ["oneworld-access"]
+        },
+        {
+          "id": "oneworld-status",
+          "label": "oneworld Sapphire or Emerald",
+          "membershipsAnyOf": ["oneworld-sapphire", "oneworld-emerald"],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "conditions": ["Confirm the status issuer and itinerary; American and Alaska/Hawaiian status has North American itinerary exclusions."],
+          "sourceIds": ["oneworld-access"]
+        },
+        {
+          "id": "qantas-premium",
+          "label": "Qantas international Business or First",
+          "cabinsAnyOf": ["business", "first"],
+          "operatingCarriersAnyOf": ["QF"],
+          "marketingCarriersAnyOf": ["QF"],
+          "route": "international",
+          "sourceIds": ["oneworld-access"]
+        },
+        {
+          "id": "qantas-club",
+          "label": "Qantas Club on Qantas",
+          "membershipsAnyOf": ["qantas-club"],
+          "operatingCarriersAnyOf": ["QF"],
+          "marketingCarriersAnyOf": ["QF"],
+          "conditions": ["Requires an eligible annual or multi-year Qantas Club membership. Qantas Club Flexible membership does not include the Los Angeles lounges."],
+          "note": "Present an eligible active Qantas Club membership and same-day onward Qantas boarding pass. Other Qantas Club partner routes are outside this initial rule coverage.",
+          "sourceIds": ["qantas-access"]
+        },
+        {
+          "id": "alaska-lounge-plus",
+          "label": "Alaska Lounge+ on an eligible international flight",
+          "membershipsAnyOf": ["alaska-lounge-plus"],
+          "operatingCarriersAnyOf": ["AS", "HA", "QF"],
+          "route": "international",
+          "conditions": ["Requires a qualifying purchased or award international flight and current digital Alaska Lounge+ membership."],
+          "sourceIds": ["alaska-partners"]
+        },
+        {
+          "id": "other-premium",
+          "label": "Other qualifying oneworld premium itinerary",
+          "cabinsAnyOf": ["business", "first"],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "conditions": ["Confirm a qualifying international premium itinerary or eligible same-day long-haul connection. A short domestic US First or Business ticket alone does not grant access."],
+          "sourceIds": ["oneworld-access"]
+        }
+      ],
+      "sources": [
+        { "id": "lax-qantas-business", "title": "Qantas: Los Angeles Business Lounge hours and facilities", "url": "https://www.qantas.com/en-au/at-the-airport/lounges/locations/los-angeles-international-business", "checkedOn": "2026-10-15" },
+        { "id": "oneworld-access", "title": "oneworld: lounge access and exclusions", "url": "https://www.oneworld.com/airport-lounges", "checkedOn": "2026-10-15" },
+        { "id": "qantas-access", "title": "Qantas: lounge access", "url": "https://www.qantas.com/en-au/at-the-airport/lounges/access", "checkedOn": "2026-10-15" },
+        { "id": "alaska-partners", "title": "Alaska: Lounge+ partner locations and access", "url": "https://www.alaskaair.com/content/airport-lounge/location-and-hours", "checkedOn": "2026-10-15" }
+      ],
+      "photos": [],
+      "recommendation": { "summary": "Showers and lounge dining before departure. Qantas directs eligible First Lounge visitors here while the adjacent First Lounge is closed.", "bestFor": ["showers", "dining"] },
+      "note": "Qantas lists this lounge as the alternative for eligible visitors while the Los Angeles First Lounge is temporarily closed. Confirm terminal access and transfer time before a domestic departure."
+    },
+    {
+      "id": "lax-qantas-first",
+      "name": "Qantas First Lounge",
+      "terminal": "Tom Bradley International Terminal",
+      "location": "Airside departures, Level 5.",
+      "airside": true,
+      "status": "temporarily-closed",
+      "hours": { "type": "unknown", "note": "Qantas marks this lounge temporarily closed as checked on 15 October 2026. A reopening date is not published. Normal 06:30–last Qantas flight hours do not establish current availability." },
+      "amenities": { "showers": "yes", "dining": "restaurant", "spa": "unknown", "quietArea": "unknown", "wifi": "yes" },
+      "accessRules": [
+        {
+          "id": "qantas-platinum",
+          "label": "Qantas Platinum or Platinum One on oneworld",
+          "membershipsAnyOf": ["qantas-platinum", "qantas-platinum-one"],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "sourceIds": ["oneworld-access"]
+        },
+        {
+          "id": "oneworld-emerald",
+          "label": "oneworld Emerald",
+          "membershipsAnyOf": ["oneworld-emerald"],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "conditions": ["Confirm the status issuer and itinerary; American and Alaska/Hawaiian status has North American itinerary exclusions."],
+          "sourceIds": ["oneworld-access"]
+        },
+        {
+          "id": "qantas-first",
+          "label": "Qantas international First",
+          "cabinsAnyOf": ["first"],
+          "operatingCarriersAnyOf": ["QF"],
+          "marketingCarriersAnyOf": ["QF"],
+          "route": "international",
+          "sourceIds": ["oneworld-access"]
+        },
+        {
+          "id": "other-first",
+          "label": "Other qualifying oneworld First itinerary",
+          "cabinsAnyOf": ["first"],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "conditions": ["Confirm a qualifying international First itinerary or eligible long-haul First connection; domestic US First alone does not grant access."],
+          "sourceIds": ["oneworld-access"]
+        }
+      ],
+      "sources": [
+        { "id": "lax-qantas-first", "title": "Qantas: Los Angeles First Lounge temporary closure", "url": "https://www.qantas.com/en-au/at-the-airport/lounges/locations/los-angeles-first", "checkedOn": "2026-10-15" },
+        { "id": "oneworld-access", "title": "oneworld: First lounge access and exclusions", "url": "https://www.oneworld.com/airport-lounges", "checkedOn": "2026-10-15" }
+      ],
+      "photos": [],
+      "note": "Temporarily closed: use the adjacent Los Angeles Business Lounge if eligible. Restaurant and shower descriptions refer to the usual facilities, not services currently available during the closure."
+    },
+    {
+      "id": "lax-alaska",
+      "name": "Alaska Lounge",
+      "terminal": "Terminal 6",
+      "location": "Airside mezzanine level, near 64.",
+      "airside": true,
+      "status": "open",
+      "hours": { "type": "weekly", "periods": [{ "days": [1, 2, 3, 4, 5, 6, 7], "open": "05:00", "close": "23:00" }] },
+      "amenities": { "showers": "unknown", "dining": "snacks", "spa": "unknown", "quietArea": "unknown", "wifi": "unknown" },
+      "accessRules": [
+        {
+          "id": "qantas-status",
+          "label": "Qantas Gold, Platinum or Platinum One on oneworld",
+          "membershipsAnyOf": ["qantas-gold", "qantas-platinum", "qantas-platinum-one"],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "note": "Domestic itineraries can qualify with Qantas status. Add your qualifying frequent-flyer number to the booking before check-in.",
+          "sourceIds": ["alaska-access"]
+        },
+        {
+          "id": "oneworld-status",
+          "label": "oneworld Sapphire or Emerald",
+          "membershipsAnyOf": ["oneworld-sapphire", "oneworld-emerald"],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "conditions": ["Confirm the status issuer and route: American and Alaska/Hawaiian Atmos status has North American itinerary exclusions."],
+          "note": "Your qualifying frequent-flyer number must be in the booking before check-in.",
+          "sourceIds": ["alaska-access"]
+        },
+        {
+          "id": "alaska-membership",
+          "label": "Alaska Lounge+ on oneworld",
+          "membershipsAnyOf": ["alaska-lounge-plus"],
+          "operatingAlliance": "oneworld",
+          "note": "Present your current membership and same-day qualifying boarding pass. Additional Alaska global partners are outside this initial rule coverage.",
+          "sourceIds": ["alaska-access"]
+        },
+        {
+          "id": "admirals-membership",
+          "label": "Admirals Club reciprocal access",
+          "membershipsAnyOf": ["admirals-club"],
+          "operatingCarriersAnyOf": ["AA", "AS", "HA"],
+          "marketingCarriersAnyOf": ["AA", "AS"],
+          "conditions": ["Requires an eligible full Admirals Club membership; single-use memberships and authorized-user credit-card benefits do not qualify for partner access."],
+          "sourceIds": ["alaska-access", "aa-partners"]
+        },
+        {
+          "id": "alaska-paid-first",
+          "label": "Qualifying Alaska or Hawaiian First ticket",
+          "cabinsAnyOf": ["first"],
+          "operatingCarriersAnyOf": ["AS", "HA"],
+          "conditions": ["Requires a qualifying paid or award First ticket, with an Alaska/Hawaiian-operated flight of at least 2,000 miles that day. Upgrades do not automatically qualify."],
+          "sourceIds": ["alaska-access"]
+        }
+      ],
+      "sources": [
+        { "id": "alaska-locations", "title": "Alaska: lounge locations and hours", "url": "https://www.alaskaair.com/content/airport-lounge/location-and-hours", "checkedOn": "2026-10-15" },
+        { "id": "alaska-access", "title": "Alaska: lounge access policies", "url": "https://www.alaskaair.com/content/airport-lounge/policies-and-rules", "checkedOn": "2026-10-15" },
+        { "id": "aa-partners", "title": "American: partner lounge access", "url": "https://www.aa.com/web/i18n/travel-info/clubs/admirals-club-locations.html", "checkedOn": "2026-10-15" }
+      ],
+      "photos": [],
+      "note": "Priority Pass access at SFO does not establish access here. Current LAX Priority Pass coverage is represented separately by the Virgin Atlantic Clubhouse. Shower, spa and restaurant availability are not verified."
+    },
+    {
+      "id": "lax-virgin-clubhouse",
+      "name": "Virgin Atlantic Clubhouse",
+      "terminal": "Tom Bradley International Terminal",
+      "location": "Airside, Level 6; take the lift near the clock tower in the main atrium.",
+      "airside": true,
+      "status": "open",
+      "hours": { "type": "weekly", "periods": [{ "days": [1, 2, 3, 4, 5, 6, 7], "open": "08:00", "close": "22:30" }], "note": "These are the published Priority Pass access hours." },
+      "amenities": { "showers": "yes", "dining": "restaurant", "spa": "unknown", "quietArea": "unknown", "wifi": "unknown" },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass · additional US$35",
+          "additionalFee": { "amount": 35, "currency": "USD" },
+          "membershipsAnyOf": ["priority-pass"],
+          "maxMinutesBeforeDeparture": 180,
+          "maxVisitMinutes": 180,
+          "note": "Mandatory US$35 per person in addition to your normal membership visit or guest fee. Maximum visit 3 hours. Capacity restrictions may limit entry, especially 12:00–22:30. Complimentary showers are first come, first served.",
+          "sourceIds": ["lax-virgin-pp"]
+        }
+      ],
+      "sources": [
+        { "id": "lax-virgin-pp", "title": "Priority Pass: Virgin Atlantic Clubhouse LAX and supplement", "url": "https://www.prioritypass.com/en-GB/lounges/united-states-of-america/los-angeles-international/lax23-virgin-atlantic-clubhouse-additional-fee-applies", "checkedOn": "2026-10-15" }
+      ],
+      "photos": [],
+      "note": "The Priority Pass listing confirms an à-la-carte menu, complimentary showers and an in-lounge cinema. Airline premium-ticket and status access are outside this initial rule coverage."
+    },
+    {
+      "id": "lax-star-alliance",
+      "name": "Star Alliance Lounge",
+      "terminal": "Tom Bradley International Terminal",
+      "location": "Airside, Level 6, above the Great Hall.",
+      "airside": true,
+      "status": "open",
+      "hours": { "type": "unknown", "note": "Current opening hours were not confirmed from the official sources reviewed. Check the operating airline before making a terminal detour." },
+      "amenities": { "showers": "yes", "dining": "unknown", "spa": "unknown", "quietArea": "unknown", "wifi": "unknown" },
+      "accessRules": [
+        {
+          "id": "star-gold",
+          "label": "Star Alliance Gold on Star Alliance",
+          "membershipsAnyOf": ["star-gold"],
+          "operatingAlliance": "star",
+          "conditions": ["Confirm the status-issuing program and entitlement with the operating airline, especially for a domestic United itinerary. United Club access rules are separate from this alliance lounge's rules."],
+          "note": "Present your qualifying membership and departing Star Alliance boarding pass. Guest rules depend on the operating airline and same-flight requirements.",
+          "sourceIds": ["ana-lax"]
+        },
+        {
+          "id": "international-star-premium",
+          "label": "Star Alliance international Business or First",
+          "cabinsAnyOf": ["business", "first"],
+          "operatingAlliance": "star",
+          "route": "international",
+          "sourceIds": ["ana-lax"]
+        },
+        {
+          "id": "ana-premium-economy",
+          "label": "ANA Premium Economy",
+          "cabinsAnyOf": ["premium-economy"],
+          "operatingCarriersAnyOf": ["NH"],
+          "route": "international",
+          "note": "ANA publishes a specific Premium Economy access entitlement for ANA-operated flights; it does not extend to other airlines' Premium Economy cabins.",
+          "sourceIds": ["ana-lax"]
+        }
+      ],
+      "sources": [
+        { "id": "ana-lax", "title": "ANA: Los Angeles lounge eligibility and amenities", "url": "https://www.ana.co.jp/en/us/travel-information/lounges/los-angeles/", "checkedOn": "2026-10-15" },
+        { "id": "ana-lax-map", "title": "ANA: Los Angeles airport guide", "url": "https://www.ana.co.jp/en/jp/guide/prepare/airport-guide/international/lax.html", "checkedOn": "2026-10-15" },
+        { "id": "airnz-lax", "title": "Air New Zealand: Star Alliance Los Angeles lounge", "url": "https://www.airnewzealandnewsroom.com/press-release-2025-star-alliance-los-angeles-lounge-wins-north-americas-leading-airport-lounge-for-sixth-consecutive-year", "checkedOn": "2026-10-15" }
+      ],
+      "photos": [],
+      "note": "The main alliance lounge is separate from any restricted First dining area. Hours are unverified, so this lounge should remain a conditional option rather than a confirmed recommendation."
+    }
+  ]
+}

@@ -73,3 +73,9 @@ The research planner's optional melatonin information is restricted to full-dura
 `node scripts/benchmark-bun.mjs` compares already-installed Node and Bun running the same TypeScript, Vitest, and Wrangler-startup commands. `--runs 1` is a quick compatibility check; `--build` also compares Vite builds and writes only the local build directory. No Bun installation, dependency installation, lockfile migration, remote deployment, or account mutation occurs.
 
 Bun was **not installed in the implementation environment**, so the script reported a skipped comparison. No performance advantage or full Wrangler/Playwright compatibility is claimed. Node/npm remains the verified workflow. Package installation, native lifecycle scripts, browser performance, and Cloudflare runtime performance are outside this benchmark's measurements.
+
+## Lounge research
+
+The starter dataset contains 16 selected lounges at SFO, SYD, HNL and LAX, reviewed on 15 October 2026. Each lounge's JSON has exact official location/program/access-policy URLs, source IDs and check dates. [The editing guide](data/lounges/README.md), [schema](data/lounges/schema.json) and [offline research prompt](data/lounges/RESEARCH_PROMPT.md) explain how to extend it. Facts are summarized independently; no third-party review ratings or unlicensed lounge photos are bundled. The current carrier-alliance snapshot includes [Hawaiian's oneworld entry on 23 April 2026](https://www.oneworld.com/news/oneworld-welcomes-hawaiian-airlines); historical membership changes are not modeled.
+
+Opening hours and access conditions can change, capacity remains operational, and omission from the curated sample does not establish that a lounge or access right is unavailable. Static editorial tags influence ranking only after confirmed access, opening and usable-visit checks. Pre-flight/arrival/boarding buffers are adjustable product assumptions, not live airport queue data.

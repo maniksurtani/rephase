@@ -1,0 +1,193 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "HNL",
+  "timeZone": "Pacific/Honolulu",
+  "updatedAt": "2026-10-15",
+  "lounges": [
+    {
+      "id": "hnl-qantas-business",
+      "name": "Qantas International Business Lounge",
+      "terminal": "T2",
+      "location": "Lower level; follow Airline Lounges / Cultural Garden signs.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          { "days": [1, 3], "open": "08:00", "close": "11:30" },
+          { "days": [2, 4, 5, 6, 7], "open": "08:00", "close": "13:00" }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "qantas-status-oneworld",
+          "label": "Qantas Gold, Platinum or Platinum One on a oneworld flight",
+          "membershipsAnyOf": ["qantas-gold", "qantas-platinum", "qantas-platinum-one"],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "sourceIds": ["qantas-access", "oneworld-access"]
+        },
+        {
+          "id": "oneworld-status",
+          "label": "oneworld Sapphire or Emerald on a oneworld flight",
+          "membershipsAnyOf": ["oneworld-sapphire", "oneworld-emerald"],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "conditions": ["Verify the issuing program's North America restrictions; Atmos and AAdvantage status have route exceptions."],
+          "sourceIds": ["oneworld-access"]
+        },
+        {
+          "id": "qantas-club-qantas",
+          "label": "Qantas Club on a Qantas flight",
+          "membershipsAnyOf": ["qantas-club"],
+          "operatingCarriersAnyOf": ["QF"],
+          "marketingCarriersAnyOf": ["QF"],
+          "sourceIds": ["qantas-access"]
+        },
+        {
+          "id": "qantas-premium",
+          "label": "Qantas international Business or First",
+          "cabinsAnyOf": ["business", "first"],
+          "operatingCarriersAnyOf": ["QF"],
+          "marketingCarriersAnyOf": ["QF"],
+          "route": "international",
+          "sourceIds": ["qantas-access"]
+        },
+        {
+          "id": "oneworld-premium",
+          "label": "International Business or First on a oneworld flight",
+          "cabinsAnyOf": ["business", "first"],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "international",
+          "conditions": ["Confirm the premium fare and route qualify; some North America and Business Light or Lite tickets exclude lounge access."],
+          "sourceIds": ["oneworld-access"]
+        }
+      ],
+      "sources": [
+        {
+          "id": "qantas-location",
+          "title": "Qantas Honolulu International Business Lounge: hours, location and facilities",
+          "url": "https://www.qantas.com/en-au/at-the-airport/lounges/locations/honolulu-international-business",
+          "checkedOn": "2026-10-15"
+        },
+        {
+          "id": "qantas-access",
+          "title": "Qantas lounge access and eligibility",
+          "url": "https://www.qantas.com/en-au/at-the-airport/lounges/access",
+          "checkedOn": "2026-10-15"
+        },
+        {
+          "id": "oneworld-access",
+          "title": "oneworld lounge access policy and exceptions",
+          "url": "https://www.oneworld.com/airport-lounges",
+          "checkedOn": "2026-10-15"
+        }
+      ],
+      "photos": [],
+      "note": "Lounge dining, refreshments and a bar are confirmed; dining service format and showers are unverified. The lounge closes around midday, so it will not suit many afternoon departures."
+    },
+    {
+      "id": "hnl-iass-hawaii",
+      "name": "I.A.S.S. Hawaii Lounge",
+      "terminal": "T2",
+      "location": "Airside, ground-floor Garden Court in the airline lounge area.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [{ "days": [1, 2, 3, 4, 5, 6, 7], "open": "07:30", "close": "18:00" }]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "none",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass before departure",
+          "membershipsAnyOf": ["priority-pass"],
+          "note": "Departure-side access only. Visit and guest charges depend on your membership; outside food and drinks are not permitted.",
+          "sourceIds": ["priority-pass", "operator"]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass: I.A.S.S. Hawaii Lounge access, hours and facilities",
+          "url": "https://www.prioritypass.com/en-GB/lounges/united-states-of-america/honolulu-international/hnl5-i-a-s-s-hawaii-lounge",
+          "checkedOn": "2026-10-15"
+        },
+        {
+          "id": "operator",
+          "title": "IASS Hawaii Lounge: opening hours, services and accepted cards",
+          "url": "https://www.iass.co.jp/en/lounge/hawaii.html",
+          "checkedOn": "2026-10-15"
+        }
+      ],
+      "photos": [],
+      "note": "A soft-drink and Wi-Fi stop; no snacks or meals. Some additional card programs are accepted, but issuer-specific eligibility is outside the seed rules."
+    },
+    {
+      "id": "hnl-premier-club",
+      "name": "Premier Club",
+      "terminal": "T1",
+      "location": "Airside, concourse level in Terminal 1.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          { "days": [1, 2, 3, 4, 5], "open": "05:00", "close": "22:00" },
+          { "days": [6, 7], "open": "06:00", "close": "22:00" }
+        ],
+        "note": "The Priority Pass day-by-day listing opens one hour later on weekends than its headline hours."
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass before departure",
+          "membershipsAnyOf": ["priority-pass"],
+          "maxMinutesBeforeDeparture": 180,
+          "maxVisitMinutes": 180,
+          "note": "Maximum three-hour stay. Entry can be restricted when busy; visit and guest charges depend on your membership.",
+          "sourceIds": ["priority-pass"]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass: Honolulu Premier Club, detailed weekly hours and entry conditions",
+          "url": "https://www.prioritypass.com/en-GB/lounges/united-states-of-america/honolulu-international/hnl7-premier-club",
+          "checkedOn": "2026-10-15"
+        },
+        {
+          "id": "oneworld-access",
+          "title": "oneworld access policy: Hawaiian Premier Clubs are excluded",
+          "url": "https://www.oneworld.com/airport-lounges",
+          "checkedOn": "2026-10-15"
+        }
+      ],
+      "photos": [],
+      "note": "Hot drinks are listed. Other amenities need review. Hawaiian Premier Clubs are excluded from reciprocal oneworld status access; Priority Pass is a separate access route."
+    }
+  ]
+}

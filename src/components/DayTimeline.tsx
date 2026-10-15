@@ -5,7 +5,7 @@ import { buildTimelineSteps, type TimelineStep } from '../lib/timeline-steps';
 import type { PlanCalendarDay } from '../lib/plan-calendar';
 import { planDayCity } from '../lib/plan-places';
 import { travelClock } from '../lib/travel-clocks';
-import type { PlanAction } from '../lib/types';
+import type { PlanAction, PlanTravelSegment } from '../lib/types';
 import { FlightSegmentCard } from './FlightSegmentCard';
 
 const kinds = ['awake', 'sleep', 'rest', 'light', 'avoid-light', 'caffeine', 'melatonin', 'flight'] as const;
@@ -31,9 +31,10 @@ function entryKind(entry: TimelineEntry): TimelineBandKind {
 }
 
 /** One increasing UTC rail; local clock labels keep their dates and DST offsets. */
-export function DayTimeline({ day, renderAction }: {
+export function DayTimeline({ day, renderAction, renderFlight }: {
   day: PlanCalendarDay;
   renderAction: (action: PlanAction) => ReactNode;
+  renderFlight?: (segment: PlanTravelSegment) => ReactNode;
 }) {
   const timeline = useMemo(() => buildDayTimeline(day, { tickMinutes: 180 }), [day]);
   const steps = useMemo(() => buildTimelineSteps(timeline), [timeline]);
@@ -54,7 +55,7 @@ export function DayTimeline({ day, renderAction }: {
           {entry.end > entry.start && <> · {entry.continuesAfter ? 'continues after this day' : `until ${end.time}${end.dateKey !== day.date ? `, ${end.date}` : ''}`}</>}</>}
         </span>
       </div>
-      {entry.kind === 'flight' ? <FlightSegmentCard segment={entry.flight} collapseMeals/> : renderAction(entry.action)}
+      {entry.kind === 'flight' ? (renderFlight ? renderFlight(entry.flight) : <FlightSegmentCard segment={entry.flight} collapseMeals/>) : renderAction(entry.action)}
     </div>;
   }
 

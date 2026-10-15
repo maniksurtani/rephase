@@ -1,10 +1,10 @@
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import type { AppData, Account, AdherenceRecord, PlanAction, PlanTravelSegment, Preferences, Trip } from './lib/types';
 import { validateTrip } from './lib/plan';
 import { findAirport } from './lib/airports';
 import { createEmptyTrip } from './lib/defaults';
 import { exportCalendar, exportData } from './lib/export';
-import { ArrowRight, ArrowUpRight, CalendarDays, Check, CheckCircle2, ChevronLeft, ChevronRight, Clock3, Coffee, Download, ExternalLink, EyeOff, Globe2, Info, LoaderCircle, LogOut, Moon, Pencil, Plane, Plus, ShieldCheck, Sparkles, Sun, Trash2, UserRound, X } from 'lucide-react';
+import { Armchair, ArrowRight, ArrowUpRight, CalendarDays, Check, CheckCircle2, ChevronLeft, ChevronRight, Clock3, Coffee, Download, ExternalLink, EyeOff, Globe2, Info, LoaderCircle, LogOut, Moon, Pencil, Plane, Plus, ShieldCheck, Sparkles, Sun, Trash2, UserRound, X } from 'lucide-react';
 import './styles.css';
 import { usePlanning } from './lib/usePlanning';
 import type { AuthConfig } from './lib/auth';
@@ -13,6 +13,11 @@ import { Modal } from './components/Modal';
 import { FlightSegmentCard } from './components/FlightSegmentCard';
 import { DayTimeline } from './components/DayTimeline';
 import './timeline.css';
+import './lounges.css';
+import { LoungeExplorer } from './components/LoungeExplorer';
+import { LoungeOpportunityLink } from './components/LoungeOpportunityLink';
+import { buildLoungeOpportunities, type LoungeOpportunity } from './lib/lounge-windows';
+import { loungeDataFor } from './lib/lounge-data';
 import { actionTravelSegment, travelClock } from './lib/travel-clocks';
 import { groupPlanDays, isCalendarDayCurrent } from './lib/plan-calendar';
 import { AdherenceForm } from './components/AdherenceForm';
@@ -37,11 +42,12 @@ export interface AppProps {
   storageError: string | null;
 }
 
-type Tab = 'today' | 'plan' | 'trips' | 'profile';
+type Tab = 'today' | 'plan' | 'trips' | 'lounges' | 'profile';
 const tabs: { id: Tab; label: string; icon: typeof Sun }[] = [
   { id: 'today', label: 'Today', icon: Sun },
   { id: 'plan', label: 'Your plan', icon: CalendarDays },
   { id: 'trips', label: 'Trips', icon: Plane },
+  { id: 'lounges', label: 'Lounges', icon: Armchair },
   { id: 'profile', label: 'Profile', icon: UserRound },
 ];
 const actionMeta: Record<PlanAction['type'], { icon: typeof Sun; label: string; color: string }> = {
@@ -134,6 +140,8 @@ function ActionCard({ action, compact = false, timeline = false, isCurrent = fal
 export default function App(props: AppProps) {
   const { data, onChange, account, authConfig, saveStatus, storageError } = props;
   const [tab, setTab] = useState<Tab>('today');
+  const [loungeContext, setLoungeContext] = useState<LoungeOpportunity | undefined>();
+  const [loungeSession, setLoungeSession] = useState(0);
   const [selectedDayId, setSelectedDayId] = useState<string | null>(null);
   const [scienceOpen, setScienceOpen] = useState(false);
   const [draftTrip, setDraftTrip] = useState<Trip | null>(null);
@@ -143,6 +151,7 @@ export default function App(props: AppProps) {
   const [notice, setNotice] = useState<string | null>(null);
   const [now, setNow] = useState(() => new Date());
   const trip = data.trips.find(t => t.id === data.selectedTripId) ?? data.trips[0] ?? null;
+  const loungeOpportunities = useMemo(() => trip ? buildLoungeOpportunities(trip).filter(value => loungeDataFor(value.airport)) : [], [trip]);
   const result = usePlanning(trip, data.preferences);
   const [recordAction,setRecordAction] = useState<PlanAction|null>(null);
   const plan = result.plan;
@@ -171,9 +180,16 @@ export default function App(props: AppProps) {
   useEffect(() => { const timer = window.setInterval(() => setNow(new Date()), 60000); return () => window.clearInterval(timer); }, []);
   useEffect(() => {
     // An editor opened for one identity must not save into a different account.
-    setDraftTrip(null); setTripErrors([]); setDeleteTripId(null); setRecordAction(null); setSelectedDayId(null);
+    setDraftTrip(null); setTripErrors([]); setDeleteTripId(null); setRecordAction(null); setSelectedDayId(null); setLoungeContext(undefined); setLoungeSession(value => value + 1);
   }, [account?.id]);
-  useEffect(() => { setSelectedDayId(null); }, [trip?.id]);
+  useEffect(() => { setSelectedDayId(null); setLoungeContext(undefined); setLoungeSession(value => value + 1); }, [trip?.id]);
+  useEffect(() => {
+    if (!loungeContext) return;
+    const current = loungeOpportunities.find(value => value.id === loungeContext.id);
+    if (JSON.stringify(current) !== JSON.stringify(loungeContext)) {
+      setLoungeContext(current); setLoungeSession(value => value + 1);
+    }
+  }, [loungeOpportunities, loungeContext]);
   useEffect(() => { if (notice) { const timer = window.setTimeout(() => setNotice(null), 4500); return () => window.clearTimeout(timer); } }, [notice]);
   useEffect(() => {
     const open = scienceOpen || Boolean(draftTrip) || Boolean(deleteTripId);
@@ -182,6 +198,18 @@ export default function App(props: AppProps) {
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = previous; };
   }, [scienceOpen, draftTrip, deleteTripId]);
+
+  function exploreLounges(opportunity?: LoungeOpportunity) {
+    setLoungeContext(opportunity); setLoungeSession(value => value + 1); setTab('lounges');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+  function flightWithLounges(segment: PlanTravelSegment, collapseMeals = false) {
+    const opportunity = loungeOpportunities.find(value => value.legId === segment.id);
+    const showOpportunity = opportunity && (collapseMeals
+      ? selectedDay?.date === localDate(segment.departure, segment.departureTimeZone)
+      : now.getTime() < Date.parse(opportunity.end));
+    return <><FlightSegmentCard segment={segment} collapseMeals={collapseMeals}/>{showOpportunity && <LoungeOpportunityLink opportunity={opportunity} onExplore={exploreLounges}/>}</>;
+  }
 
   function editTrip(value: Trip) { draftAccountId.current = account?.id ?? null; setDraftTrip({ ...value, legs: value.legs.map(l => ({ ...l })) }); setTripErrors([]); }
   function createTrip() { draftAccountId.current = account?.id ?? null; setDraftTrip(createEmptyTrip()); setTripErrors([]); }
@@ -237,7 +265,7 @@ export default function App(props: AppProps) {
               {isDemo && <div className="demo-note"><Info size={16}/><p>This is a sample itinerary. Add your flights and sleep preferences for a personal plan.</p><button type="button" onClick={createTrip}>Make it yours <ArrowRight size={14}/></button></div>}
               {!today && timelineDay && <div className="upcoming-note"><CalendarDays size={17}/><span>Your {timelineDay.stage === 'preparation' ? 'preparation' : 'next plan day'} begins <strong>{dateLabel(timelineDay.date, 'long')}</strong>. {timelineDay.travelSegments?.length ? 'Flight and recommendation times include both origin and destination clocks.' : `Times below are in ${planDayCity(timelineDay)} (${zoneName(timelineDay.timeZone, timelineDay.actions[0]?.start)}).`}</span></div>}
               {today && <p className="timezone-caption"><Globe2 size={14}/>{today.travelSegments.length ? 'Travel day · both airport clocks below' : `${planDayCity(today)} local time · ${zoneName(today.timeZone, today.actions[0]?.start)}`}</p>}
-              {timelineDay?.travelSegments?.length ? <div className="day-flights">{timelineDay.travelSegments.map(segment => <FlightSegmentCard key={segment.id} segment={segment}/>)}</div> : null}
+              {timelineDay?.travelSegments?.length ? <div className="day-flights">{timelineDay.travelSegments.map(segment => <div key={segment.id}>{flightWithLounges(segment)}</div>)}</div> : null}
               {timelineDay && <div className="action-list">{timelineDay.actions.slice(0, 3).map(action => <ActionCard key={action.id} action={action} compact travelSegments={timelineDay.travelSegments} isCurrent={!isDemo && action.id === currentAction?.id}/>)}</div>}
               {itineraryFinished && <div className="empty-card subtle"><CheckCircle2 size={28}/><p>Your saved itinerary has ended. Create your next trip whenever you’re ready.</p></div>}
               <button type="button" className="button quiet full-plan-button" onClick={() => setTab('plan')}>See the full timeline <ArrowRight size={16}/></button>
@@ -256,7 +284,7 @@ export default function App(props: AppProps) {
             {isDemo && <div className="demo-note"><Info size={16}/><p>Explore the example plan, then replace it with your own trip.</p><button type="button" onClick={createTrip}>Add your flights <ArrowRight size={14}/></button></div>}
             <div className="day-navigation" role="group" aria-label="Choose a plan day">{calendarDays.map(day => <button type="button" key={day.id} className={`day-button ${day.travelSegments?.length ? 'travel-day' : ''} ${day.id === selectedDay?.id ? 'selected' : ''}`} data-date={day.date} data-zone={day.timeZone} title={`${dateLabel(day.date, 'long')} · ${planDayCity(day)}${day.travelSegments?.length ? ` · ${day.travelSegments.map(segment => segment.flightNumber || `${segment.departureAirport} → ${segment.arrivalAirport}`).join(', ')}` : ''}`} aria-pressed={day.id === selectedDay?.id} onClick={() => setSelectedDayId(day.id)}><span>{dateLabel(day.date).split(',')[0].split(' ')[0]}</span><strong>{Number(day.date.slice(8, 10))}</strong><small>{day.travelSegments?.length ? <><Plane size={11}/>Travel</> : day.stage === 'preparation' ? 'Prepare' : planDayCity(day)}</small>{Boolean(day.travelSegments?.length) && <span className="day-zone">{[...new Set(day.travelSegments.flatMap(segment => [segment.departureAirport, segment.arrivalAirport]))].join(' · ')}</span>}</button>)}</div>
             {selectedDay && <div className="plan-layout"><section><div className="agenda-heading"><div><span className={`stage-label ${selectedDay.stage}`}>{selectedDay.travelSegments?.length ? <Plane size={13}/> : <span/>}{selectedDay.label}</span><h2>{dateLabel(selectedDay.date, 'long')}</h2><p className="timezone-caption"><Globe2 size={14}/>{selectedDay.travelSegments?.length ? 'One date, both airport clocks. Every time includes its local date.' : `All times in ${planDayCity(selectedDay)} · ${zoneName(selectedDay.timeZone, selectedDay.actions[0]?.start)}`}</p></div><div className="day-arrows"><button type="button" className="icon-button" aria-label="Previous plan day" disabled={calendarDays.indexOf(selectedDay) === 0} onClick={() => setSelectedDayId(calendarDays[calendarDays.indexOf(selectedDay) - 1]?.id)}><ChevronLeft size={18}/></button><button type="button" className="icon-button" aria-label="Next plan day" disabled={calendarDays.indexOf(selectedDay) === calendarDays.length - 1} onClick={() => setSelectedDayId(calendarDays[calendarDays.indexOf(selectedDay) + 1]?.id)}><ChevronRight size={18}/></button></div></div>
-              <DayTimeline key={selectedDay.id} day={selectedDay} renderAction={action => <ActionCard key={action.id} action={action} timeline travelSegments={selectedDay.travelSegments} isCurrent={!isDemo && action.id === currentAction?.id} record={trip.adherence?.find(entry=>entry.actionId===action.id)} onRecord={isDemo?undefined:setRecordAction}/>}/>
+              <DayTimeline key={selectedDay.id} day={selectedDay} renderFlight={segment => flightWithLounges(segment, true)} renderAction={action => <ActionCard key={action.id} action={action} timeline travelSegments={selectedDay.travelSegments} isCurrent={!isDemo && action.id === currentAction?.id} record={trip.adherence?.find(entry=>entry.actionId===action.id)} onRecord={isDemo?undefined:setRecordAction}/>}/>
             </section><aside className="plan-aside"><section className="plan-note-card"><span className="eyebrow muted"><Sparkles size={14}/>Your body clock · {planDayCity(selectedDay)}</span><h3>Estimated adjustment</h3>{selectedDay.phaseEstimateAvailable !== false ? <><div className="phase-meter"><span>Change today</span><strong>{phaseChangeLabel(selectedDay.phaseShiftHours)}</strong></div><p>Remaining adjustment: <strong>{remainingAdjustmentLabel(selectedDay.remainingShiftHours)}</strong></p></> : <div className="phase-unavailable"><span>Change today</span><p>Not enough history for a daily estimate.</p></div>}<p className="small-copy"><a href="/science.html#limits">How estimates work</a></p></section><section className="plan-note-card muted-card"><h3>Light tips</h3><p>Seek outdoor light when you can. For light avoidance, dim indoor lighting and reduce bright screens.</p><button type="button" className="text-button" onClick={() => setScienceOpen(true)}>Understand the timing <ArrowUpRight size={14}/></button></section></aside></div>}
 
             {trip.adherence?.length ? <details className="plan-warnings"><summary>Your recorded history <span>{trip.adherence.length}</span></summary><ul>{trip.adherence.slice().reverse().map(entry=><li key={entry.id}>{actionMeta[entry.type].label} · {dateLabel(entry.scheduledStart)} {time(entry.scheduledStart,entry.timeZone)} · {entry.status}</li>)}</ul></details> : null}
@@ -271,6 +299,7 @@ export default function App(props: AppProps) {
           </div><div className="manual-entry-note"><Info size={16}/><p>Look up a flight by number and departure date, or enter it manually.</p></div>
         </>}
 
+        {tab === 'lounges' && <LoungeExplorer key={`${account?.id ?? 'guest'}:${loungeSession}`} preferences={data.preferences} onPreferences={preferences => onChange({ ...data, preferences })} opportunity={loungeContext} onClearContext={() => exploreLounges()}/>}
         {tab === 'profile' && <Profile {...props} onNotice={setNotice}/>}
         <footer className="page-footer"><span><Moon size={12}/>A better rhythm, wherever life takes you.</span><div className="footer-links"><a href="/science.html">Science & further reading <ArrowUpRight size={12}/></a><a href="https://aerodatabox.com/" target="_blank" rel="noopener">Flight data by AeroDataBox <ExternalLink size={12}/></a></div></footer>
       </main>

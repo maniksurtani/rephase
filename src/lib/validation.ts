@@ -2,6 +2,7 @@ import type { AppData } from './types';
 import { Temporal } from '@js-temporal/polyfill';
 import { localToInstant } from './time';
 import { isAircraftType } from './aircraft';
+import { LOUNGE_MEMBERSHIPS } from './lounge-types';
 
 type RecordValue = Record<string, unknown>;
 const record = (value: unknown): value is RecordValue => value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -69,7 +70,7 @@ export function validateAppData(value: unknown): string | null {
   const p = value.preferences;
   const preferenceKeys = ['homeTimeZone', 'chronotype', 'usualBedtime', 'usualWakeTime', 'preferredBedtime', 'preferredWakeTime',
     'sleepHours', 'sleepAnchor', 'caffeine', 'melatonin', 'melatoninAcknowledged', 'preparationDays'];
-  if (!record(p) || !knownKeys(p, preferenceKeys, ['planningMode', 'autoSync', 'calendarAlarms']) || !timeZone(p.homeTimeZone)
+  if (!record(p) || !knownKeys(p, preferenceKeys, ['planningMode', 'autoSync', 'calendarAlarms', 'loungeMemberships', 'loungePriority']) || !timeZone(p.homeTimeZone)
     || !choice(p.chronotype, ['early', 'intermediate', 'late', 'unsure'])
     || ![p.usualBedtime, p.usualWakeTime, p.preferredBedtime, p.preferredWakeTime].every(time)
     || typeof p.sleepHours !== 'number' || !Number.isFinite(p.sleepHours) || p.sleepHours < 4 || p.sleepHours > 12
@@ -77,6 +78,9 @@ export function validateAppData(value: unknown): string | null {
     || !optional(p, 'planningMode', value => choice(value, ['rules', 'model']))
     || !optional(p, 'autoSync', value => typeof value === 'boolean')
     || !optional(p, 'calendarAlarms', value => typeof value === 'boolean')
+    || !optional(p, 'loungeMemberships', value => Array.isArray(value) && value.length <= LOUNGE_MEMBERSHIPS.length
+      && new Set(value).size === value.length && value.every(item => typeof item === 'string' && LOUNGE_MEMBERSHIPS.some(program => program.id === item)))
+    || !optional(p, 'loungePriority', value => choice(value, ['balanced', 'showers', 'dining', 'quiet']))
     || ![p.caffeine, p.melatonin, p.melatoninAcknowledged].every((item) => typeof item === 'boolean')
     || !Number.isInteger(p.preparationDays) || (p.preparationDays as number) < 0 || (p.preparationDays as number) > 7) {
     return 'Saved preferences contain an invalid value.';

@@ -8,6 +8,12 @@ Each plan day is a vertical timeline with concurrent flight, sleep/rest, light/d
 
 The default experimental planner uses the published Forger99 light-driven circadian model and compares constrained advance/delay schedules across the itinerary. Its equations have been checked against an independent Python/SciPy reference. **Numerical verification is not clinical validation:** personal phase, received light, and actual sleep remain uncertain. Conservative planning rules are also available in Profile. Read the standalone [Science page](public/science.html) at `/science.html` for plain-language explanations and original sources.
 
+## Lounge Explorer
+
+Open **Lounges** to save frequent flyer/lounge memberships, choose an airport and visit time, and compare access, showers, dining and quiet spaces. Useful pre-flight and transit windows in the plan link directly to Explorer. Confirm the operating airline for codeshares; conditional access, paid extras and missing hours remain visible. The starter guide has **16 researched lounges at SFO, SYD, HNL and LAX**, with official sources and review dates. It runs offline without another API or secret.
+
+Research lives in [one JSON file per airport](data/lounges/README.md), validated by [JSON Schema](data/lounges/schema.json). Add your offline research in `recommendation.summary`/`bestFor`, update access facts and sources, and store licensed photos at `public/lounges/<lounge-id>/` with the required credit/license metadata. See the [offline research prompt](data/lounges/RESEARCH_PROMPT.md). Dataset changes publish through the normal build/release workflow.
+
 ## Start locally
 
 Use Node.js **22.13 or newer**; Node 24 is used for development. From this repository:

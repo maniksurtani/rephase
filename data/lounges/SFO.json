@@ -1,0 +1,250 @@
+{
+  "schemaVersion": 1,
+  "airport": "SFO",
+  "timeZone": "America/Los_Angeles",
+  "updatedAt": "2026-10-15",
+  "lounges": [
+    {
+      "id": "sfo-club",
+      "name": "The Club SFO",
+      "terminal": "Terminal 1",
+      "location": "Airside in Harvey Milk Terminal 1, near B4. International Terminal A is a short walk away.",
+      "airside": true,
+      "status": "open",
+      "hours": { "type": "weekly", "periods": [{ "days": [1, 2, 3, 4, 5, 6, 7], "open": "04:30", "close": "23:30" }] },
+      "amenities": { "showers": "yes", "dining": "buffet", "spa": "unknown", "quietArea": "yes", "wifi": "yes" },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": ["priority-pass"],
+          "maxMinutesBeforeDeparture": 150,
+          "maxVisitMinutes": 150,
+          "note": "Maximum visit 2.5 hours. Showers cost US$25 for a 30-minute session; any membership visit or guest fees also apply. Entry may be waitlisted.",
+          "sourceIds": ["sfo-club-pp", "sfo-club-operator"]
+        }
+      ],
+      "sources": [
+        { "id": "sfo-club-pp", "title": "Priority Pass: The Club SFO", "url": "https://www.prioritypass.com/en-GB/lounges/united-states-of-america/san-francisco-international/sfo20-the-club-sfo", "checkedOn": "2026-10-15" },
+        { "id": "sfo-club-operator", "title": "The Club: San Francisco lounge", "url": "https://theclubairportlounges.com/lounges/sfo-the-club-terminal-1", "checkedOn": "2026-10-15" }
+      ],
+      "photos": [],
+      "recommendation": { "summary": "A Terminal 1 option for a shower and a quiet break. Showers cost US$25; Priority Pass visits are limited to 2.5 hours before departure.", "bestFor": ["showers", "quiet"] },
+      "note": "Showers are paid and booked on arrival, subject to availability. The operator also accepts LoungeKey and sells Club Pass visits; those access routes are not evaluated in this initial dataset."
+    },
+    {
+      "id": "sfo-alaska",
+      "name": "Alaska Lounge",
+      "terminal": "Terminal 1",
+      "location": "Airside, Harvey Milk Terminal 1, Retail Street, opposite B6.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [{ "days": [1, 2, 3, 4, 5, 6, 7], "open": "05:00", "close": "23:00" }],
+        "note": "Conservative planning hours. Alaska currently publishes 05:00–00:00. Priority Pass announces 05:00–23:00 from 31 October 2026; late-evening entry before that date should be checked with the lounge."
+      },
+      "amenities": { "showers": "unknown", "dining": "snacks", "spa": "unknown", "quietArea": "unknown", "wifi": "unknown" },
+      "accessRules": [
+        {
+          "id": "qantas-status",
+          "label": "Qantas Gold, Platinum or Platinum One on oneworld",
+          "membershipsAnyOf": ["qantas-gold", "qantas-platinum", "qantas-platinum-one"],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "note": "Domestic itineraries can qualify with Qantas status. Add your qualifying frequent-flyer number to the booking before check-in. One eligible oneworld-travelling guest may join.",
+          "sourceIds": ["alaska-access"]
+        },
+        {
+          "id": "oneworld-status",
+          "label": "oneworld Sapphire or Emerald",
+          "membershipsAnyOf": ["oneworld-sapphire", "oneworld-emerald"],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "conditions": ["Confirm the status-issuing airline and route: American and Alaska/Hawaiian Atmos status has North American itinerary exclusions."],
+          "note": "Your qualifying frequent-flyer number must be in the booking before check-in.",
+          "sourceIds": ["alaska-access"]
+        },
+        {
+          "id": "alaska-membership",
+          "label": "Alaska Lounge+ on oneworld",
+          "membershipsAnyOf": ["alaska-lounge-plus"],
+          "operatingAlliance": "oneworld",
+          "note": "Present your current membership and same-day qualifying boarding pass. Other Alaska global airline partners may qualify, but are outside this initial access-rule coverage.",
+          "sourceIds": ["alaska-access"]
+        },
+        {
+          "id": "admirals-membership",
+          "label": "Admirals Club reciprocal access",
+          "membershipsAnyOf": ["admirals-club"],
+          "operatingCarriersAnyOf": ["AA", "AS", "HA"],
+          "marketingCarriersAnyOf": ["AA", "AS"],
+          "conditions": ["Requires an eligible full Admirals Club membership; single-use memberships and authorized-user credit-card benefits do not qualify for partner access."],
+          "note": "Present your current membership card and same-day qualifying boarding pass.",
+          "sourceIds": ["alaska-access", "aa-partners"]
+        },
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass · additional US$15",
+          "additionalFee": { "amount": 15, "currency": "USD" },
+          "membershipsAnyOf": ["priority-pass"],
+          "operatingCarriersAnyOf": ["AS", "HA"],
+          "maxVisitMinutes": 240,
+          "note": "Mandatory US$15 per person in addition to your normal membership visit or guest fee. Maximum visit 4 hours. Other affiliated partners may qualify; check the current program listing.",
+          "sourceIds": ["sfo-alaska-pp"]
+        },
+        {
+          "id": "alaska-paid-first",
+          "label": "Qualifying Alaska or Hawaiian First ticket",
+          "cabinsAnyOf": ["first"],
+          "operatingCarriersAnyOf": ["AS", "HA"],
+          "conditions": ["Requires a qualifying paid or award First ticket, with an Alaska/Hawaiian-operated flight of at least 2,000 miles that day. Upgrades do not automatically qualify."],
+          "sourceIds": ["alaska-access"]
+        }
+      ],
+      "sources": [
+        { "id": "alaska-locations", "title": "Alaska: lounge locations and hours", "url": "https://www.alaskaair.com/content/airport-lounge/location-and-hours", "checkedOn": "2026-10-15" },
+        { "id": "alaska-access", "title": "Alaska: lounge access policies", "url": "https://www.alaskaair.com/content/airport-lounge/policies-and-rules", "checkedOn": "2026-10-15" },
+        { "id": "sfo-alaska-pp", "title": "Priority Pass: Alaska Lounge SFO and supplement", "url": "https://www.prioritypass.com/en-GB/lounges/united-states-of-america/san-francisco-international/sfo21-alaska-lounge-additional-fee-applies", "checkedOn": "2026-10-15" },
+        { "id": "aa-partners", "title": "American: partner lounge access", "url": "https://www.aa.com/web/i18n/travel-info/clubs/admirals-club-locations.html", "checkedOn": "2026-10-15" }
+      ],
+      "photos": [],
+      "note": "Paid or award First on Hawaii–mainland flights can qualify; a short domestic First segment alone does not. Restaurant, shower and spa availability are not verified."
+    },
+    {
+      "id": "sfo-admirals",
+      "name": "American Airlines Admirals Club",
+      "terminal": "Terminal 1",
+      "location": "Airside, Harvey Milk Terminal 1, near B13.",
+      "airside": true,
+      "status": "open",
+      "hours": { "type": "weekly", "periods": [{ "days": [1, 2, 3, 4, 5, 6, 7], "open": "04:30", "close": "23:30" }] },
+      "amenities": { "showers": "yes", "dining": "snacks", "spa": "unknown", "quietArea": "unknown", "wifi": "yes" },
+      "accessRules": [
+        {
+          "id": "qantas-status",
+          "label": "Qantas Gold, Platinum or Platinum One on oneworld",
+          "membershipsAnyOf": ["qantas-gold", "qantas-platinum", "qantas-platinum-one"],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "note": "Qualifying Qantas status can provide access on a domestic US itinerary. Present your boarding pass with your qualifying frequent-flyer number.",
+          "sourceIds": ["aa-access"]
+        },
+        {
+          "id": "oneworld-status",
+          "label": "oneworld Sapphire or Emerald",
+          "membershipsAnyOf": ["oneworld-sapphire", "oneworld-emerald"],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "conditions": ["Confirm the issuing frequent-flyer program and qualifying route: American and Alaska/Hawaiian status has separate itinerary restrictions."],
+          "sourceIds": ["aa-access"]
+        },
+        {
+          "id": "admirals-membership",
+          "label": "Admirals Club membership",
+          "membershipsAnyOf": ["admirals-club"],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "note": "Present your current membership and same-day boarding pass. Additional eligible airlines and card-specific access are outside this initial rule coverage.",
+          "sourceIds": ["aa-access"]
+        },
+        {
+          "id": "alaska-lounge-plus",
+          "label": "Alaska Lounge+ reciprocal access",
+          "membershipsAnyOf": ["alaska-lounge-plus"],
+          "operatingCarriersAnyOf": ["AA", "AS", "HA"],
+          "marketingCarriersAnyOf": ["AA", "AS"],
+          "note": "Present your digital Alaska Lounge+ membership and a qualifying same-day boarding pass.",
+          "sourceIds": ["alaska-partners"]
+        },
+        {
+          "id": "qantas-international-premium",
+          "label": "Qantas international Business or First",
+          "cabinsAnyOf": ["business", "first"],
+          "operatingCarriersAnyOf": ["QF"],
+          "marketingCarriersAnyOf": ["QF"],
+          "route": "international",
+          "sourceIds": ["aa-access"]
+        },
+        {
+          "id": "other-premium",
+          "label": "Other qualifying oneworld premium itinerary",
+          "cabinsAnyOf": ["business", "first"],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "conditions": ["Confirm a qualifying international or ticketed Flagship itinerary. A short domestic US First or Business ticket alone does not grant access."],
+          "sourceIds": ["aa-access"]
+        }
+      ],
+      "sources": [
+        { "id": "sfo-admirals-location", "title": "American: SFO Admirals Club facilities and hours", "url": "https://www.aa.com/pubcontent/en_US/travelInformation/airportAmenities/sfo-club.html", "checkedOn": "2026-10-15" },
+        { "id": "aa-access", "title": "American: Admirals Club access", "url": "https://www.aa.com/web/i18n/travel-info/clubs/admirals-club-access.html", "checkedOn": "2026-10-15" },
+        { "id": "alaska-partners", "title": "Alaska: Lounge+ partner locations and access", "url": "https://www.alaskaair.com/content/airport-lounge/location-and-hours", "checkedOn": "2026-10-15" }
+      ],
+      "photos": [],
+      "note": "Showers are listed by American. General lounge access is separate from premium Flagship products. Paid day passes and further reciprocal routes are outside this initial rule coverage."
+    },
+    {
+      "id": "sfo-ba",
+      "name": "British Airways Lounge",
+      "terminal": "International Terminal A",
+      "location": "Airside, between A5 and A9.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          { "days": [1, 2, 3, 4, 5, 6, 7], "open": "05:00", "close": "11:30" },
+          { "days": [1, 2, 3, 4, 5, 6, 7], "open": "13:30", "close": "18:45" }
+        ],
+        "note": "The airport publishes two daily operating windows. Confirm the current airline schedule before making a terminal detour."
+      },
+      "amenities": { "showers": "unknown", "dining": "buffet", "spa": "unknown", "quietArea": "unknown", "wifi": "yes" },
+      "accessRules": [
+        {
+          "id": "qantas-status",
+          "label": "Qantas Gold, Platinum or Platinum One on oneworld",
+          "membershipsAnyOf": ["qantas-gold", "qantas-platinum", "qantas-platinum-one"],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "note": "Dedicated First pre-flight dining is not included through status alone.",
+          "sourceIds": ["oneworld-access", "ba-sfo"]
+        },
+        {
+          "id": "oneworld-status",
+          "label": "oneworld Sapphire or Emerald",
+          "membershipsAnyOf": ["oneworld-sapphire", "oneworld-emerald"],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "conditions": ["Confirm status issuer and route; American and Alaska/Hawaiian status has North American itinerary exclusions."],
+          "sourceIds": ["oneworld-access"]
+        },
+        {
+          "id": "ba-premium",
+          "label": "British Airways international Business or First",
+          "cabinsAnyOf": ["business", "first"],
+          "operatingCarriersAnyOf": ["BA"],
+          "marketingCarriersAnyOf": ["BA"],
+          "route": "international",
+          "sourceIds": ["oneworld-access"]
+        },
+        {
+          "id": "other-premium",
+          "label": "Other qualifying oneworld premium itinerary",
+          "cabinsAnyOf": ["business", "first"],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "conditions": ["Confirm this is a qualifying international premium itinerary or eligible same-day long-haul connection; domestic US premium tickets have exclusions."],
+          "sourceIds": ["oneworld-access"]
+        }
+      ],
+      "sources": [
+        { "id": "sfo-lounges", "title": "SFO: lounge locations and operating hours", "url": "https://www.flysfo.com/passengers/shop-dine-relax/lounges", "checkedOn": "2026-10-15" },
+        { "id": "oneworld-access", "title": "oneworld: lounge access and exclusions", "url": "https://www.oneworld.com/airport-lounges", "checkedOn": "2026-10-15" },
+        { "id": "ba-sfo", "title": "British Airways: San Francisco lounge facilities", "url": "https://mediacentre.britishairways.com/news/10072019/lounging-in-san-francisco", "checkedOn": "2026-10-15" }
+      ],
+      "photos": [],
+      "note": "The private restaurant is for eligible ticketed First passengers; general lounge access does not include it. Shower and spa availability are not verified."
+    }
+  ]
+}

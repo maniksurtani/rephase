@@ -2,6 +2,20 @@
 
 Updated 2026-10-15. Checked items record completed implementation; verification status for each release is recorded below. External credentials, publication, and clinical/outcome research are separate gates; they cannot be completed by local tests.
 
+## Lounge Explorer
+
+- [x] Design versioned per-airport JSON, a machine-readable schema and an offline research/editing guide.
+- [x] Research 16 selected lounges at SFO, SYD, HNL and LAX using official sources, dates, access conditions, fees and closure status.
+- [x] Support offline editorial summaries/priorities and licensed local photo references with credit, license and source metadata.
+- [x] Match program/status, marketing/operating carrier, cabin, route and time restrictions without treating missing conditions as confirmed access.
+- [x] Evaluate local hours, overnight/DST periods, closures, entry windows and visit limits; explain amenity-based recommendations.
+- [x] Add responsive Lounge Explorer navigation and saved lounge memberships/priorities through existing automatic account storage.
+- [x] Offer deep links for useful pre-flight and same-airport transit windows with editable conservative buffer assumptions.
+- [x] Preserve old saved-data compatibility and avoid restarting circadian simulations on lounge preference changes.
+- [x] Complete final data/access/account/mobile regression checks and review screenshots.
+- [ ] Commit, reuse exact-commit CI checks, deploy and verify the published Lounge Explorer.
+- [ ] Owner acceptance: confirm real memberships/boarding-pass eligibility and extend airport coverage/qualitative research/photos as desired.
+
 ## Foundation and design
 
 - [x] Create a new Git repository on `main` at `/workspace/rephase`.
@@ -271,3 +285,5 @@ Preferences/summary verification (2026-10-15): frontend/Worker TypeScript, 37 fo
 Successful [deployment 38710586934](https://github.com/maniksurtani/rephase/actions/runs/38710586934), source `61bd2252`, passed all 387 unit tests across 29 suites and all 37 browser scenarios (34 Chromium and three mobile WebKit), then uploaded Worker version `82673a51-9555-4f0a-a755-271c55d95555`, installed the configured secret and published 24 offline assets (version `e3e88588d5ce5cae`). The full browser suite took 2.1 minutes. No configuration or database migration was needed; the obsolete acknowledgement field remains compatible with saved data and the existing model assumptions/timing restrictions remain intact. Automated checks used controlled account/provider responses without real Google sign-in or provider requests.
 
 A bounded anonymous production mobile WebKit check at 390px passed against the exact new assets. A real touch selects Sydney's canonical zone and closes suggestions; simplified melatonin controls, the absent planner picker, the compact unavailable-history card and Light tips all render correctly. No page errors, provider/auth calls, account writes or preference saves occurred, and the browser was closed afterward. This check does not claim physical-iPhone or native scrolling-gesture acceptance.
+
+Lounge Explorer local verification: frontend/Worker TypeScript, production build and 101 focused data/access/window/preference/Worker/merge checks passed. The four new browser cases passed across targeted runs, covering account autosave/reload, conditional/confirmed access, closed visits, mobile context reset, no short/continuation-day offers and preserved DST occurrences. A final card-copy refinement is checked with its affected recommendation scenario. Official-source seed coverage totals 16 lounges; photo arrays remain empty until licensed assets are supplied. Full CI and deployment are tracked above.

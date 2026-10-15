@@ -1,3 +1,5 @@
+import type { LoungeMembership, LoungePriority } from './lounge-types';
+
 export type Chronotype = 'early' | 'intermediate' | 'late' | 'unsure';
 export type AdaptationStrategy = 'adapt' | 'partial' | 'home';
 export type TravelClass = 'economy' | 'premium-economy' | 'business' | 'first';
@@ -18,6 +20,8 @@ export interface Preferences {
   planningMode?: 'rules' | 'model';
   autoSync?: boolean;
   calendarAlarms?: boolean;
+  loungeMemberships?: LoungeMembership[];
+  loungePriority?: LoungePriority;
 }
 /** Planned equipment only; it does not establish an airline's seat layout. */
 export interface AircraftType {
