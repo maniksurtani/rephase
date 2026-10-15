@@ -105,8 +105,11 @@ describe('AeroDataBox normalization', () => {
 
 describe('Authenticated flight lookup, retention and quota', () => {
   let sqlite: DatabaseSync; let env: Env; let provider: ReturnType<typeof vi.fn<typeof fetch>>;
+  let warnings: ReturnType<typeof vi.fn<typeof console.warn>>;
   const invoke = (req = flightRequest(), now = NOW, overrides: Partial<Env> = {}) => handleApi(req, { ...env, ...overrides }, { now: () => now, fetch: provider });
   beforeEach(async () => {
+    warnings = vi.fn<typeof console.warn>();
+    vi.spyOn(console, 'warn').mockImplementation(warnings);
     sqlite = new DatabaseSync(':memory:');
     for (const migration of ['0001_accounts.sql', '0002_flight_cache.sql', '0003_google_avatar.sql']) sqlite.exec(readFileSync(new URL('../migrations/' + migration, import.meta.url), 'utf8'));
     env = { DB: d1For(sqlite), GOOGLE_CLIENT_ID: 'client.apps.googleusercontent.com', RAPIDAPI_KEY: 'test-secret-never-exposed' };
@@ -116,7 +119,7 @@ describe('Authenticated flight lookup, retention and quota', () => {
       sqlite.prepare('INSERT INTO sessions VALUES (?, ?, ?)').run(await hashToken(token), id, NOW / 1000 + 366 * 86_400);
     }
   });
-  afterEach(() => sqlite.close());
+  afterEach(() => { sqlite.close(); vi.restoreAllMocks(); });
   it('reports availability without exposing the provider secret', async () => {
     const config = await invoke(new Request(ORIGIN + '/api/config'));
     expect(await config.json()).toMatchObject({ flightLookupAvailable: true, flightProvider: 'aerodatabox' });
@@ -136,7 +139,7 @@ describe('Authenticated flight lookup, retention and quota', () => {
     const [url, options] = provider.mock.calls[0];
     expect(String(url)).toBe('https://aerodatabox.p.rapidapi.com/flights/number/BA286/2026-11-05?dateLocalRole=Departure&withAircraftImage=false&withLocation=false&withFlightPlan=false');
     expect(String(url)).not.toContain(env.RAPIDAPI_KEY); expect(options?.headers).toMatchObject({ 'X-RapidAPI-Key': env.RAPIDAPI_KEY, 'X-RapidAPI-Host': 'aerodatabox.p.rapidapi.com' });
-    expect(options?.redirect).toBe('error'); expect(options?.cache).toBe('no-store'); expect(await result.text()).not.toContain(env.RAPIDAPI_KEY);
+    expect(options?.redirect).toBe('manual'); expect(options?.cache).toBe('no-store'); expect(await result.text()).not.toContain(env.RAPIDAPI_KEY);
   });
   it('serves fresh public cache across accounts without reading saved owner trips or spending credits', async () => {
     const first = await (await invoke()).json(); const other = await invoke(flightRequest(undefined, 'user-b', SESSION_B));
@@ -180,6 +183,41 @@ describe('Authenticated flight lookup, retention and quota', () => {
     const fail = await invoke(); expect(fail.status).toBe(503); expect(await fail.text()).not.toContain(env.RAPIDAPI_KEY);
     expect((await invoke(flightRequest('?flightNumber=BA287&date=2026-11-05'), NOW + 86_400_000)).status).toBe(429);
     expect(provider).toHaveBeenCalledTimes(1);
+  });
+  it('records only safe failure fields and shows the same support reference for a thrown request', async () => {
+    provider.mockImplementation(async () => { throw new Error(`key=${env.RAPIDAPI_KEY}; account=user-a; flight=BA286; date=2026-11-05`); });
+    const result = await invoke(); const body = await result.text();
+    expect(result.status).toBe(503);
+    expect(body).toMatch(/Reference: FLT-[0-9a-f]{12}/);
+    expect(warnings).toHaveBeenCalledTimes(1);
+    const record = JSON.parse(warnings.mock.calls[0][0] as string);
+    expect(record).toEqual({ event: 'flight_provider_failure', provider: 'aerodatabox', operation: 'flight_lookup', category: 'network', reference: expect.stringMatching(/^FLT-[0-9a-f]{12}$/), elapsedMs: expect.any(Number) });
+    expect(body).toContain(record.reference);
+    expect(body + JSON.stringify(warnings.mock.calls)).not.toMatch(/test-secret|user-a|BA286|2026-11-05|key=/);
+    expect(provider).toHaveBeenCalledTimes(1);
+  });
+  it.each([301, 302, 303, 307, 308])('rejects HTTP %i without following redirects or logging their contents', async status => {
+    provider.mockImplementation(async () => new Response('private-provider-body', { status, headers: { Location: 'https://untrusted.example/?key=' + env.RAPIDAPI_KEY } }));
+    const result = await invoke(); const body = await result.text();
+    expect(result.status).toBe(503); expect(body).toContain('unexpected redirect');
+    expect(provider).toHaveBeenCalledTimes(1);
+    expect(JSON.parse(warnings.mock.calls[0][0] as string)).toMatchObject({ category: 'redirect', providerStatus: status });
+    expect(body + JSON.stringify(warnings.mock.calls)).not.toMatch(/test-secret|untrusted|private-provider-body|Location/);
+  });
+  it.each([[401, 'access_denied'], [403, 'access_denied'], [429, 'rate_limit'], [500, 'http']])('classifies provider HTTP %i without exposing response data', async (status, category) => {
+    provider.mockImplementation(async () => new Response('secret-provider-account-detail', { status: status as number, headers: { 'X-Private': env.RAPIDAPI_KEY! } }));
+    const result = await invoke(); const body = await result.text();
+    expect(result.status).toBe(503);
+    expect(JSON.parse(warnings.mock.calls[0][0] as string)).toMatchObject({ category, providerStatus: status });
+    expect(body + JSON.stringify(warnings.mock.calls)).not.toMatch(/test-secret|secret-provider-account-detail|X-Private/);
+    expect(provider).toHaveBeenCalledTimes(1);
+  });
+  it('classifies a failed response stream without logging exception text', async () => {
+    provider.mockImplementation(async () => new Response(new ReadableStream({ start(controller) { controller.error(new Error('key=' + env.RAPIDAPI_KEY)); } }), { headers: { 'Content-Type': 'application/json' } }));
+    const result = await invoke(); const body = await result.text();
+    expect(result.status).toBe(503); expect(body).toContain('response could not be read');
+    expect(JSON.parse(warnings.mock.calls[0][0] as string)).toMatchObject({ category: 'response', providerStatus: 200 });
+    expect(body + JSON.stringify(warnings.mock.calls)).not.toMatch(/test-secret|key=/);
   });
   it('deduplicates concurrent same-key requests within an isolate', async () => {
     let release!: () => void; const hold = new Promise<void>(resolve => release = resolve);
@@ -242,7 +280,10 @@ describe('Authenticated flight lookup, retention and quota', () => {
       options?.signal?.addEventListener('abort', () => reject(new Error('key=' + env.RAPIDAPI_KEY)), { once: true });
     }));
     const result = await handleApi(flightRequest(), env, { now: () => NOW, fetch: provider, timeoutMs: 5 });
-    expect(result.status).toBe(503); expect(await result.text()).not.toContain(env.RAPIDAPI_KEY);
+    const body = await result.text();
+    expect(result.status).toBe(503); expect(body).toContain('timed out');
+    expect(body + JSON.stringify(warnings.mock.calls)).not.toContain(env.RAPIDAPI_KEY);
+    expect(JSON.parse(warnings.mock.calls[0][0] as string)).toMatchObject({ category: 'timeout' });
     expect(provider).toHaveBeenCalledTimes(1);
   });
   it('filters optional departure-airport requests and reports method restrictions', async () => {

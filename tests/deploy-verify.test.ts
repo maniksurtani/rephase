@@ -7,7 +7,7 @@ const settings = { origin: 'https://rephase.example', clientId: 'example.apps.go
 const readyConfig = { googleClientId: settings.clientId, syncAvailable: true, flightLookupAvailable: false };
 const readyResponse = () => Response.json(readyConfig);
 
-describe('public deployment verification', () => {
+describe('optional manual public verification', () => {
   beforeEach(() => { vi.spyOn(console, 'log').mockImplementation(() => {}); });
   afterEach(() => { vi.restoreAllMocks(); });
 
@@ -37,7 +37,7 @@ describe('public deployment verification', () => {
     ['a different Google client', () => Response.json({ ...readyConfig, googleClientId: 'another-client' })],
     ['a missing database binding', () => Response.json({ ...readyConfig, syncAvailable: false })],
     ['a null configuration', () => Response.json(null)],
-  ])('does not accept %s as a successful deployment', async (_label, response) => {
+  ])('does not accept %s as ready public configuration', async (_label, response) => {
     const fetchPublicConfig = vi.fn().mockImplementation(async () => response());
     const wait = vi.fn().mockResolvedValue(undefined);
 

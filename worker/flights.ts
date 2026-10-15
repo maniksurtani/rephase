@@ -28,6 +28,21 @@ export class FlightApiError extends Error {
   constructor(public status: number, message: string) { super(message); }
 }
 
+type ProviderFailure = 'timeout' | 'network' | 'redirect' | 'access_denied' | 'rate_limit' | 'http' | 'response';
+function providerFailure(path: string, category: ProviderFailure, started: number, status: number, message: string, providerStatus?: number): FlightApiError {
+  const reference = 'FLT-' + crypto.randomUUID().replace(/-/g, '').slice(0, 12);
+  // This allowlist deliberately excludes the URL, flight/date, account, headers,
+  // provider response, and exception text, any of which may contain private data
+  // or credentials. The reference connects the on-screen error to Worker logs.
+  console.warn(JSON.stringify({
+    event: 'flight_provider_failure', provider: 'aerodatabox', reference,
+    operation: path.startsWith('/airports/') ? 'airport_lookup' : 'flight_lookup',
+    category, elapsedMs: Math.max(0, Date.now() - started),
+    ...(providerStatus === undefined ? {} : { providerStatus }),
+  }));
+  return new FlightApiError(status, `${message} Reference: ${reference}.`);
+}
+
 export function normalizeFlightNumber(value: unknown): string | null {
   if (typeof value !== 'string' || value.length > 16) return null;
   const normalized = value.trim().toUpperCase().replace(/ +/g, '');
@@ -116,24 +131,47 @@ async function readProviderJson(response: Response): Promise<unknown> {
   catch { throw new FlightApiError(502, 'Flight provider returned invalid data. Use manual entry.'); }
 }
 async function providerRequest(path: string, db: D1Database, env: FlightEnv, accountId: string, now: number, dependencies: FlightDependencies): Promise<unknown> {
+  const started = Date.now();
   const remaining = (dependencies.deadlineMs ?? (Date.now() + 15_000)) - Date.now();
-  if (remaining <= 0) throw new FlightApiError(503, 'Flight lookup timed out. Use manual entry or try again later.');
+  if (remaining <= 0) throw providerFailure(path, 'timeout', started, 503, 'Flight lookup timed out. Use manual entry or try again later.');
   await reserveRequest(db, env, accountId, now);
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), Math.max(1, Math.min(dependencies.timeoutMs ?? 8_000, 10_000, remaining)));
+  let category: ProviderFailure = 'network';
+  let providerStatus: number | undefined;
   try {
     const result = await (dependencies.fetch ?? fetch)(PROVIDER + path, {
       method: 'GET', headers: { 'X-RapidAPI-Key': env.RAPIDAPI_KEY!.trim(), 'X-RapidAPI-Host': HOST, Accept: 'application/json' },
-      signal: controller.signal, redirect: 'error', cache: 'no-store',
+      // Workers rejects redirect:'error' before sending the request. Manual mode
+      // plus an explicit status check also keeps credentials off redirect hosts.
+      signal: controller.signal, redirect: 'manual', cache: 'no-store',
     });
+    providerStatus = result.status;
+    category = 'http';
+    if (result.status >= 300 && result.status < 400) {
+      category = 'redirect';
+      throw new FlightApiError(503, 'Flight provider returned an unexpected redirect. Use manual entry or try again later.');
+    }
     if (result.status === 204 || result.status === 404) return null;
+    if (result.status === 401 || result.status === 403) {
+      category = 'access_denied';
+      throw new FlightApiError(503, 'Flight provider access was denied. Use manual entry while the API subscription is checked.');
+    }
+    if (result.status === 429) {
+      category = 'rate_limit';
+      throw new FlightApiError(503, 'The flight provider rate limit was reached. Use manual entry or try again later.');
+    }
     if (!result.ok) throw new FlightApiError(503, 'Flight provider is temporarily unavailable or the subscription does not cover this date. Use manual entry.');
+    category = 'response';
     return await readProviderJson(result);
   } catch (error) {
-    if (error instanceof FlightApiError) throw error;
-    // Provider responses and network exceptions can include credentials. Do not
-    // log or expose either. Do not retry automatically and spend more credits.
-    throw new FlightApiError(503, 'Flight provider could not be reached. Use manual entry or try again later.');
+    if (controller.signal.aborted) throw providerFailure(path, 'timeout', started, 503, 'Flight lookup timed out. Use manual entry or try again later.', providerStatus);
+    if (error instanceof FlightApiError) throw providerFailure(path, category, started, error.status, error.message, providerStatus);
+    // Do not log or expose network/body exceptions or automatically retry and
+    // spend more credits. Only the allowlisted category/status are recorded.
+    throw providerFailure(path, category, started, 503,
+      category === 'response' ? 'Flight provider response could not be read. Use manual entry or try again later.'
+        : 'Flight provider could not be reached. Use manual entry or try again later.', providerStatus);
   } finally { clearTimeout(timeout); }
 }
 

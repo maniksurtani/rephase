@@ -31,6 +31,8 @@ async function buildApp() {
   });
 }
 
+// Optional, read-only diagnostics for the manually dispatched Verify production
+// workflow. Public security challenges must not determine deployment success.
 export async function verifyDeployment(settings, expectFlightLookup = false, options = {}) {
   const {
     fetch: fetchPublicConfig = globalThis.fetch,
@@ -110,7 +112,7 @@ export async function deploy(args = process.argv.slice(2)) {
   if (args.length !== 1 || !['--dry-run', '--apply'].includes(args[0])) {
     throw new Error('Choose --dry-run for a local deployment check, or --apply to deploy to Cloudflare.');
   }
-  const settings = validateDeploymentEnvironment();
+  validateDeploymentEnvironment();
   const wrangler = resolve(projectRoot, 'node_modules/wrangler/bin/wrangler.js');
   await access(wrangler);
   // Compilation must succeed before the first remote change, including migrations.
@@ -131,7 +133,7 @@ export async function deploy(args = process.argv.slice(2)) {
       input: JSON.stringify({ RAPIDAPI_KEY: process.env.RAPIDAPI_KEY.trim() }),
     });
   }
-  await verifyDeployment(settings, Boolean(process.env.RAPIDAPI_KEY?.trim()));
+  console.log('Cloudflare deployment commands completed. Public configuration can be checked separately with the optional Verify production workflow.');
 }
 
 if (isMainModule(import.meta.url)) {

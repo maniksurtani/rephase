@@ -149,3 +149,12 @@
 .manual-flight-details .flight-operations{margin-bottom:22px}
 .cabin-editor{margin-top:17px}
 @media(max-width:540px){.flight-search-fields{grid-template-columns:1fr;gap:0}.flight-search-fields .field>span{min-height:0;display:block}.flight-selection-summary{padding:15px 13px}.flight-selection-clocks{grid-template-columns:1fr;gap:15px}.flight-selection-route>strong{font-size:17px}.flight-selection-route>span{font-size:11px}.flight-lookup-actions .button{min-height:44px}}
+
+/* Safari's native date chrome must fit the field instead of its intrinsic width.
+   Removing its visual appearance preserves the native date/time picker. */
+.field input:is([type=date],[type=datetime-local],[type=time]){-webkit-appearance:none;appearance:none;display:block;box-sizing:border-box;min-inline-size:0;max-inline-size:100%;inline-size:100%;max-width:100%;min-height:44px}
+.field input:is([type=date],[type=datetime-local],[type=time])::-webkit-date-and-time-value{min-width:0;text-align:left}
+.field input:is([type=date],[type=datetime-local],[type=time])::-webkit-datetime-edit{min-width:0;padding:0}
+.flight-search-fields{grid-template-columns:repeat(2,minmax(0,1fr))}
+.flight-endpoints>div,.flight-operations .field-grid>*{min-width:0}
+@media(max-width:540px){.flight-search-fields{grid-template-columns:minmax(0,1fr)}.flight-operations .field:has(input[type=datetime-local]){grid-column:1/-1}}

@@ -93,6 +93,16 @@ Updated 2026-10-15. Checked items record completed implementation; verification 
 - [x] Confirm the owner has set `RAPIDAPI_KEY`, install its Worker secret and verify public production configuration enables lookup.
 - [ ] Verify an authenticated booked-flight lookup and representative real future routes without claiming universal coverage.
 
+## Mobile date controls and provider failure repair
+
+- [x] Reproduce the flight exception in real workerd: unsupported `redirect: "error"` fails before outbound I/O.
+- [x] Replace the provider redirect mode with `manual` and reject redirects without forwarding credentials.
+- [x] Constrain Safari date/time intrinsic widths while preserving native pickers and minute precision; retain paired airborne clocks while editing either and invalidate them on gate-schedule changes.
+- [x] Enable targeted, redacted provider failure diagnostics and document support references.
+- [x] Complete TypeScript, all 332 unit/model/API/runtime tests, the build, Wrangler dry run and 30 browser scenarios (28 Chromium plus 2 mobile WebKit).
+- [ ] Publish the Safari/provider repair and confirm normal deployment completes without a public HTTP gate.
+- [ ] Confirm successful real booked-flight lookup with the owner after this repair.
+
 ## Dynamic flight lookup — AeroDataBox
 
 Amadeus Self-Service is discontinued. AirLabs's near-term schedules and Skyscanner's route-search API do not meet the known-flight/date requirement months ahead. Provider evidence, current plan limits, and terms are linked in DESIGN.md.
@@ -134,7 +144,7 @@ Amadeus Self-Service is discontinued. AirLabs's near-term schedules and Skyscann
 - [x] Allow first-time DNS/TLS provisioning in the bounded post-deploy verification retry window.
 - [x] Isolate public verification in a read-only manual workflow and diagnose GitHub-runner HTTP 403 Cloudflare challenges without exposing response bodies or credentials.
 - [x] Stop confirmed browser challenges immediately with safe diagnostics and document service-specific, narrowly scoped exceptions.
-- [ ] Identify the challenging Cloudflare security service/rule in the owner's dashboard, configure the appropriate exception, and obtain green public verification/deployment runs.
+- [x] Remove the final public HTTP check from normal deployment at the owner’s request; retain optional read-only diagnostics without changing Cloudflare protections.
 - [ ] Arrange qualified review of melatonin timing/dose suitability and evaluate usability/real-world outcomes before claiming clinical efficacy.
 
 ## Optional future decisions
@@ -155,3 +165,5 @@ Anonymous production checks with the real Google SDK passed at 1120px and 390px:
 Lookup-first editor verification (2026-10-15): frontend and Worker TypeScript passed and the production build prepared 24 offline assets. All 27 existing Chromium scenarios passed after updating manual-entry regressions; three targeted scenarios passed again on the final build, including the new account-switch draft-isolation case (28 total scenarios). Coverage includes default-hidden manual fields, mobile entry and arrival defaults, unavailable lookup, provider selection/cabin preservation, changed-query save guards, independent multi-leg controls and retained attribution after manual edits. Google and provider responses are mocked; these checks do not establish live flight coverage. GitHub deployment [38689043879](https://github.com/maniksurtani/rephase/actions/runs/38689043879) passed all 319 unit tests across 25 suites and all 28 browser scenarios before publishing Worker version `78641296-6f6e-4391-9558-8a0df403249b` and the new assets. Its final runner check remains blocked by the known Cloudflare challenge (Ray `a4ac90994ed78a1f-ORD`, 05:53 UTC). Anonymous production browser checks passed at 1280px and 390px with the exact new assets: lookup-first/default-hidden manual fields, date-preserving manual fallback and no horizontal overflow. At that initial release, public configuration confirmed Google/account storage enabled and flight lookup disabled; no Google sign-in or provider calls were performed. The key was subsequently installed as recorded below; authenticated real-flight acceptance remains pending.
 
 Provider activation verification (2026-10-15): the owner confirmed `RAPIDAPI_KEY` saved in GitHub. Deployment [38691252414](https://github.com/maniksurtani/rephase/actions/runs/38691252414), at commit `e8e7be2`, passed TypeScript, all 319 unit tests across 25 suites, the build and all 28 browser scenarios; the Worker upload and secret installation succeeded. The final runner check hit the existing Cloudflare challenge (Ray `a4acb2522d8b442f-ORD`, 17:16 AEDT). Subsequent public browser checks received HTTP 200 with Google/account storage/flight lookup all configured and verified healthy mobile lookup/manual entry without overflow. No Google sign-in or live provider requests were made: the flag establishes configured key presence, not provider credential validity, subscription allowance or future-flight coverage.
+
+Safari/provider repair verification (2026-10-15): frontend/Worker TypeScript, all 332 Vitest tests across 26 suites, the production build (24 offline assets) and real Wrangler dry-run bundling passed. All 28 Chromium scenarios and both dedicated mobile WebKit scenarios passed. The WebKit cases verify empty/filled date inputs and manual departure/arrival/takeoff/landing controls at 375px and 390px, minute values, paired airborne-clock retention and gate-change invalidation. Real workerd adapter tests use local D1 and intercepted outbound requests to verify the supported fetch mode and reject redirects without forwarding credentials. Safe diagnostics have redaction/category/reference regressions. No live provider calls or real Google sign-in were performed. Publication is pending.

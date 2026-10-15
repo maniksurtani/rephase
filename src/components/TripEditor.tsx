@@ -65,8 +65,12 @@ export function TripEditor({ trip, setTrip, errors, onSave, onClose, existing, a
       if(manualScheduleEdit) {
         // Keep the original provider attribution after a manual correction.
         if(updated.flightSource!=='aerodatabox')updated.flightSource='manual';
-        if(!('takeoffDateTime' in patch))delete updated.takeoffDateTime;
-        if(!('landingDateTime' in patch))delete updated.landingDateTime;
+        // Editing one airborne clock must preserve the other. Changes to the
+        // flight's gate schedule still invalidate previously entered clocks.
+        if(!('takeoffDateTime' in patch) && !('landingDateTime' in patch)) {
+          delete updated.takeoffDateTime;
+          delete updated.landingDateTime;
+        }
       }
       if('departureDateTime' in patch && !('departureDisambiguation' in patch))delete updated.departureDisambiguation;
       if('arrivalDateTime' in patch && !('arrivalDisambiguation' in patch))delete updated.arrivalDisambiguation;
