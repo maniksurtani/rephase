@@ -45,6 +45,7 @@ Updated 2026-10-15. Checked items record completed implementation; verification 
 
 - [x] Replace the verbose application sign-in popup with Google’s official sign-in button opening Google directly.
 - [x] Show the verified Google avatar in the header, with a compact account menu containing Sign out and a fallback for missing images.
+- [x] Verify real Google button embeds at desktop/mobile sizes and remove white iframe canvases caused by the surrounding dark color scheme; keep Google's official button styling.
 - [x] Remove the cluttered signed-in panel, redundant signed-in/repeat-sign-in labels, manual sync button and automatic-sync toggle.
 - [x] Load D1 account preferences/trips automatically, with no starting-data chooser; new accounts start empty and guest data never imports automatically.
 - [x] Reconcile older same-account edits against their saved baseline; restrict unknown-baseline personal-data migration to never-initialized D1 accounts, excluding guest/demo data and retaining deletion tombstones.
@@ -56,7 +57,8 @@ Updated 2026-10-15. Checked items record completed implementation; verification 
 - [x] Add the backward-compatible nullable Google picture migration and document the next-sign-in requirement for existing sessions.
 - [x] Document D1/Workers free-tier capacity and distinguish server account data from its offline cache.
 - [x] Complete updated TypeScript, account/API unit tests, production build and desktop/mobile browser checks; record exact results below.
-- [ ] Deploy this account update with `0003_google_avatar.sql` and verify real Google avatar, automatic save/reload and another-device account loading.
+- [x] Deploy this account update with `0003_google_avatar.sql` and publish its assets/Worker to the production Custom Domain.
+- [ ] Verify real Google avatar, automatic save/reload and another-device account loading after this update.
 
 ## Flight-entry and travel-day feedback
 
@@ -133,4 +135,6 @@ Previous planner feedback verification (2026-10-15): frontend and Worker TypeScr
 
 Real OAuth/provider coverage and clinical efficacy are not implied by these checks. The code is synced to [maniksurtani/rephase](https://github.com/maniksurtani/rephase), and local `main` tracks `origin/main`. Production is live at https://rephase.surtani.org; the owner has verified real Google sign-in, the revised automatic account-saving flow awaits release acceptance, and provider lookup remains disabled without its key.
 
-Account update verification (2026-10-15): frontend and Worker TypeScript passed, all 319 Vitest tests passed across 25 suites, the production build prepared 24 offline assets, and all 23 Chromium scenarios passed. Coverage includes automatic server saving/reload/new-device loading, direct Google button flow, avatar/Sign out menu, expired sessions, offline retries, persistent conflicts, unsaved form preservation and account switches, and three-tab draft recovery. Local `0003_google_avatar.sql` migration and Wrangler dry-run bundling also passed. Google SDK/account APIs are mocked in browser checks; deployment and real-account acceptance remain pending.
+Account update verification (2026-10-15): frontend and Worker TypeScript passed, all 319 Vitest tests passed across 25 suites, the production build prepared 24 offline assets, and all 23 Chromium scenarios passed locally and in GitHub Actions. Coverage includes automatic server saving/reload/new-device loading, direct Google button flow, avatar/Sign out menu, expired sessions, offline retries, persistent conflicts, unsaved form preservation and account switches, and three-tab draft recovery. Local and production `0003_google_avatar.sql` migrations and Wrangler dry-run bundling passed. The updated Worker/assets are deployed by [run 38686653951](https://github.com/maniksurtani/rephase/actions/runs/38686653951); its final runner public check is blocked by the known Cloudflare challenge. Google SDK/account APIs are mocked in browser regressions; real-account acceptance remains pending.
+
+Anonymous production checks with the real Google SDK passed at 1120px and 390px: official sign-in iframes load, there is no application login dialog or horizontal overflow, and guest planning/meals/unique dates/offline Science work. The Google iframe transparency fix was verified before and after SDK mounting without altering Google's button design. No Google login was completed and no flight-provider credits were used during these checks.

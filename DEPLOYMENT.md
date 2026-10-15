@@ -1,6 +1,6 @@
 # Running and deploying Rephase
 
-**Production is live at https://rephase.surtani.org**, deployed on 15 October 2026 using a Cloudflare Worker Custom Domain, static assets and D1. The original `0001`/`0002` database migrations and the hourly cache-purge schedule are applied. The owner has verified real Google sign-in; live flight lookup is disabled until `RAPIDAPI_KEY` is supplied. The revised account UX/automatic-saving update and additive `0003_google_avatar.sql` migration are being prepared for the next release, with acceptance still pending.
+**Production is live at https://rephase.surtani.org**, updated on 15 October 2026 using a Cloudflare Worker Custom Domain, static assets and D1. All three database migrations and the hourly cache-purge schedule are applied. The revised account controls and automatic saving are deployed. The owner verified real Google sign-in before this update; acceptance of the revised account flow still needs a real-account check. Live flight lookup is disabled until `RAPIDAPI_KEY` is supplied.
 
 ## Production configuration at rephase.surtani.org
 
@@ -27,11 +27,13 @@ Verification allows over three minutes for transient DNS/TLS or edge readiness f
 
 Production smoke checks passed: desktop and 390px mobile guest planning, unique date tiles, both airport clocks, meal advice, calendar export, all 24 offline assets, offline planner/Science, Science without JavaScript, and HTTP 401 for unauthenticated account/state APIs. These checks do not complete Google sign-in or spend provider credits. Manual deployment is always available; automatic main-push deployment depends on the repository variable `DEPLOY_ENABLED=true`.
 
-## Account storage and the next migration
+## Account storage and avatar migration
 
 Signed-in preferences and trips live in D1 and save automatically after committed edits are debounced. IndexedDB is an offline cache with pending edits and revision merge metadata; it is not the authoritative account store. Guest data stays separate and is never automatically copied into an account. Older same-account edits with a saved baseline use three-way merging. Without that baseline, personal data can migrate once only into a never-initialized D1 account, excluding demonstration trips; existing server data and deletion tombstones are never blindly replaced. Transactional per-tab journals keep unsaved drafts recoverable when multiple tabs are used. Google’s official button opens Google directly, and the header avatar menu contains Sign out. No application starting-data chooser or manual sync step is required.
 
-The next deployment applies `0003_google_avatar.sql` before publishing the updated Worker. It adds a nullable `users.picture` column and remains compatible with the previous Worker. Existing sessions keep working, but their avatar is populated by the next Google sign-in; users can sign out and sign in once if the fallback image remains. No additional secret, OAuth scope or Cloudflare resource is needed.
+The account update applied `0003_google_avatar.sql` before publishing the updated Worker. It adds a nullable `users.picture` column and remains compatible with the previous Worker. Existing sessions keep working, but their avatar is populated by the next Google sign-in; users can sign out and sign in once if the fallback image remains. No additional secret, OAuth scope or Cloudflare resource is needed.
+
+The [account deployment run](https://github.com/maniksurtani/rephase/actions/runs/38686653951) passed TypeScript, all 319 unit tests and 23 browser scenarios, applied the migration, and published Worker version `a5ca5c8e-f8ed-4ef4-a4d7-64aae897832d`. Its final public check remains blocked by a Cloudflare browser challenge (Ray ID `a4ac69e6cbf9d311-SEA`, 05:27 UTC on 15 October). A red conclusion on that run does not mean the migration or upload failed; the public verification gate is still enforced.
 
 This account storage fits Cloudflare’s free tier for personal use and an initial audience. D1 currently allows **500 MB per database**, **5 GB per account**, **5 million row reads/day** and **100,000 row writes/day**. Workers allow **100,000 dynamic requests/day** on the free plan; static asset requests are free. Session verification, account operations, provider cache and quota records share these budgets. Debouncing avoids a write for every typed change, but database size and usage must still be monitored. Separate provider limits continue to apply. See [D1 pricing](https://developers.cloudflare.com/d1/platform/pricing/), [D1 limits](https://developers.cloudflare.com/d1/platform/limits/) and [Workers pricing](https://developers.cloudflare.com/workers/platform/pricing/).
 
