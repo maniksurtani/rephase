@@ -177,6 +177,13 @@ Source `f58739bf1da0713116fef29970ead9c8b53d686f` passed [Checks 38734623450](ht
 
 Separate anonymous live checks at 1440px and 390px passed with exact published `index-NjoZRzhx.js`: San Francisco/unchanged PDT captions, chronological timeline rows, sleep/free-time bands, both 24 October flights, Departure/Arrival labels with no Gate headings, visible meal policy and expandable details, and no page errors or overflow. Only public configuration was requested; account endpoints were intercepted and the temporary guest namespace held the itinerary. Browsers closed after checks. No Google sign-in, account write, live provider request, schema migration or scientific timing change was made by this release.
 
+## Compact uninterrupted timeline periods
+
+- [x] Remove decorative hourly rows and retain activity, midnight and timezone-offset boundaries.
+- [x] Compress long unchanged spans with an ellipsis and continuous colored bands; show free-time/state labels only where useful.
+- [x] Verify the Honolulu quiet-afternoon regression, ongoing flight/sleep bands, DST and desktop/mobile layout.
+- [ ] Publish through the verified-artifact path and record checks.
+
 ## Arrival-city labels and faster releases
 
 - [x] Resolve planner place labels from the itinerary airport city, independently of its IANA timezone, in both planning engines.

@@ -1,13 +1,13 @@
 import { useMemo, type ReactNode } from 'react';
 import { Coffee, EyeOff, Moon, Pill, Plane, Sparkles, Sun, Sunrise } from 'lucide-react';
 import { buildDayTimeline, timelineActionKind, type TimelineBand, type TimelineBandKind, type TimelineEntry } from '../lib/day-timeline';
+import { buildTimelineSteps, type TimelineStep } from '../lib/timeline-steps';
 import type { PlanCalendarDay } from '../lib/plan-calendar';
 import { planDayCity } from '../lib/plan-places';
 import { travelClock } from '../lib/travel-clocks';
 import type { PlanAction } from '../lib/types';
 import { FlightSegmentCard } from './FlightSegmentCard';
 
-const HOUR = 3_600_000;
 const kinds = ['awake', 'sleep', 'rest', 'light', 'avoid-light', 'caffeine', 'melatonin', 'flight'] as const;
 const appearance = {
   awake: { label: 'Awake / free time', icon: Sunrise, lane: 0 },
@@ -36,18 +36,7 @@ export function DayTimeline({ day, renderAction }: {
   renderAction: (action: PlanAction) => ReactNode;
 }) {
   const timeline = useMemo(() => buildDayTimeline(day, { tickMinutes: 180 }), [day]);
-  const steps = useMemo(() => {
-    const points = [...new Set([
-      timeline.start, timeline.end,
-      ...timeline.ticks.map(tick => tick.instant),
-      ...timeline.bands.flatMap(band => [band.start, band.end]),
-    ])].sort((a, b) => a - b);
-    return points.slice(0, -1).map((start, index) => ({
-      start, end: points[index + 1],
-      bands: timeline.bands.filter(band => band.start < points[index + 1] && band.end > start),
-      entries: timeline.entries.filter(entry => entry.start === start),
-    }));
-  }, [timeline]);
+  const steps = useMemo(() => buildTimelineSteps(timeline), [timeline]);
   const present = new Set(timeline.bands.map(band => band.kind));
   const clock = (instant: number) => travelClock(new Date(instant).toISOString(), timeline.timeZone);
   const firstClock = clock(timeline.start), lastClock = clock(timeline.end);
@@ -73,8 +62,18 @@ export function DayTimeline({ day, renderAction }: {
     const unique = [...new Map(bands.map(band => [band.kind, band])).values()];
     return <div className="timeline-continuation">{unique.map(band => {
       const Icon = appearance[band.kind].icon;
-      return <span className={`timeline-status timeline-${band.kind}`} key={band.kind}><Icon size={13} aria-hidden="true"/>{appearance[band.kind].label}</span>;
+      const end = clock(band.end);
+      return <span className={`timeline-status timeline-${band.kind}`} key={band.kind}><Icon size={13} aria-hidden="true"/>{appearance[band.kind].label}<small>until {end.time}{end.dateKey !== day.date ? `, ${end.date}` : ''}</small></span>;
     })}</div>;
+  }
+
+  function startingStatuses(step: TimelineStep): TimelineBand[] {
+    const represented = new Set(step.entries.map(entryKind));
+    const fresh = step.bands.filter(band => band.start === step.start && !represented.has(band.kind));
+    // Give an otherwise quiet free-time span one label after the preceding
+    // activity ends. Ongoing flights/sleep keep their visual band, not repeats.
+    if (!fresh.length && step.compressed && !step.entries.length && step.bands.length === 1 && step.bands[0].kind === 'awake') return step.bands;
+    return fresh;
   }
 
   return <section className="day-timeline" aria-label="Daily timeline" data-start={timeline.start} data-end={timeline.end}>
@@ -86,14 +85,14 @@ export function DayTimeline({ day, renderAction }: {
     <p className="timeline-free-note">Free time has no planned sleep or rest.</p>
     <ol className="timeline-steps">{steps.map(step => {
       const at = clock(step.start);
-      return <li className="timeline-step" key={step.start} data-start={step.start} data-end={step.end}
-        style={{ minHeight: `${Math.max(52, (step.end - step.start) / HOUR * 38)}px` }}>
+      const statuses = startingStatuses(step);
+      return <li className={`timeline-step${step.compressed ? ' compressed' : ''}`} key={step.start} data-start={step.start} data-end={step.end} data-compressed={step.compressed}>
         <div className="timeline-clock"><time dateTime={new Date(step.start).toISOString()}><strong>{at.time}</strong>{(travelDay || at.dateKey !== day.date) && <span>{at.date}</span>}{(travelDay || changingZone) && <small>{at.zone}</small>}</time></div>
         <div className="timeline-rail" aria-hidden="true"><span className="timeline-dot"/>{step.bands.map(band => <span
           key={band.id} className={`timeline-band timeline-${band.kind}`} data-kind={band.kind}
           data-band-id={band.id} data-start={step.start} data-end={step.end}
           title={appearance[band.kind].label} style={{ left: `${appearance[band.kind].lane * 5}px` }}/>)}</div>
-        <div className="timeline-step-content">{step.entries.length ? step.entries.map(renderEntry) : continuation(step.bands)}</div>
+        <div className="timeline-step-content">{statuses.length > 0 && continuation(statuses)}{step.entries.map(renderEntry)}{step.compressed && <div className="timeline-ellipsis" aria-label={`${durationLabel(step.end - step.start)} elapsed`}><span aria-hidden="true">· · ·</span>{!step.entries.length && <small>{durationLabel(step.end - step.start)}</small>}</div>}</div>
       </li>;
     })}
       <li className="timeline-step timeline-end" data-start={timeline.end} data-end={timeline.end}>

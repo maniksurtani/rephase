@@ -57,6 +57,13 @@ async function expectChronologicalRail(page: Page) {
     expect(entry.end).toBeGreaterThanOrEqual(entry.start);
     if (index) expect(entry.start).toBeGreaterThanOrEqual(entries[index - 1].start);
   }
+  for (const kind of ['sleep', 'flight']) {
+    const bandIds = await page.locator(`.timeline-band[data-kind="${kind}"]`).evaluateAll(nodes =>
+      [...new Set(nodes.map(node => node.getAttribute('data-band-id')))]);
+    // A continuing band carries its meaning past other recommendations;
+    // crossing a clock boundary must not repeat the same status text.
+    expect(await page.locator(`.timeline-status.timeline-${kind}`).count()).toBeLessThanOrEqual(bandIds.length);
+  }
   return rows;
 }
 
@@ -86,17 +93,20 @@ test('daily timeline shows concurrent duration bands and keeps explanation and r
   expect(caffeine!.x).toBeGreaterThan(awake!.x);
   expect(caffeine!.y).toBe(awake!.y);
   expect(caffeine!.height).toBe(awake!.height);
-  // Detail cards may expand their rows. Among continuation-only rows, a
-  // multi-hour interval must visibly occupy more space than a short interval.
-  const gaps = await page.locator('.timeline-step:not(.timeline-end):not(:has(.timeline-entry))').evaluateAll(nodes => nodes.map(node => ({
+  // Long periods with unchanged guidance stay compact. Their actual UTC
+  // duration remains available even though the rail is not an hourly ruler.
+  const quietRows = page.locator('.timeline-step:not(.timeline-end):not(:has(.timeline-entry))');
+  const gaps = await quietRows.evaluateAll(nodes => nodes.map(node => ({
     minutes: (Number(node.getAttribute('data-end')) - Number(node.getAttribute('data-start'))) / 60_000,
     height: node.getBoundingClientRect().height,
+    compressed: node.getAttribute('data-compressed') === 'true',
+    ellipsis: Boolean(node.querySelector('.timeline-ellipsis')),
   })));
   const longGap = gaps.find(gap => gap.minutes >= 120);
-  const shortGap = gaps.find(gap => gap.minutes <= 90);
   expect(longGap).toBeDefined();
-  expect(shortGap).toBeDefined();
-  expect(longGap!.height).toBeGreaterThan(shortGap!.height);
+  expect(longGap!.compressed).toBe(true);
+  expect(longGap!.ellipsis).toBe(true);
+  expect(longGap!.height).toBeLessThanOrEqual(160);
   const sleepIntervals = await intervals(page, '.timeline-band[data-kind="sleep"]');
   const awakeIntervals = await intervals(page, '.timeline-band[data-kind="awake"]');
   for (const sleep of sleepIntervals) for (const awake of awakeIntervals) {
@@ -127,6 +137,30 @@ test('mobile timeline retains date-line flights, simultaneous rest, two-flight d
   const departure = outbound.getByRole('region', { name: 'Departure', exact: true });
   await expect(departure.locator('.flight-clock-origin')).toContainText('17 Oct');
   await expect(departure.locator('.flight-clock-destination')).toContainText('16 Oct');
+
+  // The long free afternoon in Honolulu used to produce repeated 12:00,
+  // 15:00, 18:00 and 21:00 rows. Keep its real boundaries and evening advice.
+  const quietSpans = await intervals(page, '.timeline-step:not(.timeline-end):not(:has(.timeline-entry))');
+  const longest = quietSpans.reduce((best, span) => span.end - span.start > best.end - best.start ? span : best);
+  const quietTail = page.locator(`.timeline-step:not(.timeline-end)[data-start="${longest.start}"]`);
+  await expect(quietTail).toHaveCount(1);
+  const tailStart = Number(await quietTail.getAttribute('data-start'));
+  const tailEnd = Number(await quietTail.getAttribute('data-end'));
+  expect(tailEnd - tailStart).toBeGreaterThan(6 * 3_600_000);
+  await expect(quietTail).toHaveAttribute('data-compressed', 'true');
+  await expect(quietTail.locator('.timeline-ellipsis')).toBeVisible();
+  await expect(quietTail.locator('.timeline-status.timeline-awake')).toHaveCount(1);
+  expect((await quietTail.boundingBox())!.height).toBeLessThanOrEqual(160);
+  const tailRows = (await intervals(page, '.timeline-step:not(.timeline-end)')).filter(row => row.start >= tailStart && row.start < tailEnd);
+  expect(tailRows).toEqual([{ start: tailStart, end: tailEnd }]);
+  await expect(page.locator(`.timeline-step[data-start="${tailEnd}"] .timeline-entry`)).not.toHaveCount(0);
+  const clocks = await page.locator('.timeline-clock time strong').allTextContents();
+  for (const artificialTick of ['12:00', '15:00', '18:00', '21:00']) expect(clocks).not.toContain(artificialTick);
+  const endClock = page.locator('.timeline-end .timeline-clock time');
+  await expect(endClock).toContainText('00:00');
+  await expect(endClock).toContainText('18 Oct');
+  await quietTail.scrollIntoViewIfNeeded();
+  await page.screenshot({ path: 'artifacts/timeline-quiet-gap-mobile.png' });
 
   await page.locator('.day-button[data-date="2026-10-24"]').click();
   await expectChronologicalRail(page);
