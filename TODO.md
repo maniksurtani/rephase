@@ -13,7 +13,7 @@ Updated 2026-10-15. Checked items record completed implementation; verification 
 - [x] Offer deep links for useful pre-flight and same-airport transit windows with editable conservative buffer assumptions.
 - [x] Preserve old saved-data compatibility and avoid restarting circadian simulations on lounge preference changes.
 - [x] Complete final data/access/account/mobile regression checks and review screenshots.
-- [ ] Commit, reuse exact-commit CI checks, deploy and verify the published Lounge Explorer.
+- [x] Commit, reuse exact-commit CI checks, deploy and verify the published Lounge Explorer.
 - [ ] Owner acceptance: confirm real memberships/boarding-pass eligibility and extend airport coverage/qualitative research/photos as desired.
 
 ## Foundation and design
@@ -287,3 +287,9 @@ Successful [deployment 38710586934](https://github.com/maniksurtani/rephase/acti
 A bounded anonymous production mobile WebKit check at 390px passed against the exact new assets. A real touch selects Sydney's canonical zone and closes suggestions; simplified melatonin controls, the absent planner picker, the compact unavailable-history card and Light tips all render correctly. No page errors, provider/auth calls, account writes or preference saves occurred, and the browser was closed afterward. This check does not claim physical-iPhone or native scrolling-gesture acceptance.
 
 Lounge Explorer local verification: frontend/Worker TypeScript, production build and 101 focused data/access/window/preference/Worker/merge checks passed. The four new browser cases passed across targeted runs, covering account autosave/reload, conditional/confirmed access, closed visits, mobile context reset, no short/continuation-day offers and preserved DST occurrences. A final card-copy refinement is checked with its affected recommendation scenario. Official-source seed coverage totals 16 lounges; photo arrays remain empty until licensed assets are supplied. Full CI and deployment are tracked above.
+
+Lounge Explorer release: source `fa4fec74c6b0525e5bd49d50265acd08283f6024` passed [Checks 38744573890](https://github.com/maniksurtani/rephase/actions/runs/38744573890): all **514 unit/model/API/runtime tests across 38 suites**, frontend/Worker TypeScript, the production build, and **44 browser scenarios** (41 Chromium, three mobile WebKit). Browsers ran once for this source commit and took 3.0 minutes. Immutable verified artifact **11977522861** contains 25 offline assets, version `84cf2f37e990c514`; the entry is `index-B1XXZvmb.js`.
+
+Successful [deployment 38745313576](https://github.com/maniksurtani/rephase/actions/runs/38745313576) reused the exact artifact without rebuilding or repeating tests, finished in 40 seconds, had no migrations to apply, and uploaded Worker version `726ba32c-e5dd-4a3b-b35e-c9d85da3d5c9` before configured-secret installation. No new Cloudflare resource, database migration or API credential was needed.
+
+Anonymous production checks at 1440px and 390px passed against the exact new entry: four SFO records, guest-only local membership selection, a sourced SYD First recommendation with one visible summary, LAX First closure exclusion, and no horizontal overflow/page errors. Only public configuration and static assets reached the network; account/provider/auth requests were intercepted, with no real sign-in or account writes. The desktop engine was Chromium. Local WebKit could not launch because `libGLESv2.so.2` is unavailable, so the live mobile check used Chromium; the CI's three existing mobile WebKit cases passed. These checks do not claim physical-iPhone acceptance or live lounge admission. Browsers and local preview servers were closed after verification.
