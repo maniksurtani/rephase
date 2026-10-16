@@ -14,7 +14,7 @@ Updated 2026-10-16. Active work is kept here; the previous complete checklist is
 - [x] Discover lounge datasets automatically for both app and validation.
 - [x] Archive completed task/release history and retain current architecture and active work.
 - [x] Verify formatting/hooks lint, TypeScript, 525 unit/runtime tests, bundle size and all 43 browser checks; final CSS rerun 9/9.
-- [ ] Commit/push the refactor and deploy its exact verified release artifact.
+- [x] Commit/push the refactor and deploy its exact verified release artifact; [release evidence](RELEASES.md).
 
 ## Flight updates — designed, not yet implemented
 

@@ -104,6 +104,8 @@ npm run test:e2e
 
 Playwright uses `/usr/bin/chromium` when present, or `PLAYWRIGHT_CHROMIUM_EXECUTABLE`; otherwise install it with `npx playwright install chromium`. Engineering checks cover numerical reference trajectories, temporal/itinerary constraints, adherence replay, daylight, API ownership/nonce/session/revision security, cache/quotas, sync merges, calendar export, and deployment/launcher configuration. Browser checks use controlled API responses for account and flight scenarios.
 
+Current release: [refactor `b492a43`](RELEASES.md) passed all 525 unit/runtime tests and 43 browser scenarios in CI, then deployed the exact verified artifact. Anonymous desktop/mobile production checks passed without sign-in, account writes or flight requests.
+
 Detailed previous release evidence is preserved in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md). Automated account/provider checks use controlled responses; real Google/account/provider acceptance remains listed in [TODO.md](TODO.md).
 
 Use `REPHASE_CAPTURE_SCREENSHOTS=1 npm run test:e2e` for optional design captures under `artifacts/`. Normal browser runs retain screenshots and traces on failure. The suite uses two browser workers; use `PLAYWRIGHT_WORKERS=1` on constrained machines. `npm run format` formats frontend/Worker sources; hooks lint and formatting checks run in CI.

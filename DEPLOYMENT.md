@@ -1,6 +1,8 @@
 # Running and deploying Rephase
 
-**Production is live at https://rephase.surtani.org**, updated on 15 October 2026 using a Cloudflare Worker Custom Domain, static assets and D1. All four database migrations and the hourly cache-purge schedule are applied. The revised account controls and automatic saving are deployed. The owner verified real Google sign-in before this update; acceptance of the revised account flow still needs a real-account check. The `RAPIDAPI_KEY` Worker secret is installed and public configuration confirms flight lookup is enabled; authenticated real-flight acceptance remains pending.
+**Production is live at https://rephase.surtani.org**, updated on 16 October 2026 using a Cloudflare Worker Custom Domain, static assets and D1. All four database migrations and the hourly cache-purge schedule are applied. The revised account controls and automatic saving are deployed. The owner verified real Google sign-in before this update; acceptance of the revised account flow still needs a real-account check. The `RAPIDAPI_KEY` Worker secret is installed and public configuration confirms flight lookup is enabled; authenticated real-flight acceptance remains pending.
+
+The code-review refactor is deployed; current source, verification and deployment links are recorded in [RELEASES.md](RELEASES.md). No database or configuration change was required.
 
 ## Production configuration at rephase.surtani.org
 
