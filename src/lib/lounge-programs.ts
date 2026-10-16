@@ -1,7 +1,12 @@
 /** Curated program names and published alliance tiers. Access rules remain lounge-specific. */
 export type LoyaltyAllianceTier =
-  | 'oneworld-ruby' | 'oneworld-sapphire' | 'oneworld-emerald'
-  | 'star-silver' | 'star-gold' | 'skyteam-elite' | 'skyteam-elite-plus';
+  | 'oneworld-ruby'
+  | 'oneworld-sapphire'
+  | 'oneworld-emerald'
+  | 'star-silver'
+  | 'star-gold'
+  | 'skyteam-elite'
+  | 'skyteam-elite-plus';
 
 export interface LoyaltyTier<Id extends string = string> {
   readonly id: Id;
@@ -25,13 +30,22 @@ export interface LoyaltyProgram {
 
 // Keep literal IDs for the shared browser/Worker preference validator. The optional
 // alliance field remains accessible when iterating programs with different tiers.
-const tier = <const Id extends string>(id: Id, label: string, allianceTier?: LoyaltyAllianceTier): LoyaltyTier<Id> =>
-  ({ id, label, ...(allianceTier ? { allianceTier } : {}) });
-const source = (url: string, title: string): LoyaltyProgramSource => ({ url, title, checkedOn: '2026-10-16' });
+const tier = <const Id extends string>(
+  id: Id,
+  label: string,
+  allianceTier?: LoyaltyAllianceTier,
+): LoyaltyTier<Id> => ({ id, label, ...(allianceTier ? { allianceTier } : {}) });
+const source = (url: string, title: string): LoyaltyProgramSource => ({
+  url,
+  title,
+  checkedOn: '2026-10-16',
+});
 
 export const LOYALTY_PROGRAMS = [
   {
-    id: 'qantas', name: 'Qantas Frequent Flyer', airline: 'Qantas',
+    id: 'qantas',
+    name: 'Qantas Frequent Flyer',
+    airline: 'Qantas',
     keywords: ['QF', 'oneworld', 'Australia'],
     tiers: [
       tier('qantas-bronze', 'Bronze'),
@@ -41,12 +55,17 @@ export const LOYALTY_PROGRAMS = [
       tier('qantas-platinum-one', 'Platinum One', 'oneworld-emerald'),
     ],
     sources: [
-      source('https://www.qantas.com/au/en/frequent-flyer/status-and-clubs/status/bronze.html', 'Qantas Bronze membership'),
+      source(
+        'https://www.qantas.com/au/en/frequent-flyer/status-and-clubs/status/bronze.html',
+        'Qantas Bronze membership',
+      ),
       source('https://www.oneworld.com/members/qantas', 'oneworld: Qantas status tiers'),
     ],
   },
   {
-    id: 'united-mileageplus', name: 'United MileagePlus', airline: 'United Airlines',
+    id: 'united-mileageplus',
+    name: 'United MileagePlus',
+    airline: 'United Airlines',
     keywords: ['UA', 'Premier', '1K', 'Star Alliance'],
     tiers: [
       tier('united-member', 'Member'),
@@ -56,11 +75,16 @@ export const LOYALTY_PROGRAMS = [
       tier('united-premier-1k', 'Premier 1K', 'star-gold'),
     ],
     sources: [
-      source('https://www.united.com/en/us/fly/mileageplus/premier/benefits.html', 'United Premier status and Star Alliance benefits'),
+      source(
+        'https://www.united.com/en/us/fly/mileageplus/premier/benefits.html',
+        'United Premier status and Star Alliance benefits',
+      ),
     ],
   },
   {
-    id: 'american-aadvantage', name: 'American AAdvantage', airline: 'American Airlines',
+    id: 'american-aadvantage',
+    name: 'American AAdvantage',
+    airline: 'American Airlines',
     keywords: ['AA', 'oneworld'],
     tiers: [
       tier('american-member', 'Member'),
@@ -69,11 +93,27 @@ export const LOYALTY_PROGRAMS = [
       tier('american-platinum-pro', 'Platinum Pro', 'oneworld-emerald'),
       tier('american-executive-platinum', 'Executive Platinum', 'oneworld-emerald'),
     ],
-    sources: [source('https://www.oneworld.com/members/american-airlines', 'oneworld: American AAdvantage status tiers')],
+    sources: [
+      source(
+        'https://www.oneworld.com/members/american-airlines',
+        'oneworld: American AAdvantage status tiers',
+      ),
+    ],
   },
   {
-    id: 'atmos-rewards', name: 'Atmos Rewards', airline: 'Alaska Airlines and Hawaiian Airlines',
-    keywords: ['AS', 'HA', 'Alaska', 'Hawaiian', 'Mileage Plan', 'HawaiianMiles', 'MVP', 'oneworld'],
+    id: 'atmos-rewards',
+    name: 'Atmos Rewards',
+    airline: 'Alaska Airlines and Hawaiian Airlines',
+    keywords: [
+      'AS',
+      'HA',
+      'Alaska',
+      'Hawaiian',
+      'Mileage Plan',
+      'HawaiianMiles',
+      'MVP',
+      'oneworld',
+    ],
     tiers: [
       tier('atmos-member', 'Member'),
       tier('atmos-silver', 'Silver', 'oneworld-ruby'),
@@ -81,10 +121,17 @@ export const LOYALTY_PROGRAMS = [
       tier('atmos-platinum', 'Platinum', 'oneworld-emerald'),
       tier('atmos-titanium', 'Titanium', 'oneworld-emerald'),
     ],
-    sources: [source('https://www.oneworld.com/members/alaska-airlines', 'oneworld: Alaska and Atmos Rewards status tiers')],
+    sources: [
+      source(
+        'https://www.oneworld.com/members/alaska-airlines',
+        'oneworld: Alaska and Atmos Rewards status tiers',
+      ),
+    ],
   },
   {
-    id: 'delta-skymiles', name: 'Delta SkyMiles', airline: 'Delta Air Lines',
+    id: 'delta-skymiles',
+    name: 'Delta SkyMiles',
+    airline: 'Delta Air Lines',
     keywords: ['DL', 'Medallion', 'SkyTeam'],
     tiers: [
       tier('delta-member', 'Member'),
@@ -94,12 +141,20 @@ export const LOYALTY_PROGRAMS = [
       tier('delta-diamond-medallion', 'Diamond Medallion', 'skyteam-elite-plus'),
     ],
     sources: [
-      source('https://www.delta.com/us/en/skymiles/medallion-program/medallion-benefits', 'Delta Medallion benefits'),
-      source('https://www.delta.com/us/en/skymiles/medallion-program/international-partner-skyteam-benefits', 'Delta international partner and SkyTeam benefits'),
+      source(
+        'https://www.delta.com/us/en/skymiles/medallion-program/medallion-benefits',
+        'Delta Medallion benefits',
+      ),
+      source(
+        'https://www.delta.com/us/en/skymiles/medallion-program/international-partner-skyteam-benefits',
+        'Delta international partner and SkyTeam benefits',
+      ),
     ],
   },
   {
-    id: 'british-airways-club', name: 'The British Airways Club', airline: 'British Airways',
+    id: 'british-airways-club',
+    name: 'The British Airways Club',
+    airline: 'British Airways',
     keywords: ['BA', 'Executive Club', 'Avios', 'oneworld'],
     tiers: [
       tier('british-airways-blue', 'Blue'),
@@ -108,12 +163,20 @@ export const LOYALTY_PROGRAMS = [
       tier('british-airways-gold', 'Gold', 'oneworld-emerald'),
     ],
     sources: [
-      source('https://www.britishairways.com/content/the-british-airways-club/about-the-club/tiers-and-benefits', 'The British Airways Club tiers and benefits'),
-      source('https://www.oneworld.com/members/british-airways', 'oneworld: British Airways status tiers'),
+      source(
+        'https://www.britishairways.com/content/the-british-airways-club/about-the-club/tiers-and-benefits',
+        'The British Airways Club tiers and benefits',
+      ),
+      source(
+        'https://www.oneworld.com/members/british-airways',
+        'oneworld: British Airways status tiers',
+      ),
     ],
   },
   {
-    id: 'cathay', name: 'Cathay', airline: 'Cathay Pacific',
+    id: 'cathay',
+    name: 'Cathay',
+    airline: 'Cathay Pacific',
     keywords: ['CX', 'Asia Miles', 'Marco Polo Club', 'oneworld'],
     tiers: [
       tier('cathay-green', 'Green'),
@@ -121,10 +184,14 @@ export const LOYALTY_PROGRAMS = [
       tier('cathay-gold', 'Gold', 'oneworld-sapphire'),
       tier('cathay-diamond', 'Diamond', 'oneworld-emerald'),
     ],
-    sources: [source('https://www.oneworld.com/members/cathay-pacific', 'oneworld: Cathay status tiers')],
+    sources: [
+      source('https://www.oneworld.com/members/cathay-pacific', 'oneworld: Cathay status tiers'),
+    ],
   },
   {
-    id: 'air-canada-aeroplan', name: 'Air Canada Aeroplan', airline: 'Air Canada',
+    id: 'air-canada-aeroplan',
+    name: 'Air Canada Aeroplan',
+    airline: 'Air Canada',
     keywords: ['AC', 'Star Alliance', 'Super Elite'],
     tiers: [
       tier('aeroplan-member', 'Member'),
@@ -134,10 +201,17 @@ export const LOYALTY_PROGRAMS = [
       tier('aeroplan-75k', '75K', 'star-gold'),
       tier('aeroplan-super-elite', 'Super Elite', 'star-gold'),
     ],
-    sources: [source('https://www.aircanada.com/ca/en/aco/home/aeroplan/status/tiers.html', 'Air Canada Aeroplan Elite Status tiers')],
+    sources: [
+      source(
+        'https://www.aircanada.com/ca/en/aco/home/aeroplan/status/tiers.html',
+        'Air Canada Aeroplan Elite Status tiers',
+      ),
+    ],
   },
   {
-    id: 'singapore-krisflyer', name: 'Singapore Airlines KrisFlyer', airline: 'Singapore Airlines',
+    id: 'singapore-krisflyer',
+    name: 'Singapore Airlines KrisFlyer',
+    airline: 'Singapore Airlines',
     keywords: ['SQ', 'Star Alliance'],
     tiers: [
       tier('krisflyer-member', 'Member'),
@@ -145,30 +219,57 @@ export const LOYALTY_PROGRAMS = [
       tier('krisflyer-elite-gold', 'Elite Gold', 'star-gold'),
     ],
     sources: [
-      source('https://www.singaporeair.com/en_UK/sg/ppsclub-krisflyer/krisflyer/krisflyer-privileges/', 'Singapore Airlines KrisFlyer and Elite privileges'),
-      source('https://www.singaporeair.com/en_UK/sg/ppsclub-krisflyer/krisflyer/krisflyer-elite-gold/', 'Singapore Airlines KrisFlyer Elite Gold'),
+      source(
+        'https://www.singaporeair.com/en_UK/sg/ppsclub-krisflyer/krisflyer/krisflyer-privileges/',
+        'Singapore Airlines KrisFlyer and Elite privileges',
+      ),
+      source(
+        'https://www.singaporeair.com/en_UK/sg/ppsclub-krisflyer/krisflyer/krisflyer-elite-gold/',
+        'Singapore Airlines KrisFlyer Elite Gold',
+      ),
     ],
   },
   {
-    id: 'emirates-skywards', name: 'Emirates Skywards', airline: 'Emirates',
+    id: 'emirates-skywards',
+    name: 'Emirates Skywards',
+    airline: 'Emirates',
     keywords: ['EK', 'flydubai', 'FZ'],
     tiers: [
-      tier('emirates-blue', 'Blue'), tier('emirates-silver', 'Silver'),
-      tier('emirates-gold', 'Gold'), tier('emirates-platinum', 'Platinum'),
+      tier('emirates-blue', 'Blue'),
+      tier('emirates-silver', 'Silver'),
+      tier('emirates-gold', 'Gold'),
+      tier('emirates-platinum', 'Platinum'),
     ],
-    sources: [source('https://www.emirates.com/english/skywards/membership-tiers/', 'Emirates Skywards membership tiers')],
+    sources: [
+      source(
+        'https://www.emirates.com/english/skywards/membership-tiers/',
+        'Emirates Skywards membership tiers',
+      ),
+    ],
   },
   {
-    id: 'virgin-australia-velocity', name: 'Velocity Frequent Flyer', airline: 'Virgin Australia',
+    id: 'virgin-australia-velocity',
+    name: 'Velocity Frequent Flyer',
+    airline: 'Virgin Australia',
     keywords: ['VA', 'Australia'],
     tiers: [
-      tier('velocity-red', 'Red'), tier('velocity-silver', 'Silver'), tier('velocity-gold', 'Gold'),
-      tier('velocity-platinum', 'Platinum'), tier('velocity-platinum-plus', 'Platinum Plus'),
+      tier('velocity-red', 'Red'),
+      tier('velocity-silver', 'Silver'),
+      tier('velocity-gold', 'Gold'),
+      tier('velocity-platinum', 'Platinum'),
+      tier('velocity-platinum-plus', 'Platinum Plus'),
     ],
-    sources: [source('https://www.velocityfrequentflyer.com/the-basics/status', 'Velocity membership status levels')],
+    sources: [
+      source(
+        'https://www.velocityfrequentflyer.com/the-basics/status',
+        'Velocity membership status levels',
+      ),
+    ],
   },
   {
-    id: 'air-new-zealand-koru', name: 'Air New Zealand Koru', airline: 'Air New Zealand',
+    id: 'air-new-zealand-koru',
+    name: 'Air New Zealand Koru',
+    airline: 'Air New Zealand',
     keywords: ['NZ', 'Airpoints', 'Elite', 'Star Alliance'],
     tiers: [
       tier('koru-bronze', 'Bronze'),
@@ -179,15 +280,39 @@ export const LOYALTY_PROGRAMS = [
     ],
     sources: [
       source('https://www.airnewzealand.com/en-nz/koru', 'Air New Zealand Koru loyalty programme'),
-      source('https://www.airnewzealand.com/en-nz/koru/tiers/koru-silver', 'Koru Silver and Star Alliance Silver'),
-      source('https://www.airnewzealand.com/en-nz/koru/tiers/koru-gold', 'Koru Gold and Star Alliance Gold'),
-      source('https://www.airnewzealand.com/en-nz/koru/tiers/koru-platinum', 'Koru Platinum and Star Alliance Gold'),
-      source('https://www.airnewzealand.com/en-nz/koru/tiers/koru-black', 'Koru Black and Star Alliance Gold'),
+      source(
+        'https://www.airnewzealand.com/en-nz/koru/tiers/koru-silver',
+        'Koru Silver and Star Alliance Silver',
+      ),
+      source(
+        'https://www.airnewzealand.com/en-nz/koru/tiers/koru-gold',
+        'Koru Gold and Star Alliance Gold',
+      ),
+      source(
+        'https://www.airnewzealand.com/en-nz/koru/tiers/koru-platinum',
+        'Koru Platinum and Star Alliance Gold',
+      ),
+      source(
+        'https://www.airnewzealand.com/en-nz/koru/tiers/koru-black',
+        'Koru Black and Star Alliance Gold',
+      ),
     ],
   },
   {
-    id: 'miles-and-more', name: 'Miles & More', airline: 'Lufthansa Group and partner airlines',
-    keywords: ['LH', 'LX', 'OS', 'SN', 'Lufthansa', 'SWISS', 'Austrian', 'Brussels', 'Star Alliance'],
+    id: 'miles-and-more',
+    name: 'Miles & More',
+    airline: 'Lufthansa Group and partner airlines',
+    keywords: [
+      'LH',
+      'LX',
+      'OS',
+      'SN',
+      'Lufthansa',
+      'SWISS',
+      'Austrian',
+      'Brussels',
+      'Star Alliance',
+    ],
     tiers: [
       tier('miles-and-more-member', 'Member'),
       tier('miles-and-more-frequent-traveller', 'Frequent Traveller', 'star-silver'),
@@ -195,25 +320,44 @@ export const LOYALTY_PROGRAMS = [
       tier('miles-and-more-hon-circle', 'HON Circle Member', 'star-gold'),
     ],
     sources: [
-      source('https://www.miles-and-more.com/row/en/program/status-benefits/status-levels.html', 'Miles & More status levels'),
-      source('https://www.miles-and-more.com/row/en/program/status-benefits/frequent-traveller-status.html', 'Miles & More Frequent Traveller and Star Alliance Silver'),
-      source('https://www.miles-and-more.com/row/en/program/status-benefits/hon-circle-status.html', 'Miles & More HON Circle and Star Alliance Gold'),
+      source(
+        'https://www.miles-and-more.com/row/en/program/status-benefits/status-levels.html',
+        'Miles & More status levels',
+      ),
+      source(
+        'https://www.miles-and-more.com/row/en/program/status-benefits/frequent-traveller-status.html',
+        'Miles & More Frequent Traveller and Star Alliance Silver',
+      ),
+      source(
+        'https://www.miles-and-more.com/row/en/program/status-benefits/hon-circle-status.html',
+        'Miles & More HON Circle and Star Alliance Gold',
+      ),
     ],
   },
 ] as const satisfies readonly LoyaltyProgram[];
 
-export type LoyaltyStatusId = typeof LOYALTY_PROGRAMS[number]['tiers'][number]['id'];
+export type LoyaltyStatusId = (typeof LOYALTY_PROGRAMS)[number]['tiers'][number]['id'];
 
-const normalizeSearch = (value: string): string => value.normalize('NFKD')
-  .replace(/\p{M}/gu, '').toLocaleLowerCase('en')
-  .replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+const normalizeSearch = (value: string): string =>
+  value
+    .normalize('NFKD')
+    .replace(/\p{M}/gu, '')
+    .toLocaleLowerCase('en')
+    .replace(/[^\p{L}\p{N}]+/gu, ' ')
+    .trim();
 
 /** Search names, airlines, aliases and tier names; every query token must match. */
-export function searchLoyaltyPrograms(query: string): readonly typeof LOYALTY_PROGRAMS[number][] {
+export function searchLoyaltyPrograms(query: string): readonly (typeof LOYALTY_PROGRAMS)[number][] {
   const tokens = normalizeSearch(query).split(/\s+/).filter(Boolean);
-  return LOYALTY_PROGRAMS.filter(program => {
-    const searchable = normalizeSearch([program.name, program.airline, ...program.keywords,
-      ...program.tiers.map(item => item.label)].join(' '));
-    return tokens.every(token => searchable.includes(token));
+  return LOYALTY_PROGRAMS.filter((program) => {
+    const searchable = normalizeSearch(
+      [
+        program.name,
+        program.airline,
+        ...program.keywords,
+        ...program.tiers.map((item) => item.label),
+      ].join(' '),
+    );
+    return tokens.every((token) => searchable.includes(token));
   });
 }

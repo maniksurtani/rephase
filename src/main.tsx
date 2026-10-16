@@ -9,26 +9,68 @@ import type { Account } from './lib/types';
 import './root.css';
 import './fonts.css';
 
-const message = (error: unknown) => error instanceof Error ? error.message : 'The operation could not be completed.';
-function Dialog({ title, children, onClose }: { title: string; children: ReactNode; onClose: () => void }) {
+const message = (error: unknown) =>
+  error instanceof Error ? error.message : 'The operation could not be completed.';
+function Dialog({
+  title,
+  children,
+  onClose,
+}: {
+  title: string;
+  children: ReactNode;
+  onClose: () => void;
+}) {
   const panel = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const previous = document.activeElement as HTMLElement | null;
-    const getFocusable = () => Array.from(panel.current?.querySelectorAll<HTMLElement>('button:not(:disabled),input:not(:disabled),select:not(:disabled),textarea:not(:disabled),iframe,a[href],[tabindex="0"]') ?? []);
+    const getFocusable = () =>
+      Array.from(
+        panel.current?.querySelectorAll<HTMLElement>(
+          'button:not(:disabled),input:not(:disabled),select:not(:disabled),textarea:not(:disabled),iframe,a[href],[tabindex="0"]',
+        ) ?? [],
+      );
     (getFocusable()[0] ?? panel.current)?.focus();
     const listener = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose();
       if (event.key === 'Tab') {
-        const elements = getFocusable(), first = elements[0], last = elements.at(-1);
-        if (!first) { event.preventDefault(); return; }
-        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
-        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+        const elements = getFocusable(),
+          first = elements[0],
+          last = elements.at(-1);
+        if (!first) {
+          event.preventDefault();
+          return;
+        }
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last?.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
       }
     };
     document.addEventListener('keydown', listener);
-    return () => { document.removeEventListener('keydown', listener); previous?.focus(); };
+    return () => {
+      document.removeEventListener('keydown', listener);
+      previous?.focus();
+    };
   }, [onClose]);
-  return <div className="root-backdrop" onClick={onClose}><div ref={panel} tabIndex={-1} className="root-dialog" role="dialog" aria-modal="true" aria-label={title} onClick={event => event.stopPropagation()}><h2>{title}</h2>{children}</div></div>;
+  return (
+    <div className="root-backdrop" onClick={onClose}>
+      <div
+        ref={panel}
+        tabIndex={-1}
+        className="root-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <h2>{title}</h2>
+        {children}
+      </div>
+    </div>
+  );
 }
 
 function Root() {
@@ -45,20 +87,36 @@ function Root() {
     void (async () => {
       let storageError: string | null = null;
       let guest;
-      try { guest = await loadData(null) ?? createInitialData(); }
-      catch (error) { guest = createInitialData(); storageError = `Device data could not be opened. ${message(error)}`; }
+      try {
+        guest = (await loadData(null)) ?? createInitialData();
+      } catch (error) {
+        guest = createInitialData();
+        storageError = `Device data could not be opened. ${message(error)}`;
+      }
       let cachedAccount: Account | null = null;
-      try { cachedAccount = await loadLastAccount(); } catch { /* Optional display metadata, never an authentication credential. */ }
+      try {
+        cachedAccount = await loadLastAccount();
+      } catch {
+        /* Optional display metadata, never an authentication credential. */
+      }
       if (!active) return;
       const next = new AccountPersistence({ account: null, data: guest, storageError });
       controllerRef.current = next;
       if (cachedAccount) await next.restoreCachedAccount(cachedAccount);
-      if (!active) { next.dispose(); return; }
+      if (!active) {
+        next.dispose();
+        return;
+      }
       unsubscribe = next.subscribe(setState);
       setState(next.getSnapshot());
       setController(next);
     })();
-    return () => { active = false; unsubscribe?.(); controllerRef.current?.dispose(); controllerRef.current = null; };
+    return () => {
+      active = false;
+      unsubscribe?.();
+      controllerRef.current?.dispose();
+      controllerRef.current = null;
+    };
   }, []);
 
   useEffect(() => {
@@ -72,45 +130,118 @@ function Root() {
       else controller.unavailable();
     };
     void refresh();
-    const resume = () => { void refresh(); };
+    const resume = () => {
+      void refresh();
+    };
     window.addEventListener('online', resume);
     window.addEventListener('focus', resume);
-    const poll = window.setInterval(() => { if (document.visibilityState === 'visible' && navigator.onLine !== false) resume(); }, 5 * 60_000);
-    return () => { active = false; window.removeEventListener('online', resume); window.removeEventListener('focus', resume); window.clearInterval(poll); };
+    const poll = window.setInterval(() => {
+      if (document.visibilityState === 'visible' && navigator.onLine !== false) resume();
+    }, 5 * 60_000);
+    return () => {
+      active = false;
+      window.removeEventListener('online', resume);
+      window.removeEventListener('focus', resume);
+      window.clearInterval(poll);
+    };
   }, [controller]);
-  useEffect(() => { if (state?.conflict) setConflictVisible(true); }, [state?.conflict]);
+  useEffect(() => {
+    if (state?.conflict) setConflictVisible(true);
+  }, [state?.conflict]);
 
-  const signedIn = useCallback((account: Account) => { void controllerRef.current?.openAccount(account); }, []);
-  const signInError = useCallback((error: Error) => { controllerRef.current?.signInError(error); }, []);
+  const signedIn = useCallback((account: Account) => {
+    void controllerRef.current?.openAccount(account);
+  }, []);
+  const signInError = useCallback((error: Error) => {
+    controllerRef.current?.signInError(error);
+  }, []);
   const signOut = async () => {
     if (!controller || busy) return;
     setBusy(true);
-    try { await logout(); await controller.signedOut(); }
-    catch (error) { controller.signInError(new Error(`Sign-out could not complete. ${message(error)}`)); throw error; }
-    finally { setBusy(false); }
+    try {
+      await logout();
+      await controller.signedOut();
+    } catch (error) {
+      controller.signInError(new Error(`Sign-out could not complete. ${message(error)}`));
+      throw error;
+    } finally {
+      setBusy(false);
+    }
   };
-  const closeConflict = useCallback(() => { setConflictVisible(false); }, []);
+  const closeConflict = useCallback(() => {
+    setConflictVisible(false);
+  }, []);
   const resolveConflict = async (source: 'account' | 'device') => {
     if (!controller || busy) return;
     setBusy(true);
-    try { await controller.useConflictCopy(source); }
-    finally { setBusy(false); }
+    try {
+      await controller.useConflictCopy(source);
+    } finally {
+      setBusy(false);
+    }
   };
-  if (!state || !controller) return <div className="startup"><strong>Rephase</strong><span>Opening your saved rhythm…</span></div>;
-  return <>
-    <App data={state.data} onChange={controller.change} account={state.account} authConfig={config} saveStatus={state.saveStatus} accountReady={state.accountReady} storageError={state.storageError} onGoogleSignIn={signedIn} onSignInError={signInError} onSignOut={signOut} onDeleteAccountData={controller.deleteAccountData} onClearLocal={controller.clearLocal} />
-    {state.conflict && !conflictVisible && <button className="button primary root-review-changes" onClick={() => setConflictVisible(true)}>Review changes</button>}
-    {state.conflict && conflictVisible && <Dialog title="Choose which changes to keep" onClose={closeConflict}>
-      <p>The same information changed on another device. Your edits are preserved until you choose.</p>
-      <p className="small-copy">{state.conflict.reasons.slice(0, 4).join('; ')}</p>
-      <button className="primary" disabled={busy} onClick={() => void resolveConflict('account')}>Use saved account version</button>
-      <button disabled={busy} onClick={() => void resolveConflict('device')}>Keep this device’s changes</button>
-      <button disabled={busy} onClick={closeConflict}>Decide later</button>
-    </Dialog>}
-  </>;
+  if (!state || !controller)
+    return (
+      <div className="startup">
+        <strong>Rephase</strong>
+        <span>Opening your saved rhythm…</span>
+      </div>
+    );
+  return (
+    <>
+      <App
+        data={state.data}
+        onChange={controller.change}
+        account={state.account}
+        authConfig={config}
+        saveStatus={state.saveStatus}
+        accountReady={state.accountReady}
+        storageError={state.storageError}
+        onGoogleSignIn={signedIn}
+        onSignInError={signInError}
+        onSignOut={signOut}
+        onDeleteAccountData={controller.deleteAccountData}
+        onClearLocal={controller.clearLocal}
+      />
+      {state.conflict && !conflictVisible && (
+        <button
+          className="button primary root-review-changes"
+          onClick={() => setConflictVisible(true)}
+        >
+          Review changes
+        </button>
+      )}
+      {state.conflict && conflictVisible && (
+        <Dialog title="Choose which changes to keep" onClose={closeConflict}>
+          <p>
+            The same information changed on another device. Your edits are preserved until you
+            choose.
+          </p>
+          <p className="small-copy">{state.conflict.reasons.slice(0, 4).join('; ')}</p>
+          <button
+            className="primary"
+            disabled={busy}
+            onClick={() => void resolveConflict('account')}
+          >
+            Use saved account version
+          </button>
+          <button disabled={busy} onClick={() => void resolveConflict('device')}>
+            Keep this device’s changes
+          </button>
+          <button disabled={busy} onClick={closeConflict}>
+            Decide later
+          </button>
+        </Dialog>
+      )}
+    </>
+  );
 }
 createRoot(document.getElementById('root')!).render(<Root />);
 
 if (import.meta.env.PROD && 'serviceWorker' in navigator) {
-  window.addEventListener('load', () => { void navigator.serviceWorker.register('/sw.js').catch(() => { /* App remains usable without offline cache. */ }); });
+  window.addEventListener('load', () => {
+    void navigator.serviceWorker.register('/sw.js').catch(() => {
+      /* App remains usable without offline cache. */
+    });
+  });
 }

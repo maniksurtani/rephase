@@ -27,17 +27,22 @@ const J2000 = 2_451_545;
 const J0 = 0.0009;
 
 function validCoordinates(coords?: Coordinates): coords is Required<Coordinates> {
-  return typeof coords?.latitude === 'number' && Number.isFinite(coords.latitude)
-    && Math.abs(coords.latitude) <= 90
-    && typeof coords.longitude === 'number' && Number.isFinite(coords.longitude)
-    && Math.abs(coords.longitude) <= 180;
+  return (
+    typeof coords?.latitude === 'number' &&
+    Number.isFinite(coords.latitude) &&
+    Math.abs(coords.latitude) <= 90 &&
+    typeof coords.longitude === 'number' &&
+    Number.isFinite(coords.longitude) &&
+    Math.abs(coords.longitude) <= 180
+  );
 }
 
 function localDay(date: string, zone: string) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new RangeError('Use an ISO local date.');
   const day = Temporal.PlainDate.from(date, { overflow: 'reject' });
   const noon = day.toPlainDateTime('12:00').toZonedDateTime(zone);
-  if (noon.toPlainDate().toString() !== date) throw new RangeError('This local date does not exist.');
+  if (noon.toPlainDate().toString() !== date)
+    throw new RangeError('This local date does not exist.');
   return {
     noon: noon.epochMilliseconds,
     start: day.toZonedDateTime(zone).epochMilliseconds,
@@ -60,19 +65,22 @@ function solarDay(instant: number, coords: Required<Coordinates>): DaylightWindo
   const cycle = Math.round(days - J0 - longitudeWest / (2 * Math.PI));
   const transit = J0 + longitudeWest / (2 * Math.PI) + cycle;
   const anomaly = RAD * (357.5291 + 0.98560028 * transit);
-  const center = RAD * (1.9148 * Math.sin(anomaly) + 0.02 * Math.sin(2 * anomaly)
-    + 0.0003 * Math.sin(3 * anomaly));
+  const center =
+    RAD *
+    (1.9148 * Math.sin(anomaly) + 0.02 * Math.sin(2 * anomaly) + 0.0003 * Math.sin(3 * anomaly));
   const longitude = anomaly + center + 102.9372 * RAD + Math.PI;
   const declination = Math.asin(Math.sin(longitude) * Math.sin(23.4397 * RAD));
   const correction = 0.0053 * Math.sin(anomaly) - 0.0069 * Math.sin(2 * longitude);
   const noon = J2000 + transit + correction;
-  const hourAngleCosine = (Math.sin(-0.833 * RAD) - Math.sin(latitude) * Math.sin(declination))
-    / (Math.cos(latitude) * Math.cos(declination));
+  const hourAngleCosine =
+    (Math.sin(-0.833 * RAD) - Math.sin(latitude) * Math.sin(declination)) /
+    (Math.cos(latitude) * Math.cos(declination));
   if (hourAngleCosine <= -1) return { status: 'polar-day' };
   if (hourAngleCosine >= 1) return { status: 'polar-night' };
   if (!Number.isFinite(hourAngleCosine)) return { status: 'unknown' };
   const hourAngle = Math.acos(hourAngleCosine);
-  const sunsetJulian = J2000 + J0 + (hourAngle + longitudeWest) / (2 * Math.PI) + cycle + correction;
+  const sunsetJulian =
+    J2000 + J0 + (hourAngle + longitudeWest) / (2 * Math.PI) + cycle + correction;
   const sunriseJulian = 2 * noon - sunsetJulian;
   return {
     status: 'normal',
@@ -114,7 +122,10 @@ function daylightIntervals(date: string, zone: string, coords: Required<Coordina
  * initial local date; subsequent dates are calculated from the actual instants.
  */
 export function splitDaylight(
-  range: { start: number; end: number }, date: string, zone: string, coords?: Coordinates,
+  range: { start: number; end: number },
+  date: string,
+  zone: string,
+  coords?: Coordinates,
 ): DaylightSegment[] {
   const { start, end } = range;
   if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) return [];
@@ -132,17 +143,24 @@ export function splitDaylight(
       const { intervals, end: dayEnd } = daylightIntervals(dateInZone(cursor, zone), zone, coords);
       const limit = Math.min(end, dayEnd);
       if (limit <= cursor) return unknown;
-      const boundaries = [cursor, limit, ...intervals.flatMap(interval => [interval.start, interval.end])]
-        .filter(value => value >= cursor && value <= limit)
+      const boundaries = [
+        cursor,
+        limit,
+        ...intervals.flatMap((interval) => [interval.start, interval.end]),
+      ]
+        .filter((value) => value >= cursor && value <= limit)
         .sort((a, b) => a - b);
       const unique = [...new Set(boundaries)];
       for (let i = 0; i < unique.length - 1; i++) {
         const segmentStart = unique[i];
         const segmentEnd = unique[i + 1];
-        const daylight = intervals.some(interval => segmentStart >= interval.start && segmentEnd <= interval.end);
+        const daylight = intervals.some(
+          (interval) => segmentStart >= interval.start && segmentEnd <= interval.end,
+        );
         const feasibility = daylight ? 'daylight' : 'indoor';
         const previous = segments.at(-1);
-        if (previous?.feasibility === feasibility && previous.end === segmentStart) previous.end = segmentEnd;
+        if (previous?.feasibility === feasibility && previous.end === segmentStart)
+          previous.end = segmentEnd;
         else segments.push({ start: segmentStart, end: segmentEnd, feasibility });
       }
       cursor = limit;
@@ -155,9 +173,14 @@ export function splitDaylight(
 
 /** Conservatively label mixed night/day windows as requiring an indoor light option. */
 export function daylightFeasibility(
-  start: number, end: number, date: string, zone: string, coords?: Coordinates,
+  start: number,
+  end: number,
+  date: string,
+  zone: string,
+  coords?: Coordinates,
 ): DaylightFeasibility {
   const segments = splitDaylight({ start, end }, date, zone, coords);
-  if (!segments.length || segments.some(segment => segment.feasibility === 'unknown')) return 'unknown';
-  return segments.every(segment => segment.feasibility === 'daylight') ? 'daylight' : 'indoor';
+  if (!segments.length || segments.some((segment) => segment.feasibility === 'unknown'))
+    return 'unknown';
+  return segments.every((segment) => segment.feasibility === 'daylight') ? 'daylight' : 'indoor';
 }

@@ -30,8 +30,41 @@ export type LoungeFlightContext = Omit<LoungeOpportunity, 'start' | 'end' | 'min
 // independent of timezone names: an unknown route gets international buffers.
 const COUNTRY_AIRPORTS: Record<string, readonly string[]> = {
   AU: ['SYD', 'MEL', 'BNE', 'PER', 'ADL', 'CBR', 'CNS', 'OOL', 'HBA', 'DRW', 'LST', 'ASP', 'AYQ'],
-  US: ['SFO', 'HNL', 'LAX', 'JFK', 'EWR', 'BOS', 'ORD', 'DFW', 'ATL', 'MIA', 'SEA', 'SJC', 'OAK',
-    'SAN', 'IAD', 'DCA', 'LAS', 'DEN', 'PDX', 'IAH', 'AUS', 'PHX', 'ANC', 'MSP', 'PHL', 'CLT', 'FLL', 'DTW', 'SLC', 'MCO', 'KOA', 'OGG', 'LIH'],
+  US: [
+    'SFO',
+    'HNL',
+    'LAX',
+    'JFK',
+    'EWR',
+    'BOS',
+    'ORD',
+    'DFW',
+    'ATL',
+    'MIA',
+    'SEA',
+    'SJC',
+    'OAK',
+    'SAN',
+    'IAD',
+    'DCA',
+    'LAS',
+    'DEN',
+    'PDX',
+    'IAH',
+    'AUS',
+    'PHX',
+    'ANC',
+    'MSP',
+    'PHL',
+    'CLT',
+    'FLL',
+    'DTW',
+    'SLC',
+    'MCO',
+    'KOA',
+    'OGG',
+    'LIH',
+  ],
   NZ: ['AKL', 'WLG', 'CHC', 'ZQN'],
   GB: ['LHR', 'LGW', 'MAN', 'EDI', 'STN', 'LCY', 'BHX', 'GLA'],
   CA: ['YYZ', 'YVR', 'YUL', 'YYC', 'YOW'],
@@ -43,8 +76,11 @@ const COUNTRY_AIRPORTS: Record<string, readonly string[]> = {
   FR: ['CDG', 'ORY'],
   DE: ['FRA', 'MUC'],
 };
-const countries = new Map(Object.entries(COUNTRY_AIRPORTS)
-  .flatMap(([country, airports]) => airports.map(airport => [airport, country] as const)));
+const countries = new Map(
+  Object.entries(COUNTRY_AIRPORTS).flatMap(([country, airports]) =>
+    airports.map((airport) => [airport, country] as const),
+  ),
+);
 const MINUTE = 60_000;
 
 export function airportCountry(airport: string): string | undefined {
@@ -56,12 +92,23 @@ function isDomestic(leg: FlightLeg): boolean {
   return country !== undefined && country === airportCountry(leg.arrivalAirport);
 }
 
-interface TimedLeg { departure: number; arrival: number }
+interface TimedLeg {
+  departure: number;
+  arrival: number;
+}
 
 function timedLeg(leg: FlightLeg): TimedLeg | undefined {
   try {
-    const departure = localToInstant(leg.departureDateTime, leg.departureTimeZone, leg.departureDisambiguation);
-    const arrival = localToInstant(leg.arrivalDateTime, leg.arrivalTimeZone, leg.arrivalDisambiguation);
+    const departure = localToInstant(
+      leg.departureDateTime,
+      leg.departureTimeZone,
+      leg.departureDisambiguation,
+    );
+    const arrival = localToInstant(
+      leg.arrivalDateTime,
+      leg.arrivalTimeZone,
+      leg.arrivalDisambiguation,
+    );
     return arrival > departure ? { departure, arrival } : undefined;
   } catch {
     // Invalid dates, nonexistent clocks and unresolved DST folds cannot establish
@@ -102,8 +149,12 @@ export function buildLoungeOpportunities(trip: Trip): LoungeOpportunity[] {
       // Cross-airport transfers and long stopovers need additional information.
       // In particular, do not fall back to a presumed pre-flight arrival when a
       // connection is too short to offer a useful lounge visit.
-      if (previous.arrivalAirport.trim().toUpperCase() !== airport || !previousTiming
-        || timing.departure - previousTiming.arrival > 12 * 60 * MINUTE) return;
+      if (
+        previous.arrivalAirport.trim().toUpperCase() !== airport ||
+        !previousTiming ||
+        timing.departure - previousTiming.arrival > 12 * 60 * MINUTE
+      )
+        return;
       const clearanceMinutes = isDomestic(previous) ? 30 : 60;
       start = previousTiming.arrival + clearanceMinutes * MINUTE;
       kind = 'transit';
@@ -123,11 +174,19 @@ export function buildLoungeOpportunities(trip: Trip): LoungeOpportunity[] {
     const minutes = Math.floor((end - start) / MINUTE);
     if (minutes < 60) return;
     opportunities.push({
-      id: `${leg.id}:${kind}`, legId: leg.id, airport, kind,
-      start: new Date(start).toISOString(), end: new Date(end).toISOString(),
-      departure: new Date(timing.departure).toISOString(), timeZone: leg.departureTimeZone,
-      flightNumber: leg.flightNumber, destinationAirport, travelClass: leg.travelClass ?? 'economy',
-      minutes, note,
+      id: `${leg.id}:${kind}`,
+      legId: leg.id,
+      airport,
+      kind,
+      start: new Date(start).toISOString(),
+      end: new Date(end).toISOString(),
+      departure: new Date(timing.departure).toISOString(),
+      timeZone: leg.departureTimeZone,
+      flightNumber: leg.flightNumber,
+      destinationAirport,
+      travelClass: leg.travelClass ?? 'economy',
+      minutes,
+      note,
     });
   });
 
@@ -140,7 +199,9 @@ export function buildLoungeOpportunities(trip: Trip): LoungeOpportunity[] {
  * their actual remaining time; uncertain transfers never get a fabricated visit.
  */
 export function buildFlightLoungeContexts(trip: Trip): LoungeFlightContext[] {
-  const opportunities = new Map(buildLoungeOpportunities(trip).map(value => [value.legId, value]));
+  const opportunities = new Map(
+    buildLoungeOpportunities(trip).map((value) => [value.legId, value]),
+  );
   const times = trip.legs.map(timedLeg);
   const contexts: LoungeFlightContext[] = [];
 
@@ -160,10 +221,17 @@ export function buildFlightLoungeContexts(trip: Trip): LoungeFlightContext[] {
     const previousTiming = times[index - 1];
     const kind = previous?.stayAfter === 'connection' ? 'transit' : 'pre-flight';
     const context: LoungeFlightContext = {
-      id: `${leg.id}:${kind}`, legId: leg.id, airport, kind,
-      departure: new Date(timing.departure).toISOString(), timeZone: leg.departureTimeZone,
-      flightNumber: leg.flightNumber, destinationAirport, travelClass: leg.travelClass ?? 'economy',
-      windowStatus: 'unknown', note: '',
+      id: `${leg.id}:${kind}`,
+      legId: leg.id,
+      airport,
+      kind,
+      departure: new Date(timing.departure).toISOString(),
+      timeZone: leg.departureTimeZone,
+      flightNumber: leg.flightNumber,
+      destinationAirport,
+      travelClass: leg.travelClass ?? 'economy',
+      windowStatus: 'unknown',
+      note: '',
     };
     let uncertainty: string | undefined;
     if (previous && !previousTiming) {
@@ -172,7 +240,11 @@ export function buildFlightLoungeContexts(trip: Trip): LoungeFlightContext[] {
       uncertainty = 'the previous flight overlaps this departure';
     } else if (previous && previous.arrivalAirport.trim().toUpperCase() !== airport) {
       uncertainty = 'the transfer between airports needs to be planned';
-    } else if (kind === 'transit' && previousTiming && timing.departure - previousTiming.arrival > 12 * 60 * MINUTE) {
+    } else if (
+      kind === 'transit' &&
+      previousTiming &&
+      timing.departure - previousTiming.arrival > 12 * 60 * MINUTE
+    ) {
       uncertainty = 'this stopover is longer than 12 hours';
     }
     if (uncertainty) {
@@ -186,10 +258,15 @@ export function buildFlightLoungeContexts(trip: Trip): LoungeFlightContext[] {
     const arrivalMinutes = domestic ? 120 : 180;
     const clearanceMinutes = previous ? (isDomestic(previous) ? 30 : 60) : 0;
     const end = timing.departure - boardingMinutes * MINUTE;
-    const start = kind === 'transit' && previousTiming
-      ? previousTiming.arrival + clearanceMinutes * MINUTE
-      : Math.max(timing.departure - arrivalMinutes * MINUTE,
-        previousTiming ? previousTiming.arrival + clearanceMinutes * MINUTE : Number.NEGATIVE_INFINITY);
+    const start =
+      kind === 'transit' && previousTiming
+        ? previousTiming.arrival + clearanceMinutes * MINUTE
+        : Math.max(
+            timing.departure - arrivalMinutes * MINUTE,
+            previousTiming
+              ? previousTiming.arrival + clearanceMinutes * MINUTE
+              : Number.NEGATIVE_INFINITY,
+          );
 
     if (end <= start) {
       context.windowStatus = 'unavailable';

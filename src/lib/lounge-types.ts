@@ -22,21 +22,39 @@ export const LOUNGE_MEMBERSHIPS = [
   { id: 'oneworld-ruby' as const, label: 'oneworld Ruby' },
   { id: 'star-silver' as const, label: 'Star Alliance Silver' },
   { id: 'skyteam-elite' as const, label: 'SkyTeam Elite' },
-  ...LOYALTY_PROGRAMS.flatMap(program => program.tiers.map(tier => ({
-    id: tier.id, label: `${program.name} · ${tier.label}`,
-  }))),
-].filter((membership, index, all) => all.findIndex(value => value.id === membership.id) === index);
+  ...LOYALTY_PROGRAMS.flatMap((program) =>
+    program.tiers.map((tier) => ({
+      id: tier.id,
+      label: `${program.name} · ${tier.label}`,
+    })),
+  ),
+].filter(
+  (membership, index, all) => all.findIndex((value) => value.id === membership.id) === index,
+);
 
-export type LoungeMembership = typeof LOUNGE_MEMBERSHIPS[number]['id'];
+export type LoungeMembership = (typeof LOUNGE_MEMBERSHIPS)[number]['id'];
 export type LoungeAlliance = 'oneworld' | 'star' | 'skyteam';
 export type LoungeAmenity = 'yes' | 'no' | 'unknown';
 export type LoungePriority = 'balanced' | 'showers' | 'dining' | 'quiet';
 
-export interface LoungeSource { id: string; title: string; url: string; checkedOn: string }
-export interface LoungePhoto { path: string; alt: string; credit: string; license: string; sourceUrl: string }
+export interface LoungeSource {
+  id: string;
+  title: string;
+  url: string;
+  checkedOn: string;
+}
+export interface LoungePhoto {
+  path: string;
+  alt: string;
+  credit: string;
+  license: string;
+  sourceUrl: string;
+}
 export interface LoungeOpeningPeriod {
   /** ISO weekdays: Monday = 1, Sunday = 7. An overnight period belongs to its opening day. */
-  days: number[]; open: string; close: string;
+  days: number[];
+  open: string;
+  close: string;
 }
 export interface LoungeHours {
   type: 'weekly' | 'flight-dependent' | 'unknown';
@@ -46,7 +64,8 @@ export interface LoungeHours {
   exceptions?: { date: string; periods: { open: string; close: string }[]; note?: string }[];
 }
 export interface LoungeAccessRule {
-  id: string; label: string;
+  id: string;
+  label: string;
   /** Rules are OR; populated fields within a rule are AND. */
   membershipsAnyOf?: LoungeMembership[];
   cabinsAnyOf?: TravelClass[];
@@ -69,12 +88,19 @@ export interface LoungeAccessRule {
   sourceIds?: string[];
 }
 export interface Lounge {
-  id: string; name: string; terminal: string; location: string; airside: boolean;
+  id: string;
+  name: string;
+  terminal: string;
+  location: string;
+  airside: boolean;
   status: 'open' | 'temporarily-closed';
   hours: LoungeHours;
   amenities: {
-    showers: LoungeAmenity; dining: 'restaurant' | 'buffet' | 'snacks' | 'none' | 'unknown';
-    spa: LoungeAmenity; quietArea: LoungeAmenity; wifi: LoungeAmenity;
+    showers: LoungeAmenity;
+    dining: 'restaurant' | 'buffet' | 'snacks' | 'none' | 'unknown';
+    spa: LoungeAmenity;
+    quietArea: LoungeAmenity;
+    wifi: LoungeAmenity;
   };
   accessRules: LoungeAccessRule[];
   sources: LoungeSource[];
@@ -84,7 +110,11 @@ export interface Lounge {
   note?: string;
 }
 export interface AirportLoungeData {
-  $schema?: string; schemaVersion: 1; airport: string; timeZone: string; updatedAt: string;
+  $schema?: string;
+  schemaVersion: 1;
+  airport: string;
+  timeZone: string;
+  updatedAt: string;
   lounges: Lounge[];
 }
 export interface LoungeVisitContext {
@@ -100,7 +130,8 @@ export interface LoungeVisitContext {
   /** Match the dataset's terminal text; missing/different terminals require a transfer check. */
   terminal?: string;
   /** UTC instants covering the usable visit window, after security/immigration and before boarding. */
-  visitStart: string; visitEnd: string;
+  visitStart: string;
+  visitEnd: string;
   departure?: string;
   minimumVisitMinutes?: number;
   priority?: LoungePriority;

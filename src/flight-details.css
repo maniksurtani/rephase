@@ -1,5 +1,9 @@
-.flight-segment-card > .flight-segment-header { margin-bottom: 4px; }
-.flight-details { min-width: 0; }
+.flight-segment-card > .flight-segment-header {
+  margin-bottom: 4px;
+}
+.flight-details {
+  min-width: 0;
+}
 .flight-details > summary {
   color: #c6b2dd;
   cursor: pointer;
@@ -12,6 +16,12 @@
   outline-offset: 3px;
   border-radius: 4px;
 }
-.flight-details[open] > summary { margin-bottom: 4px; }
-.flight-details .flight-segment-aircraft { margin: 0 0 14px; }
-.flight-details .flight-segment-events { padding-bottom: 3px; }
+.flight-details[open] > summary {
+  margin-bottom: 4px;
+}
+.flight-details .flight-segment-aircraft {
+  margin: 0 0 14px;
+}
+.flight-details .flight-segment-events {
+  padding-bottom: 3px;
+}

@@ -23,9 +23,11 @@ export function localToInstant(local: string, zone: string, choice?: 'earlier' |
 }
 
 function zoned(instant: string | number, zone: string) {
-  return (typeof instant === 'number'
-    ? Temporal.Instant.fromEpochMilliseconds(instant)
-    : Temporal.Instant.from(instant)).toZonedDateTimeISO(zone);
+  return (
+    typeof instant === 'number'
+      ? Temporal.Instant.fromEpochMilliseconds(instant)
+      : Temporal.Instant.from(instant)
+  ).toZonedDateTimeISO(zone);
 }
 
 export function dateInZone(instant: string | number, zone: string): string {

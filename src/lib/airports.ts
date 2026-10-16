@@ -12,6 +12,7 @@ export interface Airport {
 // Pinned MIT airportsdata snapshot. See DATA_SOURCES.md for attribution and regeneration.
 // Sorted by IATA code so search results and server normalization remain deterministic.
 export const AIRPORTS: Airport[] = airportData;
-const airportsByCode = new Map(AIRPORTS.map(airport => [airport.code, airport]));
+const airportsByCode = new Map(AIRPORTS.map((airport) => [airport.code, airport]));
 
-export const findAirport = (code: string): Airport | undefined => airportsByCode.get(code.trim().toUpperCase());
+export const findAirport = (code: string): Airport | undefined =>
+  airportsByCode.get(code.trim().toUpperCase());
