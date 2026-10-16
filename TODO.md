@@ -2,6 +2,22 @@
 
 Updated 2026-10-16. Checked items record completed implementation; verification status for each release is recorded below. External credentials, publication, and clinical/outcome research are separate gates; they cannot be completed by local tests.
 
+## Flight updates — proposed, not yet implemented
+
+- [x] Review AirLabs official endpoint/date/horizon/free-field constraints, advertised allowance, caching guidance and paid webhook alternative.
+- [x] Design shared D1 due-flight queue, occurrence matching, leases, atomic budgets, stale handling and account-safe update review in DESIGN.md.
+- [x] Define a reusable normalized HTTP contract and a staged path for Flutter/native auth and push delivery.
+- [ ] Run a small free-key capability trial: account entitlement/reset, >48h/24h/10h coverage, estimates/actual/status/equipment, repeated flights/codeshares/date lines and quota cost of failed/empty requests; confirm caching/retention rights.
+- [ ] Choose/enable a provider only after the trial supports reliable exact-occurrence operational updates; keep AeroDataBox/manual future lookup.
+- [ ] Add optional per-trip tracking opt-in and two D1 tables for shared watches/private subscriptions; reconcile accepted state edits/deletions atomically and preserve original occurrence identity across reviewed delays and tracking off/on.
+- [ ] Implement the AirLabs adapter, strict matching/normalization and Worker-only secret installation behind a disabled-by-default feature flag.
+- [ ] Implement five-minute cron claims, bounded polling/stop windows, billing-cycle/rate reservations, per-watch caps, backoff and sanitized observability; preserve hourly existing cache cleanup.
+- [ ] Add authenticated versioned cached-update reads and revision/fingerprint/version-safe application of reviewed changes.
+- [ ] Add quiet in-app freshness/change UI, Update plan review and equipment-related seat confirmation; preserve offline planning and omit gates.
+- [ ] Verify temporal matching, cross-user deduplication, concurrency/quota/lease recovery, account isolation/deletion, stale semantics and responsive review flows with controlled tests.
+- [ ] Configure a small pilot budget, run verified CI/deployment, and measure real provider coverage/cost before expanding tracking.
+- [ ] Later: verified codeshare aliases where data permits; push device registrations/outbox/consent; Flutter native authentication/client and validated planner reuse/port.
+
 ## Loyalty program picker and recognizable LAX lounge
 
 - [x] Make the existing LAX Qantas Business Lounge recognizable and refresh its official-source facts.

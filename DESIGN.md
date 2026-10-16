@@ -70,6 +70,159 @@ flowchart LR
 - **API**: one Worker serves `/api/*`; static assets handle the rest. D1 stores account state, hashed revocable sessions, provider cache and request quotas. Auth is optional for local planning and required for provider lookup. An hourly scheduled handler purges expired provider cache.
 - **Hosting**: Cloudflare Worker Static Assets. The app is deployed at https://rephase.surtani.org with D1 migrations applied and a Custom Domain managing DNS/TLS. GitHub Actions supports manual deployment and automatic main-branch deployment when the repository variable `DEPLOY_ENABLED=true`.
 
+## Proposed flight updates — AirLabs evaluation
+
+**Design only, reviewed 16 October 2026.** This section proposes the next feature; the deployed app still uses AeroDataBox for dated lookup and has no AirLabs key, tracking tables or polling integration. Implement a small operational-update service around the existing Worker/D1, preserving local planning. Begin with in-app updates; mobile push can use the same observations later.
+
+### Provider choice and acceptance gate
+
+AirLabs is a candidate for **near-departure operational tracking**, rather than a replacement for the existing future flight-number/date lookup:
+
+- Its [Flight Info endpoint](https://airlabs.co/docs/flight) documents `flight_iata` or `flight_icao`, returning the closest live, scheduled or landed occurrence. It does not document a departure-date parameter. Validate the actual service date and route before accepting a result; flight number alone is insufficient.
+- Its [schedule endpoint](https://airlabs.co/docs/schedules) documents at most about ten hours ahead. The first proposed polling window is the final ten hours, subject to a trial; 24–48-hour updates or daily checks months ahead are not established capabilities of these endpoints.
+- AirLabs [advertises 1,000 free monthly queries](https://airlabs.co/OAG-Airline-Schedules-Database-API). Verify the account's actual allowance, billing reset, rate limit and field entitlements. The docs mark some fields as free without clearly establishing free estimated/actual times or disruption status. Equipment codes may be available without a model name.
+- Its [Worker proxy guide](https://airlabs.co/serverless-flight-api-proxy) recommends shared caching. Verify retention/redistribution requirements in the [terms](https://airlabs.co/terms-of-service) or with the provider before enabling production. Keep compact normalized snapshots, not raw feeds or an unlimited history.
+- [AirLabs alerts/webhooks](https://airlabs.co/docs/alert) currently require paid access. Polling remains the initial approach.
+
+A quota-bounded free-key trial must check our itinerary's flight designators, a frequently repeated daily flight, a codeshare, and midnight/date-line cases. Sample different lead times when those flights enter coverage. Record only sanitized field-presence, exact-occurrence match and quota-delta results, including failures/empty results. No paid subscription or provider choice is implied by this design. If useful free status/estimate fields or reliable matching are absent, keep this adapter disabled and assess AeroDataBox's existing status coverage/budget or a paid provider behind the same interface. Do not silently fall back to another billable provider.
+
+### Minimal architecture
+
+```mermaid
+flowchart LR
+  Cron[Five-minute Worker cron] --> Due[D1 tracked_flights due index]
+  Due --> Poll[Claim lease and reserve allowance]
+  Poll --> AirLabs[AirLabs adapter]
+  AirLabs --> Shared[D1 normalized latest observation]
+  Accounts[Private trip subscriptions] --> Shared
+  Shared --> API[Authenticated cached JSON API]
+  API --> Web[React PWA]
+  API --> Native[Future Flutter app]
+```
+
+Reuse `worker/index.ts`, the D1 binding and existing deployment workflow. Replace the hourly cron with `*/5 * * * *` only when implementing the feature; keep hourly `purgeFlightData` maintenance through a time guard. An indexed `next_poll_at` column is the durable queue. Add neither Cloudflare Queues nor Durable Objects initially. Each tick claims a configurable small batch (start at two jobs, at most two concurrent fetches); excess work remains due for later ticks. This is adequate for a small pilot and must be measured before increasing batch size.
+
+A five-minute cron is 288 invocations/day, even when no flights are due; an idle tick makes no provider request. At the proposed provider cap, indexed reads and a few writes per poll should be modest relative to D1's published free allowance (5 million rows read/day, 100,000 written/day, 5 GB account storage). Index maintenance also counts as writes. Workers Free allows 100,000 requests/day but only 10 ms CPU per cron invocation; network wait is separate. Measure the bounded job before claiming it fits, and reduce batch work or evaluate Workers Paid if CPU limits require it. These limits are shared with the account/app workload. [D1 pricing](https://developers.cloudflare.com/d1/platform/pricing/), [Workers limits](https://developers.cloudflare.com/workers/platform/limits/), [Cron Triggers](https://developers.cloudflare.com/workers/configuration/cron-triggers/).
+
+The HTTP handler reads cached observations. Opening multiple tabs, many passengers sharing a flight, and pressing refresh do not bypass the shared due time or spend provider calls. Refresh returns the shared cached snapshot and its next-check time; only cron initiates provider polls.
+
+### Identity, subscriptions and storage
+
+Add two tables and reuse the existing `flight_usage` reservation mechanism with independent AirLabs buckets:
+
+| Record | Minimal contents |
+| --- | --- |
+| `tracked_flights` | Stable occurrence ID and unique query identity; booked designator, original departure-airport local service date and route; expected polling window; normalized latest AirLabs observation; content hash/version; last attempt/success times; next due time; failure count; stop/retention deadlines; expiring lease token. Index `(tracking_state, next_poll_at)`. |
+| `flight_subscriptions` | Account/trip/leg IDs, enabled flag, trusted original occurrence identity, nullable shared-watch reference and a fingerprint of the subscribed leg. Unique `(user_id, trip_id, leg_id)`, foreign key to user with cascade; index occurrence ID. No copied observation per passenger. |
+| Existing `flight_usage` | AirLabs-specific global billing-period and short-term rate buckets. Separate from AeroDataBox's usage. Reservations count attempts, including timeouts and uncertain responses. |
+
+One hundred subscribers to the same identified occurrence therefore cause one poll and one shared observation write. Reads join each account's subscriptions to those observations. There is no per-poll rewrite of account JSON and no per-passenger polling job. A shared occurrence exposes no subscriber identities or counts.
+
+Use normalized flight designator + original local departure date + departure airport + original arrival airport to distinguish repeated days and through-flight segments. Scheduled UTC times are matching evidence, not the sole immutable key. Keep estimates and actual times outside that identity. A delayed departure crossing midnight does not become tomorrow's flight.
+
+Initially deduplicate identical booked designators/occurrences. Codeshare designators can only merge after verified operating-flight identity, service date and route establish the same physical segment; a marketing prefix is not proof of the operator. Current `FlightCandidate.operatingFlightNumber` is declared but not populated by the normalizer or retained on `FlightLeg`, so this requires explicit adapter work. Add an alias mapping only when usable evidence exists; merge watches/subscriptions atomically and retain the surviving version identity. Until then, different codeshare designators can cause duplicate polls, and the cost estimate must allow that limitation.
+
+Enable updates explicitly per signed-in trip with an optional `Trip.trackFlightUpdates` flag in schema-1 account data; missing means off. Exclude demo and completed flights. Derive subscriptions from accepted server state, never from arbitrary flight IDs posted by a client. Reconcile only affected trips during the revision-checked save, using a D1 batch/conditional statements so a stale save or delayed reconciliation cannot recreate deleted watches. An explicit manual replacement of the service/date/route rebinds the leg to a new occurrence. Applying a reviewed operational update advances the fingerprint while preserving the original occurrence and local service date, including a delay across midnight. Turning tracking off disables the binding but retains its private original identity while the leg exists; re-enabling must use that trusted identity rather than the updated planning clock. Trip/leg/account-data deletion removes bindings. An occurrence with no enabled subscribers stops polling. Do not scan every user's JSON on each cron. Guests retain local planning; durable background tracking requires an account in this first version.
+
+AeroDataBox owner records and its shared lookup cache remain separate. They supply the owner's booked itinerary, not a replacement shared operational feed. Only accepted AirLabs observations populate AirLabs-derived response fields. As a provisional minimization policy, expire normalized provider snapshots within 24 hours of their last successful check and remove completed/inactive shared watch records after a short cleanup grace, clearing their nullable references while retaining private identity bindings only for still-saved legs; confirm provider terms before choosing the production retention limit. Do not retain a raw movement history. An expired snapshot is unavailable, not an indefinitely reusable last-known result.
+
+### Polling and realistic allowances
+
+Keep far-future subscriptions dormant, waking at the verified provider horizon. The horizon is configurable; ten hours is an initial conservative trial setting, not an availability guarantee.
+
+| Flight phase | Initial policy |
+| --- | --- |
+| Outside proven coverage | No provider request; show when tracking is expected to start. |
+| In coverage, more than six hours before departure | Every two hours. |
+| Final six hours, or delayed while awaiting departure | Every twenty minutes. Once this band begins, a later estimate does not automatically reduce its frequency. |
+| Airborne | Every hour; every thirty minutes in the final two hours before expected arrival. |
+| Explicit landed/cancelled status | Accept the matching final result and stop regular polling. A diversion requires review rather than deleting the leg or assuming the onward trip is valid. |
+| Prolonged delay or missing terminal result | Bound by original scheduled arrival plus 24 hours and per-watch/global budgets. Mark stale/needs review when tracking ends without confirmation. |
+
+Normal cadence has up to one cron tick of scheduling delay, plus provider latency and retries. Do not call this real-time or guarantee a notification within twenty minutes. Avoid background poll bursts after outages: skip missed slots and schedule from the current time rather than replaying every missed interval. Honor provider rate limits and use small jitter without exceeding the displayed maximum normal freshness window.
+
+The proposed 24-to-6-hour cadence alone costs roughly nine requests; the last six hours add eighteen at twenty minutes, or twenty-four at fifteen minutes. That is already **27–33** before earlier daily checks, the unspecified 48–24-hour interval, retries, long delays or arrival checks. Enrollment thirty days ahead adds about twenty-eight daily calls. The resulting **55–65 predeparture calls** support closer to fifteen unique flights per 1,000 queries, not thirty.
+
+For a ten-hour-only window, budget roughly twenty predeparture requests and another fifteen to twenty for a long-haul flight's progress/arrival, before exceptional delays. A prudent pilot target is around twenty distinct long-haul occurrences per billing period, rather than promising thirty; short flights may use less. This is per physical occurrence, not per traveler or multi-leg trip. Deduplication helps shared flights, not different dates. Actual cost must be measured with the selected endpoint and free key.
+
+Set an initial application ceiling of 900 upstream attempts per provider billing period, leaving headroom below the advertised 1,000. Reset using the verified provider cycle, not an assumed calendar month. Count diagnostics and retries against this application budget; reconcile with provider-reported usage where available. Add a configurable per-watch ceiling (initially sixty attempts) and per-account active-leg cap (initially twenty). Prioritize due near-departure flights with fairness for older due work. On exhaustion, keep cached reads working and show “Updates paused until …” or an explicit unknown reset; never invent a midnight reset or silently bypass the cap.
+
+### Claim, poll and compare
+
+1. Read the small due batch through the index, requiring active subscriptions and an unexpired tracking horizon.
+2. Claim each row atomically if it is still due and its lease has expired. Use a random lease token and a short deadline longer than the bounded request timeout.
+3. Atomically reserve AirLabs billing-period/rate allowance before each upstream attempt. If reservation fails, release the lease and defer until the next permitted window.
+4. Make one HTTPS request with a bounded timeout/body size. Verify designator or proven alias, original service date, origin/route and scheduled-time evidence. Reject an ambiguous nearest occurrence. A changed service date, an unproven diversion or conflicting airports requires review until stable identity evidence supports it.
+5. Normalize useful optional fields: distinct scheduled/estimated/actual departure and arrival, status, aircraft code/model, source and freshness. Continue omitting gates. Preserve gate-versus-runway time semantics; an off-block timestamp cannot become confirmed takeoff time. Missing equipment/estimates do not erase known booked facts.
+6. Fence writes with the lease token. Always record attempt/freshness metadata, but increment the observation version only on a meaningful normalized change; checking timestamps and aircraft-signal movement do not create flight changes. `checkedAt` is our successful retrieval time. AirLabs' `updated` signal time is not a provider-wide status refresh timestamp.
+7. Set the next due time or terminal state; clear the lease. Unchanged responses cost a request but produce no new change version or alert.
+
+A short outage, timeout, empty result or response for the wrong occurrence retains the last valid snapshot within its retention window and marks it stale; without a prior valid snapshot, show unavailable. None means cancellation. Back off repeated unavailable/failed checks (for example 20, 40, 80 minutes, capped at two hours), with bounded recovery probes and no catch-up burst. Only explicit, matched provider evidence can assert cancellation. Honor `Retry-After` and rate-limit responses. Invalid credentials/plan entitlement suspend the provider globally instead of failing separately for every watched flight. Count failed attempts conservatively until actual provider billing behavior is verified.
+
+Cron runs and retries may repeat; network outcomes can be uncertain. Leases/timeouts/fencing minimize duplicate requests, but a crash after sending a request cannot guarantee exactly-once spending. Uncertain attempts retain their quota reservation; correctness and the hard cap take priority over refunding an ambiguous request. Small batches and idempotent writes make the next cron the recovery mechanism.
+
+### User experience and applying changes
+
+Start with a quiet Updates indicator on tracked trips/flight cards, a source/checked-at label and clear pending/stale/paused states. Refresh the app's cached-update endpoint when opening/focusing/reconnecting and periodically while a relevant trip is visible (for example once a minute). Pause client refresh when hidden/offline. These reads do not drive upstream polling and disclose the actual freshness.
+
+Meaningful differences are schedule changes, an explicit disruption, changed aircraft or a material estimate change (initially at least five minutes; always show the latest values in details). Compare against the subscriber's current booked leg, not another passenger's itinerary. Keep live estimates as an overlay; do not constantly rewrite the travel plan or autosave each provider fluctuation. Offer a compact before/after review and **Update plan** for relevant timing changes. Apply through the existing account revision boundary, checking the leg fingerprint and reviewed observation version, and advancing the private binding in the same accepted write without changing its original occurrence identity. A stale review returns a conflict/new comparison rather than overwriting newer edits. The browser then regenerates affected recommendations and lounge/meal opportunities.
+
+Cancellation requires the traveler to revise their itinerary; never silently remove a leg or invent an alternative booking. Equipment changes trigger a focused seat/lie-flat check: keep the cabin choice and never infer a bed from the aircraft model. Actual gate and runway events remain distinct so the first-thirty/final-sixty-minute sleep constraints retain their meaning. Neither stale nor unmatched observations may change planning inputs.
+
+### HTTP contract and future Flutter
+
+Keep normalized DTOs independent of React, browser storage and AirLabs payloads. An initial extension can use:
+
+| Route | Behavior |
+| --- | --- |
+| Existing `PUT /api/state` | Revision-checked trip tracking opt-in/opt-out and subscription reconciliation; continues to save all normal preferences/trips. |
+| `GET /api/v1/trips/{tripId}/flight-updates` | Account-scoped cached observations keyed by leg ID, tracking state, version/freshness and proposed changes; never fetches the provider. |
+| `POST /api/v1/trips/{tripId}/legs/{legId}/apply-flight-update` | Accepts expected account revision, leg fingerprint and reviewed observation version; applies only the reviewed supported changes atomically, then returns the new account revision/state. |
+
+Example cached item (illustrative values, not a provider response):
+
+```json
+{
+  "schemaVersion": 1,
+  "legId": "outbound-1",
+  "occurrenceId": "opaque-occurrence-id",
+  "trackingState": "active",
+  "observationVersion": 3,
+  "source": "airlabs",
+  "checkedAt": "2026-10-17T04:00:00Z",
+  "nextCheckAt": "2026-10-17T04:20:00Z",
+  "stale": false,
+  "status": "scheduled",
+  "departure": {
+    "airport": "SYD",
+    "timeZone": "Australia/Sydney",
+    "scheduledAt": "2026-10-17T05:00:00Z",
+    "estimatedAt": "2026-10-17T05:30:00Z",
+    "actualAt": null
+  },
+  "arrival": {
+    "airport": "HNL",
+    "timeZone": "Pacific/Honolulu",
+    "scheduledAt": "2026-10-17T15:00:00Z",
+    "estimatedAt": "2026-10-17T15:30:00Z",
+    "actualAt": null
+  },
+  "aircraft": { "code": "B788", "model": null }
+}
+```
+
+Use ISO-8601 UTC instants and explicit IANA zones, stable IDs, nullable unknown values and a documented status set including `unknown`. Missing/unknown provider fields do not make the whole response unusable. Authenticate every request and resolve ownership server-side; no client-selected account identity or cross-account cache access. Reuse browser HttpOnly sessions and origin checks now. Future native Google sign-in needs a separately verified native-client audience/token exchange, revocable native sessions and platform secure storage; do not weaken browser origin checks or put the AirLabs key in Flutter.
+
+A Flutter client can reuse this JSON contract, polling policy, canonical flight identities and published planner fixtures. The numerical planner is TypeScript today and does not automatically run in Dart: later choose a fixture-validated Dart port or a reused web planner surface. Do not add a server-side circadian calculation service just to prepare for a hypothetical client.
+
+Push is a later transport, not a prerequisite for tracking. In-app updates work first. When needed, add device registrations and a small delivery outbox keyed by subscriber/device + occurrence/version, with retry/deduplication and per-channel consent. Web Push can serve the PWA; Flutter can use FCM with APNs delivery on iOS. Keep payloads minimal and fetch the account-scoped update on opening. Do not add a push vendor SDK, per-user event fanout or a retained event-history table before this is required. Mobile push/auth capability and current service terms must be verified at that stage.
+
+### Implementation and verification boundaries
+
+The first implementation adds `worker/flight-updates.ts`, a small provider adapter, additive D1 tables, optional trip flag/shared validation and the two cached-read/review endpoints. Configure a Worker-only `AIRLABS_API_KEY` through GitHub production secrets and extend deployment secret installation. A disabled-by-default feature flag, verified provider horizon and hard budget must ship before activation. Expose sanitized counters for attempts, due/leased/stale watches, identity mismatches and budget pause/reset; never log API-key query strings or full personal itineraries.
+
+Use controlled provider/clock/D1 tests for shared polling across users; distinct dates/through segments and uncertain codeshares; concurrent claims/reservations; lease expiry and stale-owner fencing; quota resets/exhaustion; unchanged versions; retry/not-found semantics; midnight/DST/date-line identity; missing equipment; terminal stops; retention; account isolation/deletion and revision-safe apply/reconciliation. Browser checks should cover opt-in, freshness, before/after review, offline/stale state and seat confirmation after an equipment change. Live provider trials stay manual and quota-bounded. A design-only documentation change needs no production deployment or browser suite; implementation uses the existing exact-commit verified artifact workflow.
+
 ## Domain model
 
 `Preferences` holds home IANA timezone, chronotype, usual bedtime/wake time, preferred bedtime/wake time, `sleepHours`, `sleepAnchor`, supplement opt-ins, `preparationDays`, a stored planning mode and the calendar-alarm preference. The obsolete `melatoninAcknowledged` and `autoSync` fields remain readable for saved-data compatibility and no longer control behavior. The melatonin toggle is the sole opt-in. The planner-selection dropdown is omitted from everyday preferences: new accounts use the published circadian model, while an existing saved rules-mode choice remains intact. Saving signed-in edits is automatic.
