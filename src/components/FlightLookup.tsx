@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { LoaderCircle, Search } from 'lucide-react';
 import type { FlightCandidate, FlightLeg, FlightLookupResult } from '../lib/types';
-import { lookupFlight } from '../lib/auth';
+import { lookupFlight } from '../lib/api';
 import { aircraftLabel } from '../lib/aircraft';
 
 export interface FlightQuery {

@@ -1,5 +1,5 @@
 import { describe,expect,it,vi } from 'vitest';
-import { ApiError } from '../src/lib/auth';
+import { ApiError } from '../src/lib/api';
 import { createInitialData } from '../src/lib/defaults';
 import { foldInFlightEdits,hasContentChanges,reconcileSync } from '../src/lib/sync';
 import type { AppData } from '../src/lib/types';
@@ -67,8 +67,6 @@ describe('bounded three-way cloud synchronization',()=> {
     const transport={get:async()=>({data:null,revision:12}),put};
     expect((await reconcileSync(base,{data:base,revision:7},transport)).kind).toBe('deleted');
     expect(put).not.toHaveBeenCalled();
-    expect((await reconcileSync(base,{data:base,revision:7},transport,true)).kind).toBe('accepted');
-    expect(put).toHaveBeenCalledTimes(1);
   });
   it('keeps edits made while an upload is in flight and flags overlapping late changes',()=> {
     const sent=createInitialData(),latest=copy(sent),accepted=copy(sent);

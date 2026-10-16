@@ -2,7 +2,6 @@
   font-family: 'DM Sans', sans-serif;
   color: #eeedf5;
   background: #10121c;
-  font-synthesis: none;
   font-weight: 400;
   line-height: 1.5;
   font-synthesis: none;
@@ -184,7 +183,6 @@ small {
   padding: 14px 15px;
   border-radius: 10px;
   color: #a5a6b9;
-  font-size: 13px;
   font-weight: 500;
   position: relative;
 }
@@ -227,7 +225,6 @@ small {
   margin-bottom: 13px;
 }
 .science-teaser p {
-  font-size: 13px;
   color: #cecadb;
   line-height: 1.7;
 }
@@ -237,7 +234,6 @@ small {
   gap: 6px;
   align-items: center;
   text-align: left;
-  font-size: 11px;
   color: #ab96c9;
   margin-top: 17px;
 }
@@ -268,12 +264,10 @@ small {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 11px;
   font-weight: 500;
 }
 .account-shortcut small {
   display: block;
-  font-size: 11px;
   color: #787d95;
   margin-top: 3px;
 }
@@ -295,7 +289,6 @@ small {
   justify-content: space-between;
 }
 .topbar-label {
-  font-size: 12px;
   color: #8f93ad;
   letter-spacing: 0.15px;
 }
@@ -304,22 +297,7 @@ small {
   align-items: center;
   gap: 17px;
 }
-.local-status {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  color: #9ba8a6;
-}
-.local-status > span {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: #87af9e;
-}
 .icon-button {
-  height: 33px;
-  min-width: 33px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -331,8 +309,6 @@ small {
   color: #ddd4f0;
 }
 .topbar-avatar {
-  width: 31px;
-  height: 31px;
   border-radius: 50%;
   background: #28263a;
   border: 1px solid #3a354d;
@@ -352,7 +328,6 @@ small {
   outline: none;
 }
 .welcome-hero {
-  height: 291px;
   position: relative;
   border-radius: 17px;
   overflow: hidden;
@@ -400,9 +375,7 @@ small {
   color: #b9a3d9;
 }
 .welcome-hero p {
-  font-size: 12px;
   color: #a7a2bd;
-  line-height: 1.7;
   margin-top: 13px;
 }
 .button {
@@ -410,12 +383,9 @@ small {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 11px 17px;
   border-radius: 8px;
-  font-size: 11px;
   font-weight: 600;
   line-height: 1.4;
-  min-height: 39px;
   transition:
     background 0.15s,
     transform 0.15s;
@@ -449,9 +419,7 @@ small {
 }
 .hero-button {
   margin-top: 20px;
-  font-size: 11px;
   padding: 10px 14px;
-  min-height: 35px;
   gap: 16px;
 }
 .moon-scene {
@@ -477,7 +445,6 @@ small {
   margin-bottom: 15px;
 }
 .section-heading .eyebrow {
-  font-size: 11px;
   margin-bottom: 6px;
   letter-spacing: 1.5px;
 }
@@ -513,7 +480,6 @@ small {
   gap: 0;
   overflow-x: auto;
   padding-bottom: 20px;
-  scrollbar-width: thin;
 }
 .route-segment {
   display: contents;
@@ -534,13 +500,11 @@ small {
   color: #eeebf5;
 }
 .route-point > span:last-of-type {
-  font-size: 11px;
   color: #a3a0b8;
   max-width: 80px;
   white-space: nowrap;
 }
 .route-point small {
-  font-size: 11px;
   color: #6d7794;
 }
 .route-connector {
@@ -581,11 +545,9 @@ small {
   display: flex;
   align-items: center;
   gap: 7px;
-  font-size: 11px;
   color: #9196ae;
 }
 .text-button {
-  font-size: 11px;
   color: #b7a0d6;
   display: inline-flex;
   align-items: center;
@@ -621,7 +583,6 @@ small {
   flex: 1;
 }
 .demo-note button {
-  font-size: 11px;
   color: #c1aadf;
   display: flex;
   align-items: center;
@@ -646,8 +607,7 @@ small {
   font-weight: 500;
   color: #c5bfd4;
 }
-.action-list,
-.agenda-list {
+.action-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -676,7 +636,6 @@ small {
 }
 .action-time strong {
   font-family: Manrope, sans-serif;
-  font-size: 13px;
   color: #d7d4e3;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
@@ -736,12 +695,9 @@ small {
   min-width: 0;
 }
 .action-content h3 {
-  font-size: 12px;
   font-weight: 600;
 }
 .action-content p {
-  font-size: 11px;
-  line-height: 1.7;
   margin-top: 4px;
   color: #9298af;
 }
@@ -780,7 +736,6 @@ small {
   padding: 0;
   margin-top: 11px;
   color: #9f92bb;
-  font-size: 11px;
 }
 .why-button .rotated {
   transform: rotate(90deg);
@@ -798,18 +753,15 @@ small {
   align-items: center;
   gap: 5px;
   color: #b7a2d6;
-  font-size: 11px;
   margin-top: 7px;
 }
 .dose-label {
   display: block;
   margin-top: 6px;
-  font-size: 11px;
   color: #b3a0c4;
 }
 .full-plan-button {
   width: 100%;
-  font-size: 11px;
   margin-top: 13px;
 }
 .insight-rail {
@@ -885,7 +837,6 @@ small {
 }
 .profile-snapshot h3 {
   margin-top: 8px;
-  font-size: 13px;
 }
 .sleep-clock {
   display: flex;
@@ -935,7 +886,6 @@ small {
 }
 .profile-snapshot .text-button {
   margin-top: 19px;
-  font-size: 11px;
 }
 .quiet-tip {
   display: flex;
@@ -989,7 +939,6 @@ small {
   letter-spacing: -1.15px;
 }
 .page-heading p {
-  font-size: 12px;
   margin-top: 9px;
   color: #8e95ae;
 }
@@ -1027,11 +976,9 @@ small {
   flex-shrink: 0;
 }
 .plan-trip-name h2 {
-  font-size: 14px;
   line-height: 1.5;
 }
 .plan-trip-name span:not(.small-icon) {
-  font-size: 11px;
   color: #868da6;
   display: block;
   margin-top: 3px;
@@ -1049,7 +996,6 @@ small {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 76px;
   max-width: 95px;
   flex-shrink: 0;
   border: 1px solid #292d40;
@@ -1104,7 +1050,6 @@ small {
   margin-bottom: 21px;
 }
 .stage-label {
-  font-size: 11px;
   color: #c0a1d6;
   display: flex;
   align-items: center;
@@ -1147,23 +1092,6 @@ small {
   border: 1px solid #343246;
   background: #1b1d2d;
 }
-.agenda-list .action-content h3 {
-  font-size: 14px;
-}
-.agenda-list .action-content p {
-  font-size: 11px;
-  line-height: 1.8;
-}
-.agenda-list .action-time strong {
-  font-size: 14px;
-}
-.agenda-list .action-time {
-  min-width: 50px;
-}
-.agenda-list .action-symbol {
-  width: 38px;
-  height: 38px;
-}
 .plan-aside {
   display: flex;
   flex-direction: column;
@@ -1186,31 +1114,30 @@ small {
   color: #a29ab3;
 }
 .plan-note-card .eyebrow {
-  font-size: 11px;
   color: #ac94c6;
 }
 .phase-meter {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 10px;
   margin: 18px 0;
   padding: 14px 0;
   border-top: 1px solid #3b3249;
   border-bottom: 1px solid #3b3249;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
 }
 .phase-meter > span {
-  font-size: 11px;
   color: #9b8cad;
   max-width: 100px;
 }
 .phase-meter strong {
-  font-size: 24px;
   font-weight: 500;
   color: #c8b1e3;
+  font-size: 19px;
+  line-height: 1.5;
 }
 .phase-meter strong small {
-  font-size: 11px;
   color: #a68cbe;
 }
 .small-copy {
@@ -1236,7 +1163,6 @@ small {
   padding: 14px 17px;
 }
 .plan-warnings summary {
-  font-size: 11px;
   color: #b7a7bc;
   display: flex;
   gap: 8px;
@@ -1254,7 +1180,6 @@ small {
 .plan-warnings ul {
   padding-left: 19px;
   color: #a795ae;
-  font-size: 11px;
   line-height: 1.8;
   margin-top: 15px;
   margin-bottom: 0;
@@ -1281,7 +1206,6 @@ small {
 }
 .empty-card p {
   max-width: 350px;
-  font-size: 12px;
 }
 .empty-card .button {
   margin-top: 7px;
@@ -1347,7 +1271,6 @@ small {
   overflow-wrap: anywhere;
 }
 .trip-dates {
-  font-size: 11px;
   color: #8e90aa;
   margin-top: 7px;
 }
@@ -1399,18 +1322,15 @@ small {
 }
 .mini-leg strong {
   display: block;
-  font-size: 11px;
   color: #cbc6d9;
   font-weight: 500;
 }
 .mini-leg > div:nth-child(2) > span {
   display: block;
-  font-size: 11px;
   color: #88859d;
   margin-top: 3px;
 }
 .mini-airport {
-  font-size: 11px;
   color: #9b8aac;
   letter-spacing: 1px;
 }
@@ -1422,8 +1342,6 @@ small {
 }
 .saved-trip-actions .button {
   margin-right: auto;
-  min-height: 34px;
-  font-size: 11px;
 }
 .danger-icon:hover:not(:disabled) {
   color: #d997a6;
@@ -1473,7 +1391,6 @@ small {
   margin: 24px 0 0;
 }
 .manual-entry-note p {
-  font-size: 11px;
   color: #83839a;
   max-width: 750px;
 }
@@ -1515,7 +1432,6 @@ small {
   font-size: 17px;
 }
 .form-section-title p {
-  font-size: 11px;
   margin-top: 3px;
   color: #858ba3;
 }
@@ -1544,9 +1460,7 @@ small {
   color: #d7d0e5;
   border-radius: 7px;
   padding: 11px 12px;
-  min-height: 39px;
   width: 100%;
-  font-size: 11px;
   min-width: 0;
   transition: border-color 0.15s;
 }
@@ -1564,7 +1478,6 @@ small {
   box-shadow: 0 0 0 2px #a688c21c;
 }
 .field > small {
-  font-size: 11px;
   color: #717d99;
   line-height: 1.6;
 }
@@ -1641,15 +1554,12 @@ small {
   margin-bottom: 11px;
 }
 .chronotype-option strong {
-  font-size: 11px;
   font-weight: 500;
   color: #b8b1c8;
 }
 .chronotype-option small {
-  font-size: 11px;
   color: #798099;
   margin-top: 4px;
-  line-height: 1.6;
 }
 .chronotype-option.chosen {
   background: #30263e;
@@ -1680,7 +1590,6 @@ small {
   margin-top: 4px;
 }
 .inline-note p {
-  font-size: 11px;
   color: #a198b5;
   line-height: 1.75;
 }
@@ -1710,20 +1619,16 @@ small {
   gap: 5px;
 }
 .toggle-copy strong {
-  font-size: 11px;
   font-weight: 500;
   color: #c9c1d7;
 }
 .toggle-copy small {
-  font-size: 11px;
   line-height: 1.5;
   color: #828ba5;
 }
 .toggle {
   display: block;
   position: relative;
-  width: 34px;
-  height: 20px;
   flex-shrink: 0;
   border: 1px solid #4d465a;
   background: #292538;
@@ -1735,8 +1640,6 @@ small {
   border-color: #ad90cd;
 }
 .toggle > span {
-  width: 12px;
-  height: 12px;
   border-radius: 50%;
   background: #777185;
   position: absolute;
@@ -1771,7 +1674,6 @@ small {
   margin-bottom: 20px;
 }
 .melatonin-info h3 {
-  font-size: 12px;
   color: #cfb5e2;
   margin-bottom: 9px;
 }
@@ -1802,8 +1704,6 @@ small {
 }
 .checkbox-label input {
   accent-color: #bd9fda;
-  width: 14px;
-  height: 14px;
   margin: 3px 0 0;
   flex-shrink: 0;
 }
@@ -1821,7 +1721,6 @@ small {
   gap: 15px;
 }
 .preferences-save > span {
-  font-size: 11px;
   color: #7e7f96;
 }
 .profile-aside {
@@ -1860,9 +1759,7 @@ small {
   color: #34253e;
   border: 1px solid #f3eff8;
   border-radius: 7px;
-  min-height: 39px;
   padding: 10px;
-  font-size: 11px;
   font-weight: 600;
   margin-top: 20px;
 }
@@ -1871,7 +1768,6 @@ small {
 }
 .account-card .auth-config-note {
   color: #9c839f;
-  font-size: 11px !important;
   margin-top: 12px;
 }
 .account-sync-state {
@@ -1881,7 +1777,6 @@ small {
   border-top: 1px solid #44374e;
   margin-top: 20px;
   padding-top: 16px;
-  font-size: 11px;
   color: #ad9bbe;
   line-height: 1.7;
 }
@@ -1923,7 +1818,6 @@ small {
 }
 .cloud-delete-button {
   margin-top: 16px;
-  font-size: 11px;
 }
 .inline-error {
   font-size: 11px;
@@ -1939,7 +1833,6 @@ small {
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  font-size: 11px;
   line-height: 1.8;
   padding: 13px 16px;
   border-radius: 8px;
@@ -2034,7 +1927,6 @@ small {
   color: #baa4cc;
 }
 .modal-intro {
-  font-size: 12px;
   color: #9895ad;
   line-height: 1.85;
   margin-bottom: 24px;
@@ -2100,18 +1992,10 @@ small {
   border-radius: 7px;
   font-size: 11px;
 }
-.flight-editor-heading h3 {
-  font-size: 13px;
-}
 .flight-editor-tools {
   display: flex;
   gap: 3px;
   margin-left: auto;
-}
-.flight-editor-tools .icon-button {
-  width: 29px;
-  height: 29px;
-  min-width: 29px;
 }
 .move-up {
   transform: rotate(-45deg);
@@ -2130,7 +2014,6 @@ small {
   gap: 7px;
   text-transform: uppercase;
   letter-spacing: 1.4px;
-  font-size: 11px;
   color: #ada1c4;
   margin-bottom: 15px;
   margin-top: 5px;
@@ -2143,9 +2026,6 @@ small {
 }
 .endpoint-label.arrival > span {
   background: #af97ca;
-}
-.timezone-field input {
-  font-size: 11px;
 }
 .stay-editor {
   border-top: 1px solid #383044;
@@ -2166,7 +2046,6 @@ small {
   color: #8f7fa8;
 }
 .connection-info p {
-  font-size: 11px;
   color: #9a8da8;
   line-height: 1.8;
 }
@@ -2180,11 +2059,9 @@ small {
   justify-content: center;
   gap: 9px;
   width: 100%;
-  min-height: 43px;
   border: 1px dashed #705980;
   border-radius: 8px;
   color: #c4a3dd;
-  font-size: 11px;
   background: #241e32;
 }
 .add-flight-button:hover {
@@ -2220,7 +2097,6 @@ small {
   flex-shrink: 0;
 }
 .science-intro p {
-  font-size: 13px;
   color: #b5a8c8;
   line-height: 1.85;
 }
@@ -2242,11 +2118,9 @@ small {
   color: #dfb37f;
 }
 .science-principles h3 {
-  font-size: 14px;
   margin-bottom: 7px;
 }
 .science-principles p {
-  font-size: 11px;
   line-height: 1.85;
   color: #9b95b0;
 }
@@ -2260,12 +2134,10 @@ small {
   color: #bba3d0;
 }
 .science-limitations h3 {
-  font-size: 12px;
   color: #c7afdb;
   margin-bottom: 8px;
 }
 .science-limitations p {
-  font-size: 11px;
   line-height: 1.85;
   color: #a995b9;
 }
@@ -2273,7 +2145,6 @@ small {
   margin-top: 8px;
 }
 .source-heading {
-  font-size: 12px;
   margin: 25px 0 14px;
   color: #c9bfd8;
 }
@@ -2297,12 +2168,10 @@ small {
 }
 .source-links strong {
   display: block;
-  font-size: 11px;
   font-weight: 500;
   color: #c3acd8;
 }
 .source-links small {
-  font-size: 11px;
   color: #8f819f;
   display: block;
   margin-top: 4px;
@@ -2720,18 +2589,10 @@ small {
   .topbar-actions > .icon-button {
     display: none;
   }
-  .local-status {
-    font-size: 11px;
-  }
-  .topbar-avatar {
-    height: 29px;
-    width: 29px;
-  }
   .main-content {
     padding: 22px 22px 0;
   }
   .welcome-hero {
-    height: 274px;
     margin-bottom: 26px;
   }
   .welcome-hero h1 {
@@ -2746,9 +2607,6 @@ small {
   .moon-scene {
     width: 50%;
     right: -12px;
-  }
-  .hero-copy {
-    width: 63%;
   }
   .hero-button {
     font-size: 11px;
@@ -2785,7 +2643,6 @@ small {
     align-items: center;
     gap: 5px;
     min-width: 62px;
-    font-size: 11px;
     color: #85889e;
     padding: 4px 9px;
     border-radius: 9px;
@@ -2797,7 +2654,6 @@ small {
     filter: drop-shadow(0 0 5px #b08ad52b);
   }
   .toast {
-    bottom: 88px;
     left: 50%;
     max-width: calc(100% - 34px);
     width: max-content;
@@ -2823,7 +2679,6 @@ small {
     gap: 8px;
   }
   .day-button {
-    min-width: 68px;
     padding: 10px 7px;
   }
   .day-button strong {
@@ -2831,16 +2686,6 @@ small {
   }
   .agenda-heading h2 {
     font-size: 21px;
-  }
-  .agenda-list .action-card {
-    padding: 17px;
-    gap: 12px;
-  }
-  .agenda-list .action-content h3 {
-    font-size: 13px;
-  }
-  .agenda-list .action-content p {
-    font-size: 11px;
   }
   .modal-backdrop {
     padding: 19px;
@@ -2877,32 +2722,23 @@ small {
     padding: 0 19px;
     height: 66px;
   }
-  .local-status {
-    display: none;
-  }
   .topbar-avatar {
     width: 30px;
     height: 30px;
   }
   .welcome-hero {
-    height: 290px;
-    padding: 25px 24px;
     margin-bottom: 27px;
     align-items: flex-start;
   }
   .hero-copy {
-    width: 100%;
     padding-top: 1px;
   }
   .welcome-hero h1 {
-    font-size: 35px;
     margin-top: 16px;
     line-height: 1.21;
     max-width: 250px;
   }
   .welcome-hero p {
-    max-width: 205px;
-    font-size: 11px;
     margin-top: 15px;
     line-height: 1.8;
   }
@@ -2912,21 +2748,12 @@ small {
   .moon-scene {
     width: 280px;
     height: 180px;
-    right: -125px;
-    top: 15px;
-    opacity: 0.74;
   }
   .hero-button {
-    margin-top: 22px;
     padding: 10px 13px;
     font-size: 11px;
   }
-  .section-heading .eyebrow {
-    font-size: 11px;
-    letter-spacing: 1.3px;
-  }
   .section-heading h2 {
-    font-size: 20px;
     letter-spacing: -0.6px;
     line-height: 1.4;
   }
@@ -2945,24 +2772,15 @@ small {
     padding-bottom: 22px;
     gap: 0;
   }
-  .route-point {
-    min-width: 45px;
-  }
   .route-airport {
     font-size: 21px;
     letter-spacing: 0.8px;
-  }
-  .route-point > span:last-of-type {
-    font-size: 11px;
-    max-width: 66px;
   }
   .route-point small {
     font-size: 11px;
   }
   .route-connector {
-    padding: 0 8px;
     gap: 3px;
-    min-width: 29px;
   }
   .route-connector svg {
     width: 12px;
@@ -2975,14 +2793,12 @@ small {
     padding: 13px 0;
   }
   .trip-summary-footer > span {
-    font-size: 11px;
     gap: 5px;
   }
   .trip-summary-footer > span > svg {
     width: 13px;
   }
   .trip-summary-footer .text-button {
-    font-size: 11px;
     gap: 4px;
   }
   .today-section {
@@ -2999,57 +2815,33 @@ small {
     margin-top: 2px;
   }
   .demo-note p {
-    font-size: 11px;
     flex-basis: calc(100% - 24px);
   }
   .demo-note button {
     margin-left: 21px;
-    font-size: 11px;
   }
   .upcoming-note {
-    font-size: 11px;
     gap: 7px;
     line-height: 1.8;
   }
   .upcoming-note > svg {
     width: 15px;
   }
-  .action-card.compact {
-    padding: 15px 12px;
-    gap: 11px;
-  }
   .action-time {
-    min-width: 39px;
     gap: 3px;
   }
-  .action-time strong {
-    font-size: 12px;
-  }
-  .action-time > span {
-    font-size: 11px;
-  }
   .action-symbol {
-    width: 31px;
-    height: 31px;
     border-radius: 8px;
   }
   .action-symbol svg {
     width: 17px;
     height: 17px;
   }
-  .action-content h3 {
-    font-size: 12px;
-  }
   .action-content p {
-    font-size: 11px;
     margin-top: 4px;
-    line-height: 1.8;
   }
   .action-title-line {
     gap: 6px;
-  }
-  .live-label {
-    font-size: 6px;
   }
   .action-list {
     gap: 10px;
@@ -3064,7 +2856,6 @@ small {
   }
   .next-action-card {
     display: grid;
-    grid-template-columns: 43px 1fr;
     gap: 0 14px;
     padding: 19px 20px;
     min-height: 0;
@@ -3082,7 +2873,6 @@ small {
     border-radius: 10px;
   }
   .next-action-card h3 {
-    font-size: 16px;
     align-self: center;
   }
   .next-action-card p {
@@ -3105,7 +2895,6 @@ small {
   .next-action-time span {
     text-align: right;
     line-height: 1.7;
-    font-size: 11px;
   }
   .sample-caption {
     grid-column: 1/-1;
@@ -3123,19 +2912,10 @@ small {
   .sleep-clock strong {
     font-size: 22px;
   }
-  .sleep-clock small {
-    font-size: 11px;
-  }
   .profile-facts {
     flex-direction: row;
     justify-content: space-between;
     gap: 10px;
-    font-size: 11px;
-  }
-  .profile-snapshot .text-button {
-    font-size: 11px;
-  }
-  .quiet-tip p {
     font-size: 11px;
   }
   .page-footer {
@@ -3156,7 +2936,6 @@ small {
     margin: 7px 0 25px;
   }
   .page-heading h1 {
-    font-size: 29px;
     letter-spacing: -1px;
     margin-top: 8px;
   }
@@ -3165,15 +2944,12 @@ small {
     letter-spacing: 1.4px;
   }
   .page-heading p {
-    font-size: 11px;
     line-height: 1.8;
     max-width: 240px;
   }
   .page-heading > .button {
-    padding: 10px 12px;
     min-height: 35px;
     font-size: 11px;
-    margin-top: 24px;
     gap: 5px;
   }
   .page-heading > .button svg {
@@ -3183,7 +2959,6 @@ small {
     flex-direction: column;
     align-items: flex-end;
     gap: 10px;
-    padding-top: 7px;
   }
   .heading-actions .button {
     font-size: 11px;
@@ -3204,14 +2979,7 @@ small {
     width: 33px;
     height: 33px;
   }
-  .plan-trip-name h2 {
-    font-size: 12px;
-  }
-  .plan-trip-name span:not(.small-icon) {
-    font-size: 11px;
-  }
   .plan-trip-bar > .text-button {
-    font-size: 11px;
     gap: 5px;
     white-space: nowrap;
   }
@@ -3239,16 +3007,10 @@ small {
     align-items: center;
     margin-bottom: 18px;
   }
-  .agenda-heading h2 {
-    font-size: 19px;
-  }
   .agenda-heading .timezone-caption {
-    font-size: 11px;
-    max-width: 220px;
     line-height: 1.6;
   }
   .stage-label {
-    font-size: 11px;
     line-height: 1.6;
   }
   .day-arrows {
@@ -3258,35 +3020,10 @@ small {
     min-width: 28px;
     height: 28px;
   }
-  .agenda-list {
-    gap: 11px;
-  }
-  .agenda-list .action-card {
-    padding: 16px 12px;
-    gap: 10px;
-  }
-  .agenda-list .action-time {
-    min-width: 40px;
-  }
-  .agenda-list .action-time strong {
-    font-size: 12px;
-  }
-  .agenda-list .action-symbol {
-    width: 31px;
-    height: 31px;
-  }
-  .agenda-list .action-content h3 {
-    font-size: 12px;
-  }
-  .agenda-list .action-content p {
-    font-size: 11px;
-  }
   .why-button {
-    font-size: 11px;
     margin-top: 10px;
   }
   .dose-label {
-    font-size: 11px;
     line-height: 1.6;
   }
   .plan-aside {
@@ -3299,9 +3036,6 @@ small {
   .plan-note-card h3 {
     font-size: 15px;
     margin-top: 12px;
-  }
-  .plan-note-card p {
-    font-size: 11px;
   }
   .plan-note-card.muted-card h3 {
     margin-top: 0;
@@ -3321,7 +3055,6 @@ small {
   }
   .trips-grid {
     grid-template-columns: 1fr;
-    gap: 19px;
   }
   .saved-trip-card {
     padding: 21px;
@@ -3333,15 +3066,6 @@ small {
     font-size: 11px;
   }
   .trip-dates {
-    font-size: 11px;
-  }
-  .mini-leg strong {
-    font-size: 12px;
-  }
-  .mini-leg > div:nth-child(2) > span {
-    font-size: 11px;
-  }
-  .mini-airport {
     font-size: 11px;
   }
   .saved-trip-actions .button {
@@ -3370,15 +3094,8 @@ small {
     gap: 10px;
     margin-bottom: 23px;
   }
-  .form-section-title h2 {
-    font-size: 16px;
-  }
   .form-section-title p {
-    font-size: 11px;
     line-height: 1.7;
-  }
-  .field > span {
-    font-size: 11px;
   }
   .field input,
   .field select {
@@ -3386,51 +3103,22 @@ small {
     min-height: 41px;
     padding: 11px 10px;
   }
-  .field-grid {
-    gap: 12px;
-  }
-  .field > small {
-    font-size: 11px;
-  }
   .chronotype-options {
     grid-template-columns: 1fr 1fr;
     gap: 10px;
   }
-  .chronotype-option {
-    padding: 16px 8px;
-    min-height: 106px;
-  }
-  .chronotype-option strong {
-    font-size: 11px;
-  }
-  .chronotype-option small {
-    font-size: 11px;
-  }
   .chronotype-option > svg {
     margin-bottom: 8px;
-  }
-  .chronotype-fieldset legend {
-    font-size: 11px;
   }
   .inline-note {
     padding: 11px 10px;
   }
-  .inline-note p {
-    font-size: 11px;
-  }
   .toggle-row {
     gap: 10px;
   }
-  .toggle-copy strong {
-    font-size: 11px;
-  }
   .toggle-copy small {
-    font-size: 11px;
     line-height: 1.7;
     max-width: 230px;
-  }
-  .toggle-icon svg {
-    width: 18px;
   }
   .melatonin-info {
     padding: 13px;
@@ -3446,8 +3134,6 @@ small {
     gap: 10px;
   }
   .preferences-save > span {
-    font-size: 11px;
-    max-width: 120px;
     line-height: 1.7;
   }
   .preferences-save .button {
@@ -3456,7 +3142,6 @@ small {
   }
   .profile-aside {
     grid-template-columns: 1fr;
-    gap: 17px;
   }
   .account-card {
     padding: 22px;
@@ -3492,7 +3177,6 @@ small {
     border-radius: 13px;
   }
   .modal-header h2 {
-    font-size: 20px;
     letter-spacing: -0.6px;
   }
   .modal-header {
@@ -3504,7 +3188,6 @@ small {
     height: 30px;
   }
   .modal-intro {
-    font-size: 11px;
     margin-bottom: 21px;
     line-height: 1.85;
   }
@@ -3517,11 +3200,6 @@ small {
   .flight-editor-heading {
     margin-bottom: 17px;
   }
-  .flight-editor-tools .icon-button {
-    height: 28px;
-    min-width: 28px;
-    width: 28px;
-  }
   .flight-endpoints {
     grid-template-columns: 1fr;
     gap: 7px;
@@ -3532,7 +3210,6 @@ small {
     padding-top: 16px;
   }
   .endpoint-label {
-    font-size: 11px;
     margin-top: 1px;
     margin-bottom: 13px;
   }
@@ -3561,18 +3238,11 @@ small {
     margin-top: 20px;
   }
   .add-flight-button {
-    font-size: 11px;
     margin-top: 16px;
   }
   .sticky-footer {
     bottom: -20px;
     padding-bottom: 8px;
-    gap: 9px;
-  }
-  .modal-footer .button {
-    font-size: 11px;
-    padding: 11px 13px;
-    min-height: 38px;
   }
   .modal-footer {
     margin-top: 22px;
@@ -3590,9 +3260,6 @@ small {
   .science-intro-icon svg {
     width: 23px;
   }
-  .science-intro p {
-    font-size: 11px;
-  }
   .science-principles {
     gap: 22px;
     margin: 24px 0;
@@ -3603,12 +3270,6 @@ small {
   .science-principles article > svg {
     width: 20px;
   }
-  .science-principles h3 {
-    font-size: 13px;
-  }
-  .science-principles p {
-    font-size: 11px;
-  }
   .science-limitations {
     padding: 14px;
     gap: 9px;
@@ -3616,22 +3277,11 @@ small {
   .science-limitations > svg {
     width: 16px;
   }
-  .science-limitations p {
-    font-size: 11px;
-  }
-  .source-links strong {
-    font-size: 11px;
-  }
-  .source-links small {
-    font-size: 11px;
-  }
   .source-links > a {
     padding: 12px;
   }
   .toast {
-    font-size: 11px;
     gap: 8px;
-    bottom: 88px;
     max-width: calc(100% - 28px);
     width: max-content;
   }
@@ -3640,9 +3290,6 @@ small {
   }
   .large-empty h2 {
     font-size: 21px;
-  }
-  .empty-card p {
-    font-size: 11px;
   }
   .mobile-navigation {
     padding-top: 9px;
@@ -3667,7 +3314,6 @@ small {
 .cabin-editor {
   border-top: 1px solid var(--border);
   padding-top: 18px;
-  margin-top: 10px;
 }
 .flight-rest-note {
   display: flex;
@@ -3729,9 +3375,6 @@ small {
 .topbar-label {
   font-size: 13px;
 }
-.local-status {
-  font-size: 11px;
-}
 .topbar-avatar {
   width: 38px;
   height: 38px;
@@ -3769,17 +3412,14 @@ small {
   font-size: 12px;
   min-height: 32px;
 }
-.action-content h3,
-.agenda-list .action-content h3 {
+.action-content h3 {
   font-size: 15px;
 }
-.action-content p,
-.agenda-list .action-content p {
+.action-content p {
   font-size: 13px;
   line-height: 1.8;
 }
-.action-time strong,
-.agenda-list .action-time strong {
+.action-time strong {
   font-size: 15px;
 }
 .action-time > span,
@@ -4091,17 +3731,14 @@ small {
     width: 44px;
     height: 44px;
   }
-  .action-card.compact,
-  .agenda-list .action-card {
+  .action-card.compact {
     padding: 18px 14px;
   }
-  .action-symbol,
-  .agenda-list .action-symbol {
+  .action-symbol {
     width: 36px;
     height: 36px;
   }
-  .action-time,
-  .agenda-list .action-time {
+  .action-time {
     min-width: 46px;
   }
   .field-grid {
@@ -4144,7 +3781,6 @@ small {
 }
 @media (max-width: 540px) {
   .welcome-hero {
-    height: 322px;
     padding: 24px 23px;
   }
   .welcome-hero h1 {
@@ -4201,30 +3837,24 @@ small {
   .upcoming-note {
     font-size: 12px;
   }
-  .action-card.compact,
-  .agenda-list .action-card {
+  .action-card.compact {
     gap: 10px;
     padding: 16px 12px;
   }
-  .action-content h3,
-  .agenda-list .action-content h3 {
+  .action-content h3 {
     font-size: 14px;
   }
-  .action-content p,
-  .agenda-list .action-content p {
+  .action-content p {
     font-size: 12px;
     line-height: 1.8;
   }
-  .action-time strong,
-  .agenda-list .action-time strong {
+  .action-time strong {
     font-size: 14px;
   }
-  .action-time,
-  .agenda-list .action-time {
+  .action-time {
     min-width: 42px;
   }
-  .action-symbol,
-  .agenda-list .action-symbol {
+  .action-symbol {
     height: 33px;
     width: 33px;
   }
@@ -4580,19 +4210,6 @@ small {
 .flight-result span {
   overflow-wrap: anywhere;
 }
-.model-disclosure {
-  margin: 22px 0;
-  padding: 18px 20px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  font-size: 13px;
-  line-height: 1.7;
-}
-.model-disclosure p {
-  color: var(--muted);
-  margin: 7px 0;
-}
-.model-disclosure a,
 .page-footer a,
 .field small a,
 .science-modal a {
@@ -4644,12 +4261,12 @@ small {
   background: #382c30;
 }
 .day-button .day-zone {
-  font-size: 9px;
-  max-width: 84px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   color: #a5a1b7;
+  max-width: 86px;
+  font-size: 9px;
 }
 .day-flights {
   display: flex;
@@ -4838,14 +4455,6 @@ small {
   min-height: 136px;
   padding: 17px 10px 15px;
   gap: 6px;
-}
-.day-button .day-zone {
-  max-width: 86px;
-  font-size: 9px;
-}
-.phase-meter strong {
-  font-size: 19px;
-  line-height: 1.5;
 }
 .phase-unavailable {
   margin: 18px 0;
@@ -5181,11 +4790,6 @@ small {
     margin-bottom: 16px;
   }
 }
-.phase-meter {
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-}
 .phase-meter > span {
   max-width: none;
 }
@@ -5201,6 +4805,7 @@ small {
 .flight-search-fields {
   align-items: end;
   gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 .flight-editor-card .flight-search-fields .field {
   max-width: none;
@@ -5374,9 +4979,6 @@ small {
 .field input:is([type='date'], [type='datetime-local'], [type='time'])::-webkit-datetime-edit {
   min-width: 0;
   padding: 0;
-}
-.flight-search-fields {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 .flight-endpoints > div,
 .flight-operations .field-grid > * {

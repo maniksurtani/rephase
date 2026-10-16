@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
+import { Dialog } from './components/Dialog';
 import { createInitialData } from './lib/defaults';
 import { loadData, loadLastAccount } from './lib/store';
-import { getConfig, logout, type AuthConfig } from './lib/auth';
+import { getConfig, logout, type AuthConfig } from './lib/api';
 import { AccountPersistence, type PersistenceState } from './lib/account-persistence';
 import type { Account } from './lib/types';
 import './root.css';
@@ -11,67 +12,6 @@ import './fonts.css';
 
 const message = (error: unknown) =>
   error instanceof Error ? error.message : 'The operation could not be completed.';
-function Dialog({
-  title,
-  children,
-  onClose,
-}: {
-  title: string;
-  children: ReactNode;
-  onClose: () => void;
-}) {
-  const panel = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const previous = document.activeElement as HTMLElement | null;
-    const getFocusable = () =>
-      Array.from(
-        panel.current?.querySelectorAll<HTMLElement>(
-          'button:not(:disabled),input:not(:disabled),select:not(:disabled),textarea:not(:disabled),iframe,a[href],[tabindex="0"]',
-        ) ?? [],
-      );
-    (getFocusable()[0] ?? panel.current)?.focus();
-    const listener = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose();
-      if (event.key === 'Tab') {
-        const elements = getFocusable(),
-          first = elements[0],
-          last = elements.at(-1);
-        if (!first) {
-          event.preventDefault();
-          return;
-        }
-        if (event.shiftKey && document.activeElement === first) {
-          event.preventDefault();
-          last?.focus();
-        } else if (!event.shiftKey && document.activeElement === last) {
-          event.preventDefault();
-          first.focus();
-        }
-      }
-    };
-    document.addEventListener('keydown', listener);
-    return () => {
-      document.removeEventListener('keydown', listener);
-      previous?.focus();
-    };
-  }, [onClose]);
-  return (
-    <div className="root-backdrop" onClick={onClose}>
-      <div
-        ref={panel}
-        tabIndex={-1}
-        className="root-dialog"
-        role="dialog"
-        aria-modal="true"
-        aria-label={title}
-        onClick={(event) => event.stopPropagation()}
-      >
-        <h2>{title}</h2>
-        {children}
-      </div>
-    </div>
-  );
-}
 
 function Root() {
   const [controller, setController] = useState<AccountPersistence | null>(null);
@@ -212,7 +152,13 @@ function Root() {
         </button>
       )}
       {state.conflict && conflictVisible && (
-        <Dialog title="Choose which changes to keep" onClose={closeConflict}>
+        <Dialog
+          title="Choose which changes to keep"
+          onClose={closeConflict}
+          backdropClassName="root-backdrop"
+          className="root-dialog"
+        >
+          <h2>Choose which changes to keep</h2>
           <p>
             The same information changed on another device. Your edits are preserved until you
             choose.

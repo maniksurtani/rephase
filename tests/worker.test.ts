@@ -1,3 +1,4 @@
+import { d1For } from './support/d1';
 import { readFileSync } from 'node:fs';
 import { DatabaseSync } from 'node:sqlite';
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
@@ -33,33 +34,6 @@ const validData: AppData = {
   selectedTripId: 'trip-a',
 };
 
-/** Real SQLite queries exercise account isolation and conditional writes. */
-function d1For(sqlite: DatabaseSync): D1Database {
-  const prepare = (sql: string) => {
-    let values: (string | number | null)[] = [];
-    const statement = {
-      bind(...args: (string | number | null)[]) { values = args; return statement; },
-      async first() { return sqlite.prepare(sql).get(...values) ?? null; },
-      async run() {
-        const result = sqlite.prepare(sql).run(...values);
-        return { success: true, results: [], meta: { changes: Number(result.changes) } };
-      },
-    };
-    return statement;
-  };
-  return {
-    prepare,
-    async batch(statements: ReturnType<typeof prepare>[]) {
-      sqlite.exec('BEGIN');
-      try {
-        const results = [];
-        for (const statement of statements) results.push(await statement.run());
-        sqlite.exec('COMMIT');
-        return results;
-      } catch (error) { sqlite.exec('ROLLBACK'); throw error; }
-    },
-  } as unknown as D1Database;
-}
 
 function request(path: string, method = 'GET', body?: unknown, cookie?: string, origin = ORIGIN): Request {
   const headers = new Headers();
@@ -101,6 +75,22 @@ describe('Worker account API', () => {
     const login = await invoke(request('/api/auth/google', 'POST', { credential: 'fake' }), { GOOGLE_CLIENT_ID: '' });
     expect(login.status).toBe(503);
     expect(login.headers.has('Set-Cookie')).toBe(false);
+  });
+
+  it('connects unexpected failures to a safe log reference without exposing private diagnostics', async () => {
+    const warning = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      const secret = 'SQL SELECT private_state; token=secret@example.com';
+      const db = { prepare() { throw new Error(secret); } } as unknown as D1Database;
+      const result = await invoke(request('/api/me?private=hidden', 'GET', undefined, accountCookie(SESSION_A)), { DB: db });
+      expect(result.status).toBe(503);
+      const body = await result.text();
+      const record = JSON.parse(warning.mock.calls[0][0]);
+      expect(record).toEqual({ event: 'api_failure', operation: 'account', method: 'GET',
+        category: 'unexpected', reference: expect.stringMatching(/^API-[0-9a-f]{12}$/) });
+      expect(body).toContain(record.reference);
+      expect(body + JSON.stringify(warning.mock.calls)).not.toMatch(/private_state|secret@example|private=hidden/);
+    } finally { warning.mockRestore(); }
   });
 
   it('requires a live opaque session and returns only that account', async () => {

@@ -6,7 +6,7 @@ A mobile-first jet lag planner with a dark sleep theme, complex itineraries, Goo
 
 Each plan day is a vertical timeline with concurrent flight, sleep/rest, light/darkness, caffeine and melatonin bands. Cards appear where activities begin, with independently expandable flight details, explanations and meal details. Long uninterrupted periods keep their start/end times and use dotted bands to show compression without repeated hourly labels. Travel days retain both airport clocks; awake intervals fill gaps without scheduled sleep or rest. Flight cards show departure/arrival times without gate details.
 
-The default experimental planner uses the published Forger99 light-driven circadian model and compares constrained advance/delay schedules across the itinerary. Its equations have been checked against an independent Python/SciPy reference. **Numerical verification is not clinical validation:** personal phase, received light, and actual sleep remain uncertain. Conservative planning rules are also available in Profile. Read the standalone [Science page](public/science.html) at `/science.html` for plain-language explanations and original sources.
+The default experimental planner uses the published Forger99 light-driven circadian model and compares constrained advance/delay schedules across the itinerary. Its equations have been checked against an independent Python/SciPy reference. **Numerical verification is not clinical validation:** personal phase, received light, and actual sleep remain uncertain. Existing saved rules-mode preferences remain supported. Read the standalone [Science page](public/science.html) at `/science.html` for plain-language explanations and original sources.
 
 ## Lounge Explorer
 
@@ -94,6 +94,8 @@ Calendar export uses UTC instants, stable IDs, and optional reminders ten minute
 ## Checks
 
 ```sh
+npm run lint
+npm run format:check
 npm run typecheck
 npm test -- --maxWorkers=1
 npm run build
@@ -102,22 +104,18 @@ npm run test:e2e
 
 Playwright uses `/usr/bin/chromium` when present, or `PLAYWRIGHT_CHROMIUM_EXECUTABLE`; otherwise install it with `npx playwright install chromium`. Engineering checks cover numerical reference trajectories, temporal/itinerary constraints, adherence replay, daylight, API ownership/nonce/session/revision security, cache/quotas, sync merges, calendar export, and deployment/launcher configuration. Browser checks use controlled API responses for account and flight scenarios.
 
-Latest [Checks 38829656033](https://github.com/maniksurtani/rephase/actions/runs/38829656033) passed frontend/Worker TypeScript, all **547 unit/model/API/runtime tests across 39 suites**, the production build and all **44 browser scenarios** (41 Chromium and three mobile WebKit). [Deployment 38830044054](https://github.com/maniksurtani/rephase/actions/runs/38830044054) reused the exact commit's verified artifact without rebuilding or repeating browsers; its job finished in 30 seconds. Profile now has searchable airline programs with editable tiers, including United Premier 1K, automatic alliance badges and separate paid lounge memberships. The existing LAX Qantas Business record has a recognizable name. Anonymous live desktop/390px Chromium checks passed against the exact new assets, including old membership retention, new tier selection, guest save/reload, LAX access and no overflow/page errors. No real Google sign-in, account write or provider request occurred in these checks.
+Detailed previous release evidence is preserved in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md). Automated account/provider checks use controlled responses; real Google/account/provider acceptance remains listed in [TODO.md](TODO.md).
 
-Earlier checks verified local D1/API/scheduled handlers, launcher setup/shutdown, real Wrangler dry-run bundling, the five-flight itinerary/date-line transit, unique date tiles, meal policies and alarm-free calendar exports. Production desktop/mobile guest planning, Science without JavaScript, all 24 offline assets, offline behavior and unauthenticated API rejection passed smoke checks on 15 October 2026. Real-account automatic saving and signed-in booked-flight import remain owner acceptance checks. QA servers are stopped after verification.
+Use `REPHASE_CAPTURE_SCREENSHOTS=1 npm run test:e2e` for optional design captures under `artifacts/`. Normal browser runs retain screenshots and traces on failure. The suite uses two browser workers; use `PLAYWRIGHT_WORKERS=1` on constrained machines. `npm run format` formats frontend/Worker sources; hooks lint and formatting checks run in CI.
 
-For the independent numerical fixture reproduction, see [the kernel notes](src/lib/circadian/README.md). The airport source and optional Bun benchmark are documented in [DATA_SOURCES.md](DATA_SOURCES.md). `npm run benchmark:bun` reports honestly if Bun is absent; Node/npm remain the authoritative toolchain and lockfile.
+For the independent numerical fixture reproduction, see [the kernel notes](src/lib/circadian/README.md). The airport source is documented in [DATA_SOURCES.md](DATA_SOURCES.md). Node/npm is the authoritative toolchain and lockfile.
 
 ## GitHub and Cloudflare
 
 The code is synced to [maniksurtani/rephase](https://github.com/maniksurtani/rephase) on the `main` branch. The workspace has `origin` configured as `git@github.com:maniksurtani/rephase.git`, with `main` tracking `origin/main`. Production is deployed at https://rephase.surtani.org using a Worker Custom Domain, D1, static assets and an hourly cache-purge schedule.
 
-For another checkout, inspect the remote helper:
+For another checkout, use `git clone git@github.com:maniksurtani/rephase.git`.
 
-```sh
-npm run github:remote -- --help
-```
-
-[DEPLOYMENT.md](DEPLOYMENT.md) describes remote setup, the local/CI scripts, required Cloudflare/Google configuration, optional provider secret, and the deployment workflow. PR/main CI runs checks. Deployment supports manual dispatch and main-branch pushes when the repository variable `DEPLOY_ENABLED=true`; leaving it unset or false keeps deployment manual. Normal deployments finish after migrations, upload and secret installation; the optional **Verify production** workflow is separate because Cloudflare can challenge GitHub-hosted runners. Provider debugging and safe error references are documented in DEPLOYMENT.md.
+[DEPLOYMENT.md](DEPLOYMENT.md) describes remote setup, the local/CI scripts, required Cloudflare/Google configuration, optional provider secret, and the deployment workflow. PR/main CI runs checks. Deployment supports manual dispatch and main-branch pushes when the repository variable `DEPLOY_ENABLED=true`; leaving it unset or false keeps deployment manual. Normal deployments finish after migrations, upload and secret installation; check the published app interactively because Cloudflare can challenge GitHub-hosted runners. Provider debugging and safe error references are documented in DEPLOYMENT.md.
 
 [DESIGN.md](DESIGN.md) describes the architecture, scientific assumptions, API and storage contracts. [TODO.md](TODO.md) tracks completed implementation and external setup/research gates. [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and the bundled licenses preserve attribution.

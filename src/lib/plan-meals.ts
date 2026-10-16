@@ -1,4 +1,4 @@
-import { flightAirborneTiming } from './plan';
+import { flightAirborneTiming } from './flight-timing';
 import { localToInstant } from './time';
 import type { FlightLeg, FlightMealPlan, MealWindow, Plan, Trip } from './types';
 
@@ -54,9 +54,7 @@ function resolveSleepIntervals(
       .filter((action) => action.type === 'sleep')
       .flatMap((action) => {
         const scheduled = { start: Date.parse(action.start), end: Date.parse(action.end) };
-        const record = /^Logged sleep · (completed|partial|missed)$/.test(action.title)
-          ? sleepLogs.get(action.id)
-          : undefined;
+        const record = action.origin === 'observation' ? sleepLogs.get(action.id) : undefined;
         if (!record) return [scheduled];
         if (record.status === 'missed') return [];
         if (record.actualStart && record.actualEnd) {

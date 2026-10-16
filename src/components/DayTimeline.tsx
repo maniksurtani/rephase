@@ -56,7 +56,7 @@ export function DayTimeline({
   renderAction: (action: PlanAction) => ReactNode;
   renderFlight?: (segment: PlanTravelSegment) => ReactNode;
 }) {
-  const timeline = useMemo(() => buildDayTimeline(day, { tickMinutes: 180 }), [day]);
+  const timeline = useMemo(() => buildDayTimeline(day), [day]);
   const steps = useMemo(() => buildTimelineSteps(timeline), [timeline]);
   const present = new Set(timeline.bands.map((band) => band.kind));
   const clock = (instant: number) =>

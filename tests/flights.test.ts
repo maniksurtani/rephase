@@ -1,6 +1,6 @@
+import { d1For } from './support/d1';
 import { readFileSync } from 'node:fs';
 import { DatabaseSync } from 'node:sqlite';
-import type { D1Database } from '@cloudflare/workers-types';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { handleApi, hashToken, type Env } from '../worker/index';
 import { normalizeFlightNumber, normalizeFlights, purgeFlightData, validateFlightQuery } from '../worker/flights';
@@ -12,24 +12,7 @@ const SESSION_A = 'a'.repeat(64); const SESSION_B = 'b'.repeat(64);
 const QUERY = { flightNumber: 'BA286', date: '2026-11-05' };
 const fixture = () => JSON.parse(readFileSync(new URL('./fixtures/flights/scheduled.json', import.meta.url), 'utf8'));
 const providerResponse = (value: unknown = fixture()) => new Response(JSON.stringify(value), { headers: { 'Content-Type': 'application/json' } });
-function d1For(sqlite: DatabaseSync): D1Database {
-  const prepare = (sql: string) => {
-    let values: (string | number | null)[] = [];
-    const statement = {
-      bind(...args: (string | number | null)[]) { values = args; return statement; },
-      async first() { return sqlite.prepare(sql).get(...values) ?? null; },
-      async all() { return { success: true, results: sqlite.prepare(sql).all(...values), meta: {} }; },
-      _run() { const result = sqlite.prepare(sql).run(...values); return { success: true, results: [], meta: { changes: Number(result.changes) } }; },
-      async run() { return statement._run(); },
-    };
-    return statement;
-  };
-  return { prepare, async batch(statements: ReturnType<typeof prepare>[]) {
-    sqlite.exec('BEGIN');
-    try { const result = statements.map(s => s._run()); sqlite.exec('COMMIT'); return result; }
-    catch (error) { sqlite.exec('ROLLBACK'); throw error; }
-  } } as unknown as D1Database;
-}
+
 function flightRequest(query = '?flightNumber=BA286&date=2026-11-05', account = 'user-a', token = SESSION_A): Request {
   return new Request(ORIGIN + '/api/flights' + query, { headers: { Cookie: `__Host-rephase_session=${token}`, 'X-Rephase-Account': account } });
 }

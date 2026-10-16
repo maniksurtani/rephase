@@ -10,8 +10,7 @@
   border: 1px solid #433956;
   flex-shrink: 0;
 }
-.lounge-search-panel,
-.lounge-memberships-panel {
+.lounge-search-panel {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 16px;
@@ -119,26 +118,6 @@
   white-space: normal;
   text-align: left;
   flex-shrink: 0;
-}
-.lounge-memberships-panel {
-  display: grid;
-  grid-template-columns: 1fr 200px;
-  gap: 25px;
-  align-items: start;
-}
-.lounge-memberships-panel details {
-  min-width: 0;
-}
-.lounge-memberships-panel summary {
-  cursor: pointer;
-  font-size: 13px;
-  color: #e1d7ee;
-  line-height: 1.8;
-}
-.lounge-memberships-panel summary small {
-  color: var(--muted);
-  margin-left: 12px;
-  font-size: 11px;
 }
 .lounge-programs {
   display: grid;
@@ -401,58 +380,12 @@
 .lounge-empty p {
   line-height: 1.7;
 }
-.lounge-opportunity {
-  display: flex;
-  gap: 12px;
-  background: #222435;
-  border: 1px solid #464157;
-  border-radius: 0 0 12px 12px;
-  margin: -3px 0 15px;
-  padding: 17px 19px;
-  color: #bda8dc;
-}
-.lounge-opportunity > svg {
-  flex-shrink: 0;
-  margin-top: 3px;
-}
-.lounge-opportunity > div {
-  min-width: 0;
-}
-.lounge-opportunity strong {
-  display: block;
-  font-size: 12px;
-  font-weight: 500;
-  color: #d9cbe9;
-}
-.lounge-opportunity span {
-  display: block;
-  font-size: 12px;
-  color: #c1b5d3;
-  margin: 5px 0;
-}
-.lounge-opportunity small {
-  display: block;
-  font-size: 10px;
-  color: #9293aa;
-  line-height: 1.6;
-}
-.lounge-opportunity .text-button {
-  margin-top: 9px;
-  text-align: left;
-  white-space: normal;
-}
-.timeline-entry .lounge-opportunity {
-  margin-bottom: 0;
-}
 @media (max-width: 1100px) {
   .lounge-fields {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
   .lounge-programs {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .lounge-memberships-panel {
-    grid-template-columns: 1fr 175px;
   }
 }
 @media (max-width: 760px) {
@@ -465,8 +398,7 @@
     padding-left: 2px;
     padding-right: 2px;
   }
-  .lounge-search-panel,
-  .lounge-memberships-panel {
+  .lounge-search-panel {
     padding: 17px;
     border-radius: 14px;
   }
@@ -489,10 +421,6 @@
   .lounge-context .text-button {
     font-size: 12px;
   }
-  .lounge-memberships-panel {
-    grid-template-columns: 1fr;
-    gap: 18px;
-  }
   .lounge-priority {
     max-width: 100%;
   }
@@ -501,10 +429,6 @@
   }
   .lounge-programs label {
     min-height: 40px;
-  }
-  .lounge-memberships-panel summary small {
-    display: block;
-    margin-left: 14px;
   }
   .lounge-results {
     grid-template-columns: 1fr;
@@ -528,10 +452,6 @@
     width: 53px;
     height: 59px;
     border-radius: 20px;
-  }
-  .lounge-opportunity {
-    padding: 14px 12px;
-    gap: 9px;
   }
   .lounge-badges > span {
     font-size: 11px;

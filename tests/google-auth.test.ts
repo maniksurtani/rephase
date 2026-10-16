@@ -3,7 +3,7 @@ import type { Account } from '../src/lib/types';
 
 const CLIENT_ID = 'test-client.apps.googleusercontent.com';
 const ACCOUNT: Account = { id: 'google-user', name: 'Traveler', email: 'traveler@example.com' };
-type AuthModule = typeof import('../src/lib/auth');
+type AuthModule = typeof import('../src/lib/google-signin');
 type InitializeOptions = Parameters<NonNullable<Window['google']>['accounts']['id']['initialize']>[0];
 type ButtonOptions = Parameters<NonNullable<Window['google']>['accounts']['id']['renderButton']>[1];
 
@@ -63,7 +63,7 @@ describe('Google sign-in button lifecycle', () => {
       throw new Error(`Unexpected request: ${String(path)}`);
     });
     vi.stubGlobal('fetch', fetchMock);
-    auth = await import('../src/lib/auth');
+    auth = await import('../src/lib/google-signin');
   });
 
   afterEach(() => {

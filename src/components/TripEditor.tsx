@@ -21,6 +21,7 @@ export function TripEditor({
   errors,
   onSave,
   onClose,
+  onReload,
   existing,
   accountId,
   flightLookupAvailable,
@@ -30,6 +31,7 @@ export function TripEditor({
   errors: string[];
   onSave: () => void;
   onClose: () => void;
+  onReload?: () => void;
   existing: boolean;
   accountId: string | null;
   flightLookupAvailable: boolean;
@@ -217,6 +219,11 @@ export function TripEditor({
                 <li key={index}>{error}</li>
               ))}
             </ul>
+            {onReload && (
+              <button type="button" className="button secondary" onClick={onReload}>
+                Reload latest trip
+              </button>
+            )}
           </div>
         )}
         <div className="flight-editor-list">

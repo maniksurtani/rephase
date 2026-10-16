@@ -1,7 +1,7 @@
 import 'fake-indexeddb/auto';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { AccountPersistence, emptyAccountData } from '../src/lib/account-persistence';
-import { ApiError } from '../src/lib/auth';
+import { ApiError } from '../src/lib/api';
 import { createInitialData } from '../src/lib/defaults';
 import { createAccountCacheClient, type AccountCache } from '../src/lib/account-cache';
 import type { Account, AppData } from '../src/lib/types';
@@ -399,6 +399,43 @@ describe('server authoritative account persistence', () => {
     expect(controller.getSnapshot().conflict).toBeNull();
     expect(h.services.putCloudState).not.toHaveBeenCalled();
     await cache.clear('alice', { discardPending: true });
+  });
+  it.each([false, true])('deletes another tab’s pre-existing journal but retains any later generation: later edit %s', async laterEdit => {
+    const base = createInitialData(); base.trips[0].id = 'personal-trip'; base.selectedTripId = 'personal-trip';
+    const h = harness({ initial: base }), deleting = createAccountCacheClient('deleting-tab'), other = createAccountCacheClient('other-tab');
+    await deleting.clear('alice', { discardPending: true });
+    try {
+      const controller = new AccountPersistence({ account: alice, data: base }, { ...h.services, loadCache: deleting.load, saveCache: deleting.save, clearCache: deleting.clear });
+      instances.push(controller); await controller.refresh();
+      const oldDraft = copy(base); oldDraft.trips[0].name = 'Draft before deletion';
+      await other.save('alice', { version: 1, data: oldDraft, baseline: { data: base, revision: 1 }, pending: true });
+
+      const started = deferred<void>(), response = deferred<void>();
+      h.services.deleteCloudState.mockImplementationOnce(async () => {
+        started.resolve(); await response.promise;
+        h.setCloud({ data: null, revision: 2 });
+        return { revision: 2 };
+      });
+      const deletion = controller.deleteAccountData(); await started.promise;
+      if (laterEdit) {
+        const laterDraft = copy(oldDraft); laterDraft.trips[0].name = 'Edit during deletion';
+        await other.save('alice', { version: 1, data: laterDraft, baseline: { data: base, revision: 1 }, pending: true });
+      }
+      response.resolve(); await deletion;
+
+      expect(h.getCloud()).toEqual({ data: null, revision: 2 });
+      const cached = await deleting.load('alice');
+      expect(cached).toMatchObject({ pending: laterEdit, baseline: { data: null, revision: 2 } });
+      await controller.refresh();
+      if (laterEdit) {
+        expect(cached?.data.trips[0].name).toBe('Edit during deletion');
+        expect(controller.getSnapshot().conflict?.reasons).toContain('Saved account data was deleted while another tab has unsaved changes');
+      } else {
+        expect(cached?.data).toEqual(emptyAccountData());
+        expect(controller.getSnapshot()).toMatchObject({ data: emptyAccountData(), conflict: null });
+      }
+      expect(h.services.putCloudState).not.toHaveBeenCalled();
+    } finally { await deleting.clear('alice', { discardPending: true }); }
   });
   it('automatically recovers and uploads independent drafts from other cache clients during refresh', async () => {
     const h = harness(), a = createAccountCacheClient('recover-a'), b = createAccountCacheClient('recover-b'), c = createAccountCacheClient('recover-c');

@@ -1,6 +1,6 @@
 import type { AppData } from './types';
 import { isAppData } from './store';
-import { validateTrip } from './plan';
+import { validateTrip } from './itinerary';
 
 export interface MergeResult {
   data: AppData;

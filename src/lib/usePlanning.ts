@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { Plan, Preferences, Trip } from './types';
 import type { PlannerResponse } from './planner-worker';
+import { createPlanningContext } from './planning-airports';
 
 /** A fresh worker cancels obsolete searches and keeps itinerary editing responsive. */
 export function usePlanning(trip: Trip | null, preferences: Preferences) {
@@ -25,6 +26,7 @@ export function usePlanning(trip: Trip | null, preferences: Preferences) {
     setResult({ plan: null, error: null, loading: true });
     let ended = false;
     const id = crypto.randomUUID();
+    const context = createPlanningContext(trip);
     let worker: Worker | undefined;
     try {
       worker = new Worker(new URL('./planner-worker.ts', import.meta.url), { type: 'module' });
@@ -44,20 +46,33 @@ export function usePlanning(trip: Trip | null, preferences: Preferences) {
             loading: false,
           });
       };
-      worker.postMessage({ id, trip, preferences: planningPreferences, now: Date.now() });
+      worker.postMessage({ id, trip, preferences: planningPreferences, context, now: Date.now() });
     } catch {
-      void import('./plan').then(({ generatePlan }) => {
-        if (ended) return;
-        try {
-          setResult({ plan: generatePlan(trip, planningPreferences), error: null, loading: false });
-        } catch (error) {
-          setResult({
-            plan: null,
-            error: error instanceof Error ? error.message : 'Planning failed.',
-            loading: false,
-          });
-        }
-      });
+      void import('./plan')
+        .then(({ generatePlan }) => {
+          if (ended) return;
+          try {
+            setResult({
+              plan: generatePlan(trip, planningPreferences, { context }),
+              error: null,
+              loading: false,
+            });
+          } catch (error) {
+            setResult({
+              plan: null,
+              error: error instanceof Error ? error.message : 'Planning failed.',
+              loading: false,
+            });
+          }
+        })
+        .catch(() => {
+          if (!ended)
+            setResult({
+              plan: null,
+              error: 'The planner could not load. Reload the app and try again.',
+              loading: false,
+            });
+        });
     }
     return () => {
       ended = true;

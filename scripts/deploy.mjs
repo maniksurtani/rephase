@@ -33,79 +33,6 @@ async function buildApp() {
   });
 }
 
-// Optional, read-only diagnostics for the manually dispatched Verify production
-// workflow. Public security challenges must not determine deployment success.
-export async function verifyDeployment(settings, expectFlightLookup = false, options = {}) {
-  const {
-    fetch: fetchPublicConfig = globalThis.fetch,
-    wait = (delay) => new Promise((resolvePromise) => setTimeout(resolvePromise, delay)),
-    attempts = 40,
-    retryDelay = 5000,
-  } = options;
-  if (!Number.isSafeInteger(attempts) || attempts < 1
-      || !Number.isFinite(retryDelay) || retryDelay < 0 || retryDelay > 60_000) {
-    throw new Error('Public verification requires a positive attempt count and a retry delay between 0 and 60000 milliseconds.');
-  }
-  // A first Custom Domain needs time for DNS and TLS as well as edge propagation.
-  // Forty checks provide over three minutes even when every request fails quickly.
-  console.log('Checking public configuration and HTTPS readiness.');
-  const errorNames = new Set(['Error', 'TypeError', 'AbortError', 'TimeoutError', 'SyntaxError']);
-  const networkCodes = new Set([
-    'ENOTFOUND', 'EAI_AGAIN', 'ECONNREFUSED', 'ECONNRESET', 'ETIMEDOUT',
-    'UND_ERR_CONNECT_TIMEOUT', 'UND_ERR_HEADERS_TIMEOUT', 'UND_ERR_BODY_TIMEOUT',
-    'ERR_TLS_CERT_ALTNAME_INVALID', 'UNABLE_TO_VERIFY_LEAF_SIGNATURE',
-    'CERT_HAS_EXPIRED', 'DEPTH_ZERO_SELF_SIGNED_CERT',
-  ]);
-  for (let attempt = 0; attempt < attempts; attempt += 1) {
-    let diagnostic = {};
-    try {
-      const response = await fetchPublicConfig(`${settings.origin}/api/config`, { signal: AbortSignal.timeout(5000), cache: 'no-store' });
-      const mimeType = response.headers.get('content-type')?.split(';', 1)[0].trim().toLowerCase() || '';
-      diagnostic = {
-        status: response.status,
-        content: mimeType === 'application/json' || /^application\/[a-z0-9.+-]+\+json$/.test(mimeType) ? 'JSON'
-          : ['text/html', 'application/xhtml+xml'].includes(mimeType) ? 'HTML' : 'other',
-        challenge: response.headers.get('cf-mitigated') === 'challenge',
-      };
-      if (diagnostic.challenge) {
-        const cfRay = response.headers.get('cf-ray');
-        if (cfRay && /^[a-f0-9]{16}-[a-z]{3}$/i.test(cfRay)) diagnostic.cfRay = cfRay;
-        // A challenge cannot be solved by a noninteractive deployment check.
-        // Discard its body without parsing or logging any challenge content.
-        await response.body?.cancel();
-      } else {
-        const config = await response.json();
-        const clientMatches = config?.googleClientId === settings.clientId;
-        const syncReady = config?.syncAvailable === true;
-        const flightReady = !expectFlightLookup || config?.flightLookupAvailable === true;
-        diagnostic = { ...diagnostic, clientMatches, syncReady, flightReady };
-        if (response.ok && clientMatches && syncReady && flightReady) {
-          console.log(`Public configuration responds at ${settings.origin}. Google client and database bindings are configured.`);
-          console.log('Complete a real Google sign-in and save/reload a trip to verify account sync.');
-          return;
-        }
-      }
-    } catch (error) {
-      // Log only categories from fixed allowlists, never server bodies or error messages.
-      diagnostic = {
-        ...diagnostic,
-        error: errorNames.has(error?.name) ? error.name : 'other',
-        networkCode: networkCodes.has(error?.cause?.code) ? error.cause.code : 'other',
-      };
-    }
-    if (diagnostic.challenge || attempt === 0 || (attempt + 1) % 6 === 0) {
-      const nextStep = diagnostic.challenge ? 'blocked by a Cloudflare security challenge.'
-        : attempt < attempts - 1 ? 'retrying.' : 'no checks remain.';
-      console.log(`Public configuration is not ready (check ${attempt + 1}/${attempts}; ${JSON.stringify(diagnostic)}); ${nextStep}`);
-    }
-    if (diagnostic.challenge) {
-      throw new Error('Cloudflare security challenge blocked GET /api/config. Open the zone\'s Security Events in the Cloudflare dashboard, filter by the configured public origin and GET /api/config, and review the matching rule before rerunning verification. Guidance: https://developers.cloudflare.com/waf/analytics/security-events/');
-    }
-    if (attempt < attempts - 1) await wait(retryDelay);
-  }
-  throw new Error('Public origin verification is not ready. Check DNS/TLS readiness, PUBLIC_APP_ORIGIN, the Worker route and Google/database configuration before retrying verification.');
-}
-
 export async function deploy(args = process.argv.slice(2)) {
   if (args.includes('--help')) {
     console.log('Usage: node scripts/deploy.mjs --dry-run | --apply [--verified-release]\n--dry-run builds and checks locally; --apply applies remote D1 migrations and deploys.\n--verified-release is reserved for CI: validate and publish its exact successful Checks artifact without rebuilding.\nReads CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_D1_DATABASE_ID, PUBLIC_APP_ORIGIN and GOOGLE_CLIENT_ID.\nCLOUDFLARE_API_TOKEN authenticates CI. RAPIDAPI_KEY is optional and is sent through stdin.');
@@ -150,7 +77,7 @@ export async function deploy(args = process.argv.slice(2)) {
       input: JSON.stringify({ RAPIDAPI_KEY: process.env.RAPIDAPI_KEY.trim() }),
     });
   }
-  console.log('Cloudflare deployment commands completed. Public configuration can be checked separately with the optional Verify production workflow.');
+  console.log('Cloudflare deployment commands completed. Open the app to check the published experience.');
 }
 
 if (isMainModule(import.meta.url)) {

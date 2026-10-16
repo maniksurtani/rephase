@@ -19,11 +19,11 @@ Enter `CLOUDFLARE_API_TOKEN` directly as a `production` environment secret. Keep
 
 Confirm `rephase.surtani.org` has no existing DNS record or service before the first run. A noninteractive Wrangler deployment can replace an existing origin or DNS assignment. The generated deployment config declares a Custom Domain, disables workers.dev/preview URLs for this target, and lets Cloudflare create DNS and HTTPS automatically. Do not create a manual CNAME for it.
 
-Once settings are complete, wait for **Checks** to pass on the current `main` commit, then run **Actions → Deploy to Cloudflare → Run workflow**, selecting `main`. Deployment reuses that exact commit's tested assets and bundled Worker, migrates D1 and installs configured Worker secrets. It does not repeat the browser suite or rebuild. Public HTTP verification is an optional separate diagnostic. Leave `DEPLOY_ENABLED` unset for manual deployment; setting it to `true` later enables deployment after successful main checks.
+Once settings are complete, wait for **Checks** to pass on the current `main` commit, then run **Actions → Deploy to Cloudflare → Run workflow**, selecting `main`. Deployment reuses that exact commit's tested assets and bundled Worker, migrates D1 and installs configured Worker secrets. It does not repeat the browser suite or rebuild. Check the published app interactively after deployment. Leave `DEPLOY_ENABLED` unset for manual deployment; setting it to `true` later enables deployment after successful main checks.
 
 The Worker upload, migrations, DNS and TLS succeeded. Earlier deployments finished with a red public-check result because Cloudflare challenges GitHub-hosted runners. At the owner’s request, normal deployments no longer make that final HTTP request. Actual build, test, migration, upload and secret-installation errors still fail the workflow. No Cloudflare security exception is required for deployment.
 
-Use the optional **Verify production** workflow for public DNS/HTTPS/configuration diagnostics. It retries transient failures briefly and stops immediately on a confirmed Cloudflare challenge; its result is separate from deployment.
+The old optional public-verification workflow has been retired. Use the Cloudflare deployment result and an interactive browser check; Cloudflare can challenge noninteractive probes.
 
 Production smoke checks passed: desktop and 390px mobile guest planning, unique date tiles, both airport clocks, meal advice, calendar export, all 24 offline assets, offline planner/Science, Science without JavaScript, and HTTP 401 for unauthenticated account/state APIs. These checks do not complete Google sign-in or spend provider credits. Manual deployment is always available; automatic main-push deployment depends on the repository variable `DEPLOY_ENABLED=true`.
 
@@ -73,7 +73,7 @@ This account storage fits Cloudflare’s free tier for personal use and an initi
 
 ## Optional public verification
 
-**Actions → Verify production → Run workflow** is a read-only diagnostic for DNS, public HTTPS and API configuration. It does not deploy or need a Cloudflare API token. Normal deployment does not invoke it. A Cloudflare browser challenge can still make this optional diagnostic fail while the app works in a real browser; no security-rule change is needed to deploy. The diagnostic prints only safe response categories, readiness booleans and a validated Cloudflare Ray ID.
+Check public configuration in an interactive browser at `/api/config`; verify the published UI and use Cloudflare logs for failures. Automated deployment does not make a final public HTTP request.
 
 ## Debug flight lookup
 
@@ -136,20 +136,14 @@ Create an empty GitHub repository, choosing its name and visibility. Leave GitHu
 
 For SSH authentication, add your SSH public key to GitHub. For HTTPS, sign in with `gh auth login` or a Git credential manager; GitHub does not accept your account password for Git pushes. Never put an access token in a remote URL.
 
-The helper defaults to printing the exact commands, with no remote writes:
+Use ordinary Git commands to connect an existing checkout to an empty remote:
 
 ```sh
-npm run github:remote -- --url https://github.com/YOUR_ACCOUNT/YOUR_REPO.git
-# Alternatively: --url git@github.com:YOUR_ACCOUNT/YOUR_REPO.git
+git remote add origin git@github.com:YOUR_ACCOUNT/YOUR_REPO.git
+git push -u origin main
 ```
 
-To verify the remote is empty and add `origin` **locally**:
-
-```sh
-npm run github:remote -- --url https://github.com/YOUR_ACCOUNT/YOUR_REPO.git --check-empty --configure
-```
-
-Then run the printed `git push -u origin main` command when you are ready to upload. The helper never pushes, force-pushes, creates a repository or replaces an existing different remote. The `Checks` workflow runs for pull requests and pushes to `main` that change more than Markdown documentation; it installs locked dependencies, typechecks, tests, builds and runs Chromium plus mobile WebKit scenarios. Pull-request checks receive no deployment or provider secrets.
+For this repository, `origin` is already configured. Inspect it with `git remote -v` before changing it. The Checks workflow runs for pull requests and main pushes changing more than Markdown; it installs locked dependencies, lints hooks, typechecks, tests, builds and runs Chromium/mobile WebKit. Pull-request checks receive no deployment or provider secrets.
 
 ## Move the complete Git history to your computer
 
@@ -215,7 +209,7 @@ The workflow initially runs deployment only when you choose **Actions → Deploy
 
 Manual deployment waits for matching checks already in progress. If no successful release exists, or its artifact has expired after **30 days**, run **Actions → Checks → Run workflow → main**, wait for success, then retry deployment. A Markdown-only change intentionally skips automatic checks; deploying that exact new commit also requires a manual Checks run. Deployment refuses an older commit if `main` advances while it is waiting; start the deployment again for current `main`. Repeated deployment of an unchanged, verified commit reuses the existing artifact.
 
-After validation, deployment applies remote migrations, uploads the Worker/static bundle, and optionally uploads the provider secret via Wrangler stdin. Public configuration checks run only in the separate optional **Verify production** workflow. Secrets are not written to configuration files, command-line arguments or logs.
+After validation, deployment applies remote migrations, uploads the Worker/static bundle, and optionally uploads the provider secret via Wrangler stdin. Check public configuration interactively after deployment. Secrets are not written to configuration files, command-line arguments or logs.
 
 After deciding to enable deployment after every verified code push to `main`, set the **repository variable** `DEPLOY_ENABLED` to `true`. The completed Checks workflow triggers deployment; failed checks and Markdown-only pushes do not deploy. Leave it absent or set it to `false` for manual-only deployment. This switch must be a repository variable because the workflow evaluates it before loading an environment's variables. Restrict who can push to `main` or add branch protection as appropriate for your repository.
 

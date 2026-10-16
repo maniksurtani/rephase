@@ -1,4 +1,4 @@
-import { ApiError } from './auth';
+import { ApiError } from './api';
 import { mergeAppData } from './merge';
 import type { AppData } from './types';
 import type { SyncSnapshot } from './store';
@@ -34,7 +34,6 @@ export async function reconcileSync(
   local: AppData,
   baseline: SyncSnapshot | null,
   transport: SyncTransport,
-  explicit = false,
 ): Promise<SyncResult> {
   for (let attempt = 0; attempt < 2; attempt++) {
     const cloud = await transport.get();
@@ -48,7 +47,7 @@ export async function reconcileSync(
     let merged = local;
     if (sameData(local, cloud.data)) return { kind: 'accepted', data: local, snapshot: cloud };
     if (cloud.data === null) {
-      if (baseline?.data && !explicit) {
+      if (baseline?.data) {
         if (hasContentChanges(local, baseline.data))
           return {
             kind: 'conflict',

@@ -495,11 +495,31 @@ export async function handleApi(
   } catch (error) {
     if (error instanceof ApiError || error instanceof FlightApiError)
       return response({ error: error.message }, error.status);
-    // Never include Google credentials, session tokens, SQL, or private state in an error response/log.
+    const reference = 'API-' + crypto.randomUUID().replace(/-/g, '').slice(0, 12);
+    const operations: Record<string, string> = {
+      '/api/config': 'configuration',
+      '/api/auth/challenge': 'google_challenge',
+      '/api/auth/google': 'google_sign_in',
+      '/api/auth/logout': 'sign_out',
+      '/api/me': 'account',
+      '/api/state': 'account_state',
+      '/api/flights': 'flight_lookup',
+    };
+    // Log only fixed categories and a random support reference, never the URL,
+    // exception text, Google credentials, session tokens, SQL or private state.
+    console.warn(
+      JSON.stringify({
+        event: 'api_failure',
+        reference,
+        operation: operations[path] ?? 'unknown',
+        method: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'].includes(request.method)
+          ? request.method
+          : 'other',
+        category: 'unexpected',
+      }),
+    );
     return response(
-      {
-        error: 'Account storage is unavailable. Check the Worker configuration and D1 migrations.',
-      },
+      { error: `Account services are unavailable. Try again later. Reference: ${reference}.` },
       503,
     );
   }

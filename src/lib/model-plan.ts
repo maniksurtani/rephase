@@ -1,5 +1,4 @@
 import { Temporal } from '@js-temporal/polyfill';
-import { findAirport } from './airports';
 import { splitDaylight } from './daylight';
 import {
   entrainHabitual,
@@ -10,8 +9,8 @@ import {
 } from './circadian';
 import type { CircadianSample, CircadianState } from './circadian';
 import { dateInZone, localToInstant } from './time';
-import { flightAirborneTiming } from './plan';
-import { stayPlaceLabel } from './plan-places';
+import { flightAirborneTiming } from './flight-timing';
+import { planningStayLabel, type PlanningContext } from './planning-context';
 import type {
   AdaptationStrategy,
   AdherenceRecord,
@@ -56,6 +55,7 @@ type DayEstimate = {
   routeHours: number;
   targetKey?: string;
   zone: string;
+  direction?: Direction;
   note: string;
 };
 type Beam = {
@@ -69,6 +69,7 @@ type Beam = {
 };
 export interface ModelPlanOptions {
   now?: number;
+  context: PlanningContext;
 }
 export interface ModelSearchDiagnostics {
   evaluatedCandidates: number;
@@ -305,6 +306,7 @@ function pastInputs(trip: Trip, prefs: Preferences, start: number, end: number):
 function tripStages(
   trip: Trip,
   prefs: Preferences,
+  context: PlanningContext,
 ): {
   stages: Stage[];
   start: number;
@@ -383,7 +385,7 @@ function tripStages(
       end: onwards ? onwards.departure - 2 * HOUR : end,
       zone: flight.leg.arrivalTimeZone,
       airport: flight.leg.arrivalAirport,
-      label: stayPlaceLabel(flight.leg.arrivalAirport, destination),
+      label: planningStayLabel(context, flight.leg.arrivalAirport, destination),
       stage: destination
         ? flight.leg.arrivalTimeZone === prefs.homeTimeZone
           ? 'home'
@@ -522,6 +524,12 @@ function makeAction(
     title,
     detail,
     reason,
+    ...(type === 'sleep'
+      ? {
+          sleepKind:
+            stage.kind === 'flight' && !stage.lieFlat ? ('rest' as const) : ('sleep' as const),
+        }
+      : {}),
     evidenceUrl: type === 'light' || type === 'avoid-light' ? LIGHT_SOURCE : CDC,
     ...(feasibility ? { feasibility } : {}),
     ...(dose ? { dose } : {}),
@@ -533,6 +541,7 @@ function runCandidate(
   prefs: Preferences,
   trip: Trip,
   direction: Direction,
+  context: PlanningContext,
 ): Beam {
   const next: Beam = {
     ...beam,
@@ -630,7 +639,7 @@ function runCandidate(
               piece,
               piece.date,
               stage.zone,
-              findAirport(stage.airport),
+              context.airports[stage.airport.trim().toUpperCase()],
             )) {
               if (feasible.end - feasible.start < 15 * MINUTE) continue;
               const indoor = feasible.feasibility !== 'daylight',
@@ -692,6 +701,7 @@ function runCandidate(
       routeHours: schedule.routeHours,
       ...(stage.strategy === 'partial' && stage.targetKey ? { targetKey: stage.targetKey } : {}),
       zone: stage.zone,
+      ...(stage.kind === 'ground' && stage.adapt ? { direction } : {}),
       note:
         stage.kind === 'blocked'
           ? 'Airport/transfer buffers have no timed recommendations.'
@@ -724,6 +734,7 @@ function loggedActions(trip: Trip, cutoff: number): PlanAction[] {
     return [
       {
         id: record.actionId,
+        origin: 'observation' as const,
         type: record.type,
         start: record.scheduledStart,
         end: iso(Math.min(cutoff, Date.parse(record.scheduledEnd))),
@@ -780,7 +791,7 @@ function auxiliaryActions(
       prefs.melatonin &&
       stage.adapt &&
       !stage.preparationTargetZone &&
-      phaseEstimate?.note.startsWith('Earlier') &&
+      phaseEstimate?.direction === 'advance' &&
       phaseEstimate.routeHours < 8 &&
       sleep.end - sleep.start >= prefs.sleepHours * HOUR - 1
     ) {
@@ -872,7 +883,9 @@ function displayDays(
           todayNadirs[0].time - todayNadirs[0].previous < 36 * HOUR;
         const available = !!estimate && usable;
         // Positive means the next biological low is earlier; preserve small changes for honest display.
-        const shift = available ? 24 - (todayNadirs[0].time - todayNadirs[0].previous) / HOUR : 0;
+        const shift = available
+          ? phaseShiftBetweenLows(todayNadirs[0].previous, todayNadirs[0].time)
+          : 0;
         day = {
           id: key,
           date: piece.date,
@@ -911,10 +924,15 @@ function displayDays(
     .sort((a, b) => clock(a.date, '00:00', a.timeZone) - clock(b.date, '00:00', b.timeZone));
 }
 
+/** Positive values mean an earlier biological low; retain sub-minute modeled changes. */
+export function phaseShiftBetweenLows(previous: number, current: number): number {
+  return 24 - (current - previous) / HOUR;
+}
+
 export function generateModelPlanWithDiagnostics(
   trip: Trip,
   prefs: Preferences,
-  options: ModelPlanOptions = {},
+  options: ModelPlanOptions,
 ): { plan: Plan; diagnostics: ModelSearchDiagnostics } {
   const {
     stages: originalStages,
@@ -922,7 +940,7 @@ export function generateModelPlanWithDiagnostics(
     end,
     warnings: stageWarnings,
     flights,
-  } = tripStages(trip, prefs);
+  } = tripStages(trip, prefs, options.context);
   const validLogs = (trip.adherence ?? []).filter(
     (record) =>
       record.tripId === trip.id &&
@@ -958,7 +976,7 @@ export function generateModelPlanWithDiagnostics(
       for (const direction of stage.adapt
         ? (['advance', 'delay'] as const)
         : (['advance'] as const)) {
-        candidates.push(runCandidate(parent, stage, prefs, trip, direction));
+        candidates.push(runCandidate(parent, stage, prefs, trip, direction, options.context));
         evaluatedCandidates++;
       }
     // Bounded beam retains competing routes through subsequent destinations instead of resetting at each stop.
@@ -1077,10 +1095,6 @@ export function generateModelPlanWithDiagnostics(
     },
   };
 }
-export function generateModelPlan(
-  trip: Trip,
-  prefs: Preferences,
-  options?: ModelPlanOptions,
-): Plan {
+export function generateModelPlan(trip: Trip, prefs: Preferences, options: ModelPlanOptions): Plan {
   return generateModelPlanWithDiagnostics(trip, prefs, options).plan;
 }

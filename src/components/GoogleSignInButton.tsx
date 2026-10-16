@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { mountGoogleButton } from '../lib/auth';
+import { mountGoogleButton } from '../lib/google-signin';
 import type { Account } from '../lib/types';
 
 /** Google's supported button opens its account window directly from the user's click. */

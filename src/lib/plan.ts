@@ -4,7 +4,9 @@ import { dateInZone, localToInstant } from './time';
 import { generateModelPlan, type ModelPlanOptions } from './model-plan';
 import { decoratePlanWithTravel } from './plan-travel';
 import { decoratePlanWithMeals } from './plan-meals';
-import { stayPlaceLabel } from './plan-places';
+import { planningStayLabel, type PlanningContext } from './planning-context';
+import { validatePreferences, validateTrip } from './itinerary';
+import { flightAirborneTiming } from './flight-timing';
 
 export const PLAN_VERSION = 'rules-1.2.0';
 const HOUR = 3_600_000;
@@ -49,14 +51,7 @@ function clock(date: string, time: string, zone: string): number {
 function plusDate(date: string, days: number): string {
   return Temporal.PlainDate.from(date).add({ days }).toString();
 }
-function validZone(zone: string): boolean {
-  try {
-    Temporal.Instant.fromEpochMilliseconds(0).toZonedDateTimeISO(zone);
-    return true;
-  } catch {
-    return false;
-  }
-}
+
 function pieces(segment: Segment): Array<Segment & { date: string }> {
   const result: Array<Segment & { date: string }> = [];
   let start = segment.start;
@@ -69,130 +64,6 @@ function pieces(segment: Segment): Array<Segment & { date: string }> {
     start = end;
   }
   return result;
-}
-
-export function validateTrip(trip: Trip): string[] {
-  const errors: string[] = [];
-  if (!trip.legs?.length) return ['Add at least one flight.'];
-  if (trip.legs.length > 30) return ['A trip can include up to 30 flight legs.'];
-  let previousArrival: number | undefined;
-  let firstDeparture: number | undefined;
-  let lastArrival: number | undefined;
-  const ids = new Set<string>();
-  trip.legs.forEach((leg, index) => {
-    const prefix = `Flight ${index + 1}`;
-    if (!leg.id || ids.has(leg.id)) errors.push(`${prefix}: use a unique flight identifier.`);
-    ids.add(leg.id);
-    if (
-      !/^[A-Z0-9]{3,4}$/.test(leg.departureAirport) ||
-      !/^[A-Z0-9]{3,4}$/.test(leg.arrivalAirport)
-    ) {
-      errors.push(
-        `${prefix}: select departure and arrival airports using a 3–4 character uppercase airport code.`,
-      );
-    }
-    if (!['connection', 'destination'].includes(leg.stayAfter)) {
-      errors.push(`${prefix}: choose a connection or destination stay.`);
-    }
-    if (!['adapt', 'partial', 'home'].includes(leg.strategy)) {
-      errors.push(`${prefix}: choose an adaptation strategy.`);
-    }
-    let departure: number | undefined;
-    let arrival: number | undefined;
-    try {
-      departure = localToInstant(
-        leg.departureDateTime,
-        leg.departureTimeZone,
-        leg.departureDisambiguation,
-      );
-    } catch {
-      errors.push(
-        `${prefix}: departure date/time or zone is invalid, nonexistent, or ambiguous during daylight saving. Choose a valid local time; select earlier or later when that clock occurs twice.`,
-      );
-    }
-    try {
-      arrival = localToInstant(leg.arrivalDateTime, leg.arrivalTimeZone, leg.arrivalDisambiguation);
-    } catch {
-      errors.push(
-        `${prefix}: arrival date/time or zone is invalid, nonexistent, or ambiguous during daylight saving. Choose a valid local time; select earlier or later when that clock occurs twice.`,
-      );
-    }
-    if (departure !== undefined && arrival !== undefined) {
-      if (arrival <= departure)
-        errors.push(`${prefix}: arrival must follow departure in real time.`);
-      for (const minutes of [leg.taxiOutMinutes, leg.taxiInMinutes]) {
-        if (minutes !== undefined && (!Number.isFinite(minutes) || minutes < 0 || minutes > 180))
-          errors.push(`${prefix}: taxi allowances must be between 0 and 180 minutes.`);
-      }
-      try {
-        const airborne = flightAirborneTiming(leg);
-        if (
-          airborne.takeoff < departure ||
-          airborne.landing > arrival ||
-          (airborne.landing <= airborne.takeoff &&
-            (leg.takeoffDateTime ||
-              leg.landingDateTime ||
-              leg.taxiOutMinutes !== undefined ||
-              leg.taxiInMinutes !== undefined))
-        ) {
-          errors.push(
-            `${prefix}: takeoff and landing must fit in gate departure/arrival order; revise airborne times or taxi allowances.`,
-          );
-        }
-      } catch {
-        errors.push(
-          `${prefix}: airborne takeoff or landing time is invalid, nonexistent, or ambiguous.`,
-        );
-      }
-      if (arrival - departure > 36 * HOUR)
-        errors.push(`${prefix}: flight duration exceeds 36 hours; check dates and zones.`);
-      if (previousArrival !== undefined && departure < previousArrival + HOUR / 2) {
-        errors.push(
-          `${prefix}: leave at least 30 minutes after the previous arrival and put flights in travel order.`,
-        );
-      }
-      firstDeparture ??= departure;
-      previousArrival = arrival;
-      lastArrival = arrival;
-    }
-  });
-  if (
-    firstDeparture !== undefined &&
-    lastArrival !== undefined &&
-    lastArrival - firstDeparture > MAX_HORIZON
-  ) {
-    errors.push(
-      'The trip exceeds the supported 90-day planning horizon. Split it into shorter trips.',
-    );
-  }
-  return errors;
-}
-
-function validatePreferences(prefs: Preferences): void {
-  if (!validZone(prefs.homeTimeZone)) throw new RangeError('Select a valid home time zone.');
-  for (const value of [
-    prefs.usualBedtime,
-    prefs.usualWakeTime,
-    prefs.preferredBedtime,
-    prefs.preferredWakeTime,
-  ]) {
-    if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(value))
-      throw new RangeError('Use valid 24-hour sleep and wake times.');
-  }
-  if (!Number.isFinite(prefs.sleepHours) || prefs.sleepHours < 4 || prefs.sleepHours > 12) {
-    throw new RangeError('Sleep duration must be between 4 and 12 hours.');
-  }
-  if (
-    !Number.isInteger(prefs.preparationDays) ||
-    prefs.preparationDays < 0 ||
-    prefs.preparationDays > 7
-  ) {
-    throw new RangeError('Preparation days must be between 0 and 7.');
-  }
-  if (!['wake', 'bed'].includes(prefs.sleepAnchor))
-    throw new RangeError('Choose a sleep or wake anchor.');
-  if (prefs.planningMode !== undefined && !['rules', 'model'].includes(prefs.planningMode))
-    throw new RangeError('Choose a supported planning mode.');
 }
 
 function subtract(range: Range, blocked: Range[]): Range[] {
@@ -234,7 +105,7 @@ function phaseOccurrences(range: Range, phase: number): number[] {
  * Phase moves only by an assumed population pace during destination/preparation time.
  * Chronotype is context; it does not add an invented offset to habitual sleep timing.
  */
-export function generateRulesPlan(trip: Trip, prefs: Preferences): Plan {
+export function generateRulesPlan(trip: Trip, prefs: Preferences, context: PlanningContext): Plan {
   const errors = validateTrip(trip);
   if (errors.length) throw new RangeError(errors.join('\n'));
   validatePreferences(prefs);
@@ -344,7 +215,7 @@ export function generateRulesPlan(trip: Trip, prefs: Preferences): Plan {
             ? 'home'
             : 'destination'
           : 'travel',
-        label: stayPlaceLabel(flight.leg.arrivalAirport, destination),
+        label: planningStayLabel(context, flight.leg.arrivalAirport, destination),
         strategy: destination ? flight.leg.strategy : 'home',
         adapt: destination,
         flight: false,
@@ -478,6 +349,12 @@ export function generateRulesPlan(trip: Trip, prefs: Preferences): Plan {
           detail,
           reason,
           evidenceUrl,
+          ...(type === 'sleep'
+            ? {
+                sleepKind:
+                  segment.flight && !segment.lieFlat ? ('rest' as const) : ('sleep' as const),
+              }
+            : {}),
           ...(dose ? { dose } : {}),
           startMs: start,
           endMs: end,
@@ -660,40 +537,15 @@ export function generateRulesPlan(trip: Trip, prefs: Preferences): Plan {
   };
 }
 
-/** Gate schedule and airborne schedule are different: default taxi allowances are conservative estimates. */
-export function flightAirborneTiming(leg: Trip['legs'][number]): {
-  takeoff: number;
-  landing: number;
-} {
-  const departure = localToInstant(
-    leg.departureDateTime,
-    leg.departureTimeZone,
-    leg.departureDisambiguation,
-  );
-  const arrival = localToInstant(
-    leg.arrivalDateTime,
-    leg.arrivalTimeZone,
-    leg.arrivalDisambiguation,
-  );
-  return {
-    takeoff: leg.takeoffDateTime
-      ? localToInstant(leg.takeoffDateTime, leg.departureTimeZone, leg.departureDisambiguation)
-      : departure + (leg.taxiOutMinutes ?? 30) * 60_000,
-    landing: leg.landingDateTime
-      ? localToInstant(leg.landingDateTime, leg.arrivalTimeZone, leg.arrivalDisambiguation)
-      : arrival - (leg.taxiInMinutes ?? 30) * 60_000,
-  };
-}
-
-/** Newly generated plans use the numerical model; the original rules remain an explicit fallback. */
-export function generatePlan(trip: Trip, prefs: Preferences, options?: ModelPlanOptions): Plan {
+/** Newly generated plans use the numerical model; the original rules remain available for saved rules-mode preferences. */
+export function generatePlan(trip: Trip, prefs: Preferences, options: ModelPlanOptions): Plan {
   const errors = validateTrip(trip);
   if (errors.length) throw new RangeError(errors.join('\n'));
   validatePreferences(prefs);
   return decoratePlanWithMeals(
     decoratePlanWithTravel(
       prefs.planningMode === 'rules'
-        ? generateRulesPlan(trip, prefs)
+        ? generateRulesPlan(trip, prefs, options.context)
         : generateModelPlan(trip, prefs, options),
       trip,
     ),

@@ -5,13 +5,12 @@ import Ajv from 'ajv';
 import { Temporal } from '@js-temporal/polyfill';
 import { describe, expect, it } from 'vitest';
 import schema from '../data/lounges/schema.json';
+import { LOUNGE_DATA } from '../src/lib/lounge-data';
 import sfo from '../data/lounges/SFO.json';
-import syd from '../data/lounges/SYD.json';
-import hnl from '../data/lounges/HNL.json';
-import lax from '../data/lounges/LAX.json';
 import { LOUNGE_MEMBERSHIPS, type AirportLoungeData } from '../src/lib/lounge-types';
 
-const files = [sfo, syd, hnl, lax];
+const files = LOUNGE_DATA;
+
 const validate = new Ajv({ allErrors: true }).compile(schema);
 const publicRoot = fileURLToPath(new URL('../public/', import.meta.url));
 
@@ -114,7 +113,8 @@ describe('curated lounge research data', () => {
   });
 
   it('keeps airport files and lounge identifiers globally unique', () => {
-    expect(files.map(data => data.airport).sort()).toEqual(['HNL', 'LAX', 'SFO', 'SYD']);
+    expect(files.length).toBeGreaterThan(0);
+    expect(new Set(files.map(data => data.airport)).size).toBe(files.length);
     const ids = files.flatMap(data => data.lounges.map(lounge => lounge.id));
     expect(new Set(ids).size).toBe(ids.length);
   });

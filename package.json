@@ -16,8 +16,9 @@
     "deploy": "node scripts/deploy.mjs",
     "deploy:check": "node scripts/check-deploy-config.mjs",
     "cloudflare:configure": "node scripts/configure-cloudflare.mjs",
-    "github:remote": "node scripts/github-remote.mjs",
-    "benchmark:bun": "node scripts/benchmark-bun.mjs"
+    "lint": "eslint src",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css}\" \"worker/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\" \"worker/**/*.ts\""
   },
   "dependencies": {
     "@js-temporal/polyfill": "^0.5.1",
@@ -33,11 +34,15 @@
     "@types/node": "^24.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "@typescript-eslint/parser": "^8.71.2",
     "@vitejs/plugin-react": "^5.0.0",
     "ajv": "^8.20.0",
     "esbuild": "0.28.2",
+    "eslint": "^10.12.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
     "fake-indexeddb": "^6.2.5",
     "miniflare": "5.20261012.0-beta",
+    "prettier": "^3.9.10",
     "typescript": "^5.9.0",
     "vite": "^7.1.0",
     "vitest": "^3.2.0",

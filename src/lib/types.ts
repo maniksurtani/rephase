@@ -86,6 +86,10 @@ export interface PlanAction {
   dose?: string;
   evidenceUrl?: string;
   feasibility?: 'daylight' | 'indoor' | 'unknown';
+  /** Presentation labels never determine whether a sleep interval is seated rest. */
+  sleepKind?: 'sleep' | 'rest';
+  /** A preserved observation may share its ID with a new recommendation. */
+  origin?: 'observation';
 }
 export interface MealWindow {
   id: string;

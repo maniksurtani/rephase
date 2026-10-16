@@ -4,12 +4,10 @@ import type { ActionType, PlanAction, PlanTravelSegment } from './types';
 
 export type TimelineBandKind = ActionType | 'rest' | 'flight' | 'awake';
 
-/** Fractions use elapsed UTC time, so DST and travel never reverse the rail. */
+/** Elapsed UTC bounds keep DST and travel from reversing the rail. */
 export interface TimelineSpan {
   start: number;
   end: number;
-  startFraction: number;
-  endFraction: number;
   continuesBefore: boolean;
   continuesAfter: boolean;
 }
@@ -30,11 +28,9 @@ export interface TimelineBand extends TimelineSpan {
 export interface DayTimeline {
   start: number;
   end: number;
-  durationMinutes: number;
   timeZone: string;
   entries: TimelineEntry[];
   bands: TimelineBand[];
-  ticks: Array<{ instant: number; fraction: number }>;
 }
 
 type Range = { start: number; end: number };
@@ -74,7 +70,7 @@ function compareEntries(a: VisibleEntry, b: VisibleEntry): number {
 
 /** Rest is still the original sleep recommendation, with its original log ID. */
 export function timelineActionKind(action: PlanAction): ActionType | 'rest' {
-  return action.type === 'sleep' && /\b(?:rest|nap)\b/i.test(action.title) ? 'rest' : action.type;
+  return action.type === 'sleep' && action.sleepKind === 'rest' ? 'rest' : action.type;
 }
 
 /**
@@ -85,13 +81,7 @@ export function timelineActionKind(action: PlanAction): ActionType | 'rest' {
  * This is presentation only: original recommendations and flight objects are
  * returned by reference, and their model times and adherence IDs never change.
  */
-export function buildDayTimeline(
-  day: PlanCalendarDay,
-  options: { tickMinutes?: number } = {},
-): DayTimeline {
-  const tickMinutes = options.tickMinutes ?? 120;
-  if (!Number.isFinite(tickMinutes) || tickMinutes < 1)
-    throw new RangeError('Timeline ticks must be at least one minute apart.');
+export function buildDayTimeline(day: PlanCalendarDay): DayTimeline {
   const calendar = calendarBounds(day.date, day.timeZone);
   const sources = day.sourceDays.length ? day.sourceDays : [day];
   const sourceBounds = sources.map((source) => ({
@@ -150,12 +140,9 @@ export function buildDayTimeline(
 
   const start = Math.min(calendar.start, ...visible.map((entry) => entry.start));
   const end = Math.max(calendar.end, ...visible.map((entry) => entry.end));
-  const duration = end - start;
   const span = (range: Range, original: Range = range): TimelineSpan => ({
     start: range.start,
     end: range.end,
-    startFraction: (range.start - start) / duration,
-    endFraction: (range.end - start) / duration,
     continuesBefore: original.start < range.start,
     continuesAfter: original.end > range.end,
   });
@@ -198,24 +185,5 @@ export function buildDayTimeline(
     bands.push({ id: `awake:${cursor}`, kind: 'awake', ...span({ start: cursor, end }) });
   bands.sort((a, b) => a.start - b.start || a.end - b.end || a.id.localeCompare(b.id));
 
-  const step = tickMinutes * 60_000;
-  const ticks = new Set([start, end]);
-  for (
-    let instant = calendar.start + Math.ceil((start - calendar.start) / step) * step;
-    instant < end;
-    instant += step
-  ) {
-    ticks.add(instant);
-  }
-  return {
-    start,
-    end,
-    durationMinutes: duration / 60_000,
-    timeZone: day.timeZone,
-    entries,
-    bands,
-    ticks: [...ticks]
-      .sort((a, b) => a - b)
-      .map((instant) => ({ instant, fraction: (instant - start) / duration })),
-  };
+  return { start, end, timeZone: day.timeZone, entries, bands };
 }

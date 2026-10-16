@@ -1,4 +1,4 @@
-import { ApiError, deleteCloudState, getAccount, getCloudState, putCloudState } from './auth';
+import { ApiError, deleteCloudState, getAccount, getCloudState, putCloudState } from './api';
 import {
   clearAccountCache,
   loadAccountCache,
@@ -598,9 +598,9 @@ export class AccountPersistence {
     try {
       // Review the generations present when deletion starts. Later edits from
       // this or another tab remain independently recoverable.
-      await this.services.loadCache(account.id);
+      const cached = await this.services.loadCache(account.id);
       if (!this.current(epoch)) return;
-      const reviewedDrafts = { ...this.entry?.observedDrafts };
+      const reviewedDrafts = { ...cached?.observedDrafts };
       const verified = await this.services.getAccount();
       if (!this.current(epoch)) return;
       if (verified?.id !== account.id)

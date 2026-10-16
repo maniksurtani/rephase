@@ -78,18 +78,6 @@
   opacity: 0.5;
   cursor: wait;
 }
-.root-google {
-  min-height: 44px;
-  display: flex;
-  justify-content: center;
-  margin: 22px 0;
-}
-.root-error {
-  color: #ffc4c4 !important;
-  background: #442938;
-  padding: 12px;
-  border-radius: 10px;
-}
 .root-review-changes {
   position: fixed;
   z-index: 190;
