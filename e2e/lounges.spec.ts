@@ -51,7 +51,19 @@ function noHorizontalOverflow(page: Page) {
   return page.evaluate(() => Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) <= innerWidth);
 }
 
-test('lounge memberships save from Profile, stay out of Explorer, and survive account reload with recommendation priority', async ({ page }) => {
+async function expectScreenReaderTextHidden(page: Page) {
+  const bounds = await page.locator('.lounge-membership-settings .sr-only').evaluateAll(labels => labels.map(label => {
+    const { width, height } = label.getBoundingClientRect();
+    return { width, height };
+  }));
+  expect(bounds.length).toBeGreaterThan(0);
+  for (const { width, height } of bounds) {
+    expect(width).toBeLessThanOrEqual(1);
+    expect(height).toBeLessThanOrEqual(1);
+  }
+}
+
+test('searched airline tiers and paid memberships save from Profile without duplicates or lost programs, and survive account reload', async ({ page }) => {
   const api = new LoungeAccountApi();
   await api.install(page);
   await page.setViewportSize({ width: 1440, height: 1000 });
@@ -61,16 +73,61 @@ test('lounge memberships save from Profile, stay out of Explorer, and survive ac
   await page.getByRole('button', { name: 'Edit memberships', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Lounge memberships & airline status', exact: true })).toBeVisible();
   const priorityPass = page.getByRole('checkbox', { name: 'Priority Pass', exact: true });
-  const qantasPlatinum = page.getByRole('checkbox', { name: 'Qantas Platinum', exact: true });
   await priorityPass.check();
-  await qantasPlatinum.check();
+
+  const addStatus = page.getByRole('button', { name: 'Add airline status', exact: true });
+  const search = page.getByRole('searchbox', { name: 'Search airline programs', exact: true });
+  await addStatus.click();
+  // Editing a paid membership while the picker is open must not unexpectedly
+  // move keyboard focus back into the program search.
+  await priorityPass.uncheck();
+  await expect(priorityPass).toBeFocused();
+  await priorityPass.check();
+  await expect(priorityPass).toBeFocused();
+  await search.fill('Qantas');
+  await expect(page.locator('.loyalty-program-picker [role="status"]')).toHaveText('1 matching program');
+  await expectScreenReaderTextHidden(page);
+  expect(await noHorizontalOverflow(page)).toBe(true);
+  await page.locator('.lounge-membership-settings').evaluate(node => node.scrollIntoView({ block: 'start' }));
+  await page.screenshot({ path: 'artifacts/loyalty-settings-desktop-picker.png' });
+  await page.getByRole('button', { name: 'Add Qantas Frequent Flyer', exact: true }).click();
+  const qantasStatus = page.getByRole('combobox', { name: 'Qantas Frequent Flyer status', exact: true });
+  await expect(qantasStatus).toBeFocused();
+  await qantasStatus.selectOption('qantas-gold');
+  await qantasStatus.selectOption('qantas-platinum');
+  await expect(qantasStatus).toHaveValue('qantas-platinum');
+
+  // A selected program gets an editable tier, rather than another checkbox
+  // per tier or an opportunity to save conflicting statuses for one airline.
+  await addStatus.click();
+  await search.fill('Qantas');
+  await expect(page.getByRole('button', { name: 'Add Qantas Frequent Flyer', exact: true })).toHaveCount(0);
+  await search.press('Escape');
+  await expect(addStatus).toBeFocused();
+  await addStatus.click();
+  await search.fill('United');
+  const addUnited = page.getByRole('button', { name: 'Add United MileagePlus', exact: true });
+  await search.press('ArrowDown');
+  await expect(addUnited).toBeFocused();
+  await addUnited.press('Enter');
+  const unitedStatus = page.getByRole('combobox', { name: 'United MileagePlus status', exact: true });
+  await expect(unitedStatus).toBeFocused();
+  await unitedStatus.selectOption('united-premier-1k');
+  await expect(page.locator('.loyalty-status-row')).toHaveCount(2);
+  await expect(qantasStatus).toHaveValue('qantas-platinum');
+  await expect(priorityPass).toBeChecked();
+  await expectScreenReaderTextHidden(page);
+  await page.locator('.lounge-membership-settings').evaluate(node => node.scrollIntoView({ block: 'start' }));
+  await page.screenshot({ path: 'artifacts/loyalty-settings-desktop-selected.png' });
   await expect(page.getByRole('button', { name: 'Save preferences', exact: true })).toBeEnabled();
   await page.getByRole('button', { name: 'Save preferences', exact: true }).click();
-  await expect.poll(() => api.data.preferences.loungeMemberships).toEqual(['priority-pass', 'qantas-platinum']);
+  await expect.poll(() => [...(api.data.preferences.loungeMemberships ?? [])].sort()).toEqual(['priority-pass', 'qantas-platinum', 'united-premier-1k']);
   await page.getByRole('button', { name: 'Lounges', exact: true }).first().click();
   await expect(page.getByRole('checkbox')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Add airline status', exact: true })).toHaveCount(0);
   await expect(page.locator('.lounge-membership-summary')).toContainText('Priority Pass');
   await expect(page.locator('.lounge-membership-summary')).toContainText('Qantas Platinum');
+  await expect(page.locator('.lounge-membership-summary')).toContainText('Premier 1K');
   await page.getByRole('combobox', { name: 'Prioritise', exact: true }).selectOption('showers');
   await expect.poll(() => api.data.preferences.loungePriority).toBe('showers');
   expect(api.writes.length).toBeGreaterThan(0);
@@ -80,13 +137,40 @@ test('lounge memberships save from Profile, stay out of Explorer, and survive ac
   await expect(page.getByRole('checkbox')).toHaveCount(0);
   await expect(page.locator('.lounge-membership-summary')).toContainText('Priority Pass');
   await expect(page.locator('.lounge-membership-summary')).toContainText('Qantas Platinum');
+  await expect(page.locator('.lounge-membership-summary')).toContainText('Premier 1K');
   await expect(page.getByRole('combobox', { name: 'Prioritise', exact: true })).toHaveValue('showers');
   await expect(page.locator('.lounge-card').first()).toBeVisible();
   expect(await noHorizontalOverflow(page)).toBe(true);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.getByRole('button', { name: 'Edit memberships', exact: true }).click();
   await expect(priorityPass).toBeChecked();
-  await expect(qantasPlatinum).toBeChecked();
+  await expect(qantasStatus).toHaveValue('qantas-platinum');
+  await expect(unitedStatus).toHaveValue('united-premier-1k');
+  await expectScreenReaderTextHidden(page);
+  expect(await noHorizontalOverflow(page)).toBe(true);
+  await page.locator('.lounge-membership-settings').evaluate(node => node.scrollIntoView({ block: 'start' }));
+  await page.screenshot({ path: 'artifacts/loyalty-settings-mobile-selected.png' });
+  await addStatus.click();
+  await search.fill('British');
+  await expect(page.locator('.loyalty-program-results')).toBeVisible();
+  await expectScreenReaderTextHidden(page);
+  expect(await noHorizontalOverflow(page)).toBe(true);
+  await page.locator('.loyalty-program-picker').evaluate(node => node.scrollIntoView({ block: 'center' }));
+  await page.screenshot({ path: 'artifacts/loyalty-settings-mobile-picker.png' });
+  await search.press('Escape');
+  await page.getByRole('button', { name: 'Remove United MileagePlus', exact: true }).click();
+  await expect(unitedStatus).toHaveCount(0);
+  await expect(qantasStatus).toHaveValue('qantas-platinum');
+  await expect(priorityPass).toBeChecked();
+  await page.getByRole('button', { name: 'Save preferences', exact: true }).click();
+  await expect.poll(() => [...(api.data.preferences.loungeMemberships ?? [])].sort()).toEqual(['priority-pass', 'qantas-platinum']);
+  await page.reload();
+  await page.getByRole('button', { name: 'Lounges', exact: true }).first().click();
+  await expect(page.locator('.lounge-membership-summary')).toContainText('Priority Pass');
+  await expect(page.locator('.lounge-membership-summary')).toContainText('Qantas Platinum');
+  await expect(page.locator('.lounge-membership-summary')).not.toContainText('Premier 1K');
+  await expect(page.getByRole('checkbox')).toHaveCount(0);
+  expect(validateAppData(api.data)).toBeNull();
   expect(await noHorizontalOverflow(page)).toBe(true);
 });
 
@@ -186,6 +270,10 @@ test('compact mobile lounge links precede every departure and preserve flight co
   await page.screenshot({ path: 'artifacts/lounge-explorer-mobile.png' });
   await page.getByRole('combobox', { name: 'Operating airline', exact: true }).selectOption('QF');
   await page.getByRole('combobox', { name: 'Departure terminal', exact: true }).selectOption('Tom Bradley International Terminal');
+  const qantasBusiness = page.locator('.lounge-card[data-lounge-id="lax-qantas-business"]');
+  await expect(qantasBusiness.getByRole('heading', { name: 'Qantas / oneworld Business Lounge', exact: true })).toBeVisible();
+  await expect(qantasBusiness.locator('.lounge-access')).toHaveText('Access matches');
+  await expect(qantasBusiness.locator('.lounge-opening')).toHaveText('Open during your visit');
   await page.getByRole('combobox', { name: 'Airport', exact: true }).fill('SYD');
   await expect(page.locator('.lounge-context')).toHaveCount(0);
   await expect(page.getByRole('combobox', { name: 'Operating airline', exact: true })).toHaveValue('');

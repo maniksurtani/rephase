@@ -1,6 +1,15 @@
 # Rephase build tasks
 
-Updated 2026-10-15. Checked items record completed implementation; verification status for each release is recorded below. External credentials, publication, and clinical/outcome research are separate gates; they cannot be completed by local tests.
+Updated 2026-10-16. Checked items record completed implementation; verification status for each release is recorded below. External credentials, publication, and clinical/outcome research are separate gates; they cannot be completed by local tests.
+
+## Loyalty program picker and recognizable LAX lounge
+
+- [x] Make the existing LAX Qantas Business Lounge recognizable and refresh its official-source facts.
+- [x] Replace the flat status list with searchable airline programs, one editable tier per program and separate paid lounge memberships.
+- [x] Add United MileagePlus including Premier 1K and a sourced program/tier catalog with automatic alliance mapping.
+- [x] Retain old memberships and account storage without a database migration; keep issuer-specific lounge restrictions.
+- [x] Verify search, tier replacement/removal, saved account reload, LAX access and mobile layout.
+- [ ] Deploy the exact checked release and verify the live experience.
 
 ## Timeline and settings polish
 

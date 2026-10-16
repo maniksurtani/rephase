@@ -86,3 +86,10 @@ Current findings that differ from older lounge guides:
 - Qantas international Jetstar JQ access changed in July 2026. Codeshares, Emirates, special fares, long-haul connecting-ticket access and guests require additional rules; they are not silently assumed.
 
 Useful follow-up coverage includes Sydney domestic lounges, Air New Zealand's Sydney lounge and Honolulu's JAL Sakura Lounge Hale. The latter publishes flight-dependent hours, and Air New Zealand's current Sydney facilities page does not publish fixed hours. Keep missing coverage visible rather than treating these omissions as evidence that access is impossible.
+
+
+## LAX review: 16 October 2026
+
+The existing `lax-qantas-business` record is displayed as **Qantas / oneworld Business Lounge** so travelers can recognize the Qantas-operated lounge. Its [official Qantas location page](https://www.qantas.com/en-au/at-the-airport/lounges/locations/los-angeles-international-business) calls it “The Los Angeles Business Lounge” and confirms Level 5, daily 06:30–midnight, showers, lounge dining and Wi-Fi. This is a rename, not a second lounge. [Qantas still marks the First Lounge temporarily closed](https://www.qantas.com/en-au/at-the-airport/lounges/locations/los-angeles-first), and its [access page](https://www.qantas.com/en-au/at-the-airport/lounges/access) directs eligible First Lounge travelers to Business while it is closed.
+
+United Premier Gold, Platinum and 1K now have an explicit international-departure rule for the LAX Star Alliance Lounge. The reviewed [ANA eligibility page](https://www.ana.co.jp/en/us/travel-information/lounges/los-angeles/) supports Star Alliance Gold access on international Star Alliance departures, while warning that domestic-transfer criteria may differ. The existing generic Star Alliance Gold rule leaves domestic United access conditional pending a directly verified applicable policy; the app does not interpret an international-only researched rule as a worldwide denial. This lounge is distinct from United Club and Polaris lounges. Its opening hours remain unverified. Source review dates changed only for pages opened during this review.

@@ -1,6 +1,7 @@
 import type { TravelClass } from './types';
+import { LOYALTY_PROGRAMS } from './lounge-programs';
 
-export const LOUNGE_MEMBERSHIPS = [
+const LEGACY_LOUNGE_MEMBERSHIPS = [
   { id: 'priority-pass', label: 'Priority Pass' },
   { id: 'qantas-gold', label: 'Qantas Gold' },
   { id: 'qantas-platinum', label: 'Qantas Platinum' },
@@ -14,6 +15,17 @@ export const LOUNGE_MEMBERSHIPS = [
   { id: 'admirals-club', label: 'Admirals Club' },
   { id: 'skyteam-elite-plus', label: 'SkyTeam Elite Plus' },
 ] as const;
+
+/** Flat IDs retain compatibility with existing local/account snapshots and airport rules. */
+export const LOUNGE_MEMBERSHIPS = [
+  ...LEGACY_LOUNGE_MEMBERSHIPS,
+  { id: 'oneworld-ruby' as const, label: 'oneworld Ruby' },
+  { id: 'star-silver' as const, label: 'Star Alliance Silver' },
+  { id: 'skyteam-elite' as const, label: 'SkyTeam Elite' },
+  ...LOYALTY_PROGRAMS.flatMap(program => program.tiers.map(tier => ({
+    id: tier.id, label: `${program.name} · ${tier.label}`,
+  }))),
+].filter((membership, index, all) => all.findIndex(value => value.id === membership.id) === index);
 
 export type LoungeMembership = typeof LOUNGE_MEMBERSHIPS[number]['id'];
 export type LoungeAlliance = 'oneworld' | 'star' | 'skyteam';

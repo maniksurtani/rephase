@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   airlineAlliance, evaluateAirportLounges, evaluateLounge, expandLoungeMemberships,
 } from '../src/lib/lounge-access';
+import lax from '../data/lounges/LAX.json';
 import type { AirportLoungeData, Lounge, LoungeAccessRule, LoungeVisitContext } from '../src/lib/lounge-types';
 
 const everyDay = [1, 2, 3, 4, 5, 6, 7];
@@ -29,6 +30,21 @@ describe('lounge access matching', () => {
     expect([...expandLoungeMemberships(['qantas-platinum-one'])]).toEqual(expect.arrayContaining(['qantas-platinum', 'qantas-gold', 'oneworld-emerald', 'oneworld-sapphire']));
     expect(expandLoungeMemberships(['qantas-gold']).has('oneworld-emerald')).toBe(false);
     expect(expandLoungeMemberships(['qantas-platinum']).has('qantas-club')).toBe(false);
+  });
+
+  it.each(['united-premier-gold', 'united-premier-platinum', 'united-premier-1k'] as const)('maps %s to alliance status without a paid club membership', membership => {
+    const expanded = expandLoungeMemberships([membership]);
+    expect(expanded.has('star-gold')).toBe(true);
+    expect(expanded.has('united-club')).toBe(false);
+    expect(expanded.has('qantas-gold')).toBe(false);
+  });
+
+  it('does not upgrade entry-level United membership or Premier Silver to Gold', () => {
+    for (const membership of ['united-member', 'united-premier-silver'] as const) {
+      expect(expandLoungeMemberships([membership]).has('star-gold')).toBe(false);
+    }
+    expect(expandLoungeMemberships(['united-premier-silver']).has('star-silver')).toBe(true);
+    expect(expandLoungeMemberships(['united-club']).has('star-gold')).toBe(false);
   });
 
   it('identifies alliances for supplied carriers but leaves unverified carriers unknown', () => {
@@ -274,5 +290,36 @@ describe('transparent, conservative lounge recommendations', () => {
       expect(result.recommendedId).toBeNull();
       expect(result.results[0].access).toBe('ineligible');
     }
+  });
+});
+
+describe('recognizable LAX lounges and United issuer-specific access', () => {
+  const airport = lax as AirportLoungeData;
+  const atLax = (change: Partial<LoungeVisitContext> = {}) => context({
+    terminal: 'Tom Bradley International Terminal', now: '2026-10-16', ...change,
+  });
+
+  it('keeps the Qantas Business record recognizable, unique and accessible on Qantas', () => {
+    const matches = airport.lounges.filter(value => value.id === 'lax-qantas-business');
+    expect(matches).toHaveLength(1);
+    expect(matches[0].name).toBe('Qantas / oneworld Business Lounge');
+    const result = evaluateLounge(matches[0], atLax({ memberships: [], cabin: 'business' }), airport);
+    expect(result.access).toBe('eligible');
+    expect(result.opening).toBe('open');
+    expect(result.lounge.amenities.showers).toBe('yes');
+  });
+
+  it('recognizes Premier 1K on an international Star departure without inventing opening hours', () => {
+    const candidate = airport.lounges.find(value => value.id === 'lax-star-alliance')!;
+    const visit = atLax({ memberships: ['united-premier-1k'], operatingCarrier: 'UA', marketingCarrier: 'UA', route: 'international' });
+    const result = evaluateLounge(candidate, visit, airport);
+    expect(result.access).toBe('conditional');
+    expect(result.selectedRuleId).toBe('united-premier-gold-international');
+    expect(result.matchedRuleIds).toContain('united-premier-gold-international');
+    expect(result.opening).toBe('unknown');
+    expect(result.recommended).toBe(false);
+    expect(evaluateLounge(candidate, { ...visit, route: 'domestic' }, airport).access).toBe('conditional');
+    expect(evaluateLounge(candidate, { ...visit, memberships: ['united-premier-silver'] }, airport).access).toBe('ineligible');
+    expect(evaluateLounge(candidate, { ...visit, operatingCarrier: 'QF' }, airport).access).toBe('ineligible');
   });
 });

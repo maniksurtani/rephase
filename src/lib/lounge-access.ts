@@ -1,4 +1,5 @@
 import { Temporal } from '@js-temporal/polyfill';
+import { LOYALTY_PROGRAMS } from './lounge-programs';
 import type {
   AirportLoungeData, Lounge, LoungeAccessRule, LoungeAlliance, LoungeEvaluation,
   LoungeMembership, LoungeRecommendations, LoungeVisitContext,
@@ -12,6 +13,11 @@ type RuleResult = { rule: LoungeAccessRule; access: LoungeEvaluation['access']; 
 /** Status includes the published alliance tier, without assuming a card issuer or guest allowance. */
 export function expandLoungeMemberships(memberships: readonly LoungeMembership[]): Set<LoungeMembership> {
   const result = new Set(memberships);
+  for (const program of LOYALTY_PROGRAMS) {
+    for (const tier of program.tiers) {
+      if (result.has(tier.id) && tier.allianceTier) result.add(tier.allianceTier);
+    }
+  }
   if (result.has('qantas-platinum-one')) result.add('qantas-platinum');
   if (result.has('qantas-platinum')) { result.add('qantas-gold'); result.add('oneworld-emerald'); }
   if (result.has('qantas-gold') || result.has('oneworld-emerald')) result.add('oneworld-sapphire');
@@ -226,7 +232,8 @@ export function evaluateLounge(lounge: Lounge, context: LoungeVisitContext, data
     // Absence of a documented surcharge is preferable, but is never described as free entry.
     const feeDifference = !aFee || !bFee || aFee.currency === bFee.currency ? (aFee?.amount ?? 0) - (bFee?.amount ?? 0) : 0;
     return (b.access !== 'ineligible' ? bUsable : 0) - (a.access !== 'ineligible' ? aUsable : 0) || rank[b.access] - rank[a.access] ||
-      ((b.visit?.end ?? 0) - (b.visit?.start ?? 0)) - ((a.visit?.end ?? 0) - (a.visit?.start ?? 0)) || feeDifference;
+      ((b.visit?.end ?? 0) - (b.visit?.start ?? 0)) - ((a.visit?.end ?? 0) - (a.visit?.start ?? 0)) || feeDifference ||
+      a.warnings.length - b.warnings.length;
   });
   const best = rules[0];
   const visit = best?.visit ? { start: new Date(best.visit.start).toISOString(), end: new Date(best.visit.end).toISOString(), minutes: (best.visit.end - best.visit.start) / MINUTE } : undefined;

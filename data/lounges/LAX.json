@@ -2,11 +2,11 @@
   "schemaVersion": 1,
   "airport": "LAX",
   "timeZone": "America/Los_Angeles",
-  "updatedAt": "2026-10-15",
+  "updatedAt": "2026-10-16",
   "lounges": [
     {
       "id": "lax-qantas-business",
-      "name": "The Los Angeles Business Lounge",
+      "name": "Qantas / oneworld Business Lounge",
       "terminal": "Tom Bradley International Terminal",
       "location": "Airside departures, Level 5.",
       "airside": true,
@@ -70,14 +70,14 @@
         }
       ],
       "sources": [
-        { "id": "lax-qantas-business", "title": "Qantas: Los Angeles Business Lounge hours and facilities", "url": "https://www.qantas.com/en-au/at-the-airport/lounges/locations/los-angeles-international-business", "checkedOn": "2026-10-15" },
-        { "id": "oneworld-access", "title": "oneworld: lounge access and exclusions", "url": "https://www.oneworld.com/airport-lounges", "checkedOn": "2026-10-15" },
-        { "id": "qantas-access", "title": "Qantas: lounge access", "url": "https://www.qantas.com/en-au/at-the-airport/lounges/access", "checkedOn": "2026-10-15" },
+        { "id": "lax-qantas-business", "title": "Qantas: Los Angeles Business Lounge hours and facilities", "url": "https://www.qantas.com/en-au/at-the-airport/lounges/locations/los-angeles-international-business", "checkedOn": "2026-10-16" },
+        { "id": "oneworld-access", "title": "oneworld: lounge access and exclusions", "url": "https://www.oneworld.com/airport-lounges", "checkedOn": "2026-10-16" },
+        { "id": "qantas-access", "title": "Qantas: lounge access and temporary First Lounge alternative", "url": "https://www.qantas.com/en-au/at-the-airport/lounges/access", "checkedOn": "2026-10-16" },
         { "id": "alaska-partners", "title": "Alaska: Lounge+ partner locations and access", "url": "https://www.alaskaair.com/content/airport-lounge/location-and-hours", "checkedOn": "2026-10-15" }
       ],
       "photos": [],
       "recommendation": { "summary": "Showers and lounge dining before departure. Qantas directs eligible First Lounge visitors here while the adjacent First Lounge is closed.", "bestFor": ["showers", "dining"] },
-      "note": "Qantas lists this lounge as the alternative for eligible visitors while the Los Angeles First Lounge is temporarily closed. Confirm terminal access and transfer time before a domestic departure."
+      "note": "Operated by Qantas and officially listed as The Los Angeles Business Lounge. It also welcomes eligible First Lounge visitors during that lounge’s temporary closure. Confirm terminal access and transfer time before a domestic departure."
     },
     {
       "id": "lax-qantas-first",
@@ -86,7 +86,7 @@
       "location": "Airside departures, Level 5.",
       "airside": true,
       "status": "temporarily-closed",
-      "hours": { "type": "unknown", "note": "Qantas marks this lounge temporarily closed as checked on 15 October 2026. A reopening date is not published. Normal 06:30–last Qantas flight hours do not establish current availability." },
+      "hours": { "type": "unknown", "note": "Qantas marks this lounge temporarily closed as checked on 16 October 2026. A reopening date is not published. Normal 06:30–last Qantas flight hours do not establish current availability." },
       "amenities": { "showers": "yes", "dining": "restaurant", "spa": "unknown", "quietArea": "unknown", "wifi": "yes" },
       "accessRules": [
         {
@@ -126,11 +126,11 @@
         }
       ],
       "sources": [
-        { "id": "lax-qantas-first", "title": "Qantas: Los Angeles First Lounge temporary closure", "url": "https://www.qantas.com/en-au/at-the-airport/lounges/locations/los-angeles-first", "checkedOn": "2026-10-15" },
-        { "id": "oneworld-access", "title": "oneworld: First lounge access and exclusions", "url": "https://www.oneworld.com/airport-lounges", "checkedOn": "2026-10-15" }
+        { "id": "lax-qantas-first", "title": "Qantas: Los Angeles First Lounge temporary closure", "url": "https://www.qantas.com/en-au/at-the-airport/lounges/locations/los-angeles-first", "checkedOn": "2026-10-16" },
+        { "id": "oneworld-access", "title": "oneworld: First lounge access and exclusions", "url": "https://www.oneworld.com/airport-lounges", "checkedOn": "2026-10-16" }
       ],
       "photos": [],
-      "note": "Temporarily closed: use the adjacent Los Angeles Business Lounge if eligible. Restaurant and shower descriptions refer to the usual facilities, not services currently available during the closure."
+      "note": "Temporarily closed: use the adjacent Qantas / oneworld Business Lounge if eligible. Restaurant and shower descriptions refer to the usual facilities, not services currently available during the closure."
     },
     {
       "id": "lax-alaska",
@@ -242,6 +242,15 @@
           "sourceIds": ["ana-lax"]
         },
         {
+          "id": "united-premier-gold-international",
+          "label": "United Premier Gold, Platinum or 1K on an international Star Alliance flight",
+          "membershipsAnyOf": ["united-premier-gold", "united-premier-platinum", "united-premier-1k"],
+          "operatingAlliance": "star",
+          "route": "international",
+          "note": "Applies to this Star Alliance lounge, not United Club or Polaris lounges. Present your current Star Alliance Gold status and same-day departing Star Alliance boarding pass.",
+          "sourceIds": ["ana-lax"]
+        },
+        {
           "id": "international-star-premium",
           "label": "Star Alliance international Business or First",
           "cabinsAnyOf": ["business", "first"],
@@ -260,7 +269,7 @@
         }
       ],
       "sources": [
-        { "id": "ana-lax", "title": "ANA: Los Angeles lounge eligibility and amenities", "url": "https://www.ana.co.jp/en/us/travel-information/lounges/los-angeles/", "checkedOn": "2026-10-15" },
+        { "id": "ana-lax", "title": "ANA: Los Angeles lounge eligibility and amenities", "url": "https://www.ana.co.jp/en/us/travel-information/lounges/los-angeles/", "checkedOn": "2026-10-16" },
         { "id": "ana-lax-map", "title": "ANA: Los Angeles airport guide", "url": "https://www.ana.co.jp/en/jp/guide/prepare/airport-guide/international/lax.html", "checkedOn": "2026-10-15" },
         { "id": "airnz-lax", "title": "Air New Zealand: Star Alliance Los Angeles lounge", "url": "https://www.airnewzealandnewsroom.com/press-release-2025-star-alliance-los-angeles-lounge-wins-north-americas-leading-airport-lounge-for-sixth-consecutive-year", "checkedOn": "2026-10-15" }
       ],

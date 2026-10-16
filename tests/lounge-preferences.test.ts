@@ -24,6 +24,14 @@ describe('saved lounge preferences', () => {
     expect(validateAppData(data)).toBeNull();
   });
 
+  it('preserves older selections while accepting new program tiers through shared account validation', () => {
+    const data = createInitialData();
+    data.preferences.loungeMemberships = ['priority-pass', 'qantas-platinum', 'star-gold', 'united-premier-1k'];
+    expect(validateAppData(data)).toBeNull();
+    expect(validateAppData(JSON.parse(JSON.stringify(data)))).toBeNull();
+    expect(data.preferences.loungeMemberships).toEqual(['priority-pass', 'qantas-platinum', 'star-gold', 'united-premier-1k']);
+  });
+
   it.each([
     ['unknown membership', { loungeMemberships: ['made-up-program'] }],
     ['duplicate membership', { loungeMemberships: ['priority-pass', 'priority-pass'] }],
