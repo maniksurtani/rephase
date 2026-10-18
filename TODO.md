@@ -8,7 +8,7 @@ Updated 2026-10-18. Active work is kept here; the previous complete checklist is
 - [x] Refresh the clock when the app resumes and keep future/finished trips and date-line days accurate.
 - [x] Put Lounge Explorer on a real preflight timeline point before departure, including connections and midnight departures.
 - [x] Check late Honolulu sleep timing against the itinerary and add a coarse gradual-adjustment regression; no numerical defect established, so keep the model unchanged.
-- [ ] Verify focused time/travel regressions and publish the exact checked release.
+- [x] Verify focused time/travel regressions and publish the exact checked release: 538 unit/runtime tests and 46 browser cases passed in CI; live desktop/mobile guest checks passed. See RELEASES.md.
 
 ## Code-review refactor and release
 
