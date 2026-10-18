@@ -1,5 +1,15 @@
 # Release evidence
 
+## 18 October 2026 — collapsible melatonin guidance
+
+Source [`cf54c5b`](https://github.com/maniksurtani/rephase/commit/cf54c5bbe24c7799a04b6b2dbf844b3aba5424dd). [Checks 39100247484](https://github.com/maniksurtani/rephase/actions/runs/39100247484) passed lint, formatting, frontend/Worker TypeScript, all 538 unit/runtime tests across 42 suites and all 46 browser scenarios (1.2 minutes). Verified artifact `12126262454` contains 26 offline assets, shell `8697420e7724191a`.
+
+[Deployment 39100400249](https://github.com/maniksurtani/rephase/actions/runs/39100400249) reused that exact artifact. No migrations were needed. Worker upload version: `82f15684-12db-4073-86d3-f03ecf1a0a31`.
+
+Optional melatonin cards keep their time visible and fold usage text, dose information, explanation and source under **Melatonin guidance**, closed by default in Plan and both Today surfaces. The existing mobile preferences journey now verifies tap expansion/collapse and keyboard Enter/Space behavior. No model or recommendation timing changes.
+
+Live checks confirmed the exact entry asset and offline shell, default-hidden guidance and tap expansion/collapse in all three surfaces, Plan keyboard interaction and expanded layout at 390px/1440px. Screenshots were inspected. Only an isolated browser-local guest fixture was seeded; no page errors, account writes, sign-in or flight-provider calls occurred.
+
 ## 18 October 2026 — current guidance and preflight lounge links
 
 Source [`5f497d2`](https://github.com/maniksurtani/rephase/commit/5f497d24763a670a9eef39faad399da75eff46c0). [Checks 39088578676](https://github.com/maniksurtani/rephase/actions/runs/39088578676) passed formatting/hooks lint, frontend/Worker TypeScript, 538 unit/model/API/runtime tests across 42 suites, the build and all 46 browser cases (1.8 minutes). Verified artifact `12121119127` contains 26 offline assets, shell `7aa5586cae3f5ab8`.

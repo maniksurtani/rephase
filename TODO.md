@@ -5,7 +5,7 @@ Updated 2026-10-18. Active work is kept here; the previous complete checklist is
 ## Collapsible melatonin guidance
 
 - [x] Put melatonin usage text, dose information, explanation and source behind a default-closed Melatonin guidance disclosure in Plan and Today cards.
-- [ ] Check mobile tap/keyboard expansion and publish the verified release.
+- [x] Check mobile tap/keyboard expansion and publish the verified release; all 46 browser scenarios passed, with live Plan/Today checks at mobile and desktop widths. See RELEASES.md.
 
 ## Current-time agenda and preflight lounge links
 
