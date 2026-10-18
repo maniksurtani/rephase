@@ -2,6 +2,11 @@
 
 Updated 2026-10-18. Active work is kept here; the previous complete checklist is preserved in [the task archive](docs/archive/TODO-2026-10-16.md). Release evidence is in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md).
 
+## Collapsible melatonin guidance
+
+- [x] Put melatonin usage text, dose information, explanation and source behind a default-closed Melatonin guidance disclosure in Plan and Today cards.
+- [ ] Check mobile tap/keyboard expansion and publish the verified release.
+
 ## Current-time agenda and preflight lounge links
 
 - [x] Show current/upcoming Today cards using the device clock, retaining ongoing recommendations and hiding completed ones.

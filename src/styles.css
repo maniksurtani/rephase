@@ -740,6 +740,22 @@ small {
 .why-button .rotated {
   transform: rotate(90deg);
 }
+.melatonin-guidance > summary {
+  cursor: pointer;
+  list-style: none;
+  min-height: 44px;
+}
+.melatonin-guidance > summary::-webkit-details-marker {
+  display: none;
+}
+.melatonin-guidance > summary:focus-visible {
+  outline: 2px solid var(--violet);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+.melatonin-guidance[open] > summary > svg:last-child {
+  transform: rotate(90deg);
+}
 .action-explanation {
   border-top: 1px solid #393249;
   padding-top: 8px;
@@ -2879,6 +2895,10 @@ small {
     font-size: 11px;
     margin-top: 5px;
     grid-column: 2;
+  }
+  .next-action-card > .melatonin-guidance {
+    grid-column: 2;
+    min-width: 0;
   }
   .next-action-time {
     grid-column: 1/-1;

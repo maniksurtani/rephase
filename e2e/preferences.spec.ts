@@ -1,6 +1,6 @@
 import { AccountStateApi, emptyAppData as emptyData } from './support/fixtures';
 import { captureDesign } from './support/screenshots';
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect, type Locator, type Page } from '@playwright/test';
 import { DEFAULT_PREFERENCES } from '../src/lib/defaults';
 import type { Trip } from '../src/lib/types';
 
@@ -146,12 +146,48 @@ test.describe('mobile preferences', () => {
     const days = page.locator('.day-button');
     await expect(days.first()).toBeVisible();
     let foundGuidance = false;
+    let melatoninStart = 0;
+    const checkGuidance = async (
+      card: Locator,
+      { keyboard = false, capture }: { keyboard?: boolean; capture?: string } = {},
+    ) => {
+      const disclosure = card.locator('.melatonin-guidance');
+      const summary = disclosure.locator('summary');
+      const usage = disclosure.locator('.action-explanation p').first();
+      const dose = disclosure.locator('.dose-label');
+      const source = disclosure.getByRole('link', { name: 'Read the source', includeHidden: true });
+      await expect(disclosure).not.toHaveAttribute('open');
+      await expect(usage).toBeHidden();
+      await expect(dose).toBeHidden();
+      await expect(source).toBeHidden();
+      await summary.tap();
+      await expect(usage).toBeVisible();
+      await expect(usage).toContainText('the CDC describes');
+      await expect(dose).toBeVisible();
+      await expect(dose).toContainText('0.5–1 mg');
+      await expect(source).toBeVisible();
+      await expect(source).toHaveAttribute('href', /^https:\/\/www\.cdc\.gov\//);
+      if (capture) await captureDesign(card, capture);
+      await summary.tap();
+      await expect(usage).toBeHidden();
+      await expect(dose).toBeHidden();
+      await expect(source).toBeHidden();
+      if (keyboard) {
+        await summary.focus();
+        await summary.press('Enter');
+        await expect(usage).toBeVisible();
+        await summary.press('Space');
+        await expect(usage).toBeHidden();
+      }
+    };
     for (let index = 0; index < (await days.count()); index++) {
       await days.nth(index).tap();
       const guidance = page.getByRole('heading', { name: /^Optional melatonin/ }).first();
       if (await guidance.count()) {
         await expect(guidance).toBeVisible();
-        await expect(page.locator('.dose-label').first()).toContainText('0.5–1 mg');
+        const card = page.locator('.action-card.melatonin').first();
+        await checkGuidance(card, { keyboard: true });
+        melatoninStart = Number(await card.getAttribute('data-start'));
         await guidance.evaluate((element) =>
           element.closest('.action-card')!.scrollIntoView({ block: 'center' }),
         );
@@ -164,6 +200,21 @@ test.describe('mobile preferences', () => {
       foundGuidance,
       'The established eastbound fixture should offer optional bedtime guidance.',
     ).toBe(true);
+
+    // The same optional information stays folded in both Today surfaces.
+    await page.clock.setFixedTime(new Date(melatoninStart + 60_000));
+    await page.reload();
+    const compactCard = page.locator('.action-card.compact.melatonin');
+    await expect(compactCard).toBeVisible();
+    await expect(compactCard.getByText('Now', { exact: true })).toBeVisible();
+    await checkGuidance(compactCard, {
+      capture: 'artifacts/preferences-melatonin-compact-expanded-mobile.png',
+    });
+    const featuredCard = page.locator('.next-action-card');
+    await expect(featuredCard.getByRole('heading', { name: /^Optional melatonin/ })).toBeVisible();
+    await checkGuidance(featuredCard, {
+      capture: 'artifacts/preferences-melatonin-featured-expanded-mobile.png',
+    });
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );

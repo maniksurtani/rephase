@@ -19,6 +19,7 @@ import { airportCity, dateLabel, localDate, time, zoneName } from '../lib/displa
 import { actionCity, planDayCity } from '../lib/plan-places';
 import { ActionCard, actionMeta } from '../components/ActionCard';
 import { MoonScene } from '../components/MoonScene';
+import { MelatoninGuidance } from '../components/MelatoninGuidance';
 import { todayPreview } from '../lib/plan-view';
 
 interface TodayViewProps {
@@ -46,6 +47,7 @@ export function TodayView({
   renderFlight,
 }: TodayViewProps) {
   const { currentAction, nextAction, today, timelineDay, itineraryFinished, isDemo } = view;
+  const featuredAction = currentAction && !isDemo ? currentAction : nextAction;
   const preview = timelineDay
     ? todayPreview(timelineDay, now.getTime(), view.calendarDays)
     : undefined;
@@ -263,7 +265,11 @@ export function TodayView({
                   })()}
                 </div>
                 <h3>{(currentAction && !isDemo ? currentAction : nextAction)!.title}</h3>
-                <p>{(currentAction && !isDemo ? currentAction : nextAction)!.detail}</p>
+                {featuredAction?.type === 'melatonin' ? (
+                  <MelatoninGuidance key={featuredAction.id} action={featuredAction} />
+                ) : (
+                  <p>{featuredAction!.detail}</p>
+                )}
                 <div className="next-action-time">
                   <strong>
                     {time(

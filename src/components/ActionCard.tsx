@@ -12,6 +12,7 @@ import {
 import type { AdherenceRecord, PlanAction, PlanTravelSegment } from '../lib/types';
 import { actionTravelSegment, travelClock } from '../lib/travel-clocks';
 import { localDate, time, zoneName } from '../lib/display';
+import { MelatoninGuidance } from './MelatoninGuidance';
 
 export const actionMeta: Record<
   PlanAction['type'],
@@ -114,7 +115,11 @@ export function ActionCard({
           <h3>{action.title}</h3>
           {isCurrent && <span className="live-label">Now</span>}
         </div>
-        <p>{action.detail}</p>
+        {action.type === 'melatonin' ? (
+          <MelatoninGuidance action={action} />
+        ) : (
+          <p>{action.detail}</p>
+        )}
         {action.feasibility && (
           <span className="feasibility-label">
             {action.feasibility === 'daylight'
@@ -124,9 +129,11 @@ export function ActionCard({
                 : 'Daylight uncertain'}
           </span>
         )}
-        {action.dose && <span className="dose-label">Informational dose range: {action.dose}</span>}
+        {action.dose && action.type !== 'melatonin' && (
+          <span className="dose-label">Informational dose range: {action.dose}</span>
+        )}
         {segment && <ActionTravelClocks action={action} segment={segment} />}
-        {!compact && (
+        {!compact && action.type !== 'melatonin' && (
           <button
             type="button"
             className="why-button"
@@ -148,7 +155,7 @@ export function ActionCard({
             {record ? `Recorded: ${record.status} · edit` : 'Record what happened'}
           </button>
         )}
-        {expanded && (
+        {expanded && action.type !== 'melatonin' && (
           <div className="action-explanation">
             <p>{action.reason}</p>
             {action.evidenceUrl && (

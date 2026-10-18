@@ -305,6 +305,9 @@ Daily model change uses successive biological low points from the selected route
 
 ### Operational constraints and optional tools
 
+Melatonin action cards keep their time visible and put CDC usage text, dose information, explanation and source under a default-closed **Melatonin guidance** disclosure. The same disclosure is available in the Plan timeline, compact Today cards and the featured current/next action.
+
+
 In-flight rest starts at least **30 minutes after takeoff** and ends at least **60 minutes before landing**, regardless of cabin class. Known airborne timestamps override estimates. Gate-only schedules allow **30 minutes taxi-out and 30 minutes taxi-in by default**, with editable allowances, then apply airborne buffers. Invalid explicit airborne ordering is rejected; short flights without usable rest have no sleep action. Connection/boarding/arrival transitions are also protected. Lie-flat availability changes comfort instructions, not model dynamics. Seated travel receives rest/nap guidance without claiming a restorative full night. Crew instructions always take priority.
 
 Caffeine windows are optional and stay at least eight hours from planned sleep. This is a conservative practical cutoff, not a guarantee for all doses or individuals. The model does not simulate caffeine's alertness or phase effects.
