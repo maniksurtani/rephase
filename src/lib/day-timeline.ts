@@ -1,5 +1,6 @@
 import { Temporal } from '@js-temporal/polyfill';
 import type { PlanCalendarDay } from './plan-calendar';
+import type { LoungeFlightContext } from './lounge-windows';
 import type { ActionType, PlanAction, PlanTravelSegment } from './types';
 
 export type TimelineBandKind = ActionType | 'rest' | 'flight' | 'awake';
@@ -16,6 +17,7 @@ export type TimelineEntry = TimelineSpan &
   (
     | { id: string; kind: 'action'; action: PlanAction }
     | { id: string; kind: 'flight'; flight: PlanTravelSegment }
+    | { id: string; kind: 'lounge'; lounge: LoungeFlightContext }
   );
 
 export interface TimelineBand extends TimelineSpan {
@@ -37,6 +39,7 @@ type Range = { start: number; end: number };
 type VisibleEntry = (
   | { id: string; kind: 'action'; action: PlanAction }
   | { id: string; kind: 'flight'; flight: PlanTravelSegment }
+  | { id: string; kind: 'lounge'; lounge: LoungeFlightContext }
 ) &
   Range & { originalStart: number; originalEnd: number };
 
@@ -58,11 +61,12 @@ function validRange(start: number, end: number): boolean {
   return Number.isFinite(start) && Number.isFinite(end) && end > start;
 }
 
+const entryRank = { flight: 0, lounge: 1, action: 2 } as const;
 function compareEntries(a: VisibleEntry, b: VisibleEntry): number {
   return (
     a.start - b.start ||
     a.originalStart - b.originalStart ||
-    (a.kind === b.kind ? 0 : a.kind === 'flight' ? -1 : 1) ||
+    entryRank[a.kind] - entryRank[b.kind] ||
     a.end - b.end ||
     a.id.localeCompare(b.id)
   );
@@ -81,7 +85,10 @@ export function timelineActionKind(action: PlanAction): ActionType | 'rest' {
  * This is presentation only: original recommendations and flight objects are
  * returned by reference, and their model times and adherence IDs never change.
  */
-export function buildDayTimeline(day: PlanCalendarDay): DayTimeline {
+export function buildDayTimeline(
+  day: PlanCalendarDay,
+  options: { loungeContexts?: readonly LoungeFlightContext[] } = {},
+): DayTimeline {
   const calendar = calendarBounds(day.date, day.timeZone);
   const sources = day.sourceDays.length ? day.sourceDays : [day];
   const sourceBounds = sources.map((source) => ({
@@ -136,6 +143,30 @@ export function buildDayTimeline(day: PlanCalendarDay): DayTimeline {
         originalStart,
         originalEnd,
       });
+
+    // The link is its own pre-flight event, never a continuation/arrival item.
+    // Unknown/short visits still offer Explorer without claiming usable time.
+    const departureDate = Temporal.Instant.fromEpochMilliseconds(originalStart)
+      .toZonedDateTimeISO(flight.departureTimeZone)
+      .toPlainDate()
+      .toString();
+    const lounge = options.loungeContexts?.find((context) => context.legId === flight.id);
+    if (lounge && day.date === departureDate) {
+      const available = lounge.start ? Date.parse(lounge.start) : Number.NaN;
+      const at =
+        Number.isFinite(available) && available < originalStart
+          ? available
+          : originalStart - 30 * 60_000;
+      visible.push({
+        id: `lounge:${flight.id}`,
+        kind: 'lounge',
+        lounge,
+        start: at,
+        end: at,
+        originalStart: at,
+        originalEnd: at,
+      });
+    }
   }
 
   const start = Math.min(calendar.start, ...visible.map((entry) => entry.start));
@@ -151,22 +182,32 @@ export function buildDayTimeline(day: PlanCalendarDay): DayTimeline {
     ...span(entry, { start: entry.originalStart, end: entry.originalEnd }),
     ...(entry.kind === 'action'
       ? { kind: 'action', action: entry.action }
-      : { kind: 'flight', flight: entry.flight }),
+      : entry.kind === 'flight'
+        ? { kind: 'flight', flight: entry.flight }
+        : { kind: 'lounge', lounge: entry.lounge }),
   }));
-  const bands: TimelineBand[] = entries.map((entry) => ({
-    id: `${entry.kind}:${entry.id}`,
-    ...span(entry, {
-      start:
-        entry.kind === 'action'
-          ? Date.parse(entry.action.start)
-          : Date.parse(entry.flight.departure),
-      end:
-        entry.kind === 'action' ? Date.parse(entry.action.end) : Date.parse(entry.flight.arrival),
-    }),
-    ...(entry.kind === 'action'
-      ? { kind: timelineActionKind(entry.action), action: entry.action }
-      : { kind: 'flight', flight: entry.flight }),
-  }));
+  const bands: TimelineBand[] = entries.flatMap((entry) =>
+    entry.kind === 'lounge'
+      ? []
+      : [
+          {
+            id: `${entry.kind}:${entry.id}`,
+            ...span(entry, {
+              start:
+                entry.kind === 'action'
+                  ? Date.parse(entry.action.start)
+                  : Date.parse(entry.flight.departure),
+              end:
+                entry.kind === 'action'
+                  ? Date.parse(entry.action.end)
+                  : Date.parse(entry.flight.arrival),
+            }),
+            ...(entry.kind === 'action'
+              ? { kind: timelineActionKind(entry.action), action: entry.action }
+              : { kind: 'flight', flight: entry.flight }),
+          },
+        ],
+  );
 
   // These gaps mean only "no sleep/rest scheduled". They do not assert that a
   // traveler was awake, nor prescribe activities during transfers or buffers.

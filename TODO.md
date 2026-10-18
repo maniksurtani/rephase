@@ -1,6 +1,14 @@
 # Rephase build tasks
 
-Updated 2026-10-16. Active work is kept here; the previous complete checklist is preserved in [the task archive](docs/archive/TODO-2026-10-16.md). Release evidence is in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md).
+Updated 2026-10-18. Active work is kept here; the previous complete checklist is preserved in [the task archive](docs/archive/TODO-2026-10-16.md). Release evidence is in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md).
+
+## Current-time agenda and preflight lounge links
+
+- [x] Show current/upcoming Today cards using the device clock, retaining ongoing recommendations and hiding completed ones.
+- [x] Refresh the clock when the app resumes and keep future/finished trips and date-line days accurate.
+- [x] Put Lounge Explorer on a real preflight timeline point before departure, including connections and midnight departures.
+- [x] Check late Honolulu sleep timing against the itinerary and add a coarse gradual-adjustment regression; no numerical defect established, so keep the model unchanged.
+- [ ] Verify focused time/travel regressions and publish the exact checked release.
 
 ## Code-review refactor and release
 
@@ -28,6 +36,8 @@ Updated 2026-10-16. Active work is kept here; the previous complete checklist is
 - [ ] Later: verified codeshare aliases, opt-in push delivery and Flutter client/native authentication.
 
 ## Owner acceptance and research
+
+- [ ] Confirm the exact Honolulu 01:42 bedtime against the traveler’s actual saved preferences, trip details and recorded sleep when supplied.
 
 - [ ] Verify revised automatic account saving, account switching, offline edits/reconnection and deletion with real Google accounts/devices.
 - [ ] Confirm signed-in booked-flight import and representative future +60/+90/+150-day coverage with the configured provider.

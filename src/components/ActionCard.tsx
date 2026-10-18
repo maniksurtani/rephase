@@ -92,6 +92,9 @@ export function ActionCard({
   return (
     <article
       className={`action-card ${meta.color} ${compact ? 'compact' : ''} ${isCurrent ? 'current' : ''}`}
+      data-action-id={action.id}
+      data-start={Date.parse(action.start)}
+      data-end={Date.parse(action.end)}
     >
       {!timeline && (
         <div className="action-time">

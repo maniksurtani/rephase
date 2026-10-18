@@ -323,7 +323,7 @@ test('Today keeps a short daytime flight visible when no recommendation is curre
   await expect(page.getByRole('heading', { name: /Rest or nap/ })).toHaveCount(0);
   await expect(page.locator('.day-timeline')).toBeVisible();
   const displayedIntervals = await page
-    .locator('.timeline-entry:not([data-kind="flight"])')
+    .locator('.timeline-entry[data-kind="action"]')
     .evaluateAll((nodes) =>
       nodes.map((node) => ({
         start: Number(node.getAttribute('data-start')),

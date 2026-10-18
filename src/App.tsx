@@ -25,7 +25,6 @@ import './timeline.css';
 import './lounges.css';
 import { usePlanning } from './lib/usePlanning';
 import { usePlanView } from './lib/usePlanView';
-import { localDate } from './lib/display';
 import { tripEditConflict } from './lib/trip-edit';
 import { TripEditor } from './components/TripEditor';
 import { Modal } from './components/Modal';
@@ -92,7 +91,6 @@ export default function App(props: AppProps) {
   const [recordAction, setRecordAction] = useState<PlanAction | null>(null);
   const plan = result.plan;
   const view = usePlanView(plan, trip, selectedDayId, now);
-  const { selectedDay } = view;
   const showSaveStatus = Boolean(
     saveStatus &&
     ![
@@ -104,8 +102,18 @@ export default function App(props: AppProps) {
   );
 
   useEffect(() => {
-    const timer = window.setInterval(() => setNow(new Date()), 60000);
-    return () => window.clearInterval(timer);
+    const refresh = () => setNow(new Date());
+    const resume = () => {
+      if (document.visibilityState === 'visible') refresh();
+    };
+    const timer = window.setInterval(refresh, 60000);
+    window.addEventListener('focus', refresh);
+    document.addEventListener('visibilitychange', resume);
+    return () => {
+      window.clearInterval(timer);
+      window.removeEventListener('focus', refresh);
+      document.removeEventListener('visibilitychange', resume);
+    };
   }, []);
   useEffect(() => {
     // An editor opened for one identity must not save into a different account.
@@ -152,19 +160,17 @@ export default function App(props: AppProps) {
     setTab('lounges');
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
-  function flightWithLounges(segment: PlanTravelSegment, inPlan = false) {
+  function renderLoungeLink(opportunity: LoungeFlightContext) {
+    return <LoungeOpportunityLink opportunity={opportunity} onExplore={exploreLounges} />;
+  }
+  function flightWithLounges(segment: PlanTravelSegment) {
     const opportunity = loungeOpportunities.find((value) => value.legId === segment.id);
-    const showOpportunity =
-      opportunity &&
-      (inPlan
-        ? selectedDay?.date === localDate(segment.departure, segment.departureTimeZone)
-        : now.getTime() < Date.parse(opportunity.departure));
     return (
       <>
-        {showOpportunity && (
-          <LoungeOpportunityLink opportunity={opportunity} onExplore={exploreLounges} />
-        )}
-        <FlightSegmentCard segment={segment} collapseMeals={inPlan} />
+        {opportunity &&
+          now.getTime() < Date.parse(opportunity.departure) &&
+          renderLoungeLink(opportunity)}
+        <FlightSegmentCard segment={segment} />
       </>
     );
   }
@@ -397,6 +403,7 @@ export default function App(props: AppProps) {
               preferences={data.preferences}
               plan={plan}
               view={view}
+              now={now}
               onViewPlan={() => setTab('plan')}
               onViewTrips={() => setTab('trips')}
               onPreferences={() => setTab('profile')}
@@ -417,7 +424,8 @@ export default function App(props: AppProps) {
               onSelectDay={setSelectedDayId}
               onScience={() => setScienceOpen(true)}
               onRecord={setRecordAction}
-              renderFlight={flightWithLounges}
+              loungeContexts={loungeOpportunities}
+              renderBeforeFlight={renderLoungeLink}
             />
           )}
 

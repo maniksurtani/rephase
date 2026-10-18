@@ -19,12 +19,14 @@ import { airportCity, dateLabel, localDate, time, zoneName } from '../lib/displa
 import { actionCity, planDayCity } from '../lib/plan-places';
 import { ActionCard, actionMeta } from '../components/ActionCard';
 import { MoonScene } from '../components/MoonScene';
+import { todayPreview } from '../lib/plan-view';
 
 interface TodayViewProps {
   trip: Trip | null;
   preferences: Preferences;
   plan: Plan | null;
   view: PlanViewState;
+  now: Date;
   onViewPlan: () => void;
   onViewTrips: () => void;
   onPreferences: () => void;
@@ -36,6 +38,7 @@ export function TodayView({
   preferences,
   plan,
   view,
+  now,
   onViewPlan,
   onViewTrips,
   onPreferences,
@@ -43,6 +46,9 @@ export function TodayView({
   renderFlight,
 }: TodayViewProps) {
   const { currentAction, nextAction, today, timelineDay, itineraryFinished, isDemo } = view;
+  const preview = timelineDay
+    ? todayPreview(timelineDay, now.getTime(), view.calendarDays)
+    : undefined;
   return (
     <>
       <section className="welcome-hero">
@@ -191,25 +197,34 @@ export function TodayView({
                     : `${planDayCity(today)} local time · ${zoneName(today.timeZone, today.actions[0]?.start)}`}
                 </p>
               )}
-              {timelineDay?.travelSegments?.length ? (
+              {preview?.flights.length ? (
                 <div className="day-flights">
-                  {timelineDay.travelSegments.map((segment) => (
+                  {preview.flights.map((segment) => (
                     <div key={segment.id}>{renderFlight(segment)}</div>
                   ))}
                 </div>
               ) : null}
-              {timelineDay && (
+              {timelineDay && preview && (
                 <div className="action-list">
-                  {timelineDay.actions.slice(0, 3).map((action) => (
+                  {preview.actions.length > 0 && preview.actionDay.id !== timelineDay.id && (
+                    <p className="small-copy">
+                      {Date.parse(preview.actions[0].start) <= now.getTime() ? 'Ongoing' : 'Next'} ·{' '}
+                      {dateLabel(preview.actionDay.date, 'long')}
+                    </p>
+                  )}
+                  {preview.actions.map((action) => (
                     <ActionCard
                       key={action.id}
                       action={action}
                       compact
-                      travelSegments={timelineDay.travelSegments}
-                      isCurrent={!isDemo && action.id === currentAction?.id}
+                      travelSegments={preview.actionDay.travelSegments}
+                      isCurrent={Boolean(today) && Date.parse(action.start) <= now.getTime()}
                     />
                   ))}
                 </div>
+              )}
+              {today && preview && !preview.actions.length && !preview.flights.length && (
+                <p className="small-copy">No more recommendations today.</p>
               )}
               {itineraryFinished && (
                 <div className="empty-card subtle">

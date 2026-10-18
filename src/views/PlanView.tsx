@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import type { LoungeFlightContext } from '../lib/lounge-windows';
 import {
   ArrowRight,
   ArrowUpRight,
@@ -13,7 +14,7 @@ import {
   Plus,
   Sparkles,
 } from 'lucide-react';
-import type { Plan, PlanAction, PlanTravelSegment, Trip } from '../lib/types';
+import type { Plan, PlanAction, Trip } from '../lib/types';
 import type { PlanViewState } from '../lib/usePlanView';
 import {
   dateLabel,
@@ -40,7 +41,8 @@ interface PlanViewProps {
   onSelectDay: (id: string | null) => void;
   onScience: () => void;
   onRecord: (action: PlanAction) => void;
-  renderFlight: (segment: PlanTravelSegment, inPlan?: boolean) => ReactNode;
+  loungeContexts: LoungeFlightContext[];
+  renderBeforeFlight: (context: LoungeFlightContext) => ReactNode;
 }
 export function PlanView({
   trip,
@@ -53,7 +55,8 @@ export function PlanView({
   onSelectDay,
   onScience,
   onRecord,
-  renderFlight,
+  loungeContexts,
+  renderBeforeFlight,
 }: PlanViewProps) {
   const { calendarDays, selectedDay, currentAction, isDemo } = view;
   return (
@@ -201,7 +204,8 @@ export function PlanView({
                 <DayTimeline
                   key={selectedDay.id}
                   day={selectedDay}
-                  renderFlight={(segment) => renderFlight(segment, true)}
+                  loungeContexts={loungeContexts}
+                  renderBeforeFlight={renderBeforeFlight}
                   renderAction={(action) => (
                     <ActionCard
                       key={action.id}

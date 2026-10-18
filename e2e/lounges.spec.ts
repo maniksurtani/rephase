@@ -37,6 +37,32 @@ function noHorizontalOverflow(page: Page) {
   );
 }
 
+async function expectPreflightLoungeEntry(page: Page, flightId: string, departure: string) {
+  const link = page.locator(`.flight-lounge-link[data-flight-id="${flightId}"]`);
+  const lounge = page.locator('.timeline-entry[data-kind="lounge"]').filter({ has: link });
+  const flight = page
+    .locator('.timeline-entry[data-kind="flight"]')
+    .filter({ has: page.locator(`.flight-segment-card[data-flight-id="${flightId}"]`) });
+  await expect(lounge).toHaveCount(1);
+  await expect(flight).toHaveCount(1);
+  const start = Number(await lounge.getAttribute('data-start'));
+  expect(start).toBeLessThan(Date.parse(departure));
+  expect(start).toBeLessThan(Number(await flight.getAttribute('data-start')));
+  // Merely placing the link above the card at the departure timestamp is not
+  // enough: it needs a distinct earlier time on the rail and earlier geometry.
+  await expect(
+    lounge.locator('xpath=ancestor::li[1]').locator('.timeline-clock time'),
+  ).toHaveAttribute('datetime', new Date(start).toISOString());
+  const [loungeBounds, flightBounds] = await Promise.all([
+    lounge.boundingBox(),
+    flight.boundingBox(),
+  ]);
+  expect(loungeBounds).not.toBeNull();
+  expect(flightBounds).not.toBeNull();
+  expect(loungeBounds!.y + loungeBounds!.height).toBeLessThanOrEqual(flightBounds!.y);
+  return start;
+}
+
 async function expectScreenReaderTextHidden(page: Page) {
   const bounds = await page.locator('.lounge-membership-settings .sr-only').evaluateAll((labels) =>
     labels.map((label) => {
@@ -260,6 +286,11 @@ test('compact mobile lounge links precede departures and preserve flight context
     });
     await expect(button).toBeVisible();
     await expect(page.locator(`.flight-segment-card[data-flight-id="${leg.id}"]`)).toBeVisible();
+    await expectPreflightLoungeEntry(
+      page,
+      leg.id,
+      leg.id === 'qf94' ? '2026-10-25T06:40:00Z' : '2026-10-27T09:10:00Z',
+    );
     expect(
       await button.evaluate((node, flightId) => {
         const card = document.querySelector(`.flight-segment-card[data-flight-id="${flightId}"]`);
@@ -347,6 +378,7 @@ test('compact mobile lounge links precede departures and preserve flight context
   await navigation.getByRole('button', { name: 'Your plan', exact: true }).click();
   await page.locator('.day-button[data-date="2026-10-24"]').click();
   await expect(page.locator('.flight-segment-card[data-flight-id="qf94"]')).toBeVisible();
+  await expectPreflightLoungeEntry(page, 'qf94', '2026-10-25T02:05:00Z');
   await expect(
     page.getByRole('button', { name: 'Explore lounges in SFO', exact: true }),
   ).toBeVisible();
@@ -364,6 +396,71 @@ test('compact mobile lounge links precede departures and preserve flight context
     .selectOption('Tom Bradley International Terminal');
   await expect(page.locator('.lounge-count')).toHaveText('0 match this visit');
   await expect(page.locator('.lounge-recommended')).toHaveCount(0);
+  expect(await noHorizontalOverflow(page)).toBe(true);
+});
+
+test('an after-midnight connection keeps its lounge visit before departure on the previous local evening', async ({
+  page,
+}) => {
+  const api = new LoungeAccountApi();
+  const trip: Trip = {
+    id: 'midnight-lounge-connection',
+    name: 'After-midnight connection',
+    createdAt: '2026-10-15T12:00:00Z',
+    updatedAt: '2026-10-15T12:00:00Z',
+    legs: [
+      {
+        id: 'evening-arrival',
+        flightNumber: 'AA101',
+        departureAirport: 'SFO',
+        arrivalAirport: 'LAX',
+        departureDateTime: '2026-10-24T21:00',
+        arrivalDateTime: '2026-10-24T22:10',
+        departureTimeZone: 'America/Los_Angeles',
+        arrivalTimeZone: 'America/Los_Angeles',
+        stayAfter: 'connection',
+        strategy: 'adapt',
+        travelClass: 'economy',
+      },
+      {
+        id: 'after-midnight-departure',
+        flightNumber: 'QF94',
+        departureAirport: 'LAX',
+        arrivalAirport: 'MEL',
+        departureDateTime: '2026-10-25T01:00',
+        arrivalDateTime: '2026-10-26T10:30',
+        departureTimeZone: 'America/Los_Angeles',
+        arrivalTimeZone: 'Australia/Melbourne',
+        stayAfter: 'destination',
+        strategy: 'adapt',
+        travelClass: 'business',
+      },
+    ],
+  };
+  api.data = { ...emptyData(), trips: [trip], selectedTripId: trip.id };
+  await api.install(page);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.clock.setFixedTime(new Date('2026-10-25T04:00:00Z'));
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: trip.name, exact: true })).toBeVisible();
+  await page
+    .getByRole('navigation', { name: 'Mobile navigation' })
+    .getByRole('button', { name: 'Your plan', exact: true })
+    .click();
+  await page.locator('.day-button[data-date="2026-10-25"]').click();
+  const at = await expectPreflightLoungeEntry(
+    page,
+    'after-midnight-departure',
+    '2026-10-25T08:00:00Z',
+  );
+  expect(at).toBe(Date.parse('2026-10-25T05:40:00Z')); // 24 October, 22:40 PDT
+  await page.locator('.timeline-entry[data-kind="lounge"]').scrollIntoViewIfNeeded();
+  await captureDesign(page, 'artifacts/lounge-preflight-point-mobile.png');
+  await page.getByRole('button', { name: 'Explore lounges in LAX', exact: true }).click();
+  await expect(page.getByLabel('Visit date', { exact: true })).toHaveValue('2026-10-24');
+  await expect(page.getByLabel('From', { exact: true })).toHaveValue('22:40');
+  await expect(page.getByLabel('Until', { exact: true })).toHaveValue('00:15');
+  await expect(page.getByLabel('Departure time', { exact: true })).toHaveValue('01:00');
   expect(await noHorizontalOverflow(page)).toBe(true);
 });
 

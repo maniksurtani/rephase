@@ -4,7 +4,7 @@ import { flightAirborneTiming } from '../src/lib/flight-timing';
 import { validateTrip } from '../src/lib/itinerary';
 import { generateModelPlanWithDiagnostics } from './support/planning';
 import { MODEL_PLAN_VERSION } from '../src/lib/model-plan';
-import { localToInstant } from '../src/lib/time';
+import { formatTime, localToInstant } from '../src/lib/time';
 import type { FlightLeg, Preferences, Trip } from '../src/lib/types';
 const HOUR = 3_600_000,
   DAY = 24 * HOUR;
@@ -203,6 +203,49 @@ describe('light-driven itinerary model', () => {
       if (ends[i] - ends[i - 1] > 12 * HOUR)
         expect(Math.abs(ends[i] - ends[i - 1] - DAY)).toBeLessThanOrEqual(HOUR + 1);
     expect(plan.model!.assumptions.join(' ')).toContain('At most one hour/day');
+  }, 30_000);
+  it('gradually moves a late Honolulu sleep schedule toward the preferred local wake time', () => {
+    const destinationZone = 'Pacific/Honolulu';
+    const outbound: FlightLeg = {
+      ...leg,
+      flightNumber: 'QF103',
+      departureAirport: 'SYD',
+      arrivalAirport: 'HNL',
+      departureDateTime: '2026-10-17T20:15',
+      arrivalDateTime: '2026-10-17T08:55',
+      departureTimeZone: 'Australia/Sydney',
+      arrivalTimeZone: destinationZone,
+    };
+    const plan = generatePlan(trip([outbound]), {
+      ...prefs,
+      homeTimeZone: 'Australia/Sydney',
+      preparationDays: 0,
+    });
+    // Rejoin calendar-day fragments before checking whole nights. A gradual
+    // transition may legitimately begin after midnight; exact model minutes
+    // are not a measured or clinically validated sleep prescription.
+    const nights = plan.days
+      .filter((day) => day.stage === 'destination')
+      .flatMap((day) => day.actions.filter((action) => action.type === 'sleep'))
+      .sort((a, b) => a.start.localeCompare(b.start))
+      .reduce<Array<{ start: number; end: number }>>((result, action) => {
+        const start = Date.parse(action.start),
+          end = Date.parse(action.end);
+        const previous = result.at(-1);
+        if (previous?.end === start) previous.end = end;
+        else result.push({ start, end });
+        return result;
+      }, []);
+    expect(nights.length).toBeGreaterThan(3);
+    expect(nights[0].start).toBeGreaterThan(localToInstant('2026-10-18T00:00', destinationZone));
+    expect(nights[0].start).toBeLessThan(localToInstant('2026-10-18T03:00', destinationZone));
+    expect(nights.every((night) => night.end - night.start === prefs.sleepHours * HOUR)).toBe(true);
+    for (let index = 1; index < nights.length; index++) {
+      const interval = nights[index].start - nights[index - 1].start;
+      expect(interval).toBeGreaterThanOrEqual(DAY - HOUR - 1);
+      expect(interval).toBeLessThanOrEqual(DAY + 1);
+    }
+    expect(formatTime(nights.at(-1)!.end, destinationZone)).toBe(prefs.preferredWakeTime);
   }, 30_000);
   it('does not insert a chronotype offset or a melatonin/caffeine phase effect', () => {
     const off = generatePlan(trip(), { ...prefs, caffeine: false, chronotype: 'early' });

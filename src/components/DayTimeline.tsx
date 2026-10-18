@@ -9,6 +9,7 @@ import {
 } from '../lib/day-timeline';
 import { buildTimelineSteps, type TimelineStep } from '../lib/timeline-steps';
 import type { PlanCalendarDay } from '../lib/plan-calendar';
+import type { LoungeFlightContext } from '../lib/lounge-windows';
 import { planDayCity } from '../lib/plan-places';
 import { travelClock } from '../lib/travel-clocks';
 import type { PlanAction, PlanTravelSegment } from '../lib/types';
@@ -42,8 +43,12 @@ function durationLabel(milliseconds: number): string {
   return hours ? `${hours} h${remainder ? ` ${remainder} min` : ''}` : `${minutes} min`;
 }
 
-function entryKind(entry: TimelineEntry): TimelineBandKind {
-  return entry.kind === 'flight' ? 'flight' : timelineActionKind(entry.action);
+function entryKind(entry: TimelineEntry): TimelineBandKind | undefined {
+  return entry.kind === 'lounge'
+    ? undefined
+    : entry.kind === 'flight'
+      ? 'flight'
+      : timelineActionKind(entry.action);
 }
 
 /** One increasing UTC rail; local clock labels keep their dates and DST offsets. */
@@ -51,12 +56,16 @@ export function DayTimeline({
   day,
   renderAction,
   renderFlight,
+  loungeContexts,
+  renderBeforeFlight,
 }: {
   day: PlanCalendarDay;
   renderAction: (action: PlanAction) => ReactNode;
   renderFlight?: (segment: PlanTravelSegment) => ReactNode;
+  loungeContexts?: readonly LoungeFlightContext[];
+  renderBeforeFlight?: (context: LoungeFlightContext) => ReactNode;
 }) {
-  const timeline = useMemo(() => buildDayTimeline(day), [day]);
+  const timeline = useMemo(() => buildDayTimeline(day, { loungeContexts }), [day, loungeContexts]);
   const steps = useMemo(() => buildTimelineSteps(timeline), [timeline]);
   const present = new Set(timeline.bands.map((band) => band.kind));
   const clock = (instant: number) =>
@@ -68,7 +77,30 @@ export function DayTimeline({
   const changingZone = firstClock.zone !== lastClock.zone;
 
   function renderEntry(entry: TimelineEntry) {
-    const kind = entryKind(entry),
+    if (entry.kind === 'lounge') {
+      const local = travelClock(new Date(entry.start).toISOString(), entry.lounge.timeZone);
+      return (
+        <div
+          className="timeline-entry timeline-lounge"
+          key={`lounge:${entry.id}`}
+          data-kind="lounge"
+          data-start={entry.start}
+          data-end={entry.end}
+          data-entry-id={entry.id}
+        >
+          {entry.lounge.timeZone !== timeline.timeZone && (
+            <p className="small-copy">
+              {entry.lounge.airport} local ·{' '}
+              <time dateTime={new Date(entry.start).toISOString()}>
+                {local.time} · {local.date} · {local.zone}
+              </time>
+            </p>
+          )}
+          {renderBeforeFlight?.(entry.lounge)}
+        </div>
+      );
+    }
+    const kind = entryKind(entry)!,
       end = clock(entry.end);
     const Icon = appearance[kind].icon;
     return (

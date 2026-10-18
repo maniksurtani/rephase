@@ -3,6 +3,7 @@ import { DEFAULT_PREFERENCES } from '../src/lib/defaults';
 import { buildDayTimeline, timelineActionKind } from '../src/lib/day-timeline';
 import { generatePlan } from './support/planning';
 import { groupPlanDays } from '../src/lib/plan-calendar';
+import type { LoungeFlightContext } from '../src/lib/lounge-windows';
 import type { ActionType, PlanAction, PlanDay, PlanTravelSegment, Trip } from '../src/lib/types';
 import octoberItinerary from './fixtures/itineraries/oct2026.json';
 
@@ -306,5 +307,138 @@ describe('daily chronological timeline', () => {
       timelineActionKind({ ...first, type: 'sleep', title: 'Rest or nap', sleepKind: 'sleep' }),
     ).toBe('sleep');
     expect(timelineActionKind({ ...first, type: 'sleep', title: 'Bedtime' })).toBe('sleep');
+  });
+});
+
+describe('pre-flight lounge timeline events', () => {
+  const context = (changes: Partial<LoungeFlightContext> = {}): LoungeFlightContext => ({
+    id: 'qf103:pre-flight',
+    legId: flight.id,
+    airport: 'SYD',
+    kind: 'pre-flight',
+    departure: flight.departure,
+    timeZone: flight.departureTimeZone,
+    flightNumber: flight.flightNumber,
+    destinationAirport: 'HNL',
+    travelClass: 'economy',
+    windowStatus: 'estimated',
+    start: '2026-10-17T06:15:00Z',
+    end: '2026-10-17T08:30:00Z',
+    minutes: 135,
+    note: '',
+    ...changes,
+  });
+
+  it('places a date-line pre-flight prompt before takeoff without moving the flight or model actions', () => {
+    const recommendation = action(
+      'light',
+      'light',
+      '2026-10-17T04:00:00Z',
+      '2026-10-17T05:00:00Z',
+      {
+        timeZone: 'Australia/Sydney',
+      },
+    );
+    const [calendar] = groupPlanDays([
+      day('2026-10-17', 'Australia/Sydney', {
+        actions: [recommendation],
+        travelSegments: [flight],
+      }),
+      day('2026-10-17', 'Pacific/Honolulu', { travelSegments: [flight] }),
+    ]);
+    const before = JSON.stringify(calendar);
+    const lounge = context();
+    const timeline = buildDayTimeline(calendar, { loungeContexts: [lounge] });
+    const prompt = timeline.entries.find((entry) => entry.kind === 'lounge')!;
+    const departure = timeline.entries.find((entry) => entry.kind === 'flight')!;
+    expect(prompt).toMatchObject({
+      start: instant(lounge.start!),
+      end: instant(lounge.start!),
+      lounge,
+    });
+    expect(prompt.start).toBeLessThan(departure.start);
+    expect(departure.start).toBe(instant(flight.departure));
+    expect(timeline.bands.find((band) => band.kind === 'flight')?.start).toBe(
+      instant(flight.departure),
+    );
+    expect(timeline.bands.some((band) => band.id.includes('lounge'))).toBe(false);
+    expect(timeline.entries.find((entry) => entry.kind === 'action')?.action).toBe(recommendation);
+    expect(JSON.stringify(calendar)).toBe(before);
+  });
+
+  it.each(['limited', 'unavailable', 'unknown'] as const)(
+    'retains a quiet pre-flight prompt for a %s visit without inventing a lounge duration',
+    (windowStatus) => {
+      const [calendar] = groupPlanDays([
+        day('2026-10-17', 'Australia/Sydney', { travelSegments: [flight] }),
+      ]);
+      const lounge = context({
+        windowStatus,
+        start: undefined,
+        end: undefined,
+        minutes: undefined,
+      });
+      const prompt = buildDayTimeline(calendar, { loungeContexts: [lounge] }).entries.find(
+        (entry) => entry.kind === 'lounge',
+      )!;
+      expect(prompt.start).toBe(instant(flight.departure) - 30 * 60_000);
+      expect(prompt.end).toBe(prompt.start);
+      expect(prompt.kind === 'lounge' && prompt.lounge).toBe(lounge);
+      expect(lounge.start).toBeUndefined();
+    },
+  );
+
+  it('orders same-instant action and lounge entries consistently regardless of action input order', () => {
+    const lounge = context();
+    const light = action('light', 'light', lounge.start!, '2026-10-17T07:00:00Z', {
+      timeZone: 'Australia/Sydney',
+    });
+    const caffeine = { ...light, id: 'caffeine', type: 'caffeine' as const };
+    const ordered = (actions: PlanAction[]) => {
+      const [calendar] = groupPlanDays([
+        day('2026-10-17', 'Australia/Sydney', { actions, travelSegments: [flight] }),
+      ]);
+      return buildDayTimeline(calendar, { loungeContexts: [lounge] }).entries.map(
+        (entry) => entry.id,
+      );
+    };
+    expect(ordered([light, caffeine])).toEqual(['lounge:qf103', 'caffeine', 'light', 'qf103']);
+    expect(ordered([caffeine, light])).toEqual(ordered([light, caffeine]));
+  });
+
+  it('extends a midnight departure tile to the previous evening and omits prompts on continuation days', () => {
+    const overnight: PlanTravelSegment = {
+      ...flight,
+      departure: '2026-10-25T08:00:00Z',
+      arrival: '2026-10-25T23:30:00Z',
+      departureAirport: 'LAX',
+      arrivalAirport: 'MEL',
+      departureTimeZone: 'America/Los_Angeles',
+      arrivalTimeZone: 'Australia/Melbourne',
+    };
+    const lounge = context({
+      departure: overnight.departure,
+      airport: 'LAX',
+      destinationAirport: 'MEL',
+      kind: 'transit',
+      timeZone: overnight.departureTimeZone,
+      start: '2026-10-25T05:40:00Z',
+      end: '2026-10-25T07:15:00Z',
+    });
+    const [departure] = groupPlanDays([
+      day('2026-10-25', 'America/Los_Angeles', { travelSegments: [overnight] }),
+    ]);
+    const [arrival] = groupPlanDays([
+      day('2026-10-26', 'Australia/Melbourne', { travelSegments: [overnight] }),
+    ]);
+    const timeline = buildDayTimeline(departure, { loungeContexts: [lounge] });
+    expect(timeline.start).toBe(instant(lounge.start!));
+    expect(timeline.entries[0].kind).toBe('lounge');
+    expect(timeline.entries[1].start).toBe(instant(overnight.departure));
+    expect(
+      buildDayTimeline(arrival, { loungeContexts: [lounge] }).entries.some(
+        (entry) => entry.kind === 'lounge',
+      ),
+    ).toBe(false);
   });
 });

@@ -289,7 +289,7 @@ test('mobile timeline retains date-line flights, simultaneous rest, two-flight d
   ).toBe(true);
 });
 
-test('repeated daylight-saving hour remains a 25-hour chronological day with a 90-minute flight', async ({
+test('repeated daylight-saving hour retains a 25-hour civil day, prior-evening lounge and a 90-minute flight', async ({
   page,
 }) => {
   const trip: Trip = {
@@ -319,9 +319,16 @@ test('repeated daylight-saving hour remains a 25-hour chronological day with a 9
   await openPlan(page, trip, 'America/New_York');
   await page.locator('.day-button[data-date="2026-11-01"]').click();
   const rows = await expectChronologicalRail(page);
-  expect(rows[0].start).toBe(Date.parse('2026-11-01T04:00:00Z'));
+  // The 01:15 departure has a 23:15 pre-flight lounge visit the evening before.
+  // Keep that real lead-in without mistaking it for an extra DST calendar hour.
+  const midnight = Date.parse('2026-11-01T04:00:00Z');
+  expect(rows[0].start).toBe(Date.parse('2026-11-01T03:15:00Z'));
   expect(rows.at(-1)!.end).toBe(Date.parse('2026-11-02T05:00:00Z'));
-  expect(rows.at(-1)!.end - rows[0].start).toBe(25 * 3_600_000);
+  expect(rows.at(-1)!.end - midnight).toBe(25 * 3_600_000);
+  await expect(page.locator('.timeline-entry[data-kind="lounge"]')).toHaveAttribute(
+    'data-start',
+    String(Date.parse('2026-11-01T03:15:00Z')),
+  );
   await expect(page.locator('.timeline-heading')).toContainText(/EDT|GMT[−-]4/);
   await expect(page.locator('.timeline-heading')).toContainText(/EST|GMT[−-]5/);
   const entries = await intervals(page, '.timeline-entry[data-kind="flight"]');
