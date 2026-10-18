@@ -104,7 +104,7 @@ npm run test:e2e
 
 Playwright uses `/usr/bin/chromium` when present, or `PLAYWRIGHT_CHROMIUM_EXECUTABLE`; otherwise install it with `npx playwright install chromium`. Engineering checks cover numerical reference trajectories, temporal/itinerary constraints, adherence replay, daylight, API ownership/nonce/session/revision security, cache/quotas, sync merges, calendar export, and deployment/launcher configuration. Browser checks use controlled API responses for account and flight scenarios.
 
-Current release: [collapsible melatonin guidance `cf54c5b`](RELEASES.md) passed all 538 unit/runtime tests and 46 browser scenarios in CI, then deployed the exact verified artifact. Plan and Today keep usage details under a default-closed **Melatonin guidance** disclosure, with mobile tap and keyboard coverage.
+Current release: [retained stay dates `4f40c88`](RELEASES.md) passed all 539 unit/runtime tests and 46 browser scenarios in CI, then deployed the exact verified artifact. Recording an activity no longer hides preparation/stay dates without remaining guidance; empty days show a neutral message. The browser journey covers recording, Sunday in Honolulu, Monday's flight and mobile reload.
 
 Detailed previous release evidence is preserved in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md). Automated account/provider checks use controlled responses; real Google/account/provider acceptance remains listed in [TODO.md](TODO.md).
 

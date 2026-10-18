@@ -7,7 +7,7 @@ Updated 2026-10-18. Active work is kept here; the previous complete checklist is
 - [x] Reproduce missing Sunday 18 October in Honolulu after a recorded activity triggers future-only replanning.
 - [x] Keep preparation and stay dates from the original itinerary stages even without action cards; preserve action IDs, timing and available estimates.
 - [x] Show a neutral empty state instead of an all-day Awake band when no guidance exists.
-- [ ] Verify the recorded-activity browser journey, publish the checked release and confirm the live date strip.
+- [x] Verify the recorded-activity browser journey, publish the checked release and confirm the live date strip at desktop/mobile widths; 539 unit/runtime tests and 46 browser scenarios passed. See RELEASES.md.
 
 ## Collapsible melatonin guidance
 

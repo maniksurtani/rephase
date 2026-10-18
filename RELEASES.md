@@ -1,5 +1,15 @@
 # Release evidence
 
+## 18 October 2026 — retain stay dates after recorded activity
+
+Source [`4f40c88`](https://github.com/maniksurtani/rephase/commit/4f40c88ab7e55cd35fa95bb0cff5e6ded4a2aee7). [Checks 39176037010](https://github.com/maniksurtani/rephase/actions/runs/39176037010) passed lint, formatting, frontend/Worker TypeScript, all 539 unit/runtime tests across 42 suites and all 46 browser scenarios (1.5 minutes). Verified artifact `12153589289` contains 26 offline assets, shell `df48076eeae4ea04`.
+
+[Deployment 39176286063](https://github.com/maniksurtani/rephase/actions/runs/39176286063) reused that exact artifact without repeating browser tests. No migrations were needed. Worker upload version: `202a0614-24cb-4edd-a2cc-bba71ff545d6`.
+
+The October itinerary reproduced the missing Sunday 18 October at 13:13 Honolulu after recording preparation sleep. Future-only replanning removed unlogged recommendations, and calendar generation had relied on those actions to create stay dates. Preparation/stay dates now come from the original ground stages even when no cards remain. Empty days show a neutral message instead of an all-day Awake band. Recommendations, recorded IDs, numerical timing and estimate rules are unchanged. The focused regression verifies retained dates and future-only actions; the existing browser journey covers the actual Record UI, Sunday selection, Monday's flight and mobile reload.
+
+Live guest checks confirmed the exact entry asset/offline shell, ordered unique dates 14–19, selectable Sunday in Honolulu, its neutral empty state and Monday's AS812. Inspected desktop/390px screenshots fit without horizontal overflow. No page errors, account writes or flight-provider calls occurred. The temporary smoke harness was corrected to await the asynchronous planner before reading the date strip.
+
 ## 18 October 2026 — collapsible melatonin guidance
 
 Source [`cf54c5b`](https://github.com/maniksurtani/rephase/commit/cf54c5bbe24c7799a04b6b2dbf844b3aba5424dd). [Checks 39100247484](https://github.com/maniksurtani/rephase/actions/runs/39100247484) passed lint, formatting, frontend/Worker TypeScript, all 538 unit/runtime tests across 42 suites and all 46 browser scenarios (1.2 minutes). Verified artifact `12126262454` contains 26 offline assets, shell `8697420e7724191a`.
