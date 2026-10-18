@@ -850,59 +850,59 @@ function displayDays(
   loggedIds: Set<string>,
 ): PlanDay[] {
   const map = new Map<string, PlanDay>();
+  const ensureDay = (date: string, zone: string, stage: Stage | undefined): PlanDay => {
+    const key = `${date}:${zone}`;
+    let day = map.get(key);
+    if (day) return day;
+    const dayStart = clock(date, '00:00', zone),
+      dayEnd = clock(addDate(date, 1), '00:00', zone);
+    const estimate = estimates
+      .filter(
+        (estimate) => estimate.zone === zone && estimate.start < dayEnd && estimate.time > dayStart,
+      )
+      .at(-1);
+    const todayNadirs = nadirs
+      .map((time, index) => ({ time, previous: nadirs[index - 1] }))
+      .filter((nadir) => nadir.time >= dayStart && nadir.time < dayEnd);
+    // A day without two successive low points has no daily change estimate. Close cusp minima or
+    // a missing cycle are ambiguous, so do not turn them into a large apparent circadian shift.
+    const usable =
+      todayNadirs.length === 1 &&
+      todayNadirs[0].previous !== undefined &&
+      todayNadirs[0].time - todayNadirs[0].previous > 12 * HOUR &&
+      todayNadirs[0].time - todayNadirs[0].previous < 36 * HOUR;
+    const available = !!estimate && usable;
+    // Positive means the next biological low is earlier; preserve small changes for honest display.
+    const shift = available
+      ? phaseShiftBetweenLows(todayNadirs[0].previous, todayNadirs[0].time)
+      : 0;
+    day = {
+      id: key,
+      date,
+      timeZone: zone,
+      locationAirport: stage?.airport,
+      label: stage?.label ?? 'Saved observation',
+      stage: stage?.stage ?? 'travel',
+      actions: [],
+      phaseShiftHours: shift,
+      phaseEstimateAvailable: available,
+      remainingShiftHours: estimate
+        ? rounded(distance(estimate.endPhase, estimate.targetPhase))
+        : 0,
+      note: `${estimate?.note ?? 'Saved history; future-only replanning.'} ${available ? 'Body-clock change is the difference between successive simulated biological low points, assigned to the local date of the later low. ' : 'No daily body-clock change is available without two unambiguous simulated biological low points and model coverage for this day. '}Body-clock phase is an unmeasured estimate, not a promised outcome.`,
+    };
+    map.set(key, day);
+    return day;
+  };
   for (const action of actions)
     for (const piece of chunks(
       { start: Date.parse(action.start), end: Date.parse(action.end) },
       action.timeZone,
     )) {
-      const key = `${piece.date}:${action.timeZone}`;
-      let day = map.get(key);
-      if (!day) {
-        const stage =
-          stages.find((stage) => piece.start >= stage.start && piece.start < stage.end) ??
-          stages[stages.length - 1];
-        const dayStart = clock(piece.date, '00:00', action.timeZone),
-          dayEnd = clock(addDate(piece.date, 1), '00:00', action.timeZone);
-        const estimate = estimates
-          .filter(
-            (estimate) =>
-              estimate.zone === action.timeZone &&
-              estimate.start < dayEnd &&
-              estimate.time > dayStart,
-          )
-          .at(-1);
-        const todayNadirs = nadirs
-          .map((time, index) => ({ time, previous: nadirs[index - 1] }))
-          .filter((nadir) => nadir.time >= dayStart && nadir.time < dayEnd);
-        // A day without two successive low points has no daily change estimate. Close cusp minima or
-        // a missing cycle are ambiguous, so do not turn them into a large apparent circadian shift.
-        const usable =
-          todayNadirs.length === 1 &&
-          todayNadirs[0].previous !== undefined &&
-          todayNadirs[0].time - todayNadirs[0].previous > 12 * HOUR &&
-          todayNadirs[0].time - todayNadirs[0].previous < 36 * HOUR;
-        const available = !!estimate && usable;
-        // Positive means the next biological low is earlier; preserve small changes for honest display.
-        const shift = available
-          ? phaseShiftBetweenLows(todayNadirs[0].previous, todayNadirs[0].time)
-          : 0;
-        day = {
-          id: key,
-          date: piece.date,
-          timeZone: action.timeZone,
-          locationAirport: stage?.airport,
-          label: stage?.label ?? 'Saved observation',
-          stage: stage?.stage ?? 'travel',
-          actions: [],
-          phaseShiftHours: shift,
-          phaseEstimateAvailable: available,
-          remainingShiftHours: estimate
-            ? rounded(distance(estimate.endPhase, estimate.targetPhase))
-            : 0,
-          note: `${estimate?.note ?? 'Saved history; future-only replanning.'} ${available ? 'Body-clock change is the difference between successive simulated biological low points, assigned to the local date of the later low. ' : 'No daily body-clock change is available without two unambiguous simulated biological low points and model coverage for this day. '}Body-clock phase is an unmeasured estimate, not a promised outcome.`,
-        };
-        map.set(key, day);
-      }
+      const stage =
+        stages.find((stage) => piece.start >= stage.start && piece.start < stage.end) ??
+        stages[stages.length - 1];
+      const day = ensureDay(piece.date, action.timeZone, stage);
       const start = iso(piece.start),
         end = iso(piece.end);
       day.actions.push({
@@ -914,6 +914,11 @@ function displayDays(
         end,
       });
     }
+  // Calendar coverage follows the itinerary, even when replay leaves a stay
+  // without recommendations. Flight dates are supplied by the travel decorator;
+  // seeding its second clock here could invent a date before departure.
+  for (const stage of stages.filter((stage) => stage.kind === 'ground'))
+    for (const piece of chunks(stage, stage.zone)) ensureDay(piece.date, stage.zone, stage);
   return [...map.values()]
     .map((day) => ({
       ...day,

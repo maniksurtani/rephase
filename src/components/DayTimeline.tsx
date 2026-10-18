@@ -76,6 +76,13 @@ export function DayTimeline({
   const travelDay = day.travelSegments.length > 0;
   const changingZone = firstClock.zone !== lastClock.zone;
 
+  if (!timeline.entries.length)
+    return (
+      <section className="day-timeline" aria-label="Daily timeline">
+        <p className="small-copy">No saved recommendations for this day.</p>
+      </section>
+    );
+
   function renderEntry(entry: TimelineEntry) {
     if (entry.kind === 'lounge') {
       const local = travelClock(new Date(entry.start).toISOString(), entry.lounge.timeZone);

@@ -231,6 +231,55 @@ test('body-clock estimates show modeled movement rather than a repeated zero', a
     estimates.some((estimate) => /(?:About|Under).*\b(?:earlier|later)\b/.test(estimate)),
   ).toBe(true);
   await captureDesign(page, 'artifacts/planner-phase-desktop.png');
+
+  // Saving an earlier observation replans only the future. The intervening
+  // Honolulu stay must retain its calendar date even when no guidance remains.
+  await page.clock.setFixedTime(new Date('2026-10-18T23:13:00.000Z'));
+  await planDay(page, '2026-10-14').click();
+  await page.getByRole('button', { name: 'Record what happened', exact: true }).first().click();
+  const record = page.getByRole('dialog', { name: 'Record your actual experience', exact: true });
+  await record.getByRole('button', { name: 'Save record', exact: true }).click();
+  await expect(
+    page.getByRole('heading', { name: 'Logged sleep · completed', exact: true }),
+  ).toBeVisible();
+
+  const dates = await page
+    .locator('.day-button')
+    .evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-date')));
+  expect(dates.slice(0, 6)).toEqual([
+    '2026-10-14',
+    '2026-10-15',
+    '2026-10-16',
+    '2026-10-17',
+    '2026-10-18',
+    '2026-10-19',
+  ]);
+  expect(new Set(dates).size).toBe(dates.length);
+  await expect(planDay(page, '2026-10-18')).toContainText('Honolulu');
+  await planDay(page, '2026-10-18').click();
+  await expect(page.locator('.agenda-heading h2')).toHaveText('Sunday 18 October');
+  await expect(page.locator('.agenda-heading .stage-label')).toHaveText('Stay in Honolulu');
+  await expect(
+    page.getByText('No saved recommendations for this day.', { exact: true }),
+  ).toBeVisible();
+  await expect(page.locator('.timeline-band[data-kind="awake"]')).toHaveCount(0);
+  await expect(page.locator('.timeline-entry')).toHaveCount(0);
+  await captureDesign(page, 'artifacts/planner-empty-stay-desktop.png');
+
+  await planDay(page, '2026-10-19').click();
+  await expect(flightCard(page, 'as812')).toBeVisible();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.reload();
+  await page.getByRole('button', { name: 'Explore your plan', exact: true }).click();
+  await planDay(page, '2026-10-18').click();
+  await expect(page.locator('.agenda-heading h2')).toHaveText('Sunday 18 October');
+  await expect(
+    page.getByText('No saved recommendations for this day.', { exact: true }),
+  ).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(
+    true,
+  );
+  await captureDesign(page, 'artifacts/planner-empty-stay-mobile.png');
 });
 
 test('minute-only flight entry defaults arrival until edited and preserves existing arrival on reopening', async ({

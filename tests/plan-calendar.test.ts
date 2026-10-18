@@ -222,4 +222,69 @@ describe('calendar date presentation', () => {
     );
     for (const value of presentedActions) expect(value).toBe(originalActions.get(value.id));
   });
+
+  it('keeps Sunday in Honolulu and earlier stay dates after recorded activity triggers future-only replanning', () => {
+    const trip: Trip = {
+      ...octoberItinerary.trip,
+      legs: octoberItinerary.trip.legs.slice(0, 4) as Trip['legs'],
+    };
+    const preferences = {
+      ...DEFAULT_PREFERENCES,
+      homeTimeZone: 'Australia/Sydney',
+      preparationDays: 3,
+      planningMode: 'model' as const,
+    };
+    const now = Date.parse('2026-10-18T23:13:00Z'); // Sunday 13:13 in Honolulu.
+    const original = generatePlan(trip, preferences, { now });
+    const sleep = original.days
+      .flatMap((day) => day.actions)
+      .find((action) => action.type === 'sleep' && action.start < '2026-10-17')!;
+    const replay = generatePlan(
+      {
+        ...trip,
+        adherence: [
+          {
+            id: 'prep-sleep',
+            tripId: trip.id,
+            actionId: sleep.id,
+            type: sleep.type,
+            scheduledStart: sleep.start,
+            scheduledEnd: sleep.end,
+            timeZone: sleep.timeZone,
+            status: 'completed',
+            recordedAt: sleep.end,
+          },
+        ],
+      },
+      preferences,
+      { now },
+    );
+    const calendar = groupPlanDays(replay.days);
+    expect(calendar.map((day) => day.date)).toEqual(
+      groupPlanDays(original.days).map((day) => day.date),
+    );
+    const sunday = calendar.find((day) => day.date === '2026-10-18');
+    expect(sunday).toMatchObject({
+      stage: 'destination',
+      label: 'Stay in Honolulu',
+      timeZone: 'Pacific/Honolulu',
+      locationAirport: 'HNL',
+      actions: [],
+      travelSegments: [],
+    });
+    expect(isCalendarDayCurrent(sunday!, now)).toBe(true);
+    expect(calendar.find((day) => day.date === '2026-10-15')).toMatchObject({
+      stage: 'preparation',
+      actions: [],
+      phaseEstimateAvailable: false,
+    });
+    const actions = calendar.flatMap((day) => day.actions);
+    expect(actions.filter((action) => action.id === sleep.id)).toHaveLength(1);
+    expect(
+      actions
+        .filter((action) => action.id !== sleep.id)
+        .every((action) => Date.parse(action.start) >= now),
+    ).toBe(true);
+    expect(replay.days.some((day) => day.id === '2026-10-16:Pacific/Honolulu')).toBe(false);
+  });
 });

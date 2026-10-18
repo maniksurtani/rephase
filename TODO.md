@@ -2,6 +2,13 @@
 
 Updated 2026-10-18. Active work is kept here; the previous complete checklist is preserved in [the task archive](docs/archive/TODO-2026-10-16.md). Release evidence is in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md).
 
+## Retain stay days after replanning
+
+- [x] Reproduce missing Sunday 18 October in Honolulu after a recorded activity triggers future-only replanning.
+- [x] Keep preparation and stay dates from the original itinerary stages even without action cards; preserve action IDs, timing and available estimates.
+- [x] Show a neutral empty state instead of an all-day Awake band when no guidance exists.
+- [ ] Verify the recorded-activity browser journey, publish the checked release and confirm the live date strip.
+
 ## Collapsible melatonin guidance
 
 - [x] Put melatonin usage text, dose information, explanation and source behind a default-closed Melatonin guidance disclosure in Plan and Today cards.
