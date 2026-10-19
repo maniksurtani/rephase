@@ -74,7 +74,8 @@ For the real embedded runtime on an emulator/device:
 ```bash
 npm run mobile:engine
 cd mobile
-flutter test integration_test/offline_engine_test.dart -d DEVICE_ID
+flutter drive --no-dds --driver=test_driver/integration_test.dart \
+  --target=integration_test/offline_engine_test.dart -d DEVICE_ID
 ```
 
 This exercises on-device planning, clock refresh and DST gap/fold handling. Automated account/provider tests use controlled responses; real native Google login, account reconnection and dated flight lookup need owner acceptance. CI compilation does not establish physical-device behavior.

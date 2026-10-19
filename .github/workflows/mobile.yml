@@ -76,7 +76,7 @@ jobs:
           restore-keys: pub-${{ runner.os }}-${{ env.FLUTTER_VERSION }}-
       - run: flutter pub get --enforce-lockfile
         working-directory: mobile
-      - run: dart format --output=none --set-exit-if-changed lib test integration_test
+      - run: dart format --output=none --set-exit-if-changed lib test integration_test test_driver
         working-directory: mobile
       - run: flutter analyze
         working-directory: mobile
@@ -151,7 +151,9 @@ jobs:
       - name: Verify the offline engine in WKWebView
         timeout-minutes: 10
         run: |
-          flutter test --no-dds --verbose integration_test/offline_engine_test.dart -d "$REPHASE_SIMULATOR_ID" --reporter expanded > "$RUNNER_TEMP/rephase-ios-integration.log" 2>&1
+          # The official driver reports every integration assertion without
+          # flutter test's DDS-dependent golden-file listener (no goldens here).
+          flutter drive --no-dds --verbose --driver=test_driver/integration_test.dart --target=integration_test/offline_engine_test.dart -d "$REPHASE_SIMULATOR_ID" > "$RUNNER_TEMP/rephase-ios-integration.log" 2>&1
           tail -n 25 "$RUNNER_TEMP/rephase-ios-integration.log"
         working-directory: mobile
       - name: Diagnose a failed simulator run

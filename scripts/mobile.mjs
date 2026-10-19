@@ -31,14 +31,20 @@ if (!['run', 'check', 'apk', 'ios', 'engine'].includes(command)) {
 function run(executable, args) {
   return new Promise((resolveRun, reject) => {
     const child = spawn(executable, args, { cwd: mobile, stdio: 'inherit' });
-    child.once('error', (error) => reject(new Error(
-      error.code === 'ENOENT'
-        ? 'Flutter was not found. Install the pinned SDK or set FLUTTER_BIN to its executable.'
-        : `Could not launch ${executable}.`,
-    )));
-    child.once('exit', (code, signal) => code === 0
-      ? resolveRun()
-      : reject(new Error(`The mobile command stopped (${signal || code}).`)));
+    child.once('error', (error) =>
+      reject(
+        new Error(
+          error.code === 'ENOENT'
+            ? 'Flutter was not found. Install the pinned SDK or set FLUTTER_BIN to its executable.'
+            : `Could not launch ${executable}.`,
+        ),
+      ),
+    );
+    child.once('exit', (code, signal) =>
+      code === 0
+        ? resolveRun()
+        : reject(new Error(`The mobile command stopped (${signal || code}).`)),
+    );
   });
 }
 
@@ -48,8 +54,12 @@ if (command === 'engine') process.exit(0);
 const configPath = resolve(mobile, 'config.json');
 const config = existsSync(configPath) ? JSON.parse(await readFile(configPath, 'utf8')) : {};
 const allowed = new Set(['API_ORIGIN', 'GOOGLE_IOS_CLIENT_ID', 'GOOGLE_SERVER_CLIENT_ID']);
-if (!config || typeof config !== 'object' || Array.isArray(config)
-    || Object.keys(config).some((key) => !allowed.has(key) || typeof config[key] !== 'string')) {
+if (
+  !config ||
+  typeof config !== 'object' ||
+  Array.isArray(config) ||
+  Object.keys(config).some((key) => !allowed.has(key) || typeof config[key] !== 'string')
+) {
   throw new Error('Use the public configuration fields in mobile/config.example.json.');
 }
 for (const name of ['GOOGLE_IOS_CLIENT_ID', 'GOOGLE_SERVER_CLIENT_ID']) {
@@ -61,29 +71,50 @@ for (const name of ['GOOGLE_IOS_CLIENT_ID', 'GOOGLE_SERVER_CLIENT_ID']) {
 if (config.API_ORIGIN) {
   const origin = new URL(config.API_ORIGIN);
   const local = ['localhost', '127.0.0.1', '10.0.2.2', '[::1]'].includes(origin.hostname);
-  if (origin.origin !== config.API_ORIGIN || origin.username || origin.password
-      || (origin.protocol !== 'https:' && !(origin.protocol === 'http:' && local))) {
-    throw new Error('API_ORIGIN must be an exact HTTPS origin (or local emulator development origin).');
+  if (
+    origin.origin !== config.API_ORIGIN ||
+    origin.username ||
+    origin.password ||
+    (origin.protocol !== 'https:' && !(origin.protocol === 'http:' && local))
+  ) {
+    throw new Error(
+      'API_ORIGIN must be an exact HTTPS origin (or local emulator development origin).',
+    );
   }
 }
 const reverse = config.GOOGLE_IOS_CLIENT_ID
   ? config.GOOGLE_IOS_CLIENT_ID.split('.').reverse().join('.')
   : 'org.surtani.rephase.auth';
-await writeFile(resolve(mobile, 'ios/Flutter/Google.xcconfig'),
-  `// Generated from ignored mobile/config.json; public OAuth IDs only.\nREPHASE_GOOGLE_REVERSED_CLIENT_ID = ${reverse}\n`);
+await writeFile(
+  resolve(mobile, 'ios/Flutter/Google.xcconfig'),
+  `// Generated from ignored mobile/config.json; public OAuth IDs only.\nREPHASE_GOOGLE_REVERSED_CLIENT_ID = ${reverse}\n`,
+);
 
 await run(flutter, ['pub', 'get']);
 if (command === 'check') {
-  await run(flutter.replace(/flutter(?:\.bat)?$/, 'dart'), ['format', '--output=none', '--set-exit-if-changed', 'lib', 'test', 'integration_test']);
+  await run(flutter.replace(/flutter(?:\.bat)?$/, 'dart'), [
+    'format',
+    '--output=none',
+    '--set-exit-if-changed',
+    'lib',
+    'test',
+    'integration_test',
+    'test_driver',
+  ]);
   await run(flutter, ['analyze', '--no-pub']);
   await run(flutter, ['test', '--no-pub', ...extra]);
 } else {
   if (command === 'ios' && process.platform !== 'darwin') {
-    throw new Error('iOS compilation requires macOS with Xcode. The Android app can be built here.');
+    throw new Error(
+      'iOS compilation requires macOS with Xcode. The Android app can be built here.',
+    );
   }
   const defines = existsSync(configPath) ? [`--dart-define-from-file=${configPath}`] : [];
-  const args = command === 'run' ? ['run']
-    : command === 'apk' ? ['build', 'apk', '--debug']
-      : ['build', 'ios', '--simulator', '--debug', '--no-codesign'];
+  const args =
+    command === 'run'
+      ? ['run']
+      : command === 'apk'
+        ? ['build', 'apk', '--debug']
+        : ['build', 'ios', '--simulator', '--debug', '--no-codesign'];
   await run(flutter, [...args, ...defines, ...extra]);
 }
