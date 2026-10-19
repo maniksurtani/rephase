@@ -56,7 +56,7 @@ Updated 2026-10-18. Active work is kept here; the previous complete checklist is
 - [ ] Implement a disabled-by-default adapter, five-minute due-job claims, bounded polling, atomic billing budgets, backoff and sanitized diagnostics.
 - [ ] Add cached update reads, safe Update plan review and equipment-related seat confirmation; preserve offline planning.
 - [ ] Verify matching, deduplication, concurrency/quota recovery, isolation/deletion and mobile review; pilot a small budget before expanding.
-- [ ] Later: verified codeshare aliases, opt-in push delivery and Flutter client/native authentication.
+- [ ] Later: verified codeshare aliases, opt-in push delivery and flight-update review in the Flutter client.
 
 ## Owner acceptance and research
 
@@ -71,4 +71,4 @@ Updated 2026-10-18. Active work is kept here; the previous complete checklist is
 ## Deliberate future decisions
 
 - [ ] Decide whether to migrate old rules-mode preferences and retire that planner; preserve existing behavior until then.
-- [ ] Broader notification, accessibility/localization and native-client work should follow actual usage and the flight-provider trial.
+- [ ] Broader notification, accessibility/localization and store distribution should follow device testing and actual usage.

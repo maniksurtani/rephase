@@ -25,7 +25,8 @@ void main() {
         );
         final preferences = Map<String, dynamic>.from(
           bootstrap['defaultPreferences'] as Map,
-        )..['planningMode'] = 'rules';
+        );
+        expect(preferences['planningMode'], 'model');
         final trip = Map<String, dynamic>.from(bootstrap['demoTrip'] as Map);
         final now = DateTime.now().millisecondsSinceEpoch;
         final result = await engine.call('plan', {
@@ -34,6 +35,8 @@ void main() {
           'now': now,
         });
         final days = (result['days'] as List).cast<Map>();
+        final plan = Map<String, dynamic>.from(result['plan'] as Map);
+        expect(plan['model'], containsPair('numericallyVerified', true));
         expect(days, isNotEmpty);
         expect(days.map((day) => day['date']).toSet().length, days.length);
         expect(result['loungeContexts'], hasLength(4));

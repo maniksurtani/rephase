@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'models.dart';
 
@@ -53,13 +55,45 @@ abstract interface class GoogleIdentity {
 }
 
 class GoogleSignInIdentity implements GoogleIdentity {
+  GoogleSignInIdentity({Future<bool> Function(Uri)? canLaunchCallback})
+    : _canLaunchCallback = canLaunchCallback ?? canLaunchUrl;
+
+  final Future<bool> Function(Uri) _canLaunchCallback;
   Future<void>? _initialized;
+  static final _clientIdPattern = RegExp(
+    r'^[a-zA-Z0-9_-]+\.apps\.googleusercontent\.com$',
+  );
+
+  Future<void> _checkConfiguration(
+    String serverClientId,
+    String? clientId,
+  ) async {
+    const unavailable = 'Google sign-in is not available in this build.';
+    if (!_clientIdPattern.hasMatch(serverClientId) ||
+        (clientId != null && !_clientIdPattern.hasMatch(clientId))) {
+      throw StateError(unavailable);
+    }
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      if (clientId == null) throw StateError(unavailable);
+      // The current iOS Google SDK throws native exceptions for configuration
+      // errors. Verify the app's registered callback before entering the SDK.
+      final scheme = clientId.split('.').reversed.join('.');
+      bool registered;
+      try {
+        registered = await _canLaunchCallback(Uri(scheme: scheme));
+      } catch (_) {
+        throw StateError(unavailable);
+      }
+      if (!registered) throw StateError(unavailable);
+    }
+  }
 
   @override
   Future<String?> authenticate({
     required String serverClientId,
     String? clientId,
   }) async {
+    await _checkConfiguration(serverClientId, clientId);
     _initialized ??= GoogleSignIn.instance.initialize(
       serverClientId: serverClientId,
       clientId: clientId,

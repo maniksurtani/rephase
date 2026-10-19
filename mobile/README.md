@@ -34,6 +34,8 @@ node scripts/check-mobile-engine.mjs  # Exact engine parity in Chromium
 
 Android output: `mobile/build/app/outputs/flutter-apk/app-debug.apk`. Install with `adb install -r mobile/build/app/outputs/flutter-apk/app-debug.apk`. This is a development build, not a Play Store release. Release builds deliberately require a private signing configuration; start from `android/key.properties.example`.
 
+On a Mac, `npm run mobile -- ios` prepares an unsigned Simulator build. For a connected iPhone, open `mobile/ios/Runner.xcworkspace` in Xcode, select Runner → Signing & Capabilities → your development team, then launch with `npm run mobile -- run -d DEVICE_ID`. The phone must trust the developer and have Developer Mode enabled. The Simulator needs no signing team.
+
 To select a nonstandard SDK path, set `FLUTTER_BIN=/path/to/flutter/bin/flutter`. Generated bundles, native build products, local OAuth configuration, signing files and device credentials are ignored by Git.
 
 ## Configure Google sign-in

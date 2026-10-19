@@ -117,7 +117,7 @@ flowchart LR
   Accounts[Private trip subscriptions] --> Shared
   Shared --> API[Authenticated cached JSON API]
   API --> Web[React PWA]
-  API --> Native[Future Flutter app]
+  API --> Native[Flutter iOS / Android app]
 ```
 
 Reuse `worker/index.ts`, the D1 binding and existing deployment workflow. Replace the hourly cron with `*/5 * * * *` only when implementing the feature; keep hourly `purgeFlightData` maintenance through a time guard. An indexed `next_poll_at` column is the durable queue. Add neither Cloudflare Queues nor Durable Objects initially. Each tick claims a configurable small batch (start at two jobs, at most two concurrent fetches); excess work remains due for later ticks. This is adequate for a small pilot and must be measured before increasing batch size.
@@ -189,7 +189,7 @@ Meaningful differences are schedule changes, an explicit disruption, changed air
 
 Cancellation requires the traveler to revise their itinerary; never silently remove a leg or invent an alternative booking. Equipment changes trigger a focused seat/lie-flat check: keep the cabin choice and never infer a bed from the aircraft model. Actual gate and runway events remain distinct so the first-thirty/final-sixty-minute sleep constraints retain their meaning. Neither stale nor unmatched observations may change planning inputs.
 
-### HTTP contract and future Flutter
+### HTTP contract for web and native clients
 
 Keep normalized DTOs independent of React, browser storage and AirLabs payloads. An initial extension can use:
 
@@ -231,7 +231,7 @@ Example cached item (illustrative values, not a provider response):
 }
 ```
 
-Use ISO-8601 UTC instants and explicit IANA zones, stable IDs, nullable unknown values and a documented status set including `unknown`. Missing/unknown provider fields do not make the whole response unusable. Authenticate every request and resolve ownership server-side; no client-selected account identity or cross-account cache access. Reuse browser HttpOnly sessions and origin checks now. Future native Google sign-in needs a separately verified native-client audience/token exchange, revocable native sessions and platform secure storage; do not weaken browser origin checks or put the AirLabs key in Flutter.
+Use ISO-8601 UTC instants and explicit IANA zones, stable IDs, nullable unknown values and a documented status set including `unknown`. Missing/unknown provider fields do not make the whole response unusable. Authenticate every request and resolve ownership server-side; no client-selected account identity or cross-account cache access. Reuse browser HttpOnly sessions and origin checks, and the native client's verified Google token exchange, revocable sessions and platform secure storage. Keep provider keys in the Worker.
 
 The Flutter client reuses the existing account/flight contract and bundles the TypeScript planning core in an offline computation runtime. Future flight tracking can reuse this proposed update contract and canonical flight identities without changing where circadian calculations run.
 
