@@ -61,6 +61,8 @@ The API key used for flight lookup stays in the Worker. Never put `RAPIDAPI_KEY`
 
 The system WebView supplies the standard JavaScript/Intl timezone runtime on both platforms. This avoids maintaining a second circadian model and keeps calculations off the Flutter widget tree. Saved inputs remain schema 1, including unknown fields from newer web releases. Clock-only updates reuse the existing numerical plan.
 
+If the OS stops the embedded JavaScript process, pending work fails promptly and the next request starts a fresh offline runtime. Invalid transport responses and timeouts also reset it; ordinary input-validation errors retain the existing runtime.
+
 Opaque app-session credentials live in Keychain/Keystore. Guest and each account have separate app-private offline JSON files; guest data is not automatically imported into an account. Cloud saves use the existing revision-checked API and shared merge function. Offline edits remain pending locally; unresolved conflicts require a choice rather than an overwrite. Native logout revokes its app session. Google SDK ID tokens retain their standard Google expiry semantics.
 
 ## Verification and distribution
