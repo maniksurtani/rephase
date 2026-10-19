@@ -13,3 +13,7 @@ wrangler.deploy.json
 .deploy-dry-run/
 .deployment.env*
 .DS_Store
+mobile/config.json
+mobile/assets/engine/*.js
+mobile/assets/engine/*.json
+mobile/assets/engine/*.txt

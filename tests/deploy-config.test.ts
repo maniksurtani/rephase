@@ -71,6 +71,16 @@ describe('deployment configuration', () => {
     expect(config.vars.FLIGHT_DAILY_LIMIT).toBe('10');
   });
 
+  it('keeps native sign-in disabled by default and accepts only an explicit native-client allowlist', () => {
+    expect(buildDeploymentConfig(base, environment).vars.GOOGLE_MOBILE_CLIENT_IDS).toBeUndefined();
+    const ids = ['ios-example.apps.googleusercontent.com', 'android-example.apps.googleusercontent.com'];
+    expect(buildDeploymentConfig(base, { ...environment, GOOGLE_MOBILE_CLIENT_IDS: ids.join(', ') }).vars.GOOGLE_MOBILE_CLIENT_IDS)
+      .toBe(ids.join(','));
+    for (const invalid of ['*', `${ids[0]},`, environment.GOOGLE_CLIENT_ID, 'https://private.example/token']) {
+      expect(() => buildDeploymentConfig(base, { ...environment, GOOGLE_MOBILE_CLIENT_IDS: invalid })).toThrow('GOOGLE_MOBILE_CLIENT_IDS');
+    }
+  });
+
   it('binds the selected custom domain and disables alternate deployment URLs', () => {
     const origin = 'https://rephase.surtani.org';
     const config = buildDeploymentConfig(base, { ...environment, PUBLIC_APP_ORIGIN: origin });

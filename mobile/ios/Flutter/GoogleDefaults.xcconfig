@@ -1,0 +1,3 @@
+// A harmless callback for guest builds. The local launch script writes the
+// registered reversed Google iOS client ID to the ignored Google.xcconfig.
+REPHASE_GOOGLE_REVERSED_CLIENT_ID = org.surtani.rephase.auth

@@ -2,6 +2,16 @@
 
 Status: deployed at https://rephase.surtani.org. Last updated: 2026-10-18.
 
+## Native mobile client
+
+`mobile/` contains a Flutter iOS/Android app alongside the existing React web application. Material 3, `go_router`, Provider/ChangeNotifier, the official Google sign-in plugin, platform secure storage, `http`, `path_provider`, `url_launcher` and `share_plus` provide the native foundations. Small services and immutable JSON views retain schema-1 compatibility and preserve unknown fields. The pinned SDK and dependency lockfile are checked in or recorded for reproducible builds.
+
+All visible mobile screens are Flutter widgets. A computation-only, headless system WebView executes a locally bundled copy of the exact TypeScript planner, timezone arithmetic, timeline helpers, lounge access rules, merge logic and calendar generator. Its content policy and native navigation/network handlers deny remote loads; no code is fetched at runtime. This preserves offline planning without maintaining a second scientific implementation or adding a server calculation API. Bounded requests recover from runtime initialization failure; minute/foreground display updates reuse a cached scientific plan. The bridge has shared-fixture parity tests and a native integration test.
+
+Native Google ID tokens use the existing web server client as audience and an explicitly configured Android/iOS presenter (`azp`) allowlist, `GOOGLE_MOBILE_CLIENT_IDS`. `/api/mobile/auth/google` verifies Google signature, issuer, expiry, audience and presenter before issuing a revocable seven-day opaque bearer session. Token hashes are domain-separated from browser sessions in the existing D1 table. Native-only requests reject browser cookies/origin metadata; browser nonce, cookie and Origin checks remain unchanged. Valid cached Google credentials follow Google's standard server-auth semantics. App logout revokes its opaque session; Google token validity remains bounded by Google's expiry. Native credentials live in Keychain/Keystore, while per-account app-private JSON files retain offline data and the last cloud revision. Automatic saves use the existing compare-and-set API and shared merge rules, with account-change guards and explicit conflict resolution. No guest data is silently copied into an account.
+
+Android and unsigned iOS Simulator builds are checked separately from web deployment. Public OAuth IDs and platform callback configuration come from ignored local configuration; provider/deployment keys never ship in the app. Real Google sign-in requires registered native OAuth clients and device signing fingerprints. Store signing, physical-device acceptance and distribution remain separate from this development build; see [mobile/README.md](mobile/README.md).
+
 ## Product and scope
 
 Rephase helps travelers follow a personal light, sleep, caffeine, and optional melatonin schedule before, during, and after a trip. Its primary experience is a mobile daily agenda, with a dark, sleep-themed interface and an explicit current/next action. It is an independent implementation informed by published research, not a reproduction of Timeshifter's proprietary algorithm.
@@ -223,7 +233,7 @@ Example cached item (illustrative values, not a provider response):
 
 Use ISO-8601 UTC instants and explicit IANA zones, stable IDs, nullable unknown values and a documented status set including `unknown`. Missing/unknown provider fields do not make the whole response unusable. Authenticate every request and resolve ownership server-side; no client-selected account identity or cross-account cache access. Reuse browser HttpOnly sessions and origin checks now. Future native Google sign-in needs a separately verified native-client audience/token exchange, revocable native sessions and platform secure storage; do not weaken browser origin checks or put the AirLabs key in Flutter.
 
-A Flutter client can reuse this JSON contract, polling policy, canonical flight identities and published planner fixtures. The numerical planner is TypeScript today and does not automatically run in Dart: later choose a fixture-validated Dart port or a reused web planner surface. Do not add a server-side circadian calculation service just to prepare for a hypothetical client.
+The Flutter client reuses the existing account/flight contract and bundles the TypeScript planning core in an offline computation runtime. Future flight tracking can reuse this proposed update contract and canonical flight identities without changing where circadian calculations run.
 
 Push is a later transport, not a prerequisite for tracking. In-app updates work first. When needed, add device registrations and a small delivery outbox keyed by subscriber/device + occurrence/version, with retry/deduplication and per-channel consent. Web Push can serve the PWA; Flutter can use FCM with APNs delivery on iOS. Keep payloads minimal and fetch the account-scoped update on opening. Do not add a push vendor SDK, per-user event fanout or a retained event-history table before this is required. Mobile push/auth capability and current service terms must be verified at that stage.
 

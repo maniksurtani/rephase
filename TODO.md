@@ -2,6 +2,17 @@
 
 Updated 2026-10-18. Active work is kept here; the previous complete checklist is preserved in [the task archive](docs/archive/TODO-2026-10-16.md). Release evidence is in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md).
 
+## Flutter for iOS and Android
+
+- [x] Add a native Flutter app alongside React web, with pinned tooling and reusable libraries.
+- [x] Bundle the exact TypeScript planner, clock/timeline helpers, lounge rules and datasets for offline native use.
+- [x] Add native Google token exchange and revocable bearer sessions without relaxing browser authentication.
+- [x] Add separate guest/account caches, secure credential storage and revision-aware automatic account saves.
+- [x] Implement Today, Plan, Trips, Lounges and Profile with native controls and existing UX refinements.
+- [ ] Verify the integrated app, offline native engine, Android APK and unsigned iOS compilation; publish build evidence.
+- [ ] Register native Google OAuth clients/signing fingerprints, configure the Worker allowlist, and verify real-device account/provider flows.
+- [ ] Choose distribution/signing for device testing and review store submission requirements, including Apple login policy before public iOS distribution.
+
 ## Retain stay days after replanning
 
 - [x] Reproduce missing Sunday 18 October in Honolulu after a recorded activity triggers future-only replanning.

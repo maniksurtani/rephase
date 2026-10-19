@@ -13,6 +13,7 @@ export function validateDeploymentEnvironment(env = process.env) {
   const databaseId = value('CLOUDFLARE_D1_DATABASE_ID');
   const origin = value('PUBLIC_APP_ORIGIN');
   const clientId = value('GOOGLE_CLIENT_ID');
+  const mobileIds = value('GOOGLE_MOBILE_CLIENT_IDS');
   if (!/^[a-f0-9]{32}$/i.test(accountId) || /^0+$/.test(accountId)) {
     errors.push('CLOUDFLARE_ACCOUNT_ID must be your 32-character Cloudflare account ID.');
   }
@@ -30,8 +31,12 @@ export function validateDeploymentEnvironment(env = process.env) {
   if (!/^[a-z0-9_-]+\.apps\.googleusercontent\.com$/i.test(clientId)) {
     errors.push('GOOGLE_CLIENT_ID must be a Google OAuth Web application client ID.');
   }
+  if (mobileIds && (mobileIds.length > 4096 || mobileIds.split(',').length > 20 ||
+      mobileIds.split(',').some((id) => !/^[a-z0-9_-]+\.apps\.googleusercontent\.com$/i.test(id.trim()) || id.trim() === clientId))) {
+    errors.push('GOOGLE_MOBILE_CLIENT_IDS must contain only explicitly trusted Android/iOS OAuth client IDs, separated by commas; exclude the Web client ID.');
+  }
   if (errors.length) throw new Error(`Deployment configuration is incomplete:\n${errors.join('\n')}`);
-  return { accountId, databaseId, origin, clientId };
+  return { accountId, databaseId, origin, clientId, mobileIds: mobileIds.split(',').map((id) => id.trim()).filter(Boolean).join(',') };
 }
 
 /** Base JSONC currently has line comments only. Preserve quoted URLs and strings. */
@@ -86,7 +91,7 @@ export function buildDeploymentConfig(base, env = process.env) {
     workers_dev: workersDev,
     preview_urls: false,
     routes: workersDev ? [] : [{ pattern: hostname, custom_domain: true }],
-    vars: { GOOGLE_CLIENT_ID: settings.clientId, ALLOWED_ORIGIN: settings.origin, ...budgets },
+    vars: { GOOGLE_CLIENT_ID: settings.clientId, ...(settings.mobileIds ? { GOOGLE_MOBILE_CLIENT_IDS: settings.mobileIds } : {}), ALLOWED_ORIGIN: settings.origin, ...budgets },
     d1_databases: base.d1_databases.map((db) => db.binding === 'DB'
       ? { ...db, database_id: settings.databaseId } : db),
   };
@@ -100,7 +105,7 @@ export function isMainModule(url) {
   return Boolean(process.argv[1] && resolve(process.argv[1]) === fileURLToPath(url));
 }
 
-export const configurationHelp = 'Required public environment variables: CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_D1_DATABASE_ID, PUBLIC_APP_ORIGIN and GOOGLE_CLIENT_ID.\nOptional public quota variables: FLIGHT_DAILY_LIMIT, FLIGHT_MONTHLY_LIMIT and FLIGHT_GLOBAL_MONTHLY_LIMIT.\nProvider/deployment secrets are never written to generated configuration. See DEPLOYMENT.md.';
+export const configurationHelp = 'Required public environment variables: CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_D1_DATABASE_ID, PUBLIC_APP_ORIGIN and GOOGLE_CLIENT_ID.\nOptional public quota variables: FLIGHT_DAILY_LIMIT, FLIGHT_MONTHLY_LIMIT and FLIGHT_GLOBAL_MONTHLY_LIMIT.\nOptional native sign-in allowlist: GOOGLE_MOBILE_CLIENT_IDS (comma-separated Android/iOS OAuth client IDs; omit to disable native sign-in).\nProvider/deployment secrets are never written to generated configuration. See DEPLOYMENT.md.';
 
 if (isMainModule(import.meta.url)) {
   try {

@@ -1,0 +1,159 @@
+name: Mobile checks
+
+on:
+  pull_request:
+    paths:
+      - 'mobile/**'
+      - 'src/lib/**'
+      - 'src/mobile/**'
+      - 'src/data/**'
+      - 'data/**'
+      - 'public/icon-512.png'
+      - 'scripts/build-mobile-engine.mjs'
+      - 'scripts/check-mobile-engine.mjs'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/mobile.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'mobile/**'
+      - 'src/lib/**'
+      - 'src/mobile/**'
+      - 'src/data/**'
+      - 'data/**'
+      - 'public/icon-512.png'
+      - 'scripts/build-mobile-engine.mjs'
+      - 'scripts/check-mobile-engine.mjs'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/mobile.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mobile-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FLUTTER_VERSION: '3.47.7'
+  FLUTTER_REVISION: 'abaf9c523780a608bd46686fd5e53740a07077f8'
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+          cache: npm
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Verify the offline planning bundle in a browser
+        run: node scripts/check-mobile-engine.mjs
+      - name: Install the pinned official Flutter SDK
+        shell: bash
+        run: |
+          git clone --depth 1 --branch "$FLUTTER_VERSION" https://github.com/flutter/flutter.git "$RUNNER_TEMP/flutter-sdk"
+          test "$(git -C "$RUNNER_TEMP/flutter-sdk" rev-parse HEAD)" = "$FLUTTER_REVISION"
+          echo "$RUNNER_TEMP/flutter-sdk/bin" >> "$GITHUB_PATH"
+          "$RUNNER_TEMP/flutter-sdk/bin/flutter" config --no-analytics
+          "$RUNNER_TEMP/flutter-sdk/bin/flutter" --version
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ~/.pub-cache
+          key: pub-${{ runner.os }}-${{ env.FLUTTER_VERSION }}-${{ hashFiles('mobile/pubspec.lock') }}
+          restore-keys: pub-${{ runner.os }}-${{ env.FLUTTER_VERSION }}-
+      - run: flutter pub get --enforce-lockfile
+        working-directory: mobile
+      - run: dart format --output=none --set-exit-if-changed lib test integration_test
+        working-directory: mobile
+      - run: flutter analyze
+        working-directory: mobile
+      - run: flutter test
+        working-directory: mobile
+      - name: Build an installable debug APK
+        run: flutter build apk --debug
+        working-directory: mobile
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: rephase-android-debug-${{ github.sha }}
+          path: mobile/build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14
+
+  ios:
+    # Standard macOS runners are free for this public repository. Compile only:
+    # provisioning profiles, certificates and App Store uploads are not involved.
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: node scripts/build-mobile-engine.mjs
+      - name: Install the pinned official Flutter SDK
+        shell: bash
+        run: |
+          git clone --depth 1 --branch "$FLUTTER_VERSION" https://github.com/flutter/flutter.git "$RUNNER_TEMP/flutter-sdk"
+          test "$(git -C "$RUNNER_TEMP/flutter-sdk" rev-parse HEAD)" = "$FLUTTER_REVISION"
+          echo "$RUNNER_TEMP/flutter-sdk/bin" >> "$GITHUB_PATH"
+          "$RUNNER_TEMP/flutter-sdk/bin/flutter" config --no-analytics
+          "$RUNNER_TEMP/flutter-sdk/bin/flutter" --version
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ~/.pub-cache
+          key: pub-${{ runner.os }}-${{ env.FLUTTER_VERSION }}-${{ hashFiles('mobile/pubspec.lock') }}
+          restore-keys: pub-${{ runner.os }}-${{ env.FLUTTER_VERSION }}-
+      - run: flutter pub get --enforce-lockfile
+        working-directory: mobile
+      - name: Compile iOS for the simulator without signing
+        run: flutter build ios --simulator --debug --no-codesign
+        working-directory: mobile
+      - name: Boot an available iPhone simulator
+        timeout-minutes: 5
+        shell: bash
+        run: |
+          device_id=$(xcrun simctl list devices available --json | python3 -c '
+          import json, sys
+          devices = [device for runtime, group in json.load(sys.stdin)["devices"].items()
+                     if ".iOS-" in runtime for device in group
+                     if device.get("isAvailable") and device["name"].startswith("iPhone")]
+          if not devices:
+              raise SystemExit("No available iPhone simulator is installed")
+          selected = next((device for device in devices if device["state"] == "Booted"), devices[0])
+          print(selected["udid"])
+          ')
+          echo "REPHASE_SIMULATOR_ID=$device_id" >> "$GITHUB_ENV"
+          xcrun simctl bootstatus "$device_id" -b
+      - name: Verify the offline engine in WKWebView
+        timeout-minutes: 10
+        run: flutter test integration_test/offline_engine_test.dart -d "$REPHASE_SIMULATOR_ID"
+        working-directory: mobile
+      - name: Preserve resolved native dependency versions
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: rephase-ios-dependency-locks-${{ github.sha }}
+          path: |
+            mobile/ios/Podfile.lock
+            mobile/ios/**/Package.resolved
+          if-no-files-found: ignore
+          retention-days: 14
+
+# No Cloudflare, flight-provider, Google OAuth or signing secrets are supplied.

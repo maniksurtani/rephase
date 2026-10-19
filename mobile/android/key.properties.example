@@ -1,0 +1,6 @@
+# Copy to key.properties (ignored by Git). Never commit your keystore or passwords.
+# Generate an upload key with Android Studio or keytool, then use its absolute path.
+storeFile=/absolute/path/to/rephase-upload.jks
+storePassword=replace-me
+keyAlias=rephase-upload
+keyPassword=replace-me

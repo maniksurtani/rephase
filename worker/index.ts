@@ -1,4 +1,4 @@
-import { createRemoteJWKSet, jwtVerify, type JWTVerifyGetKey } from 'jose';
+import { createRemoteJWKSet, jwtVerify, type JWTPayload, type JWTVerifyGetKey } from 'jose';
 import type { Account, AppData } from '../src/lib/types';
 import { validateAppData } from './validation';
 import {
@@ -13,6 +13,8 @@ import {
 export interface Env extends FlightEnv {
   DB?: D1Database;
   GOOGLE_CLIENT_ID?: string;
+  /** Comma-separated Android/iOS OAuth client IDs; native sign-in is disabled without this. */
+  GOOGLE_MOBILE_CLIENT_IDS?: string;
   /** Exact browser origin; needed for the localhost Vite reverse proxy. */
   ALLOWED_ORIGIN?: string;
   ASSETS?: Fetcher;
@@ -34,6 +36,7 @@ interface StateRow {
 interface Dependencies extends FlightDependencies {
   now?: () => number;
   verifyToken?: typeof verifyGoogleCredential;
+  verifyMobileToken?: typeof verifyMobileGoogleCredential;
 }
 
 const GOOGLE_KEYS = createRemoteJWKSet(new URL('https://www.googleapis.com/oauth2/v3/certs'));
@@ -110,6 +113,12 @@ export async function verifyGoogleCredential(
   ) {
     throw new Error('Invalid credential');
   }
+  return identityFromClaims(payload);
+}
+
+function identityFromClaims(payload: JWTPayload): GoogleIdentity {
+  if (typeof payload.sub !== 'string' || !payload.sub || payload.sub.length > 255)
+    throw new Error('Invalid credential');
   const picture = googlePicture(payload.picture);
   return {
     id: payload.sub,
@@ -117,6 +126,71 @@ export async function verifyGoogleCredential(
     email: typeof payload.email === 'string' ? payload.email.slice(0, 320) : '',
     ...(picture ? { picture } : {}),
   };
+}
+
+/** Google native SDK tokens target the web server client; azp identifies the native presenter. */
+export async function verifyMobileGoogleCredential(
+  credential: string,
+  clientId: string,
+  mobileClientIds: readonly string[],
+  keys: JWTVerifyGetKey = GOOGLE_KEYS,
+): Promise<GoogleIdentity> {
+  const { payload } = await jwtVerify(credential, keys, {
+    audience: clientId,
+    issuer: ['https://accounts.google.com', 'accounts.google.com'],
+    algorithms: ['RS256'],
+    requiredClaims: ['sub', 'exp', 'iat', 'azp'],
+    maxTokenAge: '65m',
+    clockTolerance: 5,
+  });
+  if (
+    typeof payload.azp !== 'string' ||
+    payload.azp === clientId ||
+    !mobileClientIds.includes(payload.azp)
+  )
+    throw new Error('Invalid native presenter');
+  return identityFromClaims(payload);
+}
+
+function mobileClientIds(env: Env): string[] {
+  const configured = env.GOOGLE_MOBILE_CLIENT_IDS?.trim();
+  const ids = configured?.split(',').map((value) => value.trim()) ?? [];
+  if (
+    !configured ||
+    configured.length > 4096 ||
+    ids.length > 20 ||
+    ids.some(
+      (id) =>
+        !/^[a-z0-9_-]+\.apps\.googleusercontent\.com$/i.test(id) ||
+        id === env.GOOGLE_CLIENT_ID?.trim(),
+    )
+  )
+    throw new ApiError(503, 'Native Google sign-in is not configured.');
+  return [...new Set(ids)];
+}
+
+/** Native sessions never share browser cookie hashes, even if a token is copied between channels. */
+export function hashMobileToken(token: string): Promise<string> {
+  return hashToken(`rephase-mobile-session:${token}`);
+}
+
+function checkNativeRequest(request: Request): void {
+  // Do not relax cookie CSRF rules: native requests carry neither browser credentials nor metadata.
+  if (
+    request.headers.has('Cookie') ||
+    request.headers.has('Origin') ||
+    ['Sec-Fetch-Site', 'Sec-Fetch-Mode', 'Sec-Fetch-Dest'].some((name) => request.headers.has(name))
+  ) {
+    throw new ApiError(403, 'Use the native app sign-in flow for this request.');
+  }
+}
+
+function mobileToken(request: Request): string {
+  checkNativeRequest(request);
+  const match = request.headers.get('Authorization')?.match(/^Bearer ([a-f0-9]{64})$/i);
+  if (!match || match[1] !== match[1].toLowerCase())
+    throw new ApiError(401, 'Sign in to access your saved data.');
+  return match[1];
 }
 
 function cookieName(kind: 'session' | 'challenge', request: Request): string {
@@ -155,7 +229,7 @@ function response(data: unknown, status = 200, cookies: string[] = []): Response
     'Content-Type': 'application/json; charset=utf-8',
     'Cache-Control': 'no-store',
     'X-Content-Type-Options': 'nosniff',
-    Vary: 'Cookie',
+    Vary: 'Cookie, Authorization',
   });
   cookies.forEach((cookie) => headers.append('Set-Cookie', cookie));
   return new Response(JSON.stringify(data), { status, headers });
@@ -222,14 +296,15 @@ async function jsonBody(request: Request, limit: number): Promise<Record<string,
 }
 
 async function accountFor(request: Request, db: D1Database, now: number): Promise<Account> {
-  const token = readCookie(request, cookieName('session', request));
+  const native = request.headers.has('Authorization');
+  const token = native ? mobileToken(request) : readCookie(request, cookieName('session', request));
   if (!token || !/^[a-f0-9]{64}$/.test(token))
     throw new ApiError(401, 'Sign in to access your saved data.');
   const account = await db
     .prepare(
       'SELECT u.id, u.name, u.email, u.picture, s.expires_at FROM sessions s JOIN users u ON u.id = s.user_id WHERE s.token_hash = ? AND s.expires_at > ?',
     )
-    .bind(await hashToken(token), now)
+    .bind(await (native ? hashMobileToken(token) : hashToken(token)), now)
     .first<SessionRow>();
   if (!account) throw new ApiError(401, 'Your session has expired. Sign in again.');
   const picture = googlePicture(account.picture);
@@ -251,7 +326,21 @@ export async function handleApi(
   const now = Math.floor((dependencies.now?.() ?? Date.now()) / 1000);
   try {
     if (path !== '/api/config') requireSecureTransport(request);
-    if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(request.method)) checkOrigin(request, env);
+    const bearerRoute = [
+      '/api/me',
+      '/api/state',
+      '/api/flights',
+      '/api/mobile/auth/logout',
+    ].includes(path);
+    if (request.headers.has('Authorization')) {
+      if (!bearerRoute)
+        throw new ApiError(401, 'Bearer authentication is not supported for this endpoint.');
+      mobileToken(request);
+    }
+    if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(request.method)) {
+      if (path === '/api/mobile/auth/google') checkNativeRequest(request);
+      else if (!request.headers.has('Authorization') || !bearerRoute) checkOrigin(request, env);
+    }
     if (path === '/api/config' && request.method === 'GET') {
       const googleClientId = env.GOOGLE_CLIENT_ID?.trim() || null;
       return response({
@@ -308,6 +397,62 @@ export async function handleApi(
       );
       await db.batch(statements);
       return response({ nonce }, 200, [setCookie]);
+    }
+    if (path === '/api/mobile/auth/google' && request.method === 'POST') {
+      const clientId = env.GOOGLE_CLIENT_ID?.trim();
+      const allowedClients = mobileClientIds(env);
+      if (!clientId) throw new ApiError(503, 'Native Google sign-in is not configured.');
+      const db = requireDatabase(env);
+      const body = await jsonBody(request, 16 * 1024);
+      if (
+        Object.keys(body).length !== 1 ||
+        typeof body.credential !== 'string' ||
+        !body.credential ||
+        body.credential.length > 12 * 1024
+      ) {
+        throw new ApiError(400, 'A Google credential is required.');
+      }
+      let identity: GoogleIdentity;
+      try {
+        identity = await (dependencies.verifyMobileToken ?? verifyMobileGoogleCredential)(
+          body.credential,
+          clientId,
+          allowedClients,
+        );
+      } catch {
+        throw new ApiError(
+          401,
+          'Google credential could not be verified. Start a new Google sign-in.',
+        );
+      }
+      // Google SDKs may reuse an unexpired ID token. Validate it on every exchange;
+      // do not treat a legitimate cached credential as a one-use browser challenge.
+      const token = randomToken();
+      const account = identity;
+      await db.batch([
+        db
+          .prepare(
+            'INSERT INTO users (id, name, email, picture) VALUES (?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET name = excluded.name, email = excluded.email, picture = excluded.picture',
+          )
+          .bind(account.id, account.name, account.email, account.picture ?? null),
+        db.prepare('DELETE FROM sessions WHERE expires_at <= ?').bind(now),
+        db
+          .prepare('INSERT INTO sessions (token_hash, user_id, expires_at) VALUES (?, ?, ?)')
+          .bind(await hashMobileToken(token), account.id, now + SESSION_SECONDS),
+      ]);
+      return response({
+        account,
+        token,
+        expiresAt: new Date((now + SESSION_SECONDS) * 1000).toISOString(),
+      });
+    }
+    if (path === '/api/mobile/auth/logout' && request.method === 'POST') {
+      const token = mobileToken(request);
+      await requireDatabase(env)
+        .prepare('DELETE FROM sessions WHERE token_hash = ?')
+        .bind(await hashMobileToken(token))
+        .run();
+      return response({});
     }
     if (path === '/api/auth/google' && request.method === 'POST') {
       const clientId = env.GOOGLE_CLIENT_ID?.trim();
@@ -481,6 +626,8 @@ export async function handleApi(
       '/api/config': ['GET'],
       '/api/auth/challenge': ['GET'],
       '/api/auth/google': ['POST'],
+      '/api/mobile/auth/google': ['POST'],
+      '/api/mobile/auth/logout': ['POST'],
       '/api/auth/logout': ['POST'],
       '/api/me': ['GET'],
       '/api/state': ['GET', 'PUT', 'DELETE'],
@@ -500,6 +647,8 @@ export async function handleApi(
       '/api/config': 'configuration',
       '/api/auth/challenge': 'google_challenge',
       '/api/auth/google': 'google_sign_in',
+      '/api/mobile/auth/google': 'native_google_sign_in',
+      '/api/mobile/auth/logout': 'native_sign_out',
       '/api/auth/logout': 'sign_out',
       '/api/me': 'account',
       '/api/state': 'account_state',
