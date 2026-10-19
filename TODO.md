@@ -9,7 +9,7 @@ Updated 2026-10-18. Active work is kept here; the previous complete checklist is
 - [x] Add native Google token exchange and revocable bearer sessions without relaxing browser authentication.
 - [x] Add separate guest/account caches, secure credential storage and revision-aware automatic account saves.
 - [x] Implement Today, Plan, Trips, Lounges and Profile with native controls and existing UX refinements.
-- [ ] Verify the integrated app, offline native engine, Android APK and unsigned iOS compilation; publish build evidence.
+- [x] Verify the integrated app, offline native engine, Android APK and unsigned iOS compilation; 25 Flutter tests, two iOS runtime tests, 567 unit/runtime tests and 46 browser scenarios passed. See RELEASES.md.
 - [ ] Register native Google OAuth clients/signing fingerprints, configure the Worker allowlist, and verify real-device account/provider flows.
 - [ ] Choose distribution/signing for device testing and review store submission requirements, including Apple login policy before public iOS distribution.
 
@@ -65,7 +65,7 @@ Updated 2026-10-18. Active work is kept here; the previous complete checklist is
 - [ ] Verify revised automatic account saving, account switching, offline edits/reconnection and deletion with real Google accounts/devices.
 - [ ] Confirm signed-in booked-flight import and representative future +60/+90/+150-day coverage with the configured provider.
 - [ ] Verify lounge memberships and boarding-pass eligibility against real bookings; extend airport research and licensed photos.
-- [ ] Confirm physical-device Safari/date/timezone interactions and native scrolling behavior.
+- [ ] Confirm physical-device Safari/date/timezone interactions, native scrolling, background/resume behavior and interrupted runtime recovery.
 - [ ] Obtain independent scientific/clinical review before making claims about personal outcomes; numerical verification is not clinical validation.
 
 ## Deliberate future decisions

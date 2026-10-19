@@ -6,6 +6,8 @@ A native Flutter app alongside the React web app. Today, the day timeline, multi
 
 Install **Flutter 3.47.7 stable** (Dart 3.13.5), Node 24 and the Android SDK or Xcode. The pinned Flutter framework revision is `abaf9c523780a608bd46686fd5e53740a07077f8`; CI verifies it. iOS targets 15.5+, Android targets API 24+ with a current Android System WebView.
 
+For iOS, install CocoaPods as well: the current WebView plugin requires it. Run `flutter doctor` to check the Xcode or Android toolchain before launching.
+
 From the repository root:
 
 ```bash
@@ -67,7 +69,7 @@ Opaque app-session credentials live in Keychain/Keystore. Guest and each account
 
 ## Verification and distribution
 
-The Mobile checks workflow runs Flutter formatting, analysis and focused widget/data tests, verifies the compiled JavaScript planner against the web engine, builds an Android debug APK, and compiles an unsigned iOS Simulator app on macOS. No production OAuth, provider or signing secrets are supplied to these checks. The debug APK is attached to the Android workflow job.
+The Mobile checks workflow runs Flutter formatting, analysis and focused widget/data tests, verifies the compiled JavaScript planner against the web engine, builds an Android debug APK, compiles an unsigned iOS Simulator app on macOS and runs the offline engine integration tests inside WKWebView. No production OAuth, provider or signing secrets are supplied to these checks. The debug APK is attached to the Android workflow job.
 
 For the real embedded runtime on an emulator/device:
 
