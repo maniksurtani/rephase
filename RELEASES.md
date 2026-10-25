@@ -1,5 +1,19 @@
 # Release evidence
 
+## 25 October 2026 — continuous date-line journeys
+
+Source [`7aadbb6`](https://github.com/maniksurtani/rephase/commit/7aadbb66d7ce4edaaf5de1f1c85d1826c01f1233). [Checks 40173604537](https://github.com/maniksurtani/rephase/actions/runs/40173604537) passed formatting, lint, frontend/Worker TypeScript, all 575 unit/runtime tests across 44 suites and all 48 browser scenarios. Verified artifact `12591117764` contains 26 offline assets and shell `826a1c3687dd90ee`.
+
+The AA6276/QF94 itinerary previously rewound 18 elapsed hours when moving from the Pacific October 24 view to Melbourne October 25, repeating AA6276 and QF94's departure. Day views now partition one chronological UTC journey with explicit clock changes. QF94's departure belongs to October 24 at 23:40 Pacific, October 25 begins at the same instant as 17:40 Melbourne, and October 26 continues through the 09:30 arrival. Its flight bands cover exactly 15 h 50 min. Full flight/meal cards appear once at departure; later views use compact continuations and an arrival milestone.
+
+Matching midnight sleep fragments show their full episode duration and continuation labels. Post-arrival ground advice omits the previous origin clock. Original action times, recording IDs, object references, model calculations and calendar exports remain intact. Distinct logged fragments sharing an action ID retain their separate intervals. An independent audit checked every original action and flight's elapsed coverage in both planning modes, adjacent date windows and current-day selection. Focused mobile Chromium/WebKit checks and revised desktop/mobile screenshots passed review, including DST, midnight arrivals and previous-evening lounge visits. The lounge regression now checks its actual previous-day window instead of expecting that time to repeat on the departure date.
+
+Flutter formatting/analysis and all 26 widget/data tests passed locally and in CI; the offline JavaScript bundle retains exact engine parity. [Mobile checks 40173118498](https://github.com/maniksurtani/rephase/actions/runs/40173118498) passed Android APK compilation, unsigned iOS Simulator compilation and the offline runtime test in actual WKWebView. It uses app source `7ccea72`; the final commit changes only a browser regression. The [Android debug APK](https://github.com/maniksurtani/rephase/actions/runs/40173118498/artifacts/12590718158) is available. Physical-device acceptance remains in TODO.md.
+
+[Deployment 40173903495](https://github.com/maniksurtani/rephase/actions/runs/40173903495) published that exact artifact without rebuilding or repeating the browser suite. No migrations were needed. Worker version: `8ef3c557-3529-482f-931b-2fdb7211bb3f`. Automatic deployment was skipped; manual dispatch reused the successful release.
+
+The live 390px guest regression passed all three date views, clock conversion, departure ownership, compact continuation, 09:30 arrival, full sleep totals and destination-only ground clocks. Production screenshots were inspected. Only isolated browser-local guest data was seeded, with account/provider configuration disabled by the test; no account writes or flight-provider requests occurred.
+
 ## 25 October 2026 — reveal the selected plan date
 
 Source [`c4c8236`](https://github.com/maniksurtani/rephase/commit/c4c82361be117ac2c6c0265eaf172d890c18481e). [Checks 40170256708](https://github.com/maniksurtani/rephase/actions/runs/40170256708) passed formatting, lint, frontend/Worker TypeScript, all 567 unit/runtime tests across 44 suites and all 47 browser scenarios. Verified artifact `12589864286` contains 26 web offline assets and shell `3d297878bb218fb7`.

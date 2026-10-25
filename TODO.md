@@ -8,7 +8,7 @@ Updated 2026-10-25. Active work is kept here; the previous complete checklist is
 - [x] Partition the journey into adjacent UTC display windows with explicit airport-clock changes and unchanged original recommendation IDs/times.
 - [x] Render departure, compact flight continuation and arrival milestones; join midnight sleep fragments for full-duration labels and omit past-origin clocks on destination ground advice.
 - [x] Verify full-trip elapsed-time coverage, sleep continuity, both date-line directions, DST and mobile/native presentation; inspect the revised October screens. Local unit/runtime, targeted Chromium/WebKit and Flutter checks passed.
-- [ ] Publish the checked release, deploy the verified artifact and confirm the live timeline.
+- [x] Publish the checked release after 575 unit/runtime tests and 48 browser scenarios pass; deploy the verified artifact and confirm all three live mobile timelines. See RELEASES.md.
 
 ## Selected plan date visibility
 
