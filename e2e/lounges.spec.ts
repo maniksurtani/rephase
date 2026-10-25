@@ -450,16 +450,38 @@ test('an after-midnight connection keeps its lounge visit before departure on th
     .getByRole('navigation', { name: 'Mobile navigation' })
     .getByRole('button', { name: 'Your plan', exact: true })
     .click();
-  await page.locator('.day-button[data-date="2026-10-25"]').click();
-  const at = await expectPreflightLoungeEntry(
-    page,
-    'after-midnight-departure',
-    '2026-10-25T08:00:00Z',
-  );
+  await page.locator('.day-button[data-date="2026-10-24"]').click();
+  const link = page.locator('.flight-lounge-link[data-flight-id="after-midnight-departure"]');
+  const lounge = page.locator('.timeline-entry[data-kind="lounge"]').filter({ has: link });
+  await expect(lounge).toHaveCount(1);
+  const at = Number(await lounge.getAttribute('data-start'));
   expect(at).toBe(Date.parse('2026-10-25T05:40:00Z')); // 24 October, 22:40 PDT
-  await page.locator('.timeline-entry[data-kind="lounge"]').scrollIntoViewIfNeeded();
+  const localClock = lounge.locator('xpath=ancestor::li[1]').locator('.timeline-clock time');
+  await expect(localClock).toHaveAttribute('datetime', new Date(at).toISOString());
+  await expect(localClock).toContainText('22:40');
+  await expect(localClock).toContainText('24 Oct');
+  const end24 = Number(await page.locator('.day-timeline').getAttribute('data-end'));
+  expect(at).toBeLessThan(end24);
+
+  await page.locator('.day-button[data-date="2026-10-25"]').click();
+  expect(Number(await page.locator('.day-timeline').getAttribute('data-start'))).toBe(end24);
+  await expect(link).toHaveCount(0);
+  const departure = page.locator(
+    '.timeline-entry[data-flight-id="after-midnight-departure"][data-phase="departure"]',
+  );
+  await expect(departure).toHaveCount(1);
+  const departureAt = Number(await departure.getAttribute('data-start'));
+  expect(departureAt).toBe(Date.parse('2026-10-25T08:00:00Z'));
+  expect(end24).toBeLessThanOrEqual(departureAt);
+  await departure.locator('.flight-details > summary').click();
+  await expect(departure.locator('[aria-label="Departure"] .flight-clock-origin')).toContainText(
+    '01:00',
+  );
+
+  await page.locator('.day-button[data-date="2026-10-24"]').click();
+  await lounge.scrollIntoViewIfNeeded();
   await captureDesign(page, 'artifacts/lounge-preflight-point-mobile.png');
-  await page.getByRole('button', { name: 'Explore lounges in LAX', exact: true }).click();
+  await lounge.getByRole('button', { name: 'Explore lounges in LAX', exact: true }).click();
   await expect(page.getByLabel('Visit date', { exact: true })).toHaveValue('2026-10-24');
   await expect(page.getByLabel('From', { exact: true })).toHaveValue('22:40');
   await expect(page.getByLabel('Until', { exact: true })).toHaveValue('00:15');
