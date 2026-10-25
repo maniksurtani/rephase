@@ -8,7 +8,7 @@ Updated 2026-10-25. Active work is kept here; the previous complete checklist is
 - [x] Restore unrecorded historical guidance without treating it as measured sleep or changing the past light inputs; preserve explicit observations.
 - [x] End the web, native and exported plan on the day after final arrival, using the arrival timezone; show a Trip complete marker and open completed trips on their final day.
 - [x] Verify the real numerical itinerary with recorded history, mobile presentation, overnight sleep and final-day limits; local checks include 579 unit/runtime tests, affected browser journeys and Flutter.
-- [ ] Publish and deploy the verified release, then confirm the live October 24–27 timelines.
+- [x] Publish and deploy the verified release after 579 unit/runtime tests and 48 browser scenarios pass; confirm restored sleep and the October 27 completion marker on the live mobile site. See RELEASES.md.
 
 ## Continuous date-line timelines
 

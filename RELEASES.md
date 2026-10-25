@@ -1,5 +1,17 @@
 # Release evidence
 
+## 25 October 2026 — sleep history and trip completion
+
+Source [`3b07a9a`](https://github.com/maniksurtani/rephase/commit/3b07a9a69f18808bf9f88aeac987d069a02f5a53). [Checks 40235710264](https://github.com/maniksurtani/rephase/actions/runs/40235710264) passed formatting, lint, frontend/Worker TypeScript, all 579 unit/runtime tests across 46 suites and all 48 browser scenarios. Verified artifact `12614424647` contains 26 offline assets and shell `9647089ca71a2698`.
+
+After any recorded activity, future-only replanning previously removed unrecorded earlier guidance. A no-log reference plan now restores that earlier guidance as **Planned · not recorded**; matching recorded intervals take priority. This presentation history is added after the scientific simulations and never becomes assumed sleep/light exposure. The real numerical AA6276/QF94 itinerary regression records an early activity at October 26 device time and checks retained sleep/rest across October 24–26, protected flight windows and the arrival-night bedtime.
+
+Both planners publish dates only through the local day after final arrival; their internal simulation horizon and route scoring are unchanged. Arrival in Melbourne on October 26 produces a final October 27 date with a **Trip complete** marker. The terminal night's original continuation remains episode/export context so it retains eight hours of sleep without creating another date tile. Completed trips open on their final day. Web and Flutter share the same horizon and history metadata.
+
+[Deployment 40235967078](https://github.com/maniksurtani/rephase/actions/runs/40235967078) reused that exact artifact without rerunning the browser suite. No D1 migration was needed; Worker version `03a2ea2d-2b46-4656-8297-02f6fa427873` deployed at 21:34 UTC. The live 390-pixel guest browser regression passed in 7.1 seconds, exercising recorded history, the three flight-date timelines and October 27 completion. It used isolated guest data and a controlled configuration response; no real account or flight-provider calls were made. Local iPhone WebKit also passed, and all four mobile captures were inspected.
+
+Local Flutter formatting, analysis, all 26 tests and offline Chromium engine parity passed. [Native checks 40235710304](https://github.com/maniksurtani/rephase/actions/runs/40235710304) track the same source; native signing and real-device acceptance remain in TODO.md.
+
 ## 25 October 2026 — continuous date-line journeys
 
 Source [`7aadbb6`](https://github.com/maniksurtani/rephase/commit/7aadbb66d7ce4edaaf5de1f1c85d1826c01f1233). [Checks 40173604537](https://github.com/maniksurtani/rephase/actions/runs/40173604537) passed formatting, lint, frontend/Worker TypeScript, all 575 unit/runtime tests across 44 suites and all 48 browser scenarios. Verified artifact `12591117764` contains 26 offline assets and shell `826a1c3687dd90ee`.
