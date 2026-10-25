@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useLayoutEffect, useRef, type ReactNode } from 'react';
 import type { LoungeFlightContext } from '../lib/lounge-windows';
 import {
   ArrowRight,
@@ -59,6 +59,23 @@ export function PlanView({
   renderBeforeFlight,
 }: PlanViewProps) {
   const { calendarDays, selectedDay, currentAction, isDemo } = view;
+  const dayNavigationRef = useRef<HTMLDivElement>(null);
+  const selectedDayRef = useRef<HTMLButtonElement>(null);
+
+  useLayoutEffect(() => {
+    const navigation = dayNavigationRef.current;
+    const selected = selectedDayRef.current;
+    if (!navigation || !selected) return;
+    const strip = navigation.getBoundingClientRect();
+    const tile = selected.getBoundingClientRect();
+    if (tile.left >= strip.left && tile.right <= strip.right) return;
+    // Scroll only the date strip; scrollIntoView can also move the page vertically.
+    navigation.scrollTo({
+      left: navigation.scrollLeft + tile.left - strip.left - (strip.width - tile.width) / 2,
+      behavior: 'instant',
+    });
+  }, [calendarDays, selectedDay?.id]);
+
   return (
     <>
       <div className="page-heading">
@@ -118,11 +135,17 @@ export function PlanView({
               </button>
             </div>
           )}
-          <div className="day-navigation" role="group" aria-label="Choose a plan day">
+          <div
+            ref={dayNavigationRef}
+            className="day-navigation"
+            role="group"
+            aria-label="Choose a plan day"
+          >
             {calendarDays.map((day) => (
               <button
                 type="button"
                 key={day.id}
+                ref={day.id === selectedDay?.id ? selectedDayRef : undefined}
                 className={`day-button ${day.travelSegments?.length ? 'travel-day' : ''} ${day.id === selectedDay?.id ? 'selected' : ''}`}
                 data-date={day.date}
                 data-zone={day.timeZone}

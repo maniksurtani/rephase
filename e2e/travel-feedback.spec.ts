@@ -282,6 +282,64 @@ test('body-clock estimates show modeled movement rather than a repeated zero', a
   await captureDesign(page, 'artifacts/planner-empty-stay-mobile.png');
 });
 
+test('the mobile date strip follows the current day and day arrows without moving the page', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openPersonalData(page, {
+    ...personalData,
+    preferences: { ...preferences, preparationDays: 3 },
+  });
+  await page.clock.setFixedTime(new Date('2026-10-25T12:36:00.000Z'));
+  await page.reload();
+  await page
+    .getByRole('navigation', { name: 'Mobile navigation' })
+    .getByRole('button', { name: 'Your plan', exact: true })
+    .click();
+
+  async function expectSelectedDateInStrip(date: string) {
+    const selected = planDay(page, date);
+    await expect(selected).toHaveAttribute('aria-pressed', 'true');
+    // Neither a click on the date nor scrollIntoView can hide a missing app
+    // scroll: read its clipped position before any interaction with the tile.
+    await expect
+      .poll(
+        () =>
+          selected.evaluate((element) => {
+            const tile = element.getBoundingClientRect();
+            const strip = element.parentElement!.getBoundingClientRect();
+            return tile.left >= strip.left - 1 && tile.right <= strip.right + 1;
+          }),
+        { timeout: 5000 },
+      )
+      .toBe(true);
+  }
+
+  await expect(page.locator('.agenda-heading h2')).toHaveText('Sunday 25 October');
+  await expectSelectedDateInStrip('2026-10-25');
+  expect(await page.evaluate(() => window.scrollY)).toBe(0);
+  expect(
+    await page.locator('.day-navigation').evaluate((element) => element.scrollLeft),
+  ).toBeGreaterThan(0);
+  await captureDesign(page, 'artifacts/planner-current-date-mobile.png');
+
+  // Move backwards far enough to leave the initially visible dates, then
+  // forwards again. Keep the arrow on screen before measuring page movement.
+  for (const [direction, dates] of [
+    ['Previous', ['2026-10-24', '2026-10-23', '2026-10-22', '2026-10-21']],
+    ['Next', ['2026-10-22', '2026-10-23', '2026-10-24', '2026-10-25', '2026-10-26']],
+  ] as const) {
+    const arrow = page.getByRole('button', { name: `${direction} plan day`, exact: true });
+    for (const date of dates) {
+      await arrow.scrollIntoViewIfNeeded();
+      const pageTop = await page.evaluate(() => window.scrollY);
+      await arrow.click();
+      await expectSelectedDateInStrip(date);
+      expect(await page.evaluate(() => window.scrollY)).toBe(pageTop);
+    }
+  }
+});
+
 test('minute-only flight entry defaults arrival until edited and preserves existing arrival on reopening', async ({
   page,
 }) => {

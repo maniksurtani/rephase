@@ -1,6 +1,12 @@
 # Rephase build tasks
 
-Updated 2026-10-18. Active work is kept here; the previous complete checklist is preserved in [the task archive](docs/archive/TODO-2026-10-16.md). Release evidence is in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md).
+Updated 2026-10-25. Active work is kept here; the previous complete checklist is preserved in [the task archive](docs/archive/TODO-2026-10-16.md). Release evidence is in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md).
+
+## Selected plan date visibility
+
+- [x] Reproduce a selected current-day timeline with its date hidden offscreen on the mobile date strip.
+- [x] Reveal the selected date on opening the plan and when navigating between days; scroll only the date strip and retain manual browsing until the selection changes.
+- [ ] Verify the date-line itinerary and arrow navigation, publish the checked release and confirm the live mobile behavior.
 
 ## Flutter for iOS and Android
 
