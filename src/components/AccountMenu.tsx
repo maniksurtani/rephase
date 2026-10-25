@@ -31,7 +31,6 @@ export function AccountAvatar({ account }: { account: Account | null }) {
 
 export function AccountMenu({
   account,
-  accountReady,
   clientId,
   onProfile,
   onGoogleSignIn,
@@ -39,7 +38,6 @@ export function AccountMenu({
   onSignOut,
 }: {
   account: Account | null;
-  accountReady: boolean;
   clientId: string | null;
   onProfile: () => void;
   onGoogleSignIn: (account: Account) => void;
@@ -185,15 +183,6 @@ export function AccountMenu({
               Sign out
             </button>
           </div>
-          {!accountReady && clientId && (
-            <div className="account-menu-signin">
-              <GoogleSignInButton
-                clientId={clientId}
-                onSuccess={onGoogleSignIn}
-                onError={onSignInError}
-              />
-            </div>
-          )}
           {error && (
             <p className="account-menu-error" role="alert">
               {error}

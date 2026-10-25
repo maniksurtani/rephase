@@ -11,10 +11,23 @@ export class ApiError extends Error {
   constructor(
     message: string,
     public status: number,
+    public readonly serviceUnavailable = false,
   ) {
     super(message);
   }
 }
+/** A proxy/challenge page is not evidence that the application's session expired. */
+export const isAuthenticationError = (error: unknown): error is ApiError =>
+  error instanceof ApiError &&
+  !error.serviceUnavailable &&
+  (error.status === 401 || error.status === 403);
+
+const unavailable = (status: number) =>
+  new ApiError(
+    'Account services are unavailable. Check your connection and try again.',
+    status,
+    true,
+  );
 export async function api<T>(path: string, options?: RequestInit): Promise<T> {
   const signal = options?.signal
     ? AbortSignal.any([options.signal, AbortSignal.timeout(18000)])
@@ -32,16 +45,13 @@ export async function api<T>(path: string, options?: RequestInit): Promise<T> {
   try {
     payload = await response.json();
   } catch {
-    throw new ApiError(
-      'Account services are unavailable. Check your connection and try again.',
-      response.status,
-    );
+    throw unavailable(response.status);
   }
-  if (!response.ok)
-    throw new ApiError(
-      (payload as { error?: string })?.error ?? 'The request could not be completed.',
-      response.status,
-    );
+  if (!response.ok) {
+    const message = (payload as { error?: unknown })?.error;
+    if (typeof message !== 'string' || !message) throw unavailable(response.status);
+    throw new ApiError(message, response.status);
+  }
   return payload as T;
 }
 export async function getConfig(): Promise<AuthConfig> {
@@ -55,7 +65,7 @@ export async function getAccount(): Promise<Account | null> {
   try {
     return await api<Account>('/api/me');
   } catch (error) {
-    if (error instanceof ApiError && error.status === 401) return null;
+    if (isAuthenticationError(error) && error.status === 401) return null;
     throw error;
   }
 }

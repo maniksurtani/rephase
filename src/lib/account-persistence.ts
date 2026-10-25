@@ -1,4 +1,11 @@
-import { ApiError, deleteCloudState, getAccount, getCloudState, putCloudState } from './api';
+import {
+  ApiError,
+  deleteCloudState,
+  getAccount,
+  getCloudState,
+  isAuthenticationError,
+  putCloudState,
+} from './api';
 import {
   clearAccountCache,
   loadAccountCache,
@@ -38,6 +45,8 @@ function personalAccountData(data: AppData): AppData {
 }
 const errorMessage = (error: unknown) =>
   error instanceof Error ? error.message : 'The request could not be completed.';
+const SESSION_ENDED = 'Your session has ended. Reconnect to save account changes.';
+const CONFLICT_STATUS = 'A change from another device needs your choice';
 export interface AccountConflict {
   cloud: SyncSnapshot;
   reasons: string[];
@@ -46,6 +55,8 @@ export interface PersistenceState {
   account: Account | null;
   data: AppData;
   accountReady: boolean;
+  /** True only after an authentication rejection, never just a cached/offline account. */
+  requiresSignIn: boolean;
   saveStatus: string;
   storageError: string | null;
   conflict: AccountConflict | null;
@@ -125,6 +136,7 @@ export class AccountPersistence {
       account: initial.account,
       data: initial.data,
       accountReady: false,
+      requiresSignIn: false,
       saveStatus: initial.account ? 'Opening your account…' : 'Saved on this device',
       storageError: initial.storageError ?? null,
       conflict: initial.cache?.conflict ?? null,
@@ -153,11 +165,31 @@ export class AccountPersistence {
   }
   private schedule(delay = this.services.debounceMs) {
     this.cancelTimer();
-    if (!this.state.accountReady || this.state.conflict) return;
+    if (!this.state.account || this.state.requiresSignIn || this.state.conflict) return;
     this.timer = setTimeout(() => {
       this.timer = undefined;
       void this.refresh();
     }, delay);
+  }
+  private sessionEnded() {
+    this.cancelTimer();
+    this.update({
+      accountReady: false,
+      requiresSignIn: Boolean(this.state.account),
+      saveStatus: this.state.account ? SESSION_ENDED : 'Saved on this device',
+    });
+  }
+  private sessionVerified(account: Account) {
+    this.update({
+      account,
+      accountReady: true,
+      requiresSignIn: false,
+      ...(this.state.conflict
+        ? { saveStatus: CONFLICT_STATUS }
+        : this.state.requiresSignIn
+          ? { saveStatus: 'Loading your saved account…' }
+          : {}),
+    });
   }
   private storageFailure(error: unknown) {
     this.update({
@@ -223,6 +255,7 @@ export class AccountPersistence {
       account,
       data: entry.data,
       accountReady: true,
+      requiresSignIn: false,
       conflict: entry.conflict ?? null,
       saveStatus: entry.conflict
         ? 'A change from another device needs your choice'
@@ -262,11 +295,14 @@ export class AccountPersistence {
     this.update({
       saveStatus: this.state.accountReady
         ? 'Saving to your account…'
-        : 'Sign in to save your changes',
+        : this.state.requiresSignIn
+          ? SESSION_ENDED
+          : 'Changes saved on this device · waiting to reconnect',
     });
     this.schedule();
   };
   unavailable = () => {
+    if (this.state.requiresSignIn) return;
     if (this.state.account)
       this.update({
         saveStatus: this.entry?.pending
@@ -287,6 +323,7 @@ export class AccountPersistence {
       account,
       data: entry.data,
       accountReady: false,
+      requiresSignIn: false,
       conflict: entry.conflict ?? null,
       saveStatus: entry.conflict
         ? 'A change from another device needs your choice'
@@ -306,16 +343,12 @@ export class AccountPersistence {
         account,
         data: emptyAccountData(),
         accountReady: false,
+        requiresSignIn: false,
         conflict: null,
         saveStatus: 'Loading your account…',
       });
       await this.adoptAccount(account, epoch);
-    } else
-      this.update({
-        account,
-        accountReady: true,
-        conflict: this.entry?.conflict ?? this.state.conflict,
-      });
+    } else this.sessionVerified(account);
     if (this.current(epoch)) await this.refresh(account.id);
   };
 
@@ -334,20 +367,13 @@ export class AccountPersistence {
       const verified = await this.services.getAccount();
       if (!this.current(epoch)) return;
       if (!verified || (expectedAccountId && verified.id !== expectedAccountId)) {
-        this.update({
-          accountReady: false,
-          saveStatus: this.state.account
-            ? this.entry?.pending
-              ? 'Sign in to save your changes'
-              : 'Sign in to open your account'
-            : 'Saved on this device',
-        });
+        this.sessionEnded();
         return;
       }
       if (this.state.account?.id !== verified.id) {
         if (!(await this.adoptAccount(verified, epoch))) return;
       } else {
-        this.update({ account: verified, accountReady: true });
+        this.sessionVerified(verified);
         await this.services.saveLastAccount(verified).catch((error) => this.storageFailure(error));
       }
       if (!this.current(epoch) || this.state.conflict) return;
@@ -492,16 +518,11 @@ export class AccountPersistence {
     } catch (error) {
       if (!this.current(epoch)) return;
       this.pendingRefresh = false;
-      if (error instanceof ApiError && (error.status === 401 || error.status === 403)) {
-        this.update({
-          accountReady: false,
-          saveStatus: this.entry?.pending
-            ? 'Sign in to save your changes'
-            : 'Sign in to open your account',
-        });
+      if (isAuthenticationError(error)) {
+        this.sessionEnded();
       } else {
         this.unavailable();
-        if (this.state.accountReady) this.schedule(this.services.retryMs);
+        this.schedule(this.services.retryMs);
       }
     } finally {
       if (this.activeOperation === operation) {
@@ -527,6 +548,7 @@ export class AccountPersistence {
       const verified = await this.services.getAccount();
       if (!this.current(epoch)) return;
       if (verified?.id !== account.id) throw new ApiError('Sign in to open this account.', 401);
+      this.sessionVerified(verified);
       let snapshot: SyncSnapshot;
       if (source === 'account') {
         snapshot = await this.services.getCloudState(account.id);
@@ -571,8 +593,7 @@ export class AccountPersistence {
         } catch {
           this.unavailable();
         }
-      } else if (error instanceof ApiError && (error.status === 401 || error.status === 403))
-        this.update({ accountReady: false, saveStatus: 'Sign in to open your account' });
+      } else if (isAuthenticationError(error)) this.sessionEnded();
       else this.unavailable();
     } finally {
       if (this.activeOperation === operation) {
@@ -605,6 +626,7 @@ export class AccountPersistence {
       if (!this.current(epoch)) return;
       if (verified?.id !== account.id)
         throw new ApiError('Sign in to delete this account’s saved data.', 401);
+      this.sessionVerified(verified);
       const result = await this.services.deleteCloudState(account.id);
       if (!this.current(epoch)) return;
       // The deletion removes the pre-confirmation document. Any edits made
@@ -627,11 +649,7 @@ export class AccountPersistence {
       if (pending) this.pendingRefresh = true;
     } catch (error) {
       if (!this.current(epoch)) return;
-      if (error instanceof ApiError && (error.status === 401 || error.status === 403))
-        this.update({
-          accountReady: false,
-          saveStatus: 'Sign in to delete your saved account data',
-        });
+      if (isAuthenticationError(error)) this.sessionEnded();
       else
         this.update({
           saveStatus: `Your account data could not be deleted. ${errorMessage(error)}`,
@@ -693,6 +711,7 @@ export class AccountPersistence {
     this.update({
       account: null,
       accountReady: false,
+      requiresSignIn: false,
       data: opening,
       conflict: null,
       saveStatus: 'Opening your device data…',

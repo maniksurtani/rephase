@@ -35,6 +35,7 @@ import { buildFlightLoungeContexts, type LoungeFlightContext } from './lib/loung
 import { AdherenceForm } from './components/AdherenceForm';
 import { validateAppData } from './lib/validation';
 import { AccountAvatar, AccountMenu } from './components/AccountMenu';
+import { GoogleSignInButton } from './components/GoogleSignInButton';
 import { ScienceModal } from './components/ScienceModal';
 import { TodayView } from './views/TodayView';
 import { PlanView } from './views/PlanView';
@@ -359,7 +360,6 @@ export default function App(props: AppProps) {
             </button>
             <AccountMenu
               account={account}
-              accountReady={props.accountReady}
               clientId={authConfig.googleClientId}
               onProfile={() => setTab('profile')}
               onGoogleSignIn={props.onGoogleSignIn}
@@ -377,7 +377,16 @@ export default function App(props: AppProps) {
           )}
           {showSaveStatus && (
             <div className="account-save-status" role="status">
-              {saveStatus}
+              <span>{saveStatus}</span>
+              {account && props.requiresSignIn && authConfig.googleClientId && (
+                <div className="account-reconnect" role="group" aria-label="Reconnect your account">
+                  <GoogleSignInButton
+                    clientId={authConfig.googleClientId}
+                    onSuccess={props.onGoogleSignIn}
+                    onError={props.onSignInError}
+                  />
+                </div>
+              )}
             </div>
           )}
           {result.loading && (

@@ -10,7 +10,7 @@ Both planners publish dates only through the local day after final arrival; thei
 
 [Deployment 40235967078](https://github.com/maniksurtani/rephase/actions/runs/40235967078) reused that exact artifact without rerunning the browser suite. No D1 migration was needed; Worker version `03a2ea2d-2b46-4656-8297-02f6fa427873` deployed at 21:34 UTC. The live 390-pixel guest browser regression passed in 7.1 seconds, exercising recorded history, the three flight-date timelines and October 27 completion. It used isolated guest data and a controlled configuration response; no real account or flight-provider calls were made. Local iPhone WebKit also passed, and all four mobile captures were inspected.
 
-Local Flutter formatting, analysis, all 26 tests and offline Chromium engine parity passed. [Native checks 40235710304](https://github.com/maniksurtani/rephase/actions/runs/40235710304) track the same source; native signing and real-device acceptance remain in TODO.md.
+Local Flutter formatting, analysis, all 26 tests and offline Chromium engine parity passed. [Native checks 40235710304](https://github.com/maniksurtani/rephase/actions/runs/40235710304) also passed for the same source: Android analysis/tests/APK build and unsigned iOS Simulator compilation plus actual WKWebView integration. Android artifact `12615081599` contains the debug APK. Native signing and real-device acceptance remain in TODO.md.
 
 ## 25 October 2026 — continuous date-line journeys
 

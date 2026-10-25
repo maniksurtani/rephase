@@ -222,11 +222,34 @@ describe('server authoritative account persistence', () => {
     h.controller.change(edited);
     h.services.getCloudState.mockRejectedValueOnce(new ApiError('account changed', status));
     await h.controller.refresh();
-    expect(h.controller.getSnapshot()).toMatchObject({ data: edited, accountReady: false, saveStatus: 'Sign in to save your changes' });
+    expect(h.controller.getSnapshot()).toMatchObject({ data: edited, accountReady: false, requiresSignIn: true, saveStatus: 'Your session has ended. Reconnect to save account changes.' });
     const calls = h.services.getAccount.mock.calls.length;
     await vi.advanceTimersByTimeAsync(60_000);
     expect(h.services.getAccount).toHaveBeenCalledTimes(calls);
     expect(h.services.putCloudState).not.toHaveBeenCalled();
+  });
+  it('clears a stale session message after verification even while a saved conflict awaits a choice', async () => {
+    const data = emptyAccountData();
+    const conflict = { cloud: { data, revision: 2 }, reasons: ['preferences.sleepHours'] };
+    const h = harness({ cache: { version: 1, data, baseline: { data, revision: 1 }, pending: true, conflict } });
+    h.setSession(null);
+    await h.controller.refresh();
+    expect(h.controller.getSnapshot().accountReady).toBe(false);
+    h.setSession(alice);
+    await h.controller.refresh();
+    expect(h.controller.getSnapshot()).toMatchObject({ accountReady: true, requiresSignIn: false, conflict, saveStatus: 'A change from another device needs your choice' });
+    expect(h.services.putCloudState).not.toHaveBeenCalled();
+  });
+  it('retries a temporary startup failure without asking a cached account to sign in', async () => {
+    vi.useFakeTimers();
+    const h = harness();
+    h.services.getAccount.mockRejectedValueOnce(new ApiError('Account services are unavailable.', 403, true));
+    await h.controller.refresh();
+    expect(h.controller.getSnapshot()).toMatchObject({ account: alice, accountReady: false, requiresSignIn: false, saveStatus: 'Offline · showing your saved account' });
+    expect(h.services.putCloudState).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(h.services.retryMs);
+    expect(h.controller.getSnapshot()).toMatchObject({ accountReady: true, requiresSignIn: false, saveStatus: '' });
+    expect(h.services.getAccount).toHaveBeenCalledTimes(2);
   });
   it('ignores a previous account response after switching accounts', async () => {
     const h = harness();

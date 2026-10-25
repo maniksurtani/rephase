@@ -2,6 +2,14 @@
 
 Updated 2026-10-25. Active work is kept here; the previous complete checklist is preserved in [the task archive](docs/archive/TODO-2026-10-16.md). Release evidence is in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md).
 
+## Accurate account session status
+
+- [x] Reproduce a stale sign-in banner after successful session verification and temporary service responses misclassified as expired sessions.
+- [x] Separate cached/offline account access from confirmed authentication failures; retry temporary failures without asking for Google sign-in.
+- [x] Clear stale prompts after verification and provide a direct Google reconnect action only when a session needs it; preserve saved settings and pending edits.
+- [x] Verify temporary-service recovery and direct session reconnection in Chromium and mobile WebKit, with 584 unit/runtime tests and account-isolation checks passing locally.
+- [ ] Publish and deploy the checked release, then confirm the live account-state behavior.
+
 ## Sleep history and the end of a trip
 
 - [x] Reproduce disappearing sleep on October 24–26 when a recorded activity triggers replanning at a later current time.

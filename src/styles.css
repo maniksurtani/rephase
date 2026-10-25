@@ -4716,11 +4716,6 @@ small {
 .account-dropdown [role='menuitem'] svg {
   color: #b9a2d9;
 }
-.account-menu-signin {
-  padding: 10px 4px 4px;
-  border-top: 1px solid #373247;
-  margin-top: 5px;
-}
 .account-menu-error {
   font-size: 12px;
   line-height: 1.6;
@@ -4740,6 +4735,11 @@ small {
   box-shadow: 0 18px 55px #0007;
 }
 .account-save-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px 20px;
   font-size: 12px;
   line-height: 1.7;
   color: #b4a8c6;
@@ -4749,6 +4749,10 @@ small {
   border-radius: 9px;
   background: #201e2c;
   overflow-wrap: anywhere;
+}
+.account-reconnect {
+  flex: 0 1 280px;
+  max-width: 100%;
 }
 .profile-aside.has-account {
   display: flex;

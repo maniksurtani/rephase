@@ -49,6 +49,7 @@ class AccountApi {
   logoutRequests = 0;
   stateReads = 0;
   rejectNextWrite = false;
+  blocked: 'identity' | 'state' | null = null;
 
   async install(context: BrowserContext) {
     await context.route('https://accounts.google.com/gsi/client', (route) =>
@@ -66,6 +67,12 @@ class AccountApi {
       }),
     );
     await context.route('**/api/me', (route) => {
+      if (this.blocked === 'identity')
+        return route.fulfill({
+          status: 403,
+          contentType: 'text/html',
+          body: '<html>Checking your connection</html>',
+        });
       if (!this.available || this.offlinePages.has(route.request().frame().page()))
         return route.abort('internetdisconnected');
       return this.authenticated
@@ -88,6 +95,12 @@ class AccountApi {
       return route.fulfill({ json: { ok: true } });
     });
     await context.route('**/api/state', (route) => {
+      if (this.blocked === 'state')
+        return route.fulfill({
+          status: 403,
+          contentType: 'text/html',
+          body: '<html>Checking your connection</html>',
+        });
       if (!this.available || this.offlinePages.has(route.request().frame().page()))
         return route.abort('internetdisconnected');
       expect(route.request().headers()['x-rephase-account']).toBe(this.identity.id);
@@ -301,6 +314,7 @@ test('an expired session preserves edits and requests Google only when authentic
   page,
   context,
 }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
   const api = new AccountApi();
   await api.install(context);
   await page.goto('/');
@@ -318,11 +332,61 @@ test('an expired session preserves edits and requests Google only when authentic
       .first(),
   ).toBeVisible();
   expect(api.data?.preferences.sleepHours).toBe(8);
-  await page.getByRole('button', { name: `${account.name}'s account menu` }).click();
-  await page.getByRole('button', { name: 'Continue with Google', exact: true }).click();
+  const reconnect = page.getByRole('group', { name: 'Reconnect your account', exact: true });
+  await expect(reconnect).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await captureDesign(page, 'artifacts/account-reconnect-mobile.png');
+  await reconnect.getByRole('button', { name: 'Continue with Google', exact: true }).click();
   await expect.poll(() => api.data?.preferences.sleepHours, { timeout: 30_000 }).toBe(9);
   await expect(page.getByLabel('Hours of sleep you need')).toHaveValue('9');
   expect(api.googleRequests).toBe(1);
+  await expect(reconnect).toHaveCount(0);
+  await expect(page.locator('.account-save-status')).toHaveCount(0);
+});
+
+test('temporary account-service blocks do not ask a signed-in traveler to sign in again', async ({
+  page,
+  context,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const api = new AccountApi();
+  api.data = emptyData(7.5);
+  api.revision = 4;
+  api.blocked = 'identity';
+  await api.install(context);
+  await seedState(page, { lastAccount: account, [`account:${account.id}`]: emptyData(9) });
+  await page.goto('/');
+  await profile(page);
+  const banner = page.locator('.account-save-status');
+  await expect(banner).toContainText('Offline');
+  await expect(page.getByLabel('Hours of sleep you need')).toHaveValue('9');
+  await page.getByRole('button', { name: `${account.name}'s account menu` }).click();
+  await expect(page.getByRole('menuitem', { name: 'Sign out', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Continue with Google', exact: true })).toHaveCount(
+    0,
+  );
+  await page.getByRole('menuitem', { name: 'Settings', exact: true }).click();
+
+  api.blocked = null;
+  await page.evaluate(() => window.dispatchEvent(new Event('online')));
+  await expect(page.getByLabel('Hours of sleep you need')).toHaveValue('7.5');
+  await expect(banner).toHaveCount(0);
+
+  // A later block on the document request must also preserve the live session
+  // and offline edits, rather than interpreting the proxy page as an API 403.
+  api.blocked = 'state';
+  await changeSleep(page, '9');
+  await expect(banner).toContainText('Offline');
+  await expect(
+    page.getByRole('group', { name: 'Reconnect your account', exact: true }),
+  ).toHaveCount(0);
+  expect(api.data.preferences.sleepHours).toBe(7.5);
+  api.blocked = null;
+  await page.evaluate(() => window.dispatchEvent(new Event('online')));
+  await expect.poll(() => api.data?.preferences.sleepHours).toBe(9);
+  await expect(banner).toHaveCount(0);
+  expect(api.googleRequests).toBe(0);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
 test('a simultaneous conflicting edit preserves both versions until an explicit choice', async ({

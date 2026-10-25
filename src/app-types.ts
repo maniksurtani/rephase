@@ -8,6 +8,7 @@ export interface AppProps {
   authConfig: AuthConfig;
   saveStatus: string;
   accountReady: boolean;
+  requiresSignIn: boolean;
   onGoogleSignIn: (account: Account) => void;
   onSignInError: (error: Error) => void;
   onSignOut: () => Promise<void>;

@@ -136,6 +136,7 @@ function Root() {
         authConfig={config}
         saveStatus={state.saveStatus}
         accountReady={state.accountReady}
+        requiresSignIn={state.requiresSignIn}
         storageError={state.storageError}
         onGoogleSignIn={signedIn}
         onSignInError={signInError}
