@@ -106,7 +106,7 @@ npm run test:e2e
 
 Playwright uses `/usr/bin/chromium` when present, or `PLAYWRIGHT_CHROMIUM_EXECUTABLE`; otherwise install it with `npx playwright install chromium`. Engineering checks cover numerical reference trajectories, temporal/itinerary constraints, adherence replay, daylight, API ownership/nonce/session/revision security, cache/quotas, sync merges, calendar export, and deployment/launcher configuration. Browser checks use controlled API responses for account and flight scenarios.
 
-Current release: [native Flutter apps for iOS and Android](RELEASES.md), with the same offline planner and account data as the React web app. Android/iOS builds, native offline runtime checks, 25 Flutter tests, all 567 unit/runtime tests and 46 browser scenarios passed. The compatible Worker is deployed. Recording an activity continues to retain preparation/stay dates without remaining guidance, with a neutral empty state.
+Current release: [keep the selected plan date visible](RELEASES.md). The date strip reveals the selected/current day when the plan opens and follows day navigation without moving the page vertically. All 567 unit/runtime tests and 47 browser scenarios passed; local mobile Chromium/WebKit and the live mobile regression passed. The verified release is deployed.
 
 Detailed previous release evidence is preserved in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md). Automated account/provider checks use controlled responses; real Google/account/provider acceptance remains listed in [TODO.md](TODO.md).
 

@@ -1,5 +1,17 @@
 # Release evidence
 
+## 25 October 2026 — reveal the selected plan date
+
+Source [`c4c8236`](https://github.com/maniksurtani/rephase/commit/c4c82361be117ac2c6c0265eaf172d890c18481e). [Checks 40170256708](https://github.com/maniksurtani/rephase/actions/runs/40170256708) passed formatting, lint, frontend/Worker TypeScript, all 567 unit/runtime tests across 44 suites and all 47 browser scenarios. Verified artifact `12589864286` contains 26 web offline assets and shell `3d297878bb218fb7`.
+
+The selected date now scrolls into view within the horizontal date strip when the plan opens or its selected day changes. An already visible date leaves the strip position alone. Scrolling is confined to the strip so changing days cannot pull the page vertically. Selection, timeline contents and recommendations are unchanged.
+
+The new mobile regression first reproduced the original failure: Sunday 25 October was selected while only the first trip dates were visible. All five travel-feedback scenarios passed locally in Chromium; the focused October 25 and previous/next navigation case also passed in mobile WebKit. Both browser captures were inspected, with the selected date between its neighbors and no page jump.
+
+[Deployment 40170526005](https://github.com/maniksurtani/rephase/actions/runs/40170526005) published that exact verified artifact without rebuilding or repeating the browser suite. No migrations were needed. Worker version: `b5d7d161-3b70-477b-9b41-326f3364b614`. The automatic workflow-run deployment was skipped; manual dispatch reused the successful Checks release.
+
+The live 390px guest regression passed on production, including current-date visibility and previous/next navigation without vertical movement; its screenshot was inspected. Only an isolated browser-local guest fixture was seeded, with account/provider configuration disabled by the test. A standalone HTTP request received a Cloudflare 403, while the normal browser check succeeded. No account writes or flight-provider requests occurred.
+
 ## 18 October 2026 — native Flutter apps for iOS and Android
 
 Source [`e397cfc`](https://github.com/maniksurtani/rephase/commit/e397cfc1dbaaca4575f6c9e805e0e2fe10dafafd). [Checks 39183153696](https://github.com/maniksurtani/rephase/actions/runs/39183153696) passed formatting, lint, frontend/Worker TypeScript, all 567 unit/runtime tests across 44 suites and all 46 browser scenarios. Verified artifact `12157036544` contains the existing 26 web offline assets and shell `df48076eeae4ea04`.

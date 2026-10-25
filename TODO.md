@@ -6,7 +6,7 @@ Updated 2026-10-25. Active work is kept here; the previous complete checklist is
 
 - [x] Reproduce a selected current-day timeline with its date hidden offscreen on the mobile date strip.
 - [x] Reveal the selected date on opening the plan and when navigating between days; scroll only the date strip and retain manual browsing until the selection changes.
-- [ ] Verify the date-line itinerary and arrow navigation, publish the checked release and confirm the live mobile behavior.
+- [x] Verify the date-line itinerary and arrow navigation in Chromium/mobile WebKit; publish the checked release after 567 unit/runtime tests and 47 browser scenarios pass, and confirm the live mobile behavior. See RELEASES.md.
 
 ## Flutter for iOS and Android
 
