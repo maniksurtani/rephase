@@ -167,4 +167,38 @@ describe('Today current and upcoming guidance', () => {
     expect(calendar.actions).toHaveLength(5);
     expect(todayPreview(calendar, Date.parse('2026-10-18T12:00:00Z')).actions).toEqual([]);
   });
+
+  it('follows the elapsed journey window when an action clock already shows the next date', () => {
+    const flight: PlanTravelSegment = {
+      id: 'qf94',
+      flightNumber: 'QF94',
+      departureAirport: 'LAX',
+      arrivalAirport: 'MEL',
+      departure: '2026-10-25T06:40:00Z',
+      arrival: '2026-10-25T22:30:00Z',
+      departureTimeZone: 'America/Los_Angeles',
+      arrivalTimeZone: 'Australia/Melbourne',
+    };
+    const ongoing = action(
+      'destination-clock',
+      '2026-10-25T06:00:00Z',
+      '2026-10-25T06:45:00Z',
+      'Australia/Melbourne',
+    );
+    const days = [
+      { ...day('2026-10-24', 'America/Los_Angeles'), travelSegments: [flight] },
+      { ...day('2026-10-25', 'Australia/Melbourne', [ongoing]), travelSegments: [flight] },
+      { ...day('2026-10-26', 'Australia/Melbourne'), travelSegments: [flight] },
+    ];
+    const before = timing(days, '2026-10-25T06:30:00Z');
+    expect(before.currentAction).toBe(ongoing);
+    expect(before.selectedDay?.date).toBe('2026-10-24');
+    expect(before.today?.date).toBe('2026-10-24');
+    const after = timing(days, '2026-10-25T06:41:00Z');
+    expect(after.selectedDay?.date).toBe('2026-10-25');
+    expect(after.timelineDay?.date).toBe('2026-10-25');
+    const midnight = timing(days, '2026-10-25T13:00:00Z');
+    expect(midnight.selectedDay?.date).toBe('2026-10-26');
+    expect(midnight.timelineDay?.date).toBe('2026-10-26');
+  });
 });

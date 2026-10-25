@@ -127,6 +127,35 @@ describe('calendar date presentation', () => {
     ]);
   });
 
+  it('preserves all eight hours and original references when logged midnight fragments share an ID', () => {
+    const first = action('logged-sleep', '2026-10-20T22:00:00Z', '2026-10-21T00:00:00Z');
+    const second = action(
+      'logged-sleep',
+      '2026-10-21T00:00:00Z',
+      '2026-10-21T06:00:00Z',
+      'America/Los_Angeles',
+    );
+    // Both clocks call this October 20; each fragment is a distinct original
+    // interval, while the repeated first object is only a duplicate source.
+    const [calendar] = groupPlanDays([
+      day('2026-10-20', 'UTC', { actions: [first] }),
+      day('2026-10-20', 'America/Los_Angeles', { actions: [first, second] }),
+    ]);
+    expect(calendar.actions).toEqual([first, second]);
+    expect(calendar.actions[0]).toBe(first);
+    expect(calendar.actions[1]).toBe(second);
+    expect(calendar.allActions).toEqual([first, second]);
+    expect(calendar.allActions?.[0]).toBe(first);
+    expect(calendar.allActions?.[1]).toBe(second);
+    expect(
+      calendar.allActions!.reduce(
+        (hours, interval) =>
+          hours + (Date.parse(interval.end) - Date.parse(interval.start)) / 3_600_000,
+        0,
+      ),
+    ).toBe(8);
+  });
+
   it('selects the latest available source estimate without summing overlapping clocks', () => {
     const morning = day('2026-10-17', 'Australia/Sydney', {
       actions: [action('morning', '2026-10-17T00:00:00Z', '2026-10-17T02:00:00Z')],
@@ -208,6 +237,31 @@ describe('calendar date presentation', () => {
       'AA6276',
       'QF94',
     ]);
+    const departure = Date.parse('2026-10-25T06:40:00Z');
+    const midnightMelbourne = Date.parse('2026-10-25T13:00:00Z');
+    expect(forDate('2026-10-24')[0]).toMatchObject({
+      displayEnd: departure,
+      departureFlightIds: ['aa6276', 'qf94'],
+    });
+    expect(forDate('2026-10-25')[0]).toMatchObject({
+      displayStart: departure,
+      displayEnd: midnightMelbourne,
+      departureFlightIds: [],
+      clockChanges: [
+        {
+          at: departure,
+          timeZone: 'Australia/Melbourne',
+          fromTimeZone: 'America/Los_Angeles',
+        },
+      ],
+    });
+    expect(forDate('2026-10-25')[0].travelSegments.map((flight) => flight.id)).toEqual(['qf94']);
+    expect(forDate('2026-10-26')[0].displayStart).toBe(midnightMelbourne);
+    for (let index = 1; index < grouped.length; index++)
+      expect(grouped[index].displayStart).toBe(grouped[index - 1].displayEnd);
+    expect(isCalendarDayCurrent(forDate('2026-10-24')[0], departure - 1)).toBe(true);
+    expect(isCalendarDayCurrent(forDate('2026-10-25')[0], departure - 1)).toBe(false);
+    expect(isCalendarDayCurrent(forDate('2026-10-25')[0], departure)).toBe(true);
     expect(
       forDate('2026-10-25')[0].travelSegments.some((value) => value.flightNumber === 'QF94'),
     ).toBe(true);
@@ -221,6 +275,73 @@ describe('calendar date presentation', () => {
       new Set(originalActions.keys()),
     );
     for (const value of presentedActions) expect(value).toBe(originalActions.get(value.id));
+  });
+
+  it('keeps a backward date-line journey continuous without inventing a prior destination day', () => {
+    const backward: PlanTravelSegment = {
+      ...segment,
+      departureAirport: 'CXI',
+      departureTimeZone: 'Pacific/Kiritimati',
+      departure: '2026-10-14T10:30:00Z',
+      arrival: '2026-10-14T22:30:00Z',
+    };
+    const [calendar] = groupPlanDays([
+      day('2026-10-15', 'Pacific/Kiritimati', { travelSegments: [backward] }),
+      day('2026-10-14', 'Pacific/Honolulu', { travelSegments: [backward] }),
+    ]);
+    expect(calendar.date).toBe('2026-10-15');
+    expect(calendar.displayStart).toBe(Date.parse('2026-10-14T07:30:00Z'));
+    expect(calendar.displayEnd).toBe(Date.parse('2026-10-15T10:00:00Z'));
+    expect(calendar.clockChanges).toEqual([
+      {
+        at: Date.parse('2026-10-14T07:30:00Z'),
+        timeZone: 'Pacific/Kiritimati',
+        locationAirport: 'CXI',
+      },
+      {
+        at: Date.parse(backward.departure),
+        timeZone: 'Pacific/Honolulu',
+        locationAirport: 'HNL',
+        fromTimeZone: 'Pacific/Kiritimati',
+      },
+    ]);
+    expect(calendar.departureFlightIds).toEqual([backward.id]);
+  });
+
+  it('does not replay a historical departure when given only its midnight arrival date', () => {
+    const arrivalOnly = {
+      ...segment,
+      departureTimeZone: 'UTC',
+      arrivalTimeZone: 'UTC',
+      departure: '2026-10-19T22:00:00Z',
+      arrival: '2026-10-20T00:00:00Z',
+    };
+    const [calendar] = groupPlanDays([day('2026-10-20', 'UTC', { travelSegments: [arrivalOnly] })]);
+    expect(calendar.displayStart).toBe(Date.parse('2026-10-20T00:00:00Z'));
+    expect(calendar.displayEnd).toBe(Date.parse('2026-10-21T00:00:00Z'));
+    expect(calendar.departureFlightIds).toEqual([]);
+    expect(calendar.travelSegments).toEqual([arrivalOnly]);
+  });
+
+  it('labels a forward clock jump without inventing a twenty-four-hour skipped date', () => {
+    const forward: PlanTravelSegment = {
+      ...segment,
+      departureAirport: 'PPG',
+      arrivalAirport: 'CXI',
+      departureTimeZone: 'Pacific/Pago_Pago',
+      arrivalTimeZone: 'Pacific/Kiritimati',
+      departure: '2026-10-15T10:30:00Z', // 14 October 23:30 at origin.
+      arrival: '2026-10-15T17:30:00Z', // 16 October 07:30 at destination.
+    };
+    const calendar = groupPlanDays([
+      day('2026-10-14', forward.departureTimeZone, { travelSegments: [forward] }),
+      day('2026-10-16', forward.arrivalTimeZone, { travelSegments: [forward] }),
+    ]);
+    expect(calendar.map((value) => value.date)).toEqual(['2026-10-14', '2026-10-16']);
+    expect(calendar[0].displayEnd).toBe(Date.parse(forward.departure));
+    expect(calendar[1].displayStart).toBe(calendar[0].displayEnd);
+    expect(calendar[0].departureFlightIds).toEqual([forward.id]);
+    expect(calendar[1].departureFlightIds).toEqual([]);
   });
 
   it('keeps Sunday in Honolulu and earlier stay dates after recorded activity triggers future-only replanning', () => {

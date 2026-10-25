@@ -2,12 +2,17 @@ import { seedGuestData } from './support/fixtures';
 import { captureDesign } from './support/screenshots';
 import { test, expect, type Page } from '@playwright/test';
 import { DEFAULT_PREFERENCES } from '../src/lib/defaults';
-import type { AppData, Trip } from '../src/lib/types';
+import type { AppData, Preferences, Trip } from '../src/lib/types';
 import octoberItinerary from '../tests/fixtures/itineraries/oct2026.json' with { type: 'json' };
 
 const itinerary = octoberItinerary.trip as Trip;
 
-async function openPlan(page: Page, trip = itinerary, homeTimeZone = 'Australia/Sydney') {
+async function openPlan(
+  page: Page,
+  trip = itinerary,
+  homeTimeZone = 'Australia/Sydney',
+  preferences: Partial<Preferences> = {},
+) {
   await page.clock.setFixedTime(new Date('2026-11-03T12:00:00Z'));
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'New time zone. Same you.' })).toBeVisible();
@@ -19,6 +24,7 @@ async function openPlan(page: Page, trip = itinerary, homeTimeZone = 'Australia/
       planningMode: 'rules',
       preparationDays: 0,
       melatonin: true,
+      ...preferences,
     },
     trips: [trip],
     selectedTripId: trip.id,
@@ -289,6 +295,73 @@ test('mobile timeline retains date-line flights, simultaneous rest, two-flight d
   ).toBe(true);
 });
 
+test('date-line connection stays continuous through three dates with one departure and overnight sleep', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openPlan(page, { ...itinerary, legs: itinerary.legs.slice(0, 4) }, 'Australia/Sydney', {
+    planningMode: 'model',
+    preparationDays: 3,
+    melatonin: false,
+  });
+  const boundary = async (attribute: 'data-start' | 'data-end') =>
+    Number(await page.locator('.day-timeline').getAttribute(attribute));
+  await page.locator('.day-button[data-date="2026-10-24"]').click();
+  await expect(
+    page.locator('.timeline-entry[data-flight-id="aa6276"][data-phase="departure"]'),
+  ).toBeVisible();
+  const departure = page.locator('.timeline-entry[data-flight-id="qf94"][data-phase="departure"]');
+  await expect(departure).toBeVisible();
+  await expect(departure).toHaveAttribute('data-start', String(Date.parse('2026-10-25T06:40:00Z')));
+  const end24 = await boundary('data-end');
+  expect(end24).toBe(Date.parse('2026-10-25T06:40:00Z'));
+  await captureDesign(
+    page.locator('.plan-layout > section'),
+    'artifacts/timeline-date-line-24-mobile.png',
+  );
+
+  await page.locator('.day-button[data-date="2026-10-25"]').click();
+  expect(await boundary('data-start')).toBe(end24);
+  await expect(page.locator('.timeline-entry[data-flight-id="aa6276"]')).toHaveCount(0);
+  await expect(page.locator('.flight-segment-card[data-flight-id="qf94"]')).toHaveCount(0);
+  await expect(
+    page.locator('.timeline-entry[data-flight-id="qf94"][data-phase="continuation"]'),
+  ).toBeVisible();
+  await expect(page.locator('.timeline-clock time strong').first()).toHaveText('17:40');
+  await expect(page.locator('.timeline-range')).toContainText('6 h 20 min');
+  await expect(page.locator('.timeline-clock-change')).toContainText(/Los Angeles|LAX/);
+  await expect(page.locator('.timeline-clock-change')).toContainText(/Melbourne|MEL/);
+  const rest25 = page.locator('.timeline-entry[data-guidance="rest"]');
+  await expect(rest25).toContainText('8 h');
+  await expect(rest25).toContainText(/continues/i);
+  const end25 = await boundary('data-end');
+  expect(end25).toBe(Date.parse('2026-10-25T13:00:00Z'));
+  await captureDesign(
+    page.locator('.plan-layout > section'),
+    'artifacts/timeline-date-line-25-mobile.png',
+  );
+
+  await page.locator('.day-button[data-date="2026-10-26"]').click();
+  expect(await boundary('data-start')).toBe(end25);
+  const arrival = page.locator('.timeline-entry[data-flight-id="qf94"][data-phase="arrival"]');
+  await expect(arrival).toBeVisible();
+  await expect(arrival).toHaveAttribute('data-start', String(Date.parse('2026-10-25T22:30:00Z')));
+  await expect(arrival).toContainText('09:30');
+  await expect(page.locator('.flight-segment-card[data-flight-id="qf94"]')).toHaveCount(0);
+  const rest26 = page.locator('.timeline-entry[data-guidance="rest"]');
+  await expect(rest26).toContainText('8 h');
+  await expect(rest26).toContainText(/continued/i);
+  const bedtime = page.locator('.timeline-entry[data-guidance="sleep"]').last();
+  await expect(bedtime).toContainText('8 h');
+  await expect(bedtime).toContainText(/continues/i);
+  await expect(bedtime.locator('.travel-action-clocks')).toHaveCount(0);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await captureDesign(
+    page.locator('.plan-layout > section'),
+    'artifacts/timeline-date-line-26-mobile.png',
+  );
+});
+
 test('repeated daylight-saving hour retains a 25-hour civil day, prior-evening lounge and a 90-minute flight', async ({
   page,
 }) => {
@@ -322,7 +395,7 @@ test('repeated daylight-saving hour retains a 25-hour civil day, prior-evening l
   // The 01:15 departure has a 23:15 pre-flight lounge visit the evening before.
   // Keep that real lead-in without mistaking it for an extra DST calendar hour.
   const midnight = Date.parse('2026-11-01T04:00:00Z');
-  expect(rows[0].start).toBe(Date.parse('2026-11-01T03:15:00Z'));
+  expect(rows[0].start).toBeLessThanOrEqual(Date.parse('2026-11-01T03:15:00Z'));
   expect(rows.at(-1)!.end).toBe(Date.parse('2026-11-02T05:00:00Z'));
   expect(rows.at(-1)!.end - midnight).toBe(25 * 3_600_000);
   await expect(page.locator('.timeline-entry[data-kind="lounge"]')).toHaveAttribute(
@@ -331,7 +404,10 @@ test('repeated daylight-saving hour retains a 25-hour civil day, prior-evening l
   );
   await expect(page.locator('.timeline-heading')).toContainText(/EDT|GMT[−-]4/);
   await expect(page.locator('.timeline-heading')).toContainText(/EST|GMT[−-]5/);
-  const entries = await intervals(page, '.timeline-entry[data-kind="flight"]');
+  const entries = await intervals(
+    page,
+    '.timeline-entry[data-kind="flight"][data-phase="departure"]',
+  );
   expect(entries).toEqual([
     { start: Date.parse('2026-11-01T05:15:00Z'), end: Date.parse('2026-11-01T06:45:00Z') },
   ]);

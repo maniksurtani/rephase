@@ -229,11 +229,12 @@ export function PlanView({
                   day={selectedDay}
                   loungeContexts={loungeContexts}
                   renderBeforeFlight={renderBeforeFlight}
-                  renderAction={(action) => (
+                  renderAction={(action, sleepEpisode) => (
                     <ActionCard
                       key={action.id}
                       action={action}
                       timeline
+                      sleepEpisode={sleepEpisode}
                       travelSegments={selectedDay.travelSegments}
                       isCurrent={!isDemo && action.id === currentAction?.id}
                       record={trip.adherence?.find((entry) => entry.actionId === action.id)}

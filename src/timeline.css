@@ -172,6 +172,44 @@
 .timeline-entry-caption span {
   min-width: 0;
 }
+.timeline-flight-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid #4b3b37;
+  border-radius: 12px;
+  background: #211f29;
+  color: var(--timeline-color);
+}
+.timeline-flight-summary h3 {
+  font-size: 12px;
+  line-height: 1.6;
+  color: #e8d8cb;
+}
+.timeline-flight-summary p {
+  font-size: 11px;
+  line-height: 1.6;
+  color: #b3a5aa;
+  margin-top: 2px;
+}
+.timeline-clock-change {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 14px;
+  padding: 10px 12px;
+  border-left: 2px solid #9582b4;
+  background: #232131;
+  color: #b8aecb;
+  font-size: 11px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.timeline-clock-change strong {
+  color: #d9c8ee;
+  font-weight: 500;
+}
 .timeline-continuation {
   display: flex;
   align-items: flex-start;

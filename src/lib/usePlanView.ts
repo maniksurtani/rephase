@@ -13,9 +13,13 @@ export function usePlanView(
   const calendarDays = useMemo(() => groupPlanDays(plan?.days ?? []), [plan]);
   const allActions = useMemo(
     () =>
-      calendarDays
-        .flatMap((day) => day.actions)
-        .sort((a, b) => Date.parse(a.start) - Date.parse(b.start)),
+      [
+        ...new Map(
+          calendarDays.flatMap((day) =>
+            day.actions.map((action) => [`${action.id}:${action.start}:${action.end}`, action]),
+          ),
+        ).values(),
+      ].sort((a, b) => Date.parse(a.start) - Date.parse(b.start)),
     [calendarDays],
   );
   const flights = useMemo(

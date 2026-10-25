@@ -2,6 +2,14 @@
 
 Updated 2026-10-25. Active work is kept here; the previous complete checklist is preserved in [the task archive](docs/archive/TODO-2026-10-16.md). Release evidence is in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md).
 
+## Continuous date-line timelines
+
+- [x] Reproduce the October 24–26 AA6276/QF94 timeline overlap, duplicated departures and misleading sleep fragments.
+- [x] Partition the journey into adjacent UTC display windows with explicit airport-clock changes and unchanged original recommendation IDs/times.
+- [x] Render departure, compact flight continuation and arrival milestones; join midnight sleep fragments for full-duration labels and omit past-origin clocks on destination ground advice.
+- [x] Verify full-trip elapsed-time coverage, sleep continuity, both date-line directions, DST and mobile/native presentation; inspect the revised October screens. Local unit/runtime, targeted Chromium/WebKit and Flutter checks passed.
+- [ ] Publish the checked release, deploy the verified artifact and confirm the live timeline.
+
 ## Selected plan date visibility
 
 - [x] Reproduce a selected current-day timeline with its date hidden offscreen on the mobile date strip.

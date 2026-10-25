@@ -39,7 +39,7 @@ export function travelClock(
   };
 }
 
-/** Choose the relevant leg for dual-clock action labels, even outside the flight itself. */
+/** Dual clocks help in flight and near boarding, not throughout an arrival day. */
 export function actionTravelSegment(
   action: PlanAction,
   segments?: PlanTravelSegment[],
@@ -55,6 +55,10 @@ export function actionTravelSegment(
       arrival = Date.parse(segment.arrival);
     if (!Number.isFinite(departure) || !Number.isFinite(arrival) || arrival < departure) continue;
     const overlap = Math.max(0, Math.min(end, arrival) - Math.max(start, departure));
+    const inFlightPoint = start === end && start >= departure && start < arrival;
+    // This is a display window for airport/boarding guidance, not a physiological rule.
+    const preflight = start >= departure - 3 * 3_600_000 && end <= departure;
+    if (!overlap && !inFlightPoint && !preflight) continue;
     const distance = Math.max(0, departure - end, start - arrival);
     if (overlap > bestOverlap || (overlap === bestOverlap && distance < nearestDistance)) {
       selected = segment;

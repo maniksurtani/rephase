@@ -120,10 +120,11 @@ class DayTimeline extends StatelessWidget {
           last: true,
           children: [
             for (final entry in tail) _entry(context, entry, clocks),
-            const Text(
-              'End of this day',
-              style: TextStyle(color: muted, fontSize: 13),
-            ),
+            if (tail.isEmpty)
+              const Text(
+                'End of this day',
+                style: TextStyle(color: muted, fontSize: 13),
+              ),
           ],
         ),
       ],
@@ -157,6 +158,7 @@ class DayTimeline extends StatelessWidget {
     final unique = <String>{};
     final clock = mapOf(step['clock']);
     final dual = jsonObjects(step['dualClocks']);
+    final clockChange = mapOf(step['clockChange']);
     return _TimelineRow(
       key: ValueKey('step:${step['start']}'),
       clock: clock,
@@ -165,6 +167,26 @@ class DayTimeline extends StatelessWidget {
       bands: bands,
       compressed: step['compressed'] == true,
       children: [
+        if (clockChange.isNotEmpty)
+          Padding(
+            key: ValueKey('clock-change:${step['start']}'),
+            padding: const EdgeInsets.only(bottom: 16),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(Icons.schedule, color: violet, size: 17),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Clock change${labelOf(clockChange, 'city').isEmpty ? '' : ' · ${clockChange['city']}'}\n'
+                    '${clockLabel(clockChange['fromClock'], date: true)} → '
+                    '${clockLabel(clockChange['toClock'], date: true)}',
+                    style: const TextStyle(color: violet, fontSize: 12),
+                  ),
+                ),
+              ],
+            ),
+          ),
         if (travel && dual.isNotEmpty && entries.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(bottom: 10),
@@ -232,13 +254,66 @@ class DayTimeline extends StatelessWidget {
     final start = entry['start'] as num;
     final end = entry['end'] as num;
     final endClock = clocks[end];
-    final caption = entry['kind'] == 'flight' && start == end
+    final flight = mapOf(entry['flight']);
+    final phase = labelOf(entry, 'phase');
+    final episode = mapOf(entry['sleepEpisode']);
+    final episodeStart = episode['start'];
+    final episodeEnd = episode['end'];
+    final totalSleep = episodeStart is num && episodeEnd is num
+        ? episodeEnd - episodeStart
+        : null;
+    final continuesBefore = totalSleep == null
+        ? entry['continuesBefore'] == true
+        : episode['continuesBefore'] == true;
+    final continuesAfter = totalSleep == null
+        ? entry['continuesAfter'] == true
+        : episode['continuesAfter'] == true;
+    final departure = DateTime.tryParse(labelOf(flight, 'departure'));
+    final arrival = DateTime.tryParse(labelOf(flight, 'arrival'));
+    final caption = entry['kind'] == 'flight' && phase == 'departure'
+        ? 'Departure${departure != null && arrival != null ? ' · ${durationLabel(arrival.difference(departure).inMilliseconds)} flight' : ''}'
+        : entry['kind'] == 'flight' &&
+              (phase == 'arrival' || (phase.isEmpty && start == end))
         ? 'Arrival'
-        : '${entry['continuesBefore'] == true ? 'Continued · ' : ''}${durationLabel(end - start)}${entry['continuesAfter'] == true
+        : '${continuesBefore ? 'Continued · ' : ''}${durationLabel(totalSleep ?? end - start)}${totalSleep == null ? '' : ' total'}${continuesAfter
               ? ' · continues after this day'
               : endClock == null
               ? ''
               : ' · until ${clockLabel(endClock, date: endClock['dateKey'] != day['date'])}'}';
+    if (entry['kind'] == 'flight' &&
+        (phase == 'continuation' || phase == 'arrival')) {
+      final identity = labelOf(flight, 'flightNumber', 'Flight');
+      final destination = labelOf(
+        flight,
+        'arrivalCity',
+        labelOf(flight, 'arrivalAirport'),
+      );
+      return Padding(
+        key: ValueKey('flight-$phase:${flight['id']}'),
+        padding: const EdgeInsets.only(bottom: 12),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(
+              phase == 'arrival'
+                  ? Icons.flight_land_outlined
+                  : Icons.flight_outlined,
+              color: amber,
+              size: 18,
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                phase == 'arrival'
+                    ? '$identity · Arrive in $destination'
+                    : '$identity · In flight\n$caption',
+                style: const TextStyle(color: amber, fontSize: 13),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -258,7 +333,7 @@ class DayTimeline extends StatelessWidget {
           ),
         ),
         entry['kind'] == 'flight'
-            ? FlightCard(flight: mapOf(entry['flight']))
+            ? FlightCard(flight: flight)
             : GuidanceCard(
                 action: mapOf(entry['action']),
                 controller: controller,

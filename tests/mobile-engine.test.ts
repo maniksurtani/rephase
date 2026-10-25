@@ -55,6 +55,26 @@ describe('bundled offline mobile boundary', () => {
     expect(
       result.today.previewActions.every((action: Result) => Date.parse(action.end) > now),
     ).toBe(true);
+    expect(result.days.every((day: Result) => !('allActions' in day))).toBe(true);
+    const onboard = result.days.find((day: Result) => day.date === '2026-10-25');
+    expect(onboard.steps[0].clock).toMatchObject({ time: '17:40', dateKey: '2026-10-25' });
+    expect(onboard.steps[0].clockChange).toMatchObject({
+      city: 'Melbourne',
+      fromClock: { time: '23:40', dateKey: '2026-10-24' },
+      toClock: { time: '17:40', dateKey: '2026-10-25' },
+    });
+    expect(
+      onboard.timeline.entries.find((entry: Result) => entry.phase === 'continuation').flight
+        .departureClock.time,
+    ).toBe('23:40');
+    const landingDay = result.days.find((day: Result) => day.date === '2026-10-26');
+    const landing = landingDay.timeline.entries.find((entry: Result) => entry.phase === 'arrival');
+    expect(landing.flight.arrivalClock.time).toBe('09:30');
+    expect(
+      landingDay.steps
+        .filter((step: Result) => step.start >= landing.start)
+        .every((step: Result) => step.dualClocks.length === 0),
+    ).toBe(true);
   });
 
   it('retains Sunday and the exact model after adherence replay', () => {

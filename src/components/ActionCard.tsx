@@ -24,13 +24,34 @@ export const actionMeta: Record<
   caffeine: { icon: Coffee, label: 'Caffeine window', color: 'caffeine' },
   melatonin: { icon: Sparkles, label: 'Optional melatonin', color: 'melatonin' },
 };
+
+/** Presentation only: recording still uses the original action and its saved ID. */
+export interface SleepEpisodePresentation {
+  start: number;
+  end: number;
+  continuesBefore: boolean;
+  continuesAfter: boolean;
+}
+
+function sleepEpisodeLabel(episode: SleepEpisodePresentation): string {
+  const minutes = Math.round((episode.end - episode.start) / 60_000);
+  const hours = Math.floor(minutes / 60);
+  const remainder = minutes % 60;
+  const duration = hours ? `${hours} h${remainder ? ` ${remainder} min` : ''}` : `${minutes} min`;
+  return `${duration} total${episode.continuesBefore ? ' · continued' : ''}${episode.continuesAfter ? ' · continues next day' : ''}`;
+}
+
 function ActionTravelClocks({
   action,
   segment,
+  sleepEpisode,
 }: {
   action: PlanAction;
   segment: PlanTravelSegment;
+  sleepEpisode?: SleepEpisodePresentation;
 }) {
+  const startInstant = sleepEpisode ? new Date(sleepEpisode.start).toISOString() : action.start;
+  const endInstant = sleepEpisode ? new Date(sleepEpisode.end).toISOString() : action.end;
   return (
     <div
       className="travel-action-clocks"
@@ -40,19 +61,19 @@ function ActionTravelClocks({
         { role: 'Origin', airport: segment.departureAirport, zone: segment.departureTimeZone },
         { role: 'Destination', airport: segment.arrivalAirport, zone: segment.arrivalTimeZone },
       ].map((clock) => {
-        const start = travelClock(action.start, clock.zone),
-          end = travelClock(action.end, clock.zone);
+        const start = travelClock(startInstant, clock.zone),
+          end = travelClock(endInstant, clock.zone);
         return (
           <div className="travel-action-clock" key={clock.role}>
             <span>
               {clock.role} · {clock.airport}
             </span>
             <strong>
-              <time dateTime={action.start}>
+              <time dateTime={startInstant}>
                 {start.date} {start.time}
               </time>{' '}
               –{' '}
-              <time dateTime={action.end}>
+              <time dateTime={endInstant}>
                 {end.date} {end.time}
               </time>
             </strong>
@@ -75,6 +96,7 @@ export function ActionCard({
   record,
   onRecord,
   travelSegments,
+  sleepEpisode,
 }: {
   travelSegments?: PlanTravelSegment[];
   action: PlanAction;
@@ -83,9 +105,14 @@ export function ActionCard({
   isCurrent?: boolean;
   record?: AdherenceRecord;
   onRecord?: (action: PlanAction) => void;
+  sleepEpisode?: SleepEpisodePresentation;
 }) {
   const [expanded, setExpanded] = useState(false);
-  const segment = actionTravelSegment(action, travelSegments);
+  const relevantSegment = actionTravelSegment(action, travelSegments);
+  const segment =
+    relevantSegment?.departureTimeZone !== relevantSegment?.arrivalTimeZone
+      ? relevantSegment
+      : undefined;
   const meta = actionMeta[action.type];
   const Icon = meta.icon;
   const differentDay =
@@ -115,6 +142,9 @@ export function ActionCard({
           <h3>{action.title}</h3>
           {isCurrent && <span className="live-label">Now</span>}
         </div>
+        {action.type === 'sleep' && sleepEpisode && (
+          <p className="small-copy sleep-episode-label">{sleepEpisodeLabel(sleepEpisode)}</p>
+        )}
         {action.type === 'melatonin' ? (
           <MelatoninGuidance action={action} />
         ) : (
@@ -132,7 +162,9 @@ export function ActionCard({
         {action.dose && action.type !== 'melatonin' && (
           <span className="dose-label">Informational dose range: {action.dose}</span>
         )}
-        {segment && <ActionTravelClocks action={action} segment={segment} />}
+        {segment && (
+          <ActionTravelClocks action={action} segment={segment} sleepEpisode={sleepEpisode} />
+        )}
         {!compact && action.type !== 'melatonin' && (
           <button
             type="button"

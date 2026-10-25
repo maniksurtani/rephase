@@ -143,7 +143,7 @@ test('Today and the full plan retain all five flights with both local clocks and
   await expect(page.locator('.model-disclosure')).toHaveCount(0);
   let mealWindowCount = 0;
   for (const leg of itinerary.legs) {
-    const day = planDay(page, leg.arrivalDateTime.slice(0, 10), leg.arrivalTimeZone);
+    const day = planDay(page, leg.departureDateTime.slice(0, 10), leg.departureTimeZone);
     await expect(day).toHaveClass(/travel-day/);
     await expect(day).toContainText('Travel');
     await day.click();
@@ -159,7 +159,10 @@ test('Today and the full plan retain all five flights with both local clocks and
   await expect(flightCard(page, 'aa6276')).toBeVisible();
   await expect(flightCard(page, 'qf94')).toBeVisible();
   await planDay(page, '2026-10-25', 'Australia/Melbourne').click();
-  await expect(flightCard(page, 'qf94')).toBeVisible();
+  await expect(flightCard(page, 'qf94')).toHaveCount(0);
+  await expect(
+    page.locator('.timeline-entry[data-flight-id="qf94"][data-phase="continuation"]'),
+  ).toBeVisible();
   await planDay(page, '2026-10-27', 'Australia/Sydney').click();
   await expect(flightCard(page, 'qf490')).toBeVisible();
   await expect(planDay(page, '2026-10-16', 'Pacific/Honolulu')).toHaveCount(0);

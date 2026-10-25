@@ -221,6 +221,117 @@ void main() {
   );
 
   testWidgets(
+    'date-line continuations keep sleep totals and show arrival without repeated flight details',
+    (tester) async {
+      mobileSize(tester);
+      final controller = _Controller({});
+      addTearDown(controller.dispose);
+      num at(String iso) => DateTime.parse(iso).millisecondsSinceEpoch;
+      Json local(String time, String date, String zone) => {
+        'time': time,
+        'date': '${date.substring(8)} Oct',
+        'dateKey': date,
+        'zone': zone,
+      };
+      final start = at('2026-10-25T06:40Z');
+      final restStart = at('2026-10-25T11:16Z');
+      final midnight = at('2026-10-25T13:00Z');
+      final arrival = at('2026-10-25T22:30Z');
+      final flight = {
+        'id': 'qf94',
+        'flightNumber': 'QF94',
+        'arrivalCity': 'Melbourne',
+        'arrivalAirport': 'MEL',
+      };
+      final continuing = {
+        'id': 'qf94:continuation',
+        'kind': 'flight',
+        'phase': 'continuation',
+        'start': start,
+        'end': midnight,
+        'continuesAfter': true,
+        'flight': flight,
+      };
+      final rest = {
+        'kind': 'action',
+        'start': restStart,
+        'end': midnight,
+        'action': advice('rest', 'sleep', 'Rest or nap'),
+        'sleepEpisode': {
+          'start': restStart,
+          'end': restStart + const Duration(hours: 8).inMilliseconds,
+          'continuesAfter': true,
+        },
+      };
+      final day = <String, dynamic>{
+        'date': '2026-10-25',
+        'travelSegments': [flight],
+        'timeline': {
+          'start': start,
+          'end': midnight,
+          'entries': [continuing, rest],
+          'bands': [],
+        },
+        'steps': [
+          {
+            'start': start,
+            'end': restStart,
+            'clock': local('17:40', '2026-10-25', 'AEDT'),
+            'entries': [continuing],
+            'clockChange': {
+              'city': 'Melbourne',
+              'fromClock': local('23:40', '2026-10-24', 'PDT'),
+              'toClock': local('17:40', '2026-10-25', 'AEDT'),
+            },
+          },
+          {
+            'start': restStart,
+            'end': midnight,
+            'clock': local('22:16', '2026-10-25', 'AEDT'),
+            'entries': [rest],
+          },
+        ],
+        'lastClock': local('00:00', '2026-10-26', 'AEDT'),
+      };
+      Widget timeline(Json day) => host(
+        SingleChildScrollView(
+          child: DayTimeline(day: day, controller: controller),
+        ),
+      );
+      await tester.pumpWidget(timeline(day));
+      expect(find.textContaining('Clock change · Melbourne'), findsOneWidget);
+      expect(find.textContaining('QF94 · In flight'), findsOneWidget);
+      expect(find.text('8 h total · continues after this day'), findsOneWidget);
+      expect(find.text('Flight details'), findsNothing);
+
+      final landing = {
+        ...continuing,
+        'id': 'qf94:arrival',
+        'phase': 'arrival',
+        'start': arrival,
+        'end': arrival,
+      };
+      await tester.pumpWidget(
+        timeline({
+          'date': '2026-10-26',
+          'timeline': {
+            'start': arrival,
+            'end': arrival,
+            'entries': [landing],
+            'bands': [],
+          },
+          'steps': [],
+          'lastClock': local('09:30', '2026-10-26', 'AEDT'),
+        }),
+      );
+      expect(find.text('QF94 · Arrive in Melbourne'), findsOneWidget);
+      expect(find.text('Flight details'), findsNothing);
+      expect(find.text('End of this day'), findsNothing);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
     'Sunday remains selectable without recommendations and supports large mobile text',
     (tester) async {
       mobileSize(tester);

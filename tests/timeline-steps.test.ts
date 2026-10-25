@@ -70,7 +70,12 @@ describe('compact timeline presentation', () => {
     const [calendar] = groupPlanDays([
       day(undefined, undefined, { actions: [sleep], travelSegments: [flight] }),
     ]);
-    const timeline = buildDayTimeline(calendar);
+    // Isolate compaction within the day from any preceding airport lead-in.
+    const timeline = buildDayTimeline({
+      ...calendar,
+      displayStart: instant('2026-10-20T00:00:00Z'),
+      displayEnd: instant('2026-10-21T00:00:00Z'),
+    });
     const steps = buildTimelineSteps(timeline);
 
     expect(steps.map((step) => [step.start, step.end])).toEqual(

@@ -1,8 +1,20 @@
 import { useMemo, type ReactNode } from 'react';
-import { Coffee, EyeOff, Moon, Pill, Plane, Sparkles, Sun, Sunrise } from 'lucide-react';
+import {
+  Coffee,
+  EyeOff,
+  Moon,
+  Pill,
+  Plane,
+  PlaneLanding,
+  Sparkles,
+  Sun,
+  Sunrise,
+} from 'lucide-react';
 import {
   buildDayTimeline,
   timelineActionKind,
+  timelineTimeZone,
+  type SleepEpisode,
   type TimelineBand,
   type TimelineBandKind,
   type TimelineEntry,
@@ -10,7 +22,7 @@ import {
 import { buildTimelineSteps, type TimelineStep } from '../lib/timeline-steps';
 import type { PlanCalendarDay } from '../lib/plan-calendar';
 import type { LoungeFlightContext } from '../lib/lounge-windows';
-import { planDayCity } from '../lib/plan-places';
+import { airportCityName, planDayCity } from '../lib/plan-places';
 import { travelClock } from '../lib/travel-clocks';
 import type { PlanAction, PlanTravelSegment } from '../lib/types';
 import { FlightSegmentCard } from './FlightSegmentCard';
@@ -60,7 +72,7 @@ export function DayTimeline({
   renderBeforeFlight,
 }: {
   day: PlanCalendarDay;
-  renderAction: (action: PlanAction) => ReactNode;
+  renderAction: (action: PlanAction, sleepEpisode?: SleepEpisode) => ReactNode;
   renderFlight?: (segment: PlanTravelSegment) => ReactNode;
   loungeContexts?: readonly LoungeFlightContext[];
   renderBeforeFlight?: (context: LoungeFlightContext) => ReactNode;
@@ -68,13 +80,16 @@ export function DayTimeline({
   const timeline = useMemo(() => buildDayTimeline(day, { loungeContexts }), [day, loungeContexts]);
   const steps = useMemo(() => buildTimelineSteps(timeline), [timeline]);
   const present = new Set(timeline.bands.map((band) => band.kind));
-  const clock = (instant: number) =>
-    travelClock(new Date(instant).toISOString(), timeline.timeZone);
+  if (timeline.entries.some((entry) => entry.kind === 'flight')) present.add('flight');
+  const clock = (instant: number, before = false) =>
+    travelClock(new Date(instant).toISOString(), timelineTimeZone(timeline, instant, before));
   const firstClock = clock(timeline.start),
-    lastClock = clock(timeline.end);
+    lastClock = clock(timeline.end, true);
   const tailEntries = timeline.entries.filter((entry) => entry.start === timeline.end);
   const travelDay = day.travelSegments.length > 0;
   const changingZone = firstClock.zone !== lastClock.zone;
+  const clockCity =
+    airportCityName(timeline.clockChanges?.[0]?.locationAirport) ?? planDayCity(day);
 
   if (!timeline.entries.length)
     return (
@@ -95,7 +110,7 @@ export function DayTimeline({
           data-end={entry.end}
           data-entry-id={entry.id}
         >
-          {entry.lounge.timeZone !== timeline.timeZone && (
+          {entry.lounge.timeZone !== timelineTimeZone(timeline, entry.start) && (
             <p className="small-copy">
               {entry.lounge.airport} local ·{' '}
               <time dateTime={new Date(entry.start).toISOString()}>
@@ -108,7 +123,7 @@ export function DayTimeline({
       );
     }
     const kind = entryKind(entry)!,
-      end = clock(entry.end);
+      end = clock(entry.end, true);
     const Icon = appearance[kind].icon;
     return (
       <div
@@ -119,11 +134,21 @@ export function DayTimeline({
         data-start={entry.start}
         data-end={entry.end}
         data-entry-id={entry.id}
+        data-flight-id={entry.kind === 'flight' ? entry.flight.id : undefined}
+        data-phase={entry.kind === 'flight' ? entry.phase : undefined}
       >
         <div className="timeline-entry-caption">
           <Icon size={13} aria-hidden="true" />
           <span>
-            {entry.kind === 'flight' && entry.start === entry.end ? (
+            {entry.kind === 'flight' && entry.phase === 'departure' ? (
+              <>
+                Departs ·{' '}
+                {durationLabel(
+                  Date.parse(entry.flight.arrival) - Date.parse(entry.flight.departure),
+                )}{' '}
+                total
+              </>
+            ) : entry.kind === 'flight' && entry.phase === 'arrival' ? (
               'Arrival'
             ) : (
               <>
@@ -134,7 +159,7 @@ export function DayTimeline({
                     {' '}
                     ·{' '}
                     {entry.continuesAfter
-                      ? 'continues after this day'
+                      ? 'continues next day'
                       : `until ${end.time}${end.dateKey !== day.date ? `, ${end.date}` : ''}`}
                   </>
                 )}
@@ -143,13 +168,38 @@ export function DayTimeline({
           </span>
         </div>
         {entry.kind === 'flight' ? (
-          renderFlight ? (
-            renderFlight(entry.flight)
+          entry.phase === 'departure' ? (
+            renderFlight ? (
+              renderFlight(entry.flight)
+            ) : (
+              <FlightSegmentCard segment={entry.flight} collapseMeals />
+            )
           ) : (
-            <FlightSegmentCard segment={entry.flight} collapseMeals />
+            <div className="timeline-flight-summary">
+              {entry.phase === 'arrival' ? (
+                <PlaneLanding size={17} aria-hidden="true" />
+              ) : (
+                <Plane size={17} aria-hidden="true" />
+              )}
+              <div>
+                <h3>
+                  {entry.flight.flightNumber ||
+                    `${entry.flight.departureAirport} → ${entry.flight.arrivalAirport}`}{' '}
+                  ·{' '}
+                  {entry.phase === 'arrival'
+                    ? `Arrive in ${airportCityName(entry.flight.arrivalAirport) ?? entry.flight.arrivalAirport}`
+                    : 'In flight'}
+                </h3>
+                <p>
+                  {entry.phase === 'arrival'
+                    ? `${entry.flight.arrivalAirport} · ${end.time} local time`
+                    : `${entry.flight.departureAirport} → ${entry.flight.arrivalAirport}`}
+                </p>
+              </div>
+            </div>
           )
         ) : (
-          renderAction(entry.action)
+          renderAction(entry.action, entry.sleepEpisode)
         )}
       </div>
     );
@@ -161,7 +211,7 @@ export function DayTimeline({
       <div className="timeline-continuation">
         {unique.map((band) => {
           const Icon = appearance[band.kind].icon;
-          const end = clock(band.end);
+          const end = clock(band.end, true);
           return (
             <span className={`timeline-status timeline-${band.kind}`} key={band.kind}>
               <Icon size={13} aria-hidden="true" />
@@ -206,7 +256,7 @@ export function DayTimeline({
         <div>
           <span className="eyebrow muted">Your day, in order</span>
           <p>
-            {planDayCity(day)} time{' '}
+            {changingZone ? 'Local airport clocks' : `${clockCity} time`}{' '}
             <span>
               · {firstClock.zone}
               {firstClock.zone !== lastClock.zone ? ` → ${lastClock.zone}` : ''}
@@ -263,6 +313,33 @@ export function DayTimeline({
                 ))}
               </div>
               <div className="timeline-step-content">
+                {timeline.clockChanges
+                  ?.filter((change) => change.at === step.start && change.fromTimeZone)
+                  .map((change) => {
+                    const from = travelClock(
+                      new Date(change.at).toISOString(),
+                      change.fromTimeZone!,
+                    );
+                    const to = travelClock(new Date(change.at).toISOString(), change.timeZone);
+                    const destination = airportCityName(change.locationAirport) ?? 'destination';
+                    const flight = day.travelSegments.find(
+                      (flight) => Date.parse(flight.departure) === change.at,
+                    );
+                    const origin = airportCityName(flight?.departureAirport) ?? 'origin';
+                    return (
+                      <div
+                        className="timeline-clock-change"
+                        data-kind="clock-change"
+                        data-start={change.at}
+                        key={change.at}
+                      >
+                        <strong>Switch to {destination} time</strong>
+                        <span>
+                          {from.date} {from.time} {origin} = {to.date} {to.time} {destination}
+                        </span>
+                      </div>
+                    );
+                  })}
                 {statuses.length > 0 && continuation(statuses)}
                 {step.entries.map(renderEntry)}
                 {step.compressed && (

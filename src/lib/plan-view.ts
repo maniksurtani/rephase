@@ -3,6 +3,9 @@ import { isCalendarDayCurrent } from './plan-calendar';
 import { localDate } from './display';
 import type { PlanAction, PlanTravelSegment } from './types';
 
+const sameActionInterval = (a: PlanAction, b: PlanAction | undefined) =>
+  b !== undefined && a.id === b.id && a.start === b.start && a.end === b.end;
+
 /** Use absolute device time, not a date string, across destination clocks. */
 export function selectPlanTiming(
   calendarDays: PlanCalendarDay[],
@@ -20,7 +23,13 @@ export function selectPlanTiming(
       Date.parse(flight.departure) <= now.getTime() && Date.parse(flight.arrival) > now.getTime(),
   );
   const nextFlight = flights.find((flight) => Date.parse(flight.departure) > now.getTime());
+  const journeyToday = calendarDays.find(
+    (day) => day.displayStart !== undefined && isCalendarDayCurrent(day, now.getTime()),
+  );
   const flightDay = (flight: PlanTravelSegment) => {
+    if (currentFlight?.id === flight.id && journeyToday) return journeyToday;
+    const departureOwner = calendarDays.find((day) => day.departureFlightIds?.includes(flight.id));
+    if (departureOwner) return departureOwner;
     const date =
       currentFlight?.id === flight.id
         ? localDate(now, flight.arrivalTimeZone)
@@ -34,17 +43,28 @@ export function selectPlanTiming(
     );
   };
   const currentDay =
-    calendarDays.find(
-      (day) =>
-        currentAction &&
-        day.date === localDate(now, currentAction.timeZone) &&
-        day.actions.some((action) => action.id === currentAction.id),
-    ) ?? (currentFlight ? flightDay(currentFlight) : undefined);
+    (((currentAction || currentFlight) && journeyToday) ||
+      calendarDays.find(
+        (day) =>
+          currentAction &&
+          day.date === localDate(now, currentAction.timeZone) &&
+          day.actions.some((action) => sameActionInterval(action, currentAction)),
+      )) ??
+    (currentFlight ? flightDay(currentFlight) : undefined);
   const nextDay =
     nextFlight && (!nextAction || Date.parse(nextFlight.departure) < Date.parse(nextAction.start))
       ? flightDay(nextFlight)
-      : calendarDays.find((day) => day.actions.some((action) => action.id === nextAction?.id));
+      : (calendarDays.find(
+          (day) =>
+            nextAction &&
+            day.displayStart !== undefined &&
+            isCalendarDayCurrent(day, Date.parse(nextAction.start)),
+        ) ??
+        calendarDays.find((day) =>
+          day.actions.some((action) => sameActionInterval(action, nextAction)),
+        ));
   const today =
+    journeyToday ??
     currentDay ??
     (nextDay && isCalendarDayCurrent(nextDay, now.getTime())
       ? nextDay

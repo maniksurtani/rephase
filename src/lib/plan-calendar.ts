@@ -1,5 +1,7 @@
 import { Temporal } from '@js-temporal/polyfill';
 import type { PlanAction, PlanDay, PlanTravelSegment } from './types';
+import { withJourneyWindows, type JourneyClockChange } from './journey-calendar';
+export type { JourneyClockChange } from './journey-calendar';
 
 /** A single date tile, retaining the original zoned days for model context. */
 export interface PlanCalendarDay extends PlanDay {
@@ -8,10 +10,20 @@ export interface PlanCalendarDay extends PlanDay {
   travelSegments: PlanTravelSegment[];
   /** Estimates are selected from one zoned day, never added across clocks. */
   phaseEstimateSourceId?: string;
+  /** Nonoverlapping UTC bounds for this date's portion of the journey. */
+  displayStart?: number;
+  displayEnd?: number;
+  clockChanges?: JourneyClockChange[];
+  /** Departure summaries can sit at the end boundary before a clock change. */
+  departureFlightIds?: string[];
+  /** Shared original references let adjacent sleep fragments form one episode. */
+  allActions?: readonly PlanAction[];
 }
 
 /** A merged day can be current on either side of a timezone/date-line change. */
 export function isCalendarDayCurrent(day: PlanCalendarDay, instant: number): boolean {
+  if (day.displayStart !== undefined && day.displayEnd !== undefined)
+    return instant >= day.displayStart && instant < day.displayEnd;
   const time = Temporal.Instant.fromEpochMilliseconds(instant);
   return day.timeZones.some(
     (zone) => time.toZonedDateTimeISO(zone).toPlainDate().toString() === day.date,
@@ -58,7 +70,7 @@ export function groupPlanDays(days: PlanDay[]): PlanCalendarDay[] {
     else dates.set(day.date, [day]);
   }
 
-  return [...dates.entries()]
+  const grouped = [...dates.entries()]
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([date, members]) => {
       // A late destination estimate describes the end of this presentation day
@@ -87,8 +99,10 @@ export function groupPlanDays(days: PlanDay[]): PlanCalendarDay[] {
       const actionsById = new Map<string, PlanAction>();
       const flightsById = new Map<string, PlanTravelSegment>();
       for (const day of sourceDays) {
-        for (const action of day.actions)
-          if (!actionsById.has(action.id)) actionsById.set(action.id, action);
+        for (const action of day.actions) {
+          const key = `${action.id}:${action.start}:${action.end}`;
+          if (!actionsById.has(key)) actionsById.set(key, action);
+        }
         for (const segment of day.travelSegments ?? [])
           if (!flightsById.has(segment.id)) flightsById.set(segment.id, segment);
       }
@@ -118,4 +132,5 @@ export function groupPlanDays(days: PlanDay[]): PlanCalendarDay[] {
         phaseEstimateSourceId: estimate?.id,
       };
     });
+  return withJourneyWindows(grouped);
 }

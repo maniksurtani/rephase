@@ -1,7 +1,7 @@
 import { Temporal } from '@js-temporal/polyfill';
 import { AIRPORTS, findAirport } from '../lib/airports';
 import { createDemoTrip, createEmptyTrip, createLeg, DEFAULT_PREFERENCES } from '../lib/defaults';
-import { buildDayTimeline } from '../lib/day-timeline';
+import { buildDayTimeline, timelineTimeZone } from '../lib/day-timeline';
 import { phaseChangeLabel, remainingAdjustmentLabel } from '../lib/display';
 import { buildCalendar } from '../lib/export';
 import { validateTrip } from '../lib/itinerary';
@@ -69,6 +69,9 @@ function presentPlan(plan: Plan, trip: Trip, now: number) {
   });
   const days = grouped.map((day) => {
     const timeline = buildDayTimeline(day, { loungeContexts });
+    // Shared action history belongs to the planning boundary, not every JSON day.
+    const publicDay = { ...day };
+    delete publicDay.allActions;
     const enrichEntry = (entry: (typeof timeline.entries)[number]) => ({
       ...entry,
       ...(entry.kind === 'action'
@@ -78,7 +81,7 @@ function presentPlan(plan: Plan, trip: Trip, now: number) {
           : {}),
     });
     return {
-      ...day,
+      ...publicDay,
       city: planDayCity(day),
       phaseChangeLabel:
         day.phaseEstimateAvailable === false
@@ -92,35 +95,51 @@ function presentPlan(plan: Plan, trip: Trip, now: number) {
       travelSegments: day.travelSegments.map(flight),
       timeline: { ...timeline, entries: timeline.entries.map(enrichEntry) },
       steps: buildTimelineSteps(timeline).map((step) => {
-        const nearest = actionTravelSegment(
+        const relevantFlight = actionTravelSegment(
           { start: iso(step.start), end: iso(step.end) } as PlanAction,
           day.travelSegments,
+        );
+        const clockChange = timeline.clockChanges?.find(
+          (change) => change.at === step.start && change.fromTimeZone,
         );
         return {
           ...step,
           entries: step.entries.map(enrichEntry),
-          clock: travelClock(iso(step.start), timeline.timeZone),
-          endClock: travelClock(iso(step.end), timeline.timeZone),
-          dualClocks: nearest
-            ? [
-                {
-                  airport: nearest.departureAirport,
-                  ...travelClock(iso(step.start), nearest.departureTimeZone),
-                },
-                {
-                  airport: nearest.arrivalAirport,
-                  ...travelClock(iso(step.start), nearest.arrivalTimeZone),
-                },
-              ]
-            : [],
+          clock: travelClock(iso(step.start), timelineTimeZone(timeline, step.start)),
+          endClock: travelClock(iso(step.end), timelineTimeZone(timeline, step.end, true)),
+          clockChange: clockChange && {
+            ...clockChange,
+            city: clockChange.locationAirport
+              ? findAirport(clockChange.locationAirport)?.city
+              : undefined,
+            fromClock: travelClock(iso(step.start), clockChange.fromTimeZone!),
+            toClock: travelClock(iso(step.start), clockChange.timeZone),
+          },
+          dualClocks:
+            relevantFlight && relevantFlight.departureTimeZone !== relevantFlight.arrivalTimeZone
+              ? [
+                  {
+                    airport: relevantFlight.departureAirport,
+                    ...travelClock(iso(step.start), relevantFlight.departureTimeZone),
+                  },
+                  {
+                    airport: relevantFlight.arrivalAirport,
+                    ...travelClock(iso(step.start), relevantFlight.arrivalTimeZone),
+                  },
+                ]
+              : [],
         };
       }),
-      lastClock: travelClock(iso(timeline.end), timeline.timeZone),
+      lastClock: travelClock(iso(timeline.end), timelineTimeZone(timeline, timeline.end, true)),
     };
   });
-  const actions = grouped
-    .flatMap((day) => day.actions)
-    .sort((a, b) => Date.parse(a.start) - Date.parse(b.start));
+  const actions = [
+    ...new Map(
+      grouped.flatMap((day) =>
+        day.actions.map((item) => [`${item.id}:${item.start}:${item.end}`, item] as const),
+      ),
+    ).values(),
+  ].sort((a, b) => Date.parse(a.start) - Date.parse(b.start));
   const flights = [
     ...new Map(
       grouped.flatMap((day) => day.travelSegments.map((item) => [item.id, item] as const)),

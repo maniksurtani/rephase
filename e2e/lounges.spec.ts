@@ -317,7 +317,10 @@ test('compact mobile lounge links precede departures and preserve flight context
   // pre-departure lounge window belongs only to the LAX departure day.
   for (const date of ['2026-10-25', '2026-10-26']) {
     await page.locator(`.day-button[data-date="${date}"]`).click();
-    await expect(page.locator('.flight-segment-card[data-flight-id="qf94"]')).toBeVisible();
+    await expect(page.locator('.flight-segment-card[data-flight-id="qf94"]')).toHaveCount(0);
+    await expect(
+      page.locator('.timeline-entry[data-flight-id="qf94"][data-phase="continuation"]'),
+    ).toBeVisible();
     await expect(
       page.getByRole('button', { name: 'Explore lounges in LAX', exact: true }),
     ).toHaveCount(0);

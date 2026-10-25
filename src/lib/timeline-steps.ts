@@ -13,25 +13,29 @@ const TWO_HOURS = 2 * 60 * 60_000;
 
 /** Keep clock changes visible even when a long, unchanged period is compressed. */
 function clockBoundaries(timeline: DayTimeline): number[] {
-  const start = Temporal.Instant.fromEpochMilliseconds(timeline.start).toZonedDateTimeISO(
-    timeline.timeZone,
-  );
-  const boundaries: number[] = [];
-  let date = start.toPlainDate().add({ days: 1 });
-  for (
-    let midnight = date.toZonedDateTime(timeline.timeZone).epochMilliseconds;
-    midnight < timeline.end;
-    date = date.add({ days: 1 }),
-      midnight = date.toZonedDateTime(timeline.timeZone).epochMilliseconds
-  ) {
-    if (midnight > timeline.start) boundaries.push(midnight);
-  }
-
-  let transition = start.getTimeZoneTransition('next');
-  while (transition && transition.epochMilliseconds < timeline.end) {
-    if (transition.epochMilliseconds > timeline.start)
-      boundaries.push(transition.epochMilliseconds);
-    transition = transition.getTimeZoneTransition('next');
+  const changes = timeline.clockChanges ?? [{ at: timeline.start, timeZone: timeline.timeZone }];
+  const boundaries: number[] = changes.map((change) => change.at);
+  for (let index = 0; index < changes.length; index++) {
+    const from = Math.max(timeline.start, changes[index].at);
+    const to = Math.min(timeline.end, changes[index + 1]?.at ?? timeline.end);
+    if (to <= from) continue;
+    const start = Temporal.Instant.fromEpochMilliseconds(from).toZonedDateTimeISO(
+      changes[index].timeZone,
+    );
+    let date = start.toPlainDate().add({ days: 1 });
+    for (
+      let midnight = date.toZonedDateTime(start.timeZoneId).epochMilliseconds;
+      midnight < to;
+      date = date.add({ days: 1 }),
+        midnight = date.toZonedDateTime(start.timeZoneId).epochMilliseconds
+    ) {
+      if (midnight > from) boundaries.push(midnight);
+    }
+    let transition = start.getTimeZoneTransition('next');
+    while (transition && transition.epochMilliseconds < to) {
+      if (transition.epochMilliseconds > from) boundaries.push(transition.epochMilliseconds);
+      transition = transition.getTimeZoneTransition('next');
+    }
   }
   return boundaries;
 }

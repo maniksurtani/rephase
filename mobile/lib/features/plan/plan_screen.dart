@@ -222,7 +222,7 @@ class _PlanScreenState extends State<PlanScreen> {
             const SizedBox(height: 8),
             Text(
               day['stage'] == 'travel'
-                  ? 'One date, both airport clocks. Times include their local date.'
+                  ? 'Times follow your journey. Clock changes are marked.'
                   : 'All times in ${day['city']}',
               style: const TextStyle(color: muted, fontSize: 13),
             ),

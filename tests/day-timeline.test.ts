@@ -173,9 +173,13 @@ describe('daily chronological timeline', () => {
     ]);
     expect(calendar.timeZone).toBe('Pacific/Honolulu');
     const timeline = buildDayTimeline(calendar);
-    expect(timeline.start).toBe(instant(origin.start));
+    expect(timeline.start).toBe(instant('2026-10-16T13:00:00Z'));
     expect(timeline.end).toBe(instant('2026-10-18T10:00:00Z'));
-    expect(timeline.entries.map((entry) => entry.id)).toEqual(['origin', 'qf103', 'destination']);
+    expect(
+      timeline.entries
+        .filter((entry) => entry.kind !== 'flight' || entry.phase !== 'arrival')
+        .map((entry) => entry.id),
+    ).toEqual(['origin', 'qf103', 'destination']);
     expect(timeline.entries[1]).toMatchObject({
       kind: 'flight',
       flight,
@@ -201,12 +205,12 @@ describe('daily chronological timeline', () => {
     expect(timeline.entries).toHaveLength(1);
     expect(timeline.entries[0]).toMatchObject({
       kind: 'flight',
+      phase: 'arrival',
       flight: midnightFlight,
       start: timeline.start,
       end: timeline.start,
-      continuesBefore: true,
-      continuesAfter: false,
     });
+    expect(timeline.bands.some((band) => band.kind === 'flight')).toBe(false);
   });
 
   it('keeps an empty day readable and skips invalid or zero-length records', () => {
@@ -235,7 +239,7 @@ describe('daily chronological timeline', () => {
     expect(calendar.travelSegments[0]).toBe(invalidFlight);
   });
 
-  it('retains every original action and the multi-day flight portions in the five-flight itinerary', () => {
+  it('keeps date-line days continuous and preserves every flight minute and original action', () => {
     const plan = generatePlan(octoberItinerary.trip as Trip, {
       ...DEFAULT_PREFERENCES,
       homeTimeZone: 'Australia/Sydney',
@@ -262,21 +266,166 @@ describe('daily chronological timeline', () => {
       for (let i = 1; i < timeline.entries.length; i++)
         expect(timeline.entries[i].start).toBeGreaterThanOrEqual(timeline.entries[i - 1].start);
     }
+    for (let index = 1; index < timelines.length; index++)
+      expect(timelines[index].start).toBe(timelines[index - 1].end);
+    const flights = new Map(
+      calendars.flatMap((calendar) =>
+        calendar.travelSegments.map((flight) => [flight.id, flight] as const),
+      ),
+    );
+    for (const flight of flights.values()) {
+      const portions = timelines.flatMap((timeline) =>
+        timeline.bands.filter((band) => band.kind === 'flight' && band.flight?.id === flight.id),
+      );
+      expect(portions.reduce((total, band) => total + band.end - band.start, 0)).toBe(
+        instant(flight.arrival) - instant(flight.departure),
+      );
+      for (let index = 1; index < portions.length; index++)
+        expect(portions[index].start).toBe(portions[index - 1].end);
+    }
+    // A clock change cannot turn sleep already recommended elsewhere in the
+    // journey into an Awake band on another date's view of the same instant.
+    for (const awake of timelines
+      .flatMap((timeline) => timeline.bands)
+      .filter((band) => band.kind === 'awake'))
+      for (const sleep of [...original.values()].filter((value) => value.type === 'sleep'))
+        expect(awake.start < instant(sleep.end) && awake.end > instant(sleep.start)).toBe(false);
+    const timelineOnDate = (date: string) =>
+      timelines[calendars.findIndex((calendar) => calendar.date === date)];
+    expect(timelineOnDate('2026-10-24').end).toBe(instant('2026-10-25T06:40:00Z'));
+    expect(timelineOnDate('2026-10-25').start).toBe(instant('2026-10-25T06:40:00Z'));
+    expect(timelineOnDate('2026-10-25').end).toBe(instant('2026-10-25T13:00:00Z'));
+    expect(timelineOnDate('2026-10-26').start).toBe(instant('2026-10-25T13:00:00Z'));
+    expect(
+      timelineOnDate('2026-10-25').bands.some((band) => band.flight?.flightNumber === 'AA6276'),
+    ).toBe(false);
     const flightOnDate = (date: string) =>
       timelines[calendars.findIndex((calendar) => calendar.date === date)].entries.find(
         (entry) => entry.kind === 'flight' && entry.flight.flightNumber === 'QF94',
       );
     expect(flightOnDate('2026-10-24')).toMatchObject({
+      phase: 'departure',
       continuesBefore: false,
       continuesAfter: true,
     });
-    // Departure is already 25 October in Melbourne: this merged date can also
-    // include the departure, while still clipping the later arrival date.
-    expect(flightOnDate('2026-10-25')).toMatchObject({ continuesAfter: true });
+    // The destination clock starts at departure, without replaying Pacific
+    // preflight hours or counting the flight's first twenty minutes twice.
+    expect(flightOnDate('2026-10-25')).toMatchObject({
+      phase: 'continuation',
+      continuesBefore: true,
+      continuesAfter: true,
+    });
     expect(flightOnDate('2026-10-26')).toMatchObject({
+      phase: 'continuation',
       continuesBefore: true,
       continuesAfter: false,
     });
+    expect(
+      timelineOnDate('2026-10-26').entries.find(
+        (entry) =>
+          entry.kind === 'flight' &&
+          entry.phase === 'arrival' &&
+          entry.flight.flightNumber === 'QF94',
+      ),
+    ).toMatchObject({
+      start: instant('2026-10-25T22:30:00Z'),
+      end: instant('2026-10-25T22:30:00Z'),
+    });
+  });
+
+  it('presents midnight sleep fragments as one episode without changing recorded action references', () => {
+    const returnFlight: PlanTravelSegment = {
+      ...flight,
+      id: 'qf94',
+      flightNumber: 'QF94',
+      departureAirport: 'LAX',
+      arrivalAirport: 'MEL',
+      departure: '2026-10-25T06:40:00Z',
+      arrival: '2026-10-25T22:30:00Z',
+      departureTimeZone: 'America/Los_Angeles',
+      arrivalTimeZone: 'Australia/Melbourne',
+    };
+    const firstRest = action('rest-25', 'sleep', '2026-10-25T11:15:00Z', '2026-10-25T13:00:00Z', {
+      timeZone: 'Australia/Melbourne',
+      sleepKind: 'rest',
+      title: 'Rest or nap',
+    });
+    const nextRest = {
+      ...firstRest,
+      id: 'rest-26',
+      start: firstRest.end,
+      end: '2026-10-25T19:15:00Z',
+    };
+    const firstNight = action(
+      'bedtime-26',
+      'sleep',
+      '2026-10-26T12:00:00Z',
+      '2026-10-26T13:00:00Z',
+      {
+        timeZone: 'Australia/Melbourne',
+        sleepKind: 'sleep',
+      },
+    );
+    const nextNight = {
+      ...firstNight,
+      id: 'bedtime-27',
+      start: firstNight.end,
+      end: '2026-10-26T20:00:00Z',
+    };
+    const calendars = groupPlanDays([
+      day('2026-10-24', 'America/Los_Angeles', { travelSegments: [returnFlight] }),
+      day('2026-10-25', 'Australia/Melbourne', {
+        actions: [firstRest],
+        travelSegments: [returnFlight],
+      }),
+      day('2026-10-26', 'Australia/Melbourne', {
+        actions: [nextRest, firstNight],
+        travelSegments: [returnFlight],
+      }),
+      day('2026-10-27', 'Australia/Melbourne', { actions: [nextNight] }),
+    ]);
+    const entries = calendars.flatMap((calendar) => buildDayTimeline(calendar).entries);
+    const entryFor = (original: PlanAction) => entries.find((entry) => entry.id === original.id)!;
+    expect(entryFor(firstRest)).toMatchObject({
+      action: firstRest,
+      sleepEpisode: {
+        start: instant(firstRest.start),
+        end: instant(nextRest.end),
+        continuesBefore: false,
+        continuesAfter: true,
+      },
+    });
+    expect(entryFor(nextRest)).toMatchObject({
+      action: nextRest,
+      sleepEpisode: {
+        start: instant(firstRest.start),
+        end: instant(nextRest.end),
+        continuesBefore: true,
+        continuesAfter: false,
+      },
+    });
+    expect(entryFor(firstNight)).toMatchObject({
+      action: firstNight,
+      sleepEpisode: {
+        start: instant(firstNight.start),
+        end: instant(nextNight.end),
+        continuesBefore: false,
+        continuesAfter: true,
+      },
+    });
+    expect(entryFor(nextNight)).toMatchObject({
+      action: nextNight,
+      sleepEpisode: {
+        start: instant(firstNight.start),
+        end: instant(nextNight.end),
+        continuesBefore: true,
+        continuesAfter: false,
+      },
+    });
+    for (const original of [firstRest, nextRest, firstNight, nextNight]) {
+      const entry = entryFor(original);
+      expect(entry.kind === 'action' && entry.action).toBe(original);
+    }
   });
 
   it('deduplicates repeated IDs, keeps same-instant entries deterministic, and distinguishes rest from sleep', () => {
@@ -294,11 +443,15 @@ describe('daily chronological timeline', () => {
     ]);
     calendar.actions.push(first);
     calendar.travelSegments.push(concurrentFlight);
-    expect(buildDayTimeline(calendar).entries.map((entry) => entry.id)).toEqual([
-      'qf103',
-      'a',
-      'b',
-    ]);
+    const entries = buildDayTimeline(calendar).entries;
+    expect(
+      entries
+        .filter((entry) => entry.kind !== 'flight' || entry.phase !== 'arrival')
+        .map((entry) => entry.id),
+    ).toEqual(['qf103', 'a', 'b']);
+    expect(
+      entries.filter((entry) => entry.kind === 'flight' && entry.phase === 'arrival'),
+    ).toHaveLength(1);
     expect(timelineActionKind(first)).toBe('light');
     expect(
       timelineActionKind({ ...first, type: 'sleep', title: 'Bedtime', sleepKind: 'rest' }),
@@ -398,9 +551,9 @@ describe('pre-flight lounge timeline events', () => {
       const [calendar] = groupPlanDays([
         day('2026-10-17', 'Australia/Sydney', { actions, travelSegments: [flight] }),
       ]);
-      return buildDayTimeline(calendar, { loungeContexts: [lounge] }).entries.map(
-        (entry) => entry.id,
-      );
+      return buildDayTimeline(calendar, { loungeContexts: [lounge] })
+        .entries.filter((entry) => entry.kind !== 'flight' || entry.phase !== 'arrival')
+        .map((entry) => entry.id);
     };
     expect(ordered([light, caffeine])).toEqual(['lounge:qf103', 'caffeine', 'light', 'qf103']);
     expect(ordered([caffeine, light])).toEqual(ordered([light, caffeine]));
@@ -432,8 +585,9 @@ describe('pre-flight lounge timeline events', () => {
       day('2026-10-26', 'Australia/Melbourne', { travelSegments: [overnight] }),
     ]);
     const timeline = buildDayTimeline(departure, { loungeContexts: [lounge] });
-    expect(timeline.start).toBe(instant(lounge.start!));
+    expect(timeline.start).toBeLessThanOrEqual(instant(lounge.start!));
     expect(timeline.entries[0].kind).toBe('lounge');
+    expect(timeline.entries[0].start).toBe(instant(lounge.start!));
     expect(timeline.entries[1].start).toBe(instant(overnight.departure));
     expect(
       buildDayTimeline(arrival, { loungeContexts: [lounge] }).entries.some(
