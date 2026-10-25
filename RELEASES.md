@@ -1,5 +1,15 @@
 # Release evidence
 
+## 25 October 2026 — accurate account session status
+
+Source [`30a51fa`](https://github.com/maniksurtani/rephase/commit/30a51fa4be761ac0591a4f30de252fd203940bd4). [Checks 40238006769](https://github.com/maniksurtani/rephase/actions/runs/40238006769) passed formatting, lint, frontend/Worker TypeScript, all 584 unit/runtime tests across 47 suites and all 49 browser scenarios. Verified artifact `12615173581` contains 26 offline assets and shell `a88ceda0d909e448`.
+
+The account controller now distinguishes cached account data, successful session verification and a confirmed authentication failure. Verification clears stale sign-in messaging even while a saved conflict awaits a choice. Temporary HTML service/challenge responses keep their HTTP status but follow connection recovery instead of being mistaken for an API authentication rejection. Initially unverified cached accounts also retry temporary failures. Confirmed session failures retain settings and unsaved edits and display a direct Google reconnect button in the banner; the avatar menu keeps Settings and Sign out. The existing seven-day browser session lifetime, server ownership checks and Worker authentication policy remain unchanged.
+
+Focused Chromium and actual iPhone WebKit checks passed for temporary account-service blocking at startup and during a save, automatic recovery without Google sign-in, and confirmed expiry followed by direct reconnection and successful saving of pending edits. WebKit's controlled-response check blocked service workers so its mocked API responses stayed at the page boundary. The 390-pixel reconnect layout was inspected. The scientific planner bundle remains `planner-worker-DYVqOMTl.js`.
+
+[Deployment 40238160044](https://github.com/maniksurtani/rephase/actions/runs/40238160044) reused the verified artifact without rebuilding or rerunning the browser suite. No D1 migration was needed. Wrangler reported Worker version `40e5104d-41fc-4f1e-a0e3-f0361c088929` at 22:03 UTC. Both mobile recovery scenarios passed against the deployed frontend in 11.4 seconds total using isolated browser contexts and controlled account/Google responses; no real account credentials or saved user data were used or changed. Real-account session behavior remains an owner acceptance item.
+
 ## 25 October 2026 — sleep history and trip completion
 
 Source [`3b07a9a`](https://github.com/maniksurtani/rephase/commit/3b07a9a69f18808bf9f88aeac987d069a02f5a53). [Checks 40235710264](https://github.com/maniksurtani/rephase/actions/runs/40235710264) passed formatting, lint, frontend/Worker TypeScript, all 579 unit/runtime tests across 46 suites and all 48 browser scenarios. Verified artifact `12614424647` contains 26 offline assets and shell `9647089ca71a2698`.

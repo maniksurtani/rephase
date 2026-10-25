@@ -8,7 +8,7 @@ Updated 2026-10-25. Active work is kept here; the previous complete checklist is
 - [x] Separate cached/offline account access from confirmed authentication failures; retry temporary failures without asking for Google sign-in.
 - [x] Clear stale prompts after verification and provide a direct Google reconnect action only when a session needs it; preserve saved settings and pending edits.
 - [x] Verify temporary-service recovery and direct session reconnection in Chromium and mobile WebKit, with 584 unit/runtime tests and account-isolation checks passing locally.
-- [ ] Publish and deploy the checked release, then confirm the live account-state behavior.
+- [x] Publish and deploy the verified release after 584 unit/runtime tests and 49 browser scenarios pass; confirm both recovery flows against the deployed frontend with controlled account responses. See RELEASES.md.
 
 ## Sleep history and the end of a trip
 
