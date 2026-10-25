@@ -1058,6 +1058,30 @@ small {
   grid-template-columns: minmax(0, 1fr) 260px;
   gap: 28px;
 }
+.trip-complete {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 20px;
+  margin-top: 24px;
+  border: 1px solid #363045;
+  border-radius: 11px;
+  background: #201e2e;
+}
+.trip-complete > svg {
+  flex-shrink: 0;
+  color: #bca4d2;
+}
+.trip-complete h3 {
+  font-size: 16px;
+  margin: 0 0 6px;
+}
+.trip-complete p {
+  color: #a29ab3;
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 0;
+}
 .agenda-heading {
   display: flex;
   justify-content: space-between;

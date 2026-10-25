@@ -98,11 +98,16 @@ describe('bundled offline mobile boundary', () => {
     ];
     const result = invoke('plan', { trip, preferences, now });
     expect(result.plan).toEqual(serial(generatePlan(trip, preferences, { now })));
-    expect(result.days.find((day: Result) => day.date === '2026-10-18')).toMatchObject({
-      city: 'Honolulu',
-      actions: [],
-      stage: 'destination',
-    });
+    const stay = result.days.find((day: Result) => day.date === '2026-10-18');
+    expect(stay).toMatchObject({ city: 'Honolulu', stage: 'destination' });
+    expect(stay.actions.some((action: Result) => action.type === 'sleep')).toBe(true);
+    expect(
+      stay.actions
+        .filter((action: Result) => Date.parse(action.end) <= now)
+        .every((action: Result) => action.origin === 'original-plan'),
+    ).toBe(true);
+    expect(result.days.at(-1)).toMatchObject({ date: '2026-10-27', tripComplete: true });
+    expect(result.days.every((day: Result) => day.date <= '2026-10-27')).toBe(true);
     expect(result.today.dayId).toBe('2026-10-18');
   }, 30_000);
 

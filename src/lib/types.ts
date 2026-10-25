@@ -88,8 +88,8 @@ export interface PlanAction {
   feasibility?: 'daylight' | 'indoor' | 'unknown';
   /** Presentation labels never determine whether a sleep interval is seated rest. */
   sleepKind?: 'sleep' | 'rest';
-  /** A preserved observation may share its ID with a new recommendation. */
-  origin?: 'observation';
+  /** Unrecorded historical guidance is distinct from a preserved observation. */
+  origin?: 'observation' | 'original-plan';
 }
 export interface MealWindow {
   id: string;

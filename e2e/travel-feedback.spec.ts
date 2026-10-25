@@ -235,8 +235,8 @@ test('body-clock estimates show modeled movement rather than a repeated zero', a
   ).toBe(true);
   await captureDesign(page, 'artifacts/planner-phase-desktop.png');
 
-  // Saving an earlier observation replans only the future. The intervening
-  // Honolulu stay must retain its calendar date even when no guidance remains.
+  // Saving an earlier observation replans only the future. Unrecorded earlier
+  // advice remains visible as a plan, separate from the saved observation.
   await page.clock.setFixedTime(new Date('2026-10-18T23:13:00.000Z'));
   await planDay(page, '2026-10-14').click();
   await page.getByRole('button', { name: 'Record what happened', exact: true }).first().click();
@@ -262,12 +262,12 @@ test('body-clock estimates show modeled movement rather than a repeated zero', a
   await planDay(page, '2026-10-18').click();
   await expect(page.locator('.agenda-heading h2')).toHaveText('Sunday 18 October');
   await expect(page.locator('.agenda-heading .stage-label')).toHaveText('Stay in Honolulu');
+  await expect(page.locator('.timeline-entry[data-guidance="sleep"]')).toBeVisible();
+  await expect(page.getByText('Planned · not recorded', { exact: true }).first()).toBeVisible();
   await expect(
     page.getByText('No saved recommendations for this day.', { exact: true }),
-  ).toBeVisible();
-  await expect(page.locator('.timeline-band[data-kind="awake"]')).toHaveCount(0);
-  await expect(page.locator('.timeline-entry')).toHaveCount(0);
-  await captureDesign(page, 'artifacts/planner-empty-stay-desktop.png');
+  ).toHaveCount(0);
+  await captureDesign(page, 'artifacts/planner-recorded-stay-desktop.png');
 
   await planDay(page, '2026-10-19').click();
   await expect(flightCard(page, 'as812')).toBeVisible();
@@ -276,13 +276,12 @@ test('body-clock estimates show modeled movement rather than a repeated zero', a
   await page.getByRole('button', { name: 'Explore your plan', exact: true }).click();
   await planDay(page, '2026-10-18').click();
   await expect(page.locator('.agenda-heading h2')).toHaveText('Sunday 18 October');
-  await expect(
-    page.getByText('No saved recommendations for this day.', { exact: true }),
-  ).toBeVisible();
+  await expect(page.locator('.timeline-entry[data-guidance="sleep"]')).toBeVisible();
+  await expect(page.getByText('Planned · not recorded', { exact: true }).first()).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(
     true,
   );
-  await captureDesign(page, 'artifacts/planner-empty-stay-mobile.png');
+  await captureDesign(page, 'artifacts/planner-recorded-stay-mobile.png');
 });
 
 test('the mobile date strip follows the current day and day arrows without moving the page', async ({

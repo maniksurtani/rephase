@@ -257,6 +257,8 @@ describe('calendar date presentation', () => {
     });
     expect(forDate('2026-10-25')[0].travelSegments.map((flight) => flight.id)).toEqual(['qf94']);
     expect(forDate('2026-10-26')[0].displayStart).toBe(midnightMelbourne);
+    expect(grouped.at(-1)?.date).toBe('2026-10-28');
+    expect(grouped.at(-1)?.tripComplete).toBe(true);
     for (let index = 1; index < grouped.length; index++)
       expect(grouped[index].displayStart).toBe(grouped[index - 1].displayEnd);
     expect(isCalendarDayCurrent(forDate('2026-10-24')[0], departure - 1)).toBe(true);
@@ -272,6 +274,15 @@ describe('calendar date presentation', () => {
     );
     const presentedActions = grouped.flatMap((value) => value.actions);
     expect(new Set(presentedActions.map((value) => value.id))).toEqual(
+      new Set(
+        [...originalActions.values()]
+          .filter((action) => Date.parse(action.start) < grouped.at(-1)!.displayEnd!)
+          .map((action) => action.id),
+      ),
+    );
+    // The final night's next-morning fragment remains shared episode context,
+    // without creating a date beyond the first day after the final arrival.
+    expect(new Set(grouped.at(-1)!.allActions?.map((action) => action.id))).toEqual(
       new Set(originalActions.keys()),
     );
     for (const value of presentedActions) expect(value).toBe(originalActions.get(value.id));
@@ -390,20 +401,20 @@ describe('calendar date presentation', () => {
       label: 'Stay in Honolulu',
       timeZone: 'Pacific/Honolulu',
       locationAirport: 'HNL',
-      actions: [],
       travelSegments: [],
     });
+    expect(sunday!.actions.some((action) => action.type === 'sleep')).toBe(true);
+    expect(sunday!.actions.every((action) => action.origin === 'original-plan')).toBe(true);
     expect(isCalendarDayCurrent(sunday!, now)).toBe(true);
     expect(calendar.find((day) => day.date === '2026-10-15')).toMatchObject({
       stage: 'preparation',
-      actions: [],
       phaseEstimateAvailable: false,
     });
     const actions = calendar.flatMap((day) => day.actions);
     expect(actions.filter((action) => action.id === sleep.id)).toHaveLength(1);
     expect(
       actions
-        .filter((action) => action.id !== sleep.id)
+        .filter((action) => action.origin !== 'original-plan' && action.id !== sleep.id)
         .every((action) => Date.parse(action.start) >= now),
     ).toBe(true);
     expect(replay.days.some((day) => day.id === '2026-10-16:Pacific/Honolulu')).toBe(false);

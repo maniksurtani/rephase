@@ -189,6 +189,7 @@ describe('Today current and upcoming guidance', () => {
       { ...day('2026-10-24', 'America/Los_Angeles'), travelSegments: [flight] },
       { ...day('2026-10-25', 'Australia/Melbourne', [ongoing]), travelSegments: [flight] },
       { ...day('2026-10-26', 'Australia/Melbourne'), travelSegments: [flight] },
+      day('2026-10-27', 'Australia/Melbourne'),
     ];
     const before = timing(days, '2026-10-25T06:30:00Z');
     expect(before.currentAction).toBe(ongoing);
@@ -200,5 +201,11 @@ describe('Today current and upcoming guidance', () => {
     const midnight = timing(days, '2026-10-25T13:00:00Z');
     expect(midnight.selectedDay?.date).toBe('2026-10-26');
     expect(midnight.timelineDay?.date).toBe('2026-10-26');
+    const finished = timing(days, '2026-10-28T00:00:00Z');
+    expect(finished.itineraryFinished).toBe(true);
+    expect(finished.selectedDay?.date).toBe('2026-10-27');
+    expect(timing(days, '2026-10-28T00:00:00Z', '2026-10-24').selectedDay?.date).toBe(
+      '2026-10-24',
+    );
   });
 });

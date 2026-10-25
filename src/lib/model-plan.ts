@@ -747,6 +747,46 @@ function loggedActions(trip: Trip, cutoff: number): PlanAction[] {
     ];
   });
 }
+/** Keep the trip readable without treating an unrecorded recommendation as exposure. */
+function originalPlanHistory(
+  trip: Trip,
+  prefs: Preferences,
+  options: ModelPlanOptions,
+  cutoff: number,
+  records: AdherenceRecord[],
+): PlanAction[] {
+  const original = generateModelPlan({ ...trip, adherence: undefined }, prefs, options);
+  return original.days.flatMap((day) =>
+    day.actions.flatMap((action) => {
+      const start = Date.parse(action.start),
+        end = Math.min(cutoff, Date.parse(action.end));
+      if (end <= start) return [];
+      let ranges = [{ start, end }];
+      // Even a missed or partial observation replaces its scheduled interval;
+      // otherwise the original plan would falsely show sleep alongside the log.
+      for (const record of records.filter((record) => record.type === action.type)) {
+        const blockStart = Date.parse(record.scheduledStart),
+          blockEnd = Date.parse(record.scheduledEnd);
+        if (!Number.isFinite(blockStart) || !Number.isFinite(blockEnd) || blockEnd <= blockStart)
+          continue;
+        ranges = ranges.flatMap((range) =>
+          blockEnd <= range.start || blockStart >= range.end
+            ? [range]
+            : [
+                ...(blockStart > range.start ? [{ start: range.start, end: blockStart }] : []),
+                ...(blockEnd < range.end ? [{ start: blockEnd, end: range.end }] : []),
+              ],
+        );
+      }
+      return ranges.map((range) => ({
+        ...action,
+        origin: 'original-plan' as const,
+        start: iso(range.start),
+        end: iso(range.end),
+      }));
+    }),
+  );
+}
 function auxiliaryActions(
   actions: PlanAction[],
   stages: Stage[],
@@ -907,9 +947,10 @@ function displayDays(
         end = iso(piece.end);
       day.actions.push({
         ...action,
-        id: loggedIds.has(action.id)
-          ? action.id
-          : `${tripId}:${action.type}:${start}:${end}:${action.timeZone}`,
+        id:
+          action.origin === 'observation' && loggedIds.has(action.id)
+            ? action.id
+            : `${tripId}:${action.type}:${start}:${end}:${action.timeZone}`,
         start,
         end,
       });
@@ -1030,6 +1071,7 @@ export function generateModelPlanWithDiagnostics(
       `Past light/sleep logs were replayed up to ${iso(cutoff)}; only future recommendations are regenerated. Missed instructions use uncertain habitual/background light, and partial logs without actual times use an approximate exposure. Completion does not establish actual phase.`,
     );
   const allActions = [
+    ...(validLogs.length ? originalPlanHistory(trip, prefs, options, cutoff, validLogs) : []),
     ...loggedActions({ ...trip, adherence: validLogs }, cutoff),
     ...auxiliaryActions(selected.actions, stages, trip, prefs, selected.estimates),
   ];

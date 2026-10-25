@@ -2,7 +2,7 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { generatePlan } from './support/planning';
 import { flightAirborneTiming } from '../src/lib/flight-timing';
 import { validateTrip } from '../src/lib/itinerary';
-import { generateModelPlanWithDiagnostics } from './support/planning';
+import { generateModelPlan, generateModelPlanWithDiagnostics } from './support/planning';
 import { MODEL_PLAN_VERSION } from '../src/lib/model-plan';
 import { formatTime, localToInstant } from '../src/lib/time';
 import type { FlightLeg, Preferences, Trip } from '../src/lib/types';
@@ -216,7 +216,7 @@ describe('light-driven itinerary model', () => {
       departureTimeZone: 'Australia/Sydney',
       arrivalTimeZone: destinationZone,
     };
-    const plan = generatePlan(trip([outbound]), {
+    const plan = generateModelPlan(trip([outbound]), {
       ...prefs,
       homeTimeZone: 'Australia/Sydney',
       preparationDays: 0,
@@ -309,7 +309,7 @@ describe('light-driven itinerary model', () => {
     expect(all(completed.plan).find((item) => item.id === action.id)?.title).toContain('completed');
     expect(
       all(completed.plan)
-        .filter((item) => item.id !== action.id)
+        .filter((item) => item.origin !== 'original-plan' && item.id !== action.id)
         .every((item) => Date.parse(item.start) >= cutoff),
     ).toBe(true);
     expect(completed.plan.warnings.join(' ')).toContain(
@@ -447,7 +447,7 @@ describe('light-driven itinerary model', () => {
     );
     expect(
       all(partial.plan)
-        .filter((action) => action.id !== sleep.id)
+        .filter((action) => action.origin !== 'original-plan' && action.id !== sleep.id)
         .every((action) => Date.parse(action.start) >= cutoff),
     ).toBe(true);
     expect(partial.plan.warnings.join(' ')).toContain('Sleep logs constrain assumed darkness');

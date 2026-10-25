@@ -7,6 +7,7 @@ import { decoratePlanWithMeals } from './plan-meals';
 import { planningStayLabel, type PlanningContext } from './planning-context';
 import { validatePreferences, validateTrip } from './itinerary';
 import { flightAirborneTiming } from './flight-timing';
+import { limitPlanToArrival } from './plan-horizon';
 
 export const PLAN_VERSION = 'rules-1.2.0';
 const HOUR = 3_600_000;
@@ -542,11 +543,14 @@ export function generatePlan(trip: Trip, prefs: Preferences, options: ModelPlanO
   const errors = validateTrip(trip);
   if (errors.length) throw new RangeError(errors.join('\n'));
   validatePreferences(prefs);
-  return decoratePlanWithMeals(
-    decoratePlanWithTravel(
-      prefs.planningMode === 'rules'
-        ? generateRulesPlan(trip, prefs, options.context)
-        : generateModelPlan(trip, prefs, options),
+  return limitPlanToArrival(
+    decoratePlanWithMeals(
+      decoratePlanWithTravel(
+        prefs.planningMode === 'rules'
+          ? generateRulesPlan(trip, prefs, options.context)
+          : generateModelPlan(trip, prefs, options),
+        trip,
+      ),
       trip,
     ),
     trip,

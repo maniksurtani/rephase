@@ -75,6 +75,7 @@ class _PlanScreenState extends State<PlanScreen> {
       final day =
           days.where((day) => day['id'] == _selectedDay).firstOrNull ??
           days.where((day) => day['id'] == today['dayId']).firstOrNull ??
+          (today['itineraryFinished'] == true ? days.lastOrNull : null) ??
           days.firstOrNull;
       final index = day == null ? -1 : days.indexOf(day);
       if (day != null) _showDate(index, labelOf(day, 'date'));
@@ -232,6 +233,37 @@ class _PlanScreenState extends State<PlanScreen> {
               day: day,
               controller: controller,
             ),
+            if (day['tripComplete'] == true) ...[
+              const SizedBox(height: 24),
+              const Card(
+                child: Padding(
+                  padding: EdgeInsets.all(18),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(Icons.check_circle_outline, color: violet, size: 22),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Trip complete',
+                              style: TextStyle(fontWeight: FontWeight.w600),
+                            ),
+                            SizedBox(height: 6),
+                            Text(
+                              'Return to your usual routine.',
+                              style: TextStyle(color: muted),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
             const SizedBox(height: 24),
             _AdjustmentCard(day: day),
           ],

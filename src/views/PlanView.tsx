@@ -3,6 +3,7 @@ import type { LoungeFlightContext } from '../lib/lounge-windows';
 import {
   ArrowRight,
   ArrowUpRight,
+  CircleCheck,
   ChevronLeft,
   ChevronRight,
   Download,
@@ -82,7 +83,7 @@ export function PlanView({
         <div>
           <span className="eyebrow muted">One journey. One continuous rhythm.</span>
           <h1>Your travel plan</h1>
-          <p>From the first preparation day to your final arrival.</p>
+          <p>Your schedule before, during and after travel.</p>
         </div>
         <div className="heading-actions">
           {isDemo && <span className="pill demo-pill">Example trip</span>}
@@ -242,6 +243,15 @@ export function PlanView({
                     />
                   )}
                 />
+                {selectedDay.tripComplete && (
+                  <div className="trip-complete" role="note">
+                    <CircleCheck size={20} aria-hidden="true" />
+                    <div>
+                      <h3>Trip complete</h3>
+                      <p>Return to your usual routine.</p>
+                    </div>
+                  </div>
+                )}
               </section>
               <aside className="plan-aside">
                 <section className="plan-note-card">

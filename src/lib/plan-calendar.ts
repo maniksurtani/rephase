@@ -18,6 +18,8 @@ export interface PlanCalendarDay extends PlanDay {
   departureFlightIds?: string[];
   /** Shared original references let adjacent sleep fragments form one episode. */
   allActions?: readonly PlanAction[];
+  /** The last supported local day, one day after final arrival. */
+  tripComplete?: boolean;
 }
 
 /** A merged day can be current on either side of a timezone/date-line change. */

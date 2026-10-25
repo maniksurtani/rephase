@@ -2,6 +2,14 @@
 
 Updated 2026-10-25. Active work is kept here; the previous complete checklist is preserved in [the task archive](docs/archive/TODO-2026-10-16.md). Release evidence is in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md).
 
+## Sleep history and the end of a trip
+
+- [x] Reproduce disappearing sleep on October 24–26 when a recorded activity triggers replanning at a later current time.
+- [x] Restore unrecorded historical guidance without treating it as measured sleep or changing the past light inputs; preserve explicit observations.
+- [x] End the web, native and exported plan on the day after final arrival, using the arrival timezone; show a Trip complete marker and open completed trips on their final day.
+- [x] Verify the real numerical itinerary with recorded history, mobile presentation, overnight sleep and final-day limits; local checks include 579 unit/runtime tests, affected browser journeys and Flutter.
+- [ ] Publish and deploy the verified release, then confirm the live October 24–27 timelines.
+
 ## Continuous date-line timelines
 
 - [x] Reproduce the October 24–26 AA6276/QF94 timeline overlap, duplicated departures and misleading sleep fragments.

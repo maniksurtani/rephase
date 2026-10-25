@@ -74,6 +74,14 @@ class GuidanceCard extends StatelessWidget {
               const SizedBox(height: 12),
               Text(detail),
             ],
+            if (action['origin'] == 'original-plan')
+              const Padding(
+                padding: EdgeInsets.only(top: 8),
+                child: Text(
+                  'Planned · not recorded',
+                  style: TextStyle(color: muted, fontSize: 12),
+                ),
+              ),
             if (action['feasibility'] != null) ...[
               const SizedBox(height: 10),
               Text(switch (action['feasibility']) {

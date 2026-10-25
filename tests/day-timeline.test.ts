@@ -254,7 +254,13 @@ describe('daily chronological timeline', () => {
     const presented = timelines
       .flatMap((timeline) => timeline.entries)
       .filter((entry) => entry.kind === 'action');
-    expect(new Set(presented.map((entry) => entry.id))).toEqual(new Set(original.keys()));
+    expect(new Set(presented.map((entry) => entry.id))).toEqual(
+      new Set(
+        [...original.values()]
+          .filter((action) => instant(action.start) < timelines.at(-1)!.end)
+          .map((action) => action.id),
+      ),
+    );
     for (const entry of presented)
       if (entry.kind === 'action') expect(entry.action).toBe(original.get(entry.id));
     for (const timeline of timelines) {

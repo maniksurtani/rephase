@@ -12,8 +12,9 @@ async function openPlan(
   trip = itinerary,
   homeTimeZone = 'Australia/Sydney',
   preferences: Partial<Preferences> = {},
+  now = '2026-11-03T12:00:00Z',
 ) {
-  await page.clock.setFixedTime(new Date('2026-11-03T12:00:00Z'));
+  await page.clock.setFixedTime(new Date(now));
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'New time zone. Same you.' })).toBeVisible();
   const data: AppData = {
@@ -295,21 +296,48 @@ test('mobile timeline retains date-line flights, simultaneous rest, two-flight d
   ).toBe(true);
 });
 
-test('date-line connection stays continuous through three dates with one departure and overnight sleep', async ({
+test('date-line connection retains sleep after recording and ends after its recovery day', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await openPlan(page, { ...itinerary, legs: itinerary.legs.slice(0, 4) }, 'Australia/Sydney', {
-    planningMode: 'model',
-    preparationDays: 3,
-    melatonin: false,
-  });
+  await openPlan(
+    page,
+    { ...itinerary, legs: itinerary.legs.slice(0, 4) },
+    'Australia/Sydney',
+    { planningMode: 'model', preparationDays: 3, melatonin: false },
+    '2026-10-26T10:00:00Z',
+  );
+  // Exercise a real saved observation: the model must keep unrecorded earlier
+  // guidance visible without treating it as evidence that the traveler slept.
+  await page.locator('.day-button[data-date="2026-10-14"]').click();
+  await page
+    .locator('.action-card.sleep')
+    .getByRole('button', { name: 'Record what happened', exact: true })
+    .first()
+    .click();
+  await page
+    .getByRole('dialog', { name: 'Record your actual experience', exact: true })
+    .getByRole('button', { name: 'Save record', exact: true })
+    .click();
+  await expect(
+    page.getByRole('heading', { name: 'Logged sleep · completed', exact: true }),
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'Dismiss notification', exact: true }).click();
+  const dates = await page
+    .locator('.day-button')
+    .evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-date')));
+  expect(dates.at(-1)).toBe('2026-10-27');
+  expect(dates.every((date) => date! <= '2026-10-27')).toBe(true);
   const boundary = async (attribute: 'data-start' | 'data-end') =>
     Number(await page.locator('.day-timeline').getAttribute(attribute));
   await page.locator('.day-button[data-date="2026-10-24"]').click();
   await expect(
     page.locator('.timeline-entry[data-flight-id="aa6276"][data-phase="departure"]'),
   ).toBeVisible();
+  const sleep24 = page.locator('.timeline-entry[data-guidance="sleep"]');
+  await expect(sleep24).toBeVisible();
+  await expect(sleep24).toContainText('Planned · not recorded');
+  await expect(page.locator('.trip-complete')).toHaveCount(0);
   const departure = page.locator('.timeline-entry[data-flight-id="qf94"][data-phase="departure"]');
   await expect(departure).toBeVisible();
   await expect(departure).toHaveAttribute('data-start', String(Date.parse('2026-10-25T06:40:00Z')));
@@ -334,6 +362,7 @@ test('date-line connection stays continuous through three dates with one departu
   const rest25 = page.locator('.timeline-entry[data-guidance="rest"]');
   await expect(rest25).toContainText('8 h');
   await expect(rest25).toContainText(/continues/i);
+  await expect(rest25).toContainText('Planned · not recorded');
   const end25 = await boundary('data-end');
   expect(end25).toBe(Date.parse('2026-10-25T13:00:00Z'));
   await captureDesign(
@@ -359,6 +388,17 @@ test('date-line connection stays continuous through three dates with one departu
   await captureDesign(
     page.locator('.plan-layout > section'),
     'artifacts/timeline-date-line-26-mobile.png',
+  );
+  await expect(page.locator('.trip-complete')).toHaveCount(0);
+  const end26 = await boundary('data-end');
+  await page.locator('.day-button[data-date="2026-10-27"]').click();
+  expect(await boundary('data-start')).toBe(end26);
+  await expect(page.locator('.trip-complete')).toContainText('Trip complete');
+  await expect(page.getByRole('button', { name: 'Next plan day', exact: true })).toBeDisabled();
+  await expect(page.locator('.day-button[data-date="2026-10-28"]')).toHaveCount(0);
+  await captureDesign(
+    page.locator('.plan-layout > section'),
+    'artifacts/timeline-trip-complete-mobile.png',
   );
 });
 

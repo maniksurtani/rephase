@@ -1,6 +1,7 @@
 import { Temporal } from '@js-temporal/polyfill';
 import type { PlanCalendarDay } from './plan-calendar';
 import type { PlanAction, PlanTravelSegment } from './types';
+import { arrivalPlanHorizon } from './plan-horizon';
 
 /** The displayed clock changes at departure, not at an inferred geographic date line. */
 export interface JourneyClockChange {
@@ -80,13 +81,19 @@ export function withJourneyWindows(groups: PlanCalendarDay[]): PlanCalendarDay[]
   const start = startsWithDeparture
     ? Math.min(firstMidnight, firstDeparture - 3 * HOUR)
     : firstMidnight;
-  const end = Math.max(
-    ...sources.map(
-      (day) =>
-        Temporal.PlainDate.from(day.date).add({ days: 1 }).toZonedDateTime(day.timeZone)
-          .epochMilliseconds,
+  const finalFlight = [...flights].sort((a, b) => Date.parse(b.arrival) - Date.parse(a.arrival))[0];
+  const horizon = arrivalPlanHorizon(Date.parse(finalFlight.arrival), finalFlight.arrivalTimeZone);
+  const end = Math.min(
+    horizon.end,
+    Math.max(
+      ...sources.map(
+        (day) =>
+          Temporal.PlainDate.from(day.date).add({ days: 1 }).toZonedDateTime(day.timeZone)
+            .epochMilliseconds,
+      ),
     ),
   );
+  if (start >= end) return [];
   let flightIndex = 0;
   while (flightIndex < flights.length && Date.parse(flights[flightIndex].departure) < start) {
     zone = flights[flightIndex].arrivalTimeZone;
@@ -193,6 +200,7 @@ export function withJourneyWindows(groups: PlanCalendarDay[]): PlanCalendarDay[]
       displayEnd: window.end,
       clockChanges: window.clockChanges,
       departureFlightIds,
+      tripComplete: window.date === horizon.lastDate,
       allActions,
       actions,
       travelSegments,

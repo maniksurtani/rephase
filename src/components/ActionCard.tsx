@@ -121,6 +121,7 @@ export function ActionCard({
     <article
       className={`action-card ${meta.color} ${compact ? 'compact' : ''} ${isCurrent ? 'current' : ''}`}
       data-action-id={action.id}
+      data-origin={action.origin}
       data-start={Date.parse(action.start)}
       data-end={Date.parse(action.end)}
     >
@@ -142,6 +143,7 @@ export function ActionCard({
           <h3>{action.title}</h3>
           {isCurrent && <span className="live-label">Now</span>}
         </div>
+        {action.origin === 'original-plan' && <p className="small-copy">Planned · not recorded</p>}
         {action.type === 'sleep' && sleepEpisode && (
           <p className="small-copy sleep-episode-label">{sleepEpisodeLabel(sleepEpisode)}</p>
         )}

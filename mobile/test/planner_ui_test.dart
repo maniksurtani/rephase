@@ -350,7 +350,7 @@ void main() {
         'days': [
           day('2026-10-17', 'Honolulu'),
           day('2026-10-18', 'Honolulu'),
-          day('2026-10-19', 'San Francisco'),
+          {...day('2026-10-19', 'San Francisco'), 'tripComplete': true},
         ],
         'today': {'dayId': '2026-10-17'},
       });
@@ -370,6 +370,13 @@ void main() {
         findsOneWidget,
       );
       expect(find.text('Stay in Honolulu'), findsOneWidget);
+      expect(find.text('Trip complete'), findsNothing);
+      await tester.ensureVisible(find.byTooltip('Next day'));
+      await tester.tap(find.byTooltip('Next day'));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Trip complete'));
+      expect(find.text('Trip complete'), findsOneWidget);
+      expect(find.text('Return to your usual routine.'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
   );

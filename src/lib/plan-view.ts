@@ -70,10 +70,11 @@ export function selectPlanTiming(
       ? nextDay
       : calendarDays.filter((day) => isCalendarDayCurrent(day, now.getTime())).at(-1));
   const upcomingDay = currentDay ?? nextDay ?? (currentAction || currentFlight ? today : undefined);
-  const defaultDay = today ?? upcomingDay ?? calendarDays[0];
+  const itineraryFinished = Boolean(calendarDays.length && !upcomingDay);
+  const defaultDay =
+    today ?? upcomingDay ?? (itineraryFinished ? calendarDays.at(-1) : calendarDays[0]);
   const selectedDay = calendarDays.find((day) => day.id === selectedDayId) ?? defaultDay;
   const timelineDay = today ?? upcomingDay;
-  const itineraryFinished = Boolean(calendarDays.length && !upcomingDay);
 
   return { currentAction, nextAction, today, timelineDay, itineraryFinished, selectedDay };
 }
