@@ -2,11 +2,19 @@
 
 ## 3 November 2026 — Android builds on Java 25
 
+Source [`26dd672`](https://github.com/maniksurtani/rephase/commit/26dd6722c0017cb2cd18547d7dc822ed9823c103).
+
 Android Studio Rabbit 2 uses Java 25.0.4, which cannot run the previous Gradle 8.14.3 build. The wrapper now selects Gradle 9.3.1 with its official distribution SHA-256. This version supports Java 25 and matches the pinned Flutter SDK's Gradle template. Android CI selects Java 25 to cover this configuration continuously.
 
 AGP 8.13.2 and Kotlin 2.4.0 remain compatible with the new Gradle version; the app's Java/Kotlin bytecode target remains 17. AGP stays at 8 because the stable WebView plugin uses a ProGuard default removed by AGP 9. The existing AGP future-support advisory and dependencies' Java 8 compilation warnings are separate from the resolved Java/Gradle incompatibility.
 
-Local verification used checksum-verified Temurin 25.0.4+7. Gradle reported Java 25.0.4 for its launcher and daemon, configured the real Android project successfully and regenerated its local wrapper JAR with the official checksum. The full `npm run mobile:apk` build then passed, with `assembleDebug` taking 119.6 seconds. The workspace's previous Flutter JDK selection was restored afterwards. Workflow actionlint validation, README/workflow formatting and diff checks also passed. CI results follow the push.
+Local verification used checksum-verified Temurin 25.0.4+7. Gradle reported Java 25.0.4 for its launcher and daemon, configured the real Android project successfully and regenerated its local wrapper JAR with the official checksum. The full `npm run mobile:apk` build then passed, with `assembleDebug` taking 119.6 seconds. The workspace's previous Flutter JDK selection was restored afterwards. Workflow actionlint validation, README/workflow formatting and diff checks also passed.
+
+[Checks 41593062061](https://github.com/maniksurtani/rephase/actions/runs/41593062061) passed all 597 unit/runtime tests across 48 suites, formatting, lint, types, build and all 49 browser scenarios; the browser suite took 1.5 minutes.
+
+The Android job in [native checks 41593062062](https://github.com/maniksurtani/rephase/actions/runs/41593062062) also passed: Flutter formatting/analysis, all 26 Flutter tests and a full APK build using Temurin 25.0.5+8 with Gradle 9.3.1. This covers both the reported Java 25.0.4 locally and the next Java 25 patch in CI. [APK artifact 13210977888](https://github.com/maniksurtani/rephase/actions/runs/41593062062/artifacts/13210977888) is 86,208,207 compressed bytes, SHA-256 `608f47d78cff7479e762e35e63188fa9240a7a43f84175bdb6670045c1e41530`.
+
+The same native run passed iOS Simulator compilation and the bounded WKWebView runtime test. Both native jobs and the web Checks run are green. No Cloudflare deployment is needed for this Android build-toolchain change.
 
 ## 3 November 2026 — bounded iOS runtime startup
 

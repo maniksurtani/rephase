@@ -7,7 +7,8 @@ Updated 2026-11-03. Active work is kept here; the previous complete checklist is
 - [x] Verify Gradle 9.3.1 supports Java 25, the existing Android/Kotlin plugins and the pinned Flutter SDK.
 - [x] Upgrade the Gradle distribution and checksum, and select Java 25 for Android CI.
 - [x] Verify an Android APK build with Java 25.0.4 and update setup documentation; Gradle 9.3.1 configured successfully and assembled the APK in 119.6 seconds.
-- [ ] Confirm native CI passes and record the tested versions.
+- [x] Push the Gradle upgrade and Java 25 CI configuration as 26dd672.
+- [x] Confirm native CI 41593062062 passes both platforms and record Java 25.0.4 local / 25.0.5 CI verification. See RELEASES.md.
 
 ## Bounded iOS runtime startup
 
