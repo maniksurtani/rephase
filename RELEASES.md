@@ -2,9 +2,13 @@
 
 ## 3 November 2026 — native timezone autocomplete
 
+Source [`c2377c1`](https://github.com/maniksurtani/rephase/commit/c2377c1ff871b5397f67524b51f2de2084023494).
+
 The native settings field filtered the engine's timezone catalog as strings, although the actual catalog contains `{value, city}` records. Every option was discarded, so typing showed no suggestions and timezone validation rejected all entries. Test fixtures incorrectly used strings and masked the failure. The field now searches the records' city and IANA values, saves the canonical IANA selection, and uses Flutter's available-space dropdown placement to keep suggestions accessible around the keyboard. The shared native settings component fixes both Android and iOS.
 
-Regression tests reproduced the failure with realistic catalog records before the fix. They cover narrowing and city search, selection and saved preferences, invalid input, and tappable options above a compact-screen keyboard. All 34 Flutter tests and Dart analysis pass locally. The existing native integration test now also exercises the actual settings field with the real bundled engine catalog, selecting and saving `Australia/Sydney`; native CI verification is pending. Android's `requestCursorUpdates on inactive InputConnection` warning alone did not identify this application data mismatch.
+Regression tests reproduced the failure with realistic catalog records before the fix. They cover narrowing and city search, selection and saved preferences, invalid input, and tappable options above a compact-screen keyboard. All 34 Flutter tests and Dart analysis pass locally. The existing native integration test now also exercises the actual settings field with the real bundled engine catalog, selecting and saving `Australia/Sydney`. Android's `requestCursorUpdates on inactive InputConnection` warning alone did not identify this application data mismatch.
+
+[Checks 41630966205](https://github.com/maniksurtani/rephase/actions/runs/41630966205) passed all 597 unit/runtime tests, 49 browser scenarios, lint, formatting, types and build. [Native checks 41630966432](https://github.com/maniksurtani/rephase/actions/runs/41630966432/attempts/2) passed Android formatting/analysis, all 34 Flutter tests, APK compilation and the actual WebView runtime regression. The exact reported keyboard warning also appeared in the passing Android run, before successful selection/save assertions. The first iOS job timed out starting the simulator before compilation or test execution; a single failed-job rerun passed simulator startup, compilation and the actual WKWebView settings/engine regression. Its runtime stage completed in 110 seconds. No app assertion failure was retried, and no Cloudflare deployment was needed for this native UI change.
 
 ## 3 November 2026 — Android offline document loading
 

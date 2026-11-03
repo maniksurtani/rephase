@@ -8,7 +8,7 @@ Updated 2026-11-03. Active work is kept here; the previous complete checklist is
 - [x] Search the catalog's city and IANA timezone values, save the canonical selection, and let Flutter place suggestions in the available space around the keyboard.
 - [x] Verify narrowing, selection, preserved preferences, invalid input and a tappable dropdown on a compact screen with the keyboard open; all 34 Flutter tests and Dart analysis pass locally.
 - [x] Extend the existing native runtime test to search and save a timezone using the real bundled engine catalog.
-- [ ] Push and verify the updated runtime test inside Android WebView and iOS WKWebView; record the result in RELEASES.md.
+- [x] Push and verify the updated runtime test inside Android WebView and iOS WKWebView in native run 41630966432; record the passing result and initial simulator setup timeout in RELEASES.md.
 
 ## Android offline planner startup
 
