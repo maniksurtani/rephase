@@ -9,7 +9,7 @@ Updated 2026-11-03. Active work is kept here; the previous complete checklist is
 - [x] Add Profile permission controls, per-account/device preferences, test delivery and account-safe notification deep links.
 - [x] Configure Android notification/boot receivers and desugaring, and the iOS notification delegate without adding a push backend.
 - [x] Verify queue limits, date-line/DST timing, cancellation races, permission failures, retry and cold/warm taps; all 45 Flutter tests pass locally.
-- [ ] Push and verify both native runtimes, including real-plan reminder extraction and notification/storage plugin initialization.
+- [x] Push and verify both native runtimes in run 41646001351, including real-plan reminder extraction and notification/storage plugin initialization; the final test refinement also passes all 45 tests in fast run 41648049789.
 - [ ] Check permission prompts, closed/offline delivery, tap navigation and Android reboot restoration on physical devices using mobile/README.md.
 
 ## Faster CI feedback
