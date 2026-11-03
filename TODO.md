@@ -2,6 +2,13 @@
 
 Updated 2026-11-03. Active work is kept here; the previous complete checklist is preserved in [the task archive](docs/archive/TODO-2026-10-16.md). Release evidence is in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md).
 
+## Android builds on Java 25
+
+- [x] Verify Gradle 9.3.1 supports Java 25, the existing Android/Kotlin plugins and the pinned Flutter SDK.
+- [x] Upgrade the Gradle distribution and checksum, and select Java 25 for Android CI.
+- [x] Verify an Android APK build with Java 25.0.4 and update setup documentation; Gradle 9.3.1 configured successfully and assembled the APK in 119.6 seconds.
+- [ ] Confirm native CI passes and record the tested versions.
+
 ## Bounded iOS runtime startup
 
 - [x] Isolate the simulator failure to Flutter's VM-service connection discovery; verify the unchanged iOS retry passes.

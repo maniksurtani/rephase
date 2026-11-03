@@ -1,5 +1,13 @@
 # Release evidence
 
+## 3 November 2026 — Android builds on Java 25
+
+Android Studio Rabbit 2 uses Java 25.0.4, which cannot run the previous Gradle 8.14.3 build. The wrapper now selects Gradle 9.3.1 with its official distribution SHA-256. This version supports Java 25 and matches the pinned Flutter SDK's Gradle template. Android CI selects Java 25 to cover this configuration continuously.
+
+AGP 8.13.2 and Kotlin 2.4.0 remain compatible with the new Gradle version; the app's Java/Kotlin bytecode target remains 17. AGP stays at 8 because the stable WebView plugin uses a ProGuard default removed by AGP 9. The existing AGP future-support advisory and dependencies' Java 8 compilation warnings are separate from the resolved Java/Gradle incompatibility.
+
+Local verification used checksum-verified Temurin 25.0.4+7. Gradle reported Java 25.0.4 for its launcher and daemon, configured the real Android project successfully and regenerated its local wrapper JAR with the official checksum. The full `npm run mobile:apk` build then passed, with `assembleDebug` taking 119.6 seconds. The workspace's previous Flutter JDK selection was restored afterwards. Workflow actionlint validation, README/workflow formatting and diff checks also passed. CI results follow the push.
+
 ## 3 November 2026 — bounded iOS runtime startup
 
 The original iOS failure occurred after successful compilation and simulator launch, while Flutter waited for its VM-service port. The [unchanged retry](https://github.com/maniksurtani/rephase/actions/runs/40238006750/attempts/2) passed its actual WKWebView tests in eight seconds, supporting an intermittent connection problem without proving the suspected startup-log race.
