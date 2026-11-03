@@ -9,7 +9,7 @@ Updated 2026-11-03. Active work is kept here; the previous complete checklist is
 - [x] Permit one simulator restart only for an observed VM-service startup timeout before any test starts; preserve assertion failures and cancellation.
 - [x] Stream and retain complete driver logs and simulator diagnostics for every attempt, including successful recovery.
 - [x] Verify recovery, failure and cancellation behavior with 13 subprocess scenarios and all 597 unit/runtime tests; validate the workflow with actionlint.
-- [ ] Push the changes and check the native workflow.
+- [x] Push the changes and confirm native workflow 41575003127 passes both platforms; inspect the first-attempt iOS runtime result and uploaded diagnostics. See RELEASES.md.
 
 ## Accurate account session status
 
