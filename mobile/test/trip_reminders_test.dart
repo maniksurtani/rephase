@@ -68,7 +68,7 @@ class MemorySettings implements ReminderSettingsStore {
 class Notifications implements ReminderGateway {
   bool permission = true;
   int permissionRequests = 0, schedules = 0, clearCalls = 0, tests = 0;
-  bool failSchedule = false;
+  int? failAfter;
   Completer<void>? scheduling;
   final requests = <int, TripReminder>{};
   void Function(String?)? onTap;
@@ -101,7 +101,7 @@ class Notifications implements ReminderGateway {
   @override
   Future<void> schedule(int id, TripReminder reminder) async {
     await scheduling?.future;
-    if (failSchedule) throw StateError('OS refused request');
+    if (schedules == failAfter) throw StateError('OS refused request');
     schedules++;
     requests[id] = reminder;
   }
@@ -385,7 +385,7 @@ void main() {
     },
   );
   test('partial OS failures clear the queue and retry recovers', () async {
-    final gateway = Notifications()..failSchedule = true;
+    final gateway = Notifications()..failAfter = 1;
     final store = MemorySettings()..values['guest'] = true;
     final service = TripReminders(
       gateway: gateway,
@@ -398,17 +398,24 @@ void main() {
           now.add(const Duration(hours: 1)),
           now.add(const Duration(hours: 2)),
         ),
+        action(
+          'sleep',
+          'sleep',
+          now.add(const Duration(hours: 3)),
+          now.add(const Duration(hours: 11)),
+        ),
       ]),
     );
     addTearDown(service.dispose);
     service.update(accountId: null, data: data([trip('t')]));
     await service.refresh();
     expect(service.error, isNotNull);
+    expect(gateway.schedules, 1);
     expect(gateway.requests, isEmpty);
-    gateway.failSchedule = false;
+    gateway.failAfter = null;
     await service.refresh();
     expect(service.error, isNull);
-    expect(gateway.requests, hasLength(1));
+    expect(gateway.requests, hasLength(2));
   });
   test(
     'restored opt-in refills a rolling queue and decodes notification taps',
