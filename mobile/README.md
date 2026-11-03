@@ -71,6 +71,8 @@ Opaque app-session credentials live in Keychain/Keystore. Guest and each account
 
 The Mobile checks workflow runs Flutter formatting, analysis and focused widget/data tests, verifies the compiled JavaScript planner against the web engine, builds an Android debug APK, compiles an unsigned iOS Simulator app on macOS and runs the offline engine integration tests inside WKWebView. No production OAuth, provider or signing secrets are supplied to these checks. The debug APK is attached to the Android workflow job.
 
+The iOS job compiles its integration app once and runs that binary through the official Flutter driver. Connection startup has a three-minute limit. A timeout while Flutter is explicitly waiting for the VM service permits one restart of the selected simulator and one retry, provided no driver connection or test execution has been observed. Explicit command failures, assertions, cancellation and runtime hangs never trigger a retry. After connection, the runtime has its own three-minute limit. Each attempt's complete driver output is streamed to the job and retained with simulator diagnostics in the `rephase-ios-runtime-…` artifact for 14 days, including successful recovery attempts.
+
 For the real embedded runtime on an emulator/device:
 
 ```bash

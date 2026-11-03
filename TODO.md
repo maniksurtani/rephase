@@ -1,6 +1,15 @@
 # Rephase build tasks
 
-Updated 2026-10-25. Active work is kept here; the previous complete checklist is preserved in [the task archive](docs/archive/TODO-2026-10-16.md). Release evidence is in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md).
+Updated 2026-11-03. Active work is kept here; the previous complete checklist is preserved in [the task archive](docs/archive/TODO-2026-10-16.md). Release evidence is in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md).
+
+## Bounded iOS runtime startup
+
+- [x] Isolate the simulator failure to Flutter's VM-service connection discovery; verify the unchanged iOS retry passes.
+- [x] Compile the runtime test once and bound connection startup separately from test execution.
+- [x] Permit one simulator restart only for an observed VM-service startup timeout before any test starts; preserve assertion failures and cancellation.
+- [x] Stream and retain complete driver logs and simulator diagnostics for every attempt, including successful recovery.
+- [x] Verify recovery, failure and cancellation behavior with 13 subprocess scenarios and all 597 unit/runtime tests; validate the workflow with actionlint.
+- [ ] Push the changes and check the native workflow.
 
 ## Accurate account session status
 

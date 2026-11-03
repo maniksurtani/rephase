@@ -1,5 +1,15 @@
 # Release evidence
 
+## 3 November 2026 — bounded iOS runtime startup
+
+The original iOS failure occurred after successful compilation and simulator launch, while Flutter waited for its VM-service port. The [unchanged retry](https://github.com/maniksurtani/rephase/actions/runs/40238006750/attempts/2) passed its actual WKWebView tests in eight seconds, supporting an intermittent connection problem without proving the suspected startup-log race.
+
+The native workflow now compiles the integration app once and reuses that binary. A Node runner gives startup and connected execution separate three-minute limits. Only an observed VM-service discovery timeout before any driver connection or test execution permits one restart of the selected simulator. Explicit command failures, assertions, crash evidence, cancellation and runtime hangs fail without retry. Detached Flutter process groups are stopped before restart, including stubborn descendants.
+
+Complete stdout/stderr for each attempt is streamed and retained alongside simulator logs covering the entire attempt, CoreSimulator logs, available Runner crash reports, restart output and a JSON outcome summary. The native workflow uploads these diagnostics on success and failure for 14 days. This change affects CI and its integration-test marker; it does not change application behavior or require a Cloudflare deployment.
+
+Local checks passed: all 597 unit/runtime tests across 48 suites, including 13 subprocess watchdog scenarios; frontend/Worker TypeScript, lint, formatting, Dart marker formatting and actionlint workflow validation also passed. The runner scenarios cover successful recovery, repeated and unknown hangs, failed simulator restart, assertions, crash evidence, cancellation, large log chunks and termination of stubborn descendants. Native CI verification follows the push.
+
 ## 25 October 2026 — accurate account session status
 
 Source [`30a51fa`](https://github.com/maniksurtani/rephase/commit/30a51fa4be761ac0591a4f30de252fd203940bd4). [Checks 40238006769](https://github.com/maniksurtani/rephase/actions/runs/40238006769) passed formatting, lint, frontend/Worker TypeScript, all 584 unit/runtime tests across 47 suites and all 49 browser scenarios. Verified artifact `12615173581` contains 26 offline assets and shell `a88ceda0d909e448`.

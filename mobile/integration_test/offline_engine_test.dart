@@ -9,6 +9,7 @@ void main() {
   testWidgets('bundled native runtime plans offline and resolves DST safely', (
     tester,
   ) async {
+    debugPrint('REPHASE_IOS_TEST_STARTED');
     await tester.pumpWidget(
       const MaterialApp(home: Scaffold(body: Text('Offline engine check'))),
     );
