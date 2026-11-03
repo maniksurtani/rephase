@@ -1,5 +1,13 @@
 # Release evidence
 
+## 3 November 2026 — faster CI feedback
+
+Mobile CI now separates fast Flutter formatting/analysis/widget tests from full native runtime verification. Ordinary widget changes run only the fast workflow. Engine, WebView, native platform, dependency and integration-host changes still run both native runtimes; full checks also run nightly, on published releases and on demand. Mobile-only changes skip web Checks, and Markdown-only changes skip mobile checks. Web deployment continues to require a verified artifact for the exact current main commit; manually dispatch Checks when deploying a commit that skipped it.
+
+A shared setup action caches the pinned Flutter SDK, including engine artifacts, separately for quick/Android/iOS profiles, verifies its framework revision and caches Pub packages. Full native jobs also cache Gradle dependencies/wrappers and iOS dependency downloads. Compiled Xcode outputs are rebuilt. Installable APKs are produced only for published releases or explicit manual requests; routine full runs compile only the integration host. Native logs, execution bounds and the existing limited VM-startup recovery remain intact.
+
+Actionlint and whitespace validation pass. A local matrix checks 28 change scenarios against the actual push/PR filters, including widget-only edits, docs, shared engine/data/licenses, native platform files and mixed web/mobile changes. Live workflow verification and cache timing are pending; no warm-cache speedup is claimed before measurement.
+
 ## 3 November 2026 — native timezone autocomplete
 
 Source [`c2377c1`](https://github.com/maniksurtani/rephase/commit/c2377c1ff871b5397f67524b51f2de2084023494).

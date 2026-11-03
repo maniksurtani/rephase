@@ -1,0 +1,64 @@
+name: Set up pinned Flutter
+description: Cache the verified Flutter SDK, platform artifacts and Pub packages.
+
+inputs:
+  profile:
+    description: Artifact set to cache (quick, android or ios).
+    default: quick
+  version:
+    description: Official stable Flutter tag to install on a cache miss.
+    default: '3.47.7'
+  revision:
+    description: Required framework revision, checked before invoking Flutter.
+    default: abaf9c523780a608bd46686fd5e53740a07077f8
+
+runs:
+  using: composite
+  steps:
+    - name: Validate pinned SDK settings
+      shell: bash
+      env:
+        FLUTTER_PROFILE: ${{ inputs.profile }}
+        FLUTTER_VERSION: ${{ inputs.version }}
+        FLUTTER_REVISION: ${{ inputs.revision }}
+      run: |
+        case "$FLUTTER_PROFILE" in quick|android|ios) ;; *) exit 1 ;; esac
+        [[ "$FLUTTER_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+        [[ "$FLUTTER_REVISION" =~ ^[a-f0-9]{40}$ ]]
+    - name: Restore Flutter SDK and platform artifacts
+      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+      with:
+        path: ${{ runner.temp }}/flutter-sdk
+        # Keep quick caches separate from native caches so the first quick job
+        # cannot publish an immutable cache without the required engine artifacts.
+        key: flutter-sdk-v1-${{ runner.os }}-${{ runner.arch }}-${{ inputs.revision }}-${{ inputs.profile }}
+    - name: Restore Pub packages
+      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+      with:
+        path: ~/.pub-cache
+        key: pub-v2-${{ runner.os }}-${{ runner.arch }}-${{ inputs.revision }}-${{ hashFiles('mobile/pubspec.lock') }}
+        restore-keys: pub-v2-${{ runner.os }}-${{ runner.arch }}-${{ inputs.revision }}-
+    - name: Install and verify the official SDK
+      shell: bash
+      env:
+        FLUTTER_VERSION: ${{ inputs.version }}
+        FLUTTER_REVISION: ${{ inputs.revision }}
+      run: |
+        sdk_dir="$RUNNER_TEMP/flutter-sdk"
+        if [[ ! -d "$sdk_dir/.git" ]]; then
+          git clone --depth 1 --branch "$FLUTTER_VERSION" https://github.com/flutter/flutter.git "$sdk_dir"
+        fi
+        test "$(git -C "$sdk_dir" rev-parse HEAD)" = "$FLUTTER_REVISION"
+        echo "$sdk_dir/bin" >> "$GITHUB_PATH"
+        "$sdk_dir/bin/flutter" config --no-analytics
+        "$sdk_dir/bin/flutter" --version
+    - name: Prepare only the required Flutter artifacts
+      shell: bash
+      env:
+        FLUTTER_PROFILE: ${{ inputs.profile }}
+      run: |
+        case "$FLUTTER_PROFILE" in
+          quick) flutter precache --universal ;;
+          android) flutter precache --android --universal ;;
+          ios) flutter precache --ios --universal ;;
+        esac

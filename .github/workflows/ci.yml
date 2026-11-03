@@ -2,10 +2,20 @@ name: Checks
 
 on:
   pull_request:
-    paths-ignore: ['**/*.md']
+    paths-ignore:
+      - '**/*.md'
+      - 'mobile/**'
+      - '.github/workflows/mobile.yml'
+      - '.github/workflows/mobile-runtime.yml'
+      - '.github/actions/setup-flutter/**'
   push:
     branches: [main]
-    paths-ignore: ['**/*.md']
+    paths-ignore:
+      - '**/*.md'
+      - 'mobile/**'
+      - '.github/workflows/mobile.yml'
+      - '.github/workflows/mobile-runtime.yml'
+      - '.github/actions/setup-flutter/**'
   workflow_dispatch:
 
 permissions:

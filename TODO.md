@@ -2,6 +2,15 @@
 
 Updated 2026-11-03. Active work is kept here; the previous complete checklist is preserved in [the task archive](docs/archive/TODO-2026-10-16.md). Release evidence is in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md).
 
+## Faster CI feedback
+
+- [x] Measure the previous fix's workflow steps: 26m01s elapsed after an iOS startup failure, with 19-second Flutter tests and an 11m04s cold iOS build. Keep the inexpensive regression tests.
+- [x] Separate fast Flutter checks from full native compilation/runtime checks, with targeted native inputs, nightly verification and manual release checks.
+- [x] Skip web checks for mobile-only changes and skip mobile checks for Markdown-only changes; preserve exact-commit web release provenance.
+- [x] Cache the pinned Flutter SDK and engine artifacts, Gradle and iOS dependency downloads; retain revision checks and native diagnostics.
+- [x] Make installable APK artifacts explicit manual/release outputs and document the workflows.
+- [ ] Validate workflow syntax and trigger scenarios, push, and verify the new jobs. Record measured results without assuming warm-cache savings.
+
 ## Native timezone autocomplete
 
 - [x] Reproduce missing suggestions with the real `{value, city}` catalog shape; the old string-only filter discarded every entry, and simplified test fixtures hid the mismatch.

@@ -112,7 +112,22 @@ Opaque app-session credentials live in Keychain/Keystore. Guest and each account
 
 ## Verification and distribution
 
-The Mobile checks workflow runs Flutter formatting, analysis and focused widget/data tests, verifies the compiled JavaScript planner against the web engine, builds an Android debug APK and runs the offline engine integration test inside both Android WebView and iOS WKWebView. Android uses a headless API 36 emulator with KVM on the Linux runner; iOS uses an unsigned Simulator build on macOS. The real app's Android APK is uploaded before compiling the separate integration-test APK. Android driver, emulator, logcat and WebView-provider logs are retained for 14 days. No production OAuth, provider or signing secrets are supplied to these checks.
+**Mobile checks** runs Flutter formatting, analysis and all widget/data tests for relevant changes. Ordinary feature-widget changes use this fast workflow without compiling Android/iOS apps or starting devices. Markdown-only changes skip mobile CI, and mobile-only changes skip the web Checks workflow.
+
+**Native runtime checks** verifies the bundled planner in Chromium, compiles the integration app and tests it inside Android WebView and iOS WKWebView. It runs automatically for shared engine/data, WebView loader, native platform, dependency, integration-host and CI setup changes, and nightly on the default branch. Run it manually before a mobile release or whenever a change needs device-level verification; publishing a GitHub release also runs it, but does not create a prerelease approval gate. Android uses a headless API 36 emulator with KVM; iOS uses an unsigned Simulator build on macOS.
+
+Flutter SDK and engine artifacts are cached separately for quick, Android and iOS jobs, with the pinned revision checked before execution. Pub, Gradle and iOS dependency downloads are also cached. The first run populates these caches; savings depend on subsequent cache hits. Native diagnostics remain available for 14 days. No production OAuth, provider or signing secrets are supplied to these checks.
+
+To request a full check or an installable debug APK from GitHub Actions:
+
+```bash
+gh workflow run mobile-runtime.yml --ref main
+gh workflow run mobile-runtime.yml --ref main -f build_apk=true
+```
+
+The optional APK is the real application, uploaded before the separate integration-test APK overwrites the build output. Installable APKs are also produced for published GitHub releases. Routine pushes and nightly checks compile only the integration host. For quick checks on demand, use `gh workflow run mobile.yml --ref main`.
+
+Cloudflare deployment still requires a successful web Checks artifact for the exact current commit. After a mobile-only commit, run `gh workflow run ci.yml --ref main` and wait for success before deploying that commit; deployment does not reuse an older commit's artifact.
 
 The iOS job compiles its integration app once and runs that binary through the official Flutter driver. Connection startup has a three-minute limit. A timeout while Flutter is explicitly waiting for the VM service permits one restart of the selected simulator and one retry, provided no driver connection or test execution has been observed. Explicit command failures, assertions, cancellation and runtime hangs never trigger a retry. After connection, the runtime has its own three-minute limit. Each attempt's complete driver output is streamed to the job and retained with simulator diagnostics in the `rephase-ios-runtime-…` artifact for 14 days, including successful recovery attempts.
 
