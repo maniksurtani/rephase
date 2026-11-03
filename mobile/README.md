@@ -20,9 +20,11 @@ Install the full **Xcode** app from the Mac App Store and open it once to accept
 sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
 sudo xcodebuild -runFirstLaunch
 xcodebuild -downloadPlatform iOS
-open -a Simulator
+open -a DeviceHub
 flutter doctor -v
 ```
+
+Xcode 27.2 uses **DeviceHub** to manage simulated devices. On older Xcode versions, launch the simulator app with `open -a Simulator` instead.
 
 For Android, also install [Android Studio and its SDK/emulator](https://docs.flutter.dev/platform-integration/android/setup), then run `flutter doctor --android-licenses`. iOS targets 15.5+, Android targets API 24+ with a current Android System WebView. Follow any remaining toolchain setup reported by `flutter doctor -v`; the [Flutter iOS setup guide](https://docs.flutter.dev/platform-integration/ios/setup) covers Xcode and simulator configuration.
 
