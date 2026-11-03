@@ -4,11 +4,11 @@ Updated 2026-11-03. Active work is kept here; the previous complete checklist is
 
 ## Android offline planner startup
 
-- [ ] Reproduce the original loader failure with actual Android WebView execution and request/console diagnostics.
+- [x] Reproduce the original loader failure in Android WebView: diagnostic run 41601164582 shows the initial `data:` document denied with HTTP 403, followed by the exact reported error.
 - [x] Serve Android's exact initial planner document from bundled memory while keeping other requests, filesystem access and remote code blocked; ignore incidental blank-page completion.
 - [x] Add focused document-policy tests; all 31 Flutter tests, Dart analysis and Chromium engine parity pass locally.
 - [x] Add Android emulator runtime coverage and preserve its driver, emulator, logcat and WebView-provider diagnostics.
-- [ ] Verify the corrected loader in Android WebView and iOS WKWebView, push the fix and record the evidence.
+- [x] Push the fix and verify native run 41601171116: Android WebView 133 loads the in-memory HTTPS document and completes planning; iOS WKWebView also passes. Record the reproduced old failure and fixed result in RELEASES.md.
 
 ## Android builds on Java 25
 
