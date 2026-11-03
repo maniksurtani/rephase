@@ -102,10 +102,16 @@ jobs:
           test -e /dev/kvm
           sudo chmod a+rw /dev/kvm
           runtime_logs="$RUNNER_TEMP/rephase-android-runtime"
-          mkdir -p "$runtime_logs"
+          export ANDROID_AVD_HOME="$RUNNER_TEMP/rephase-android-avd"
+          echo "ANDROID_AVD_HOME=$ANDROID_AVD_HOME" >> "$GITHUB_ENV"
+          mkdir -p "$runtime_logs" "$ANDROID_AVD_HOME"
           image='system-images;android-36;google_apis;x86_64'
           "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install emulator "$image" 2>&1 | tee "$runtime_logs/sdk-install.log"
-          printf 'no\n' | "$ANDROID_HOME/cmdline-tools/latest/bin/avdmanager" create avd --force --name rephase-runtime --package "$image" --device pixel_6 2>&1 | tee "$runtime_logs/avd-create.log"
+          printf 'no\n' | "$ANDROID_HOME/cmdline-tools/latest/bin/avdmanager" create avd --force --name rephase-runtime --path "$ANDROID_AVD_HOME/rephase-runtime.avd" --package "$image" --device pixel_6 2>&1 | tee "$runtime_logs/avd-create.log"
+          test -f "$ANDROID_AVD_HOME/rephase-runtime.ini"
+          test -f "$ANDROID_AVD_HOME/rephase-runtime.avd/config.ini"
+          "$ANDROID_HOME/emulator/emulator" -list-avds | tee "$runtime_logs/avd-list.log"
+          grep -Fxq rephase-runtime "$runtime_logs/avd-list.log"
           "$ANDROID_HOME/platform-tools/adb" start-server
           nohup "$ANDROID_HOME/emulator/emulator" -avd rephase-runtime -port 5554 -accel on -gpu swiftshader -no-window -no-audio -no-snapshot -no-boot-anim -camera-back none -camera-front none -memory 2048 -cores 2 > "$runtime_logs/emulator.log" 2>&1 &
       - name: Compile the Android runtime test
