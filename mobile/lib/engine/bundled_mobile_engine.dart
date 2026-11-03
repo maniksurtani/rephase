@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 import 'mobile_engine.dart';
+import 'offline_planner_document.dart';
 
 /// Computation only. Every visible screen is a native Flutter widget.
 class BundledMobileEngine implements MobileEngine {
@@ -80,6 +82,8 @@ class BundledMobileEngine implements MobileEngine {
     }
     final ready = Completer<void>();
     final lost = StreamController<void>.broadcast();
+    final document = OfflinePlannerDocument(script);
+    final android = defaultTargetPlatform == TargetPlatform.android;
     MobileEngineException? loadError;
     late final HeadlessInAppWebView runtime;
     void invalidateRuntime() {
@@ -94,12 +98,17 @@ class BundledMobileEngine implements MobileEngine {
     }
 
     runtime = HeadlessInAppWebView(
-      initialData: InAppWebViewInitialData(
-        data: '''<!doctype html><html><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; connect-src 'none'; img-src 'none'; style-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
-<script>${script.replaceAll(RegExp('</script', caseSensitive: false), r'<\/script')}</script></head><body></body></html>''',
-        baseUrl: WebUri('https://offline.rephase.invalid/'),
-      ),
+      // Android can route initial-data loads through request interception.
+      // Serve its exact document locally instead of denying that initial load.
+      initialUrlRequest: android
+          ? URLRequest(url: WebUri(OfflinePlannerDocument.url))
+          : null,
+      initialData: android
+          ? null
+          : InAppWebViewInitialData(
+              data: document.html,
+              baseUrl: WebUri(OfflinePlannerDocument.url),
+            ),
       initialSettings: InAppWebViewSettings(
         javaScriptEnabled: true,
         isInspectable: false,
@@ -125,19 +134,40 @@ class BundledMobileEngine implements MobileEngine {
       shouldOverrideUrlLoading: (controller, navigation) async {
         final url = navigation.request.url?.toString();
         return !ready.isCompleted &&
-                (url == 'about:blank' ||
-                    url == 'https://offline.rephase.invalid/')
+                (url == 'about:blank' || url == OfflinePlannerDocument.url)
             ? NavigationActionPolicy.ALLOW
             : NavigationActionPolicy.CANCEL;
       },
-      shouldInterceptRequest: (controller, request) async =>
-          WebResourceResponse(
-            statusCode: 403,
-            reasonPhrase: 'Offline computation only',
-            data: Uint8List(0),
-          ),
+      shouldInterceptRequest: (controller, request) async {
+        if (kDebugMode && request.isForMainFrame == true) {
+          debugPrint(
+            'Offline planner request: ${request.url.scheme} ${request.url.host}',
+          );
+        }
+        return document.responseFor(request, loading: !ready.isCompleted);
+      },
       onLoadStop: (controller, url) {
-        if (!ready.isCompleted) {
+        if (kDebugMode) debugPrint('Offline planner document loaded: $url');
+        if (!ready.isCompleted &&
+            (!android || url?.toString() == OfflinePlannerDocument.url)) {
+          ready.complete();
+        }
+      },
+      onConsoleMessage: (controller, message) {
+        if (kDebugMode && message.messageLevel == ConsoleMessageLevel.ERROR) {
+          debugPrint('Offline planner JavaScript: ${message.message}');
+        }
+      },
+      onReceivedHttpError: (controller, request, response) {
+        if (kDebugMode && request.isForMainFrame == true) {
+          debugPrint('Offline planner HTTP error: ${response.statusCode}');
+        }
+        if (!ready.isCompleted &&
+            request.isForMainFrame == true &&
+            request.url.toString() == OfflinePlannerDocument.url) {
+          loadError = const MobileEngineException(
+            'The offline planner document could not be loaded.',
+          );
           ready.complete();
         }
       },

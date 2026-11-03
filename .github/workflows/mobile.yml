@@ -95,6 +95,61 @@ jobs:
           path: mobile/build/app/outputs/flutter-apk/app-debug.apk
           if-no-files-found: error
           retention-days: 14
+      - name: Start an Android emulator for the native runtime check
+        timeout-minutes: 6
+        shell: bash
+        run: |
+          test -e /dev/kvm
+          sudo chmod a+rw /dev/kvm
+          runtime_logs="$RUNNER_TEMP/rephase-android-runtime"
+          mkdir -p "$runtime_logs"
+          image='system-images;android-36;google_apis;x86_64'
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install emulator "$image" 2>&1 | tee "$runtime_logs/sdk-install.log"
+          printf 'no\n' | "$ANDROID_HOME/cmdline-tools/latest/bin/avdmanager" create avd --force --name rephase-runtime --package "$image" --device pixel_6 2>&1 | tee "$runtime_logs/avd-create.log"
+          "$ANDROID_HOME/platform-tools/adb" start-server
+          nohup "$ANDROID_HOME/emulator/emulator" -avd rephase-runtime -port 5554 -accel on -gpu swiftshader -no-window -no-audio -no-snapshot -no-boot-anim -camera-back none -camera-front none -memory 2048 -cores 2 > "$runtime_logs/emulator.log" 2>&1 &
+      - name: Compile the Android runtime test
+        run: flutter build apk --debug --no-pub --target=integration_test/offline_engine_test.dart
+        working-directory: mobile
+      - name: Wait for Android to finish booting
+        timeout-minutes: 4
+        shell: bash
+        run: |
+          boot_deadline=$((SECONDS + 180))
+          until timeout 5 "$ANDROID_HOME/platform-tools/adb" -s emulator-5554 shell getprop sys.boot_completed 2>/dev/null | grep -q '^1'; do
+            if (( SECONDS >= boot_deadline )); then
+              echo 'The Android emulator did not finish booting within three minutes.' >&2
+              exit 1
+            fi
+            sleep 3
+          done
+          "$ANDROID_HOME/platform-tools/adb" -s emulator-5554 shell input keyevent 82
+          "$ANDROID_HOME/platform-tools/adb" -s emulator-5554 logcat -c
+      - name: Verify the offline engine in Android WebView
+        timeout-minutes: 8
+        shell: bash
+        working-directory: mobile
+        run: |
+          # Keep the real app APK uploaded above; this binary is only the test host.
+          flutter drive --no-dds --verbose --no-pub --driver=test_driver/integration_test.dart --target=integration_test/offline_engine_test.dart --use-application-binary=build/app/outputs/flutter-apk/app-debug.apk -d emulator-5554 2>&1 | tee "$RUNNER_TEMP/rephase-android-runtime/driver.log"
+      - name: Capture Android runtime diagnostics and stop the emulator
+        if: always()
+        timeout-minutes: 2
+        shell: bash
+        run: |
+          runtime_logs="$RUNNER_TEMP/rephase-android-runtime"
+          mkdir -p "$runtime_logs"
+          timeout 15 "$ANDROID_HOME/platform-tools/adb" -s emulator-5554 logcat -d -v threadtime > "$runtime_logs/logcat.log" 2>&1 || true
+          timeout 15 "$ANDROID_HOME/platform-tools/adb" -s emulator-5554 shell dumpsys webviewupdate > "$runtime_logs/webview-provider.log" 2>&1 || true
+          timeout 10 "$ANDROID_HOME/platform-tools/adb" -s emulator-5554 emu kill || true
+      - name: Preserve Android runtime diagnostics
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: rephase-android-runtime-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/rephase-android-runtime/
+          if-no-files-found: warn
+          retention-days: 14
 
   ios:
     # Standard macOS runners are free for this public repository. Build and run

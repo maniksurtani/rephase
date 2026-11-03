@@ -1,5 +1,11 @@
 # Release evidence
 
+## 3 November 2026 — Android offline document loading
+
+Android startup reported that the bundled planner could not be loaded, on both an emulator and a physical device. The loader denied every intercepted resource and completed readiness on the first load-stop event. Android now requests one fixed synthetic HTTPS document, whose exact initial main-frame GET receives the bundled HTML from memory; all other requests remain explicitly denied. Its readiness check excludes incidental blank-page completions. The iOS initial-data loading path and the existing content policy remain intact, and debug builds expose WebView script and main-document HTTP errors.
+
+Five document-policy tests cover the initial UTF-8 response, script containment, denied origins/URLs/methods/subresources, absent metadata and requests after initialization. All 31 Flutter tests and Dart analysis passed locally, as did the bundled planner's Chromium numerical/offline parity check. Android CI now boots an API 36 emulator and executes the existing native integration test in actual Android WebView, retaining full diagnostics; the real app APK remains a separate artifact. Native reproduction and verification results follow below.
+
 ## 3 November 2026 — Android builds on Java 25
 
 Source [`26dd672`](https://github.com/maniksurtani/rephase/commit/26dd6722c0017cb2cd18547d7dc822ed9823c103).

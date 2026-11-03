@@ -2,6 +2,14 @@
 
 Updated 2026-11-03. Active work is kept here; the previous complete checklist is preserved in [the task archive](docs/archive/TODO-2026-10-16.md). Release evidence is in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md).
 
+## Android offline planner startup
+
+- [ ] Reproduce the original loader failure with actual Android WebView execution and request/console diagnostics.
+- [x] Serve Android's exact initial planner document from bundled memory while keeping other requests, filesystem access and remote code blocked; ignore incidental blank-page completion.
+- [x] Add focused document-policy tests; all 31 Flutter tests, Dart analysis and Chromium engine parity pass locally.
+- [x] Add Android emulator runtime coverage and preserve its driver, emulator, logcat and WebView-provider diagnostics.
+- [ ] Verify the corrected loader in Android WebView and iOS WKWebView, push the fix and record the evidence.
+
 ## Android builds on Java 25
 
 - [x] Verify Gradle 9.3.1 supports Java 25, the existing Android/Kotlin plugins and the pinned Flutter SDK.
