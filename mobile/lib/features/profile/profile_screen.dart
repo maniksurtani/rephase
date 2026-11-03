@@ -8,6 +8,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../app_controller.dart';
 import 'preferences_editor.dart';
+import '../../notifications/reminder_settings.dart';
+import '../../notifications/trip_reminders.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -84,6 +86,7 @@ class ProfileScreen extends StatelessWidget {
     final controller = context.watch<AppController>();
     final preferences = controller.preferences;
     final account = controller.account;
+    final reminders = context.read<TripReminders?>();
     return Scaffold(
       appBar: AppBar(title: const Text('Your settings')),
       body: preferences == null
@@ -205,6 +208,11 @@ class ProfileScreen extends StatelessWidget {
                   onSave: controller.savePreferences,
                 ),
                 const SizedBox(height: 28),
+                if (reminders != null) ...[
+                  const Divider(),
+                  ReminderSettings(reminders: reminders),
+                  const SizedBox(height: 16),
+                ],
                 const Divider(),
                 ListTile(
                   contentPadding: EdgeInsets.zero,

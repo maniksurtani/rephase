@@ -81,6 +81,18 @@ On a Mac, `npm run mobile -- ios` prepares an unsigned Simulator build. For a co
 
 To select a nonstandard SDK path, set `FLUTTER_BIN=/path/to/flutter/bin/flutter`. Generated bundles, native build products, local OAuth configuration, signing files and device credentials are ignored by Git.
 
+## Trip reminders
+
+Rebuild the app after pulling this feature; hot reload cannot install its native plugins. In **Profile → Trip reminders**, turn the switch on and allow notifications. **Send test reminder** checks delivery on that device. Guest use works too; the opt-in is remembered separately for each account on each device.
+
+Rephase schedules local notifications for upcoming sleep/rest, daylight/bright light, dim-light, optional caffeine and optional melatonin windows in **all saved trips**. Optional aids follow your preferences. Tapping a reminder opens its trip and day. Edits, recorded activities, deleted trips and account changes replace or remove obsolete reminders. Notifications follow absolute instants across time zones and daylight-saving changes; continuous sleep periods produce one reminder, including across midnight and the date line.
+
+Scheduled reminders work offline and while the app is closed, without Firebase, APNs credentials or a notification backend. Rephase keeps the nearest **60 reminders** ready, below iOS's 64-request limit, and refreshes them on opening/resuming the app, plan changes and as reminders pass while the app is open. Open it periodically during long trips and after editing on another device. Changes on the web take effect on this device after its next account refresh.
+
+Android uses battery-aware, inexact alarms, with reboot/package-update restoration; it does not request exact-alarm access. Delivery can be delayed or silenced by system scheduling, Focus, notification settings, or battery restrictions. Force-stopping an Android app can prevent its reminders until it is reopened. These are guidance notifications, not wake-up alarms.
+
+For device acceptance, enable reminders on a saved trip with upcoming guidance, send a test, and check a scheduled reminder with the app closed and in airplane mode. Tap it to verify the trip/day, change the device's time zone, and verify that its absolute schedule stays fixed. Check Android reboot restoration, switching accounts, editing/deleting the trip and disabling reminders. Automated tests cover planning/queue/tap behavior and native plugin initialization; permission-dialog and actual OS delivery checks still require a device.
+
 ## Configure Google sign-in
 
 Use the **same Google Cloud project** as the existing web OAuth client. Neither Firebase nor a new backend service is required. The native ID token targets the existing web client; the Worker separately verifies the native presenting client.
@@ -99,6 +111,7 @@ The API key used for flight lookup stays in the Worker. Never put `RAPIDAPI_KEY`
 - `lib/app_controller.dart`: application state, lifecycle/clock refresh, account boundaries and automatic saves.
 - `lib/data/`: immutable JSON views, atomic per-account offline files, secure native sessions, Google SDK and HTTP adapters.
 - `lib/engine/`: serialized, bounded calls to a computation-only headless system WebView. Its self-contained HTML/JavaScript blocks network access, navigation and remote code. The visible application is Flutter.
+- `lib/notifications/`: plan-to-reminder projection, a serialized account-scoped scheduler, and the [`flutter_local_notifications`](https://pub.dev/packages/flutter_local_notifications) adapter. UTC scheduling uses `timezone`; device opt-ins use `shared_preferences`. No separate scientific model or polling service is introduced.
 - `src/mobile/bridge.ts`: the typed boundary to existing planning, timezone, timeline, lounge, validation, merge and calendar functions.
 - `scripts/build-mobile-engine.mjs`: bundles the engine, airport catalog, lounge guides and preserved upstream notices. Generated assets are rebuilt rather than checked into Git.
 
@@ -140,6 +153,6 @@ flutter drive --no-dds --driver=test_driver/integration_test.dart \
   --target=integration_test/offline_engine_test.dart -d DEVICE_ID
 ```
 
-This exercises on-device planning, clock refresh and DST gap/fold handling. Automated account/provider tests use controlled responses; real native Google login, account reconnection and dated flight lookup need owner acceptance. CI compilation does not establish physical-device behavior.
+This exercises on-device planning, clock refresh, DST gap/fold handling, settings autocomplete, reminder extraction from the real plan and native notification/storage plugin initialization without permission prompts. Automated account/provider tests use controlled responses; real native Google login, account reconnection and dated flight lookup need owner acceptance. CI compilation does not establish physical-device behavior.
 
 iPhone installation needs a Mac/Xcode and an Apple development signing team, or a signed TestFlight build. App Store/Play Store publication is a separate step: choose final signing/distribution, privacy declarations and store assets, and review Apple's login requirements before public distribution. No store upload or signed release is performed by this workflow.

@@ -4,6 +4,8 @@ import 'package:integration_test/integration_test.dart';
 import 'package:rephase/data/models.dart';
 import 'package:rephase/engine/bundled_mobile_engine.dart';
 import 'package:rephase/features/profile/preferences_editor.dart';
+import 'package:rephase/notifications/reminder_gateway.dart';
+import 'package:rephase/notifications/trip_reminder.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -43,6 +45,15 @@ void main() {
         expect(days, isNotEmpty);
         expect(days.map((day) => day['date']).toSet().length, days.length);
         expect(result['loungeContexts'], hasLength(4));
+        final reminders = remindersForPlan(
+          owner: 'guest',
+          trip: Trip.fromJson(trip),
+          preferences: Preferences.fromJson(preferences),
+          response: result,
+        );
+        expect(reminders.any((reminder) => reminder.type == 'sleep'), isTrue);
+        expect(reminders.every((reminder) => reminder.at.isUtc), isTrue);
+        expect(reminders.any((reminder) => reminder.dayId.isNotEmpty), isTrue);
         expect(
           days.every((day) => day['steps'] is List && day['lastClock'] is Map),
           isTrue,
@@ -115,4 +126,21 @@ void main() {
     await tester.pumpAndSettle();
     expect(saved?.homeTimeZone, 'Australia/Sydney');
   }, timeout: const Timeout(Duration(minutes: 2)));
+
+  testWidgets('native reminders initialize without requesting permission', (
+    tester,
+  ) async {
+    await tester.runAsync(() async {
+      final gateway = LocalReminderGateway();
+      await gateway.initialize((_) {});
+      final permission = await gateway.allowed();
+      await gateway.cancelAll();
+      expect(await gateway.pending(), isEmpty);
+      expect(await gateway.allowed(), permission);
+      final settings = DeviceReminderSettings();
+      await settings.setEnabled('integration-probe', true);
+      expect(await settings.enabled('integration-probe'), isTrue);
+      await settings.setEnabled('integration-probe', false);
+    });
+  });
 }

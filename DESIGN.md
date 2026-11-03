@@ -1,6 +1,6 @@
 # Rephase system design
 
-Status: deployed at https://rephase.surtani.org. Last updated: 2026-10-18.
+Status: deployed at https://rephase.surtani.org. Last updated: 2026-11-03.
 
 ## Native mobile client
 
@@ -13,6 +13,14 @@ On Android, the WebView requests one synthetic HTTPS document; the request handl
 Native Google ID tokens use the existing web server client as audience and an explicitly configured Android/iOS presenter (`azp`) allowlist, `GOOGLE_MOBILE_CLIENT_IDS`. `/api/mobile/auth/google` verifies Google signature, issuer, expiry, audience and presenter before issuing a revocable seven-day opaque bearer session. Token hashes are domain-separated from browser sessions in the existing D1 table. Native-only requests reject browser cookies/origin metadata; browser nonce, cookie and Origin checks remain unchanged. Valid cached Google credentials follow Google's standard server-auth semantics. App logout revokes its opaque session; Google token validity remains bounded by Google's expiry. Native credentials live in Keychain/Keystore, while per-account app-private JSON files retain offline data and the last cloud revision. Automatic saves use the existing compare-and-set API and shared merge rules, with account-change guards and explicit conflict resolution. No guest data is silently copied into an account.
 
 Android and unsigned iOS Simulator builds are checked separately from web deployment. Public OAuth IDs and platform callback configuration come from ignored local configuration; provider/deployment keys never ship in the app. Real Google sign-in requires registered native OAuth clients and device signing fingerprints. Store signing, physical-device acceptance and distribution remain separate from this development build; see [mobile/README.md](mobile/README.md).
+
+### Local trip reminders
+
+Native Profile has a notification opt-in per account/device, including a separate guest opt-in. `flutter_local_notifications` schedules the nearest 60 future sleep/rest, light, avoid-light, optional caffeine and optional melatonin starts across saved trips. The same bundled planner supplies guidance; continuous same-kind intervals are joined before past actions are excluded, avoiding midnight/date-line continuation alerts. Recorded observations and already recorded actions are excluded. Permission is requested only when the user enables reminders.
+
+Absolute UTC instants are passed through `timezone`, so a change to the device's local time zone does not move a reminder. A serialized coordinator caches plans, replaces changed requests, cancels obsolete requests on trip/account changes, and rejects work superseded while awaiting the planner or OS. Cold/warm notification taps open the corresponding saved trip/day only within the active account. The device opt-in is in `shared_preferences`; it is not a cloud preference or credential.
+
+The OS delivers pending notifications while the app is closed/offline. Android uses inexact idle-aware alarms and boot/package-update restoration; iOS uses calendar notification triggers. Reconciliation runs on app open/resume, input changes and elapsed queued reminders while the app is foregrounded. No background job is claimed to replenish the iOS-limited queue or fetch remote edits: long trips require periodically reopening the app. Focus, permissions and battery policy can delay or silence delivery. This needs no Worker changes, remote push tokens or server scheduler; later flight-change push delivery remains a separate feature.
 
 ## Product and scope
 

@@ -208,16 +208,7 @@ class AppController extends ChangeNotifier with WidgetsBindingObserver {
       _notify();
       return;
     }
-    final planningPreferences = prefs.toJson()
-      ..remove('loungeMemberships')
-      ..remove('loungePriority')
-      ..remove('calendarAlarms')
-      ..remove('autoSync')
-      ..remove('melatoninAcknowledged');
-    final planningInput = jsonEncode({
-      'trip': trip.json,
-      'preferences': planningPreferences,
-    });
+    final planningInput = _planningInput(trip, prefs);
     final cachedPlan = _mobilePlan?['plan'];
     final reuse = cachedPlan is Map && planningInput == _lastPlanningInput;
     if (presentationOnly && !reuse) return;
@@ -244,6 +235,34 @@ class AppController extends ChangeNotifier with WidgetsBindingObserver {
         _notify();
       }
     }
+  }
+
+  String _planningInput(Trip trip, Preferences prefs) {
+    final planningPreferences = prefs.toJson()
+      ..remove('loungeMemberships')
+      ..remove('loungePriority')
+      ..remove('calendarAlarms')
+      ..remove('autoSync')
+      ..remove('melatoninAcknowledged');
+    return jsonEncode({'trip': trip.json, 'preferences': planningPreferences});
+  }
+
+  /// Share the displayed plan when its inputs match. Other saved trips can be
+  /// planned without changing the user's selection or visible timeline.
+  Future<Json> planForReminders(
+    Trip trip,
+    Preferences prefs,
+    DateTime at,
+  ) async {
+    if (_mobilePlan != null &&
+        _lastPlanningInput == _planningInput(trip, prefs)) {
+      return _mobilePlan!;
+    }
+    return engine.call('plan', {
+      'trip': trip.toJson(),
+      'preferences': prefs.toJson(),
+      'now': at.millisecondsSinceEpoch,
+    });
   }
 
   Future<void> _persist(int epoch) async {

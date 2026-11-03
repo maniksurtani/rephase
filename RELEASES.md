@@ -1,5 +1,13 @@
 # Release evidence
 
+## 3 November 2026 — native trip reminders
+
+iOS and Android now offer Profile → Trip reminders, with explicit notification permission and a test reminder. Local OS requests cover the nearest 60 future sleep/rest, light, dim-light, optional caffeine and optional melatonin windows across saved trips. The existing offline planner supplies all recommendations. UTC schedules survive device time-zone changes; joined intervals avoid duplicate bedtime alerts across midnight/date-line fragments. Recorded/past guidance and disabled optional aids are excluded.
+
+The device stores a separate opt-in per account and guest. Editing/deleting trips, recording activities, account changes and app resume reconcile the queue. Serialized replacement guards prevent old-account work from leaving pending requests after sign-out. Notification taps open the matching saved trip/day, including on cold launch, and reject other-account/deleted-trip links. Android restores requests on reboot and uses inexact idle-aware scheduling without exact-alarm permission. Pending requests need no network or running Dart process; users must reopen the app to refresh its limited queue and retrieve changes from other devices.
+
+All 45 Flutter tests pass locally, including 11 reminder cases covering time zones, merged windows, global limits, permissions, stale-work cancellation, failure recovery, settings and navigation. Native CI verification is pending. The integration test now checks reminder extraction from the actual numerical plan and native notification/storage initialization without prompting for permission. Actual permission dialogs, scheduled OS delivery and Android reboot restoration remain physical-device acceptance items; see mobile/README.md. No Cloudflare change is required.
+
 ## 3 November 2026 — faster CI feedback
 
 Mobile CI now separates fast Flutter formatting/analysis/widget tests from full native runtime verification. Ordinary widget changes run only the fast workflow. Engine, WebView, native platform, dependency and integration-host changes still run both native runtimes; full checks also run nightly, on published releases and on demand. Mobile-only changes skip web Checks, and Markdown-only changes skip mobile checks. Web deployment continues to require a verified artifact for the exact current main commit; manually dispatch Checks when deploying a commit that skipped it.

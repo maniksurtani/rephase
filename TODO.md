@@ -2,6 +2,16 @@
 
 Updated 2026-11-03. Active work is kept here; the previous complete checklist is preserved in [the task archive](docs/archive/TODO-2026-10-16.md). Release evidence is in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md).
 
+## Native trip reminders
+
+- [x] Add opt-in local reminders for all saved trips using the existing offline planner, absolute times and the nearest 60 future guidance windows.
+- [x] Merge continuous sleep/light windows; omit past, recorded and disabled optional guidance; refresh on edits, deletion, account changes and app resume.
+- [x] Add Profile permission controls, per-account/device preferences, test delivery and account-safe notification deep links.
+- [x] Configure Android notification/boot receivers and desugaring, and the iOS notification delegate without adding a push backend.
+- [x] Verify queue limits, date-line/DST timing, cancellation races, permission failures, retry and cold/warm taps; all 45 Flutter tests pass locally.
+- [ ] Push and verify both native runtimes, including real-plan reminder extraction and notification/storage plugin initialization.
+- [ ] Check permission prompts, closed/offline delivery, tap navigation and Android reboot restoration on physical devices using mobile/README.md.
+
 ## Faster CI feedback
 
 - [x] Measure the previous fix's workflow steps: 26m01s elapsed after an iOS startup failure, with 19-second Flutter tests and an 11m04s cold iOS build. Keep the inexpensive regression tests.

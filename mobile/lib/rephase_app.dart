@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import 'app_controller.dart';
+import 'notifications/trip_reminders.dart';
 import 'features/lounges/lounges_screen.dart';
 import 'features/plan/plan_screen.dart';
 import 'features/profile/profile_screen.dart';
@@ -16,8 +17,9 @@ import 'ui/common.dart';
 import 'ui/theme.dart';
 
 class RephaseApp extends StatefulWidget {
-  const RephaseApp({super.key, required this.controller});
+  const RephaseApp({super.key, required this.controller, this.reminders});
   final AppController controller;
+  final TripReminders? reminders;
 
   @override
   State<RephaseApp> createState() => _RephaseAppState();
@@ -28,6 +30,49 @@ class _RephaseAppState extends State<RephaseApp> {
   String? _accountId;
   String? _routerAccountId;
   bool _resetPending = false;
+  bool _openingReminder = false;
+
+  void _reminderInputsChanged() {
+    widget.reminders?.update(
+      accountId: widget.controller.account?.id,
+      data: widget.controller.data,
+    );
+    unawaited(_openReminder());
+  }
+
+  void _reminderChanged() => unawaited(_openReminder());
+
+  Future<void> _openReminder() async {
+    final controller = widget.controller;
+    final reminders = widget.reminders;
+    if (_openingReminder ||
+        _resetPending ||
+        controller.busy ||
+        controller.data == null ||
+        reminders?.pendingLink == null) {
+      return;
+    }
+    final link = reminders!.takeLink()!;
+    if (link.owner != TripReminders.ownerKey(controller.account?.id) ||
+        !controller.trips.any((trip) => trip.id == link.tripId)) {
+      return;
+    }
+    _openingReminder = true;
+    try {
+      await controller.selectTrip(link.tripId);
+      if (mounted &&
+          !_resetPending &&
+          link.owner == TripReminders.ownerKey(controller.account?.id)) {
+        _router.go(
+          Uri(path: '/plan', queryParameters: {'day': link.dayId}).toString(),
+        );
+      }
+    } catch (_) {
+      // The controller reports persistence errors without crashing a tap callback.
+    } finally {
+      _openingReminder = false;
+    }
+  }
 
   Key _screenKey(String screen) =>
       ValueKey('$screen:${widget.controller.account?.id ?? 'guest'}');
@@ -49,6 +94,7 @@ class _RephaseAppState extends State<RephaseApp> {
         _resetPending = false;
       });
       WidgetsBinding.instance.addPostFrameCallback((_) => previous.dispose());
+      unawaited(_openReminder());
     });
   }
 
@@ -155,20 +201,29 @@ class _RephaseAppState extends State<RephaseApp> {
     _routerAccountId = _accountId;
     _router = _createRouter();
     controller.addListener(_accountChanged);
+    controller.addListener(_reminderInputsChanged);
+    widget.reminders?.addListener(_reminderChanged);
     unawaited(controller.initialize());
   }
 
   @override
   void dispose() {
     widget.controller.removeListener(_accountChanged);
+    widget.controller.removeListener(_reminderInputsChanged);
+    widget.reminders?.removeListener(_reminderChanged);
+    widget.reminders?.dispose();
     _router.dispose();
     widget.controller.dispose();
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) => ChangeNotifierProvider.value(
-    value: widget.controller,
+  Widget build(BuildContext context) => MultiProvider(
+    providers: [
+      ChangeNotifierProvider.value(value: widget.controller),
+      if (widget.reminders != null)
+        ChangeNotifierProvider.value(value: widget.reminders!),
+    ],
     child: MaterialApp.router(
       key: ObjectKey(_router),
       title: 'Rephase',
