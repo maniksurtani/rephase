@@ -2,11 +2,48 @@
 
 A native Flutter app alongside the React web app. Today, the day timeline, multi-flight trips, Lounge Explorer and Profile use Flutter widgets. Planning and lounge matching run offline using the same bundled TypeScript code and datasets as the web application.
 
+## Mac setup
+
+[Homebrew](https://brew.sh/) is the simplest option for a local Flutter SDK. Install Flutter, Node 24 LTS and CocoaPods:
+
+```bash
+brew install --cask flutter
+brew install node@24 cocoapods
+export PATH="$(brew --prefix node@24)/bin:$PATH"
+```
+
+Add that `export PATH=…` line to `~/.zshrc` to select Node 24 in future terminal sessions. Flutter includes Dart; a separate Dart installation is unnecessary. CocoaPods is still required by the app's WebView plugin, even though other iOS dependencies use Swift Package Manager.
+
+Install the full **Xcode** app from the Mac App Store and open it once to accept its license and finish setup. With Xcode at its default location, select it and install the iOS Simulator runtime:
+
+```bash
+sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
+sudo xcodebuild -runFirstLaunch
+xcodebuild -downloadPlatform iOS
+open -a Simulator
+flutter doctor -v
+```
+
+For Android, also install [Android Studio and its SDK/emulator](https://docs.flutter.dev/platform-integration/android/setup), then run `flutter doctor --android-licenses`. iOS targets 15.5+, Android targets API 24+ with a current Android System WebView. Follow any remaining toolchain setup reported by `flutter doctor -v`; the [Flutter iOS setup guide](https://docs.flutter.dev/platform-integration/ios/setup) covers Xcode and simulator configuration.
+
+### Version compatibility
+
+| Tool    | Verified in CI                             | Other local versions                                                                                                                                                           |
+| ------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Flutter | **3.47.7 stable**, bundled Dart **3.13.5** | **3.47.9 stable**, bundled Dart **3.13.7**, satisfies the locked SDK constraints and is expected to work. It has not been tested by this project's CI.                         |
+| Node    | **24.x LTS**                               | **25.9.0** satisfies the current dependency engine requirements and may work, but Node 25 is non-LTS and reached end of life on **1 June 2026**. Use Node 24 for this project. |
+
+The Flutter framework revision verified by CI remains `abaf9c523780a608bd46686fd5e53740a07077f8`. These are the project's tested versions, rather than exact-version restrictions in the local launcher. See the [Flutter SDK archive](https://docs.flutter.dev/install/archive) and [Node release schedule](https://github.com/nodejs/Release#release-schedule) for release details.
+
+Homebrew installs its current Flutter release (3.47.9 as of 3 November 2026); it does not select this repository's exact CI version. To reproduce CI, download the matching macOS SDK from the Flutter archive into a separate directory, choosing Apple Silicon or Intel as appropriate. Select it for the launcher with `FLUTTER_BIN`, for example:
+
+```bash
+FLUTTER_BIN="$HOME/development/flutter-3.47.7/bin/flutter" npm run mobile:check
+```
+
+Run that command from the repository root after `npm ci`. If you work on several Flutter projects, a version manager such as [FVM](https://fvm.app/) is another option; its SDK executable can also be passed through `FLUTTER_BIN`. To check a local Flutter 3.47.9 installation before launching, use `flutter --version`, `node --version` and `npm run mobile:check`.
+
 ## Run locally
-
-Install **Flutter 3.47.7 stable** (Dart 3.13.5), Node 24 and the Android SDK or Xcode. The pinned Flutter framework revision is `abaf9c523780a608bd46686fd5e53740a07077f8`; CI verifies it. iOS targets 15.5+, Android targets API 24+ with a current Android System WebView.
-
-For iOS, install CocoaPods as well: the current WebView plugin requires it. Run `flutter doctor` to check the Xcode or Android toolchain before launching.
 
 From the repository root:
 
