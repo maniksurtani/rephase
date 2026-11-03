@@ -2,6 +2,14 @@
 
 Updated 2026-11-03. Active work is kept here; the previous complete checklist is preserved in [the task archive](docs/archive/TODO-2026-10-16.md). Release evidence is in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md).
 
+## Native timezone autocomplete
+
+- [x] Reproduce missing suggestions with the real `{value, city}` catalog shape; the old string-only filter discarded every entry, and simplified test fixtures hid the mismatch.
+- [x] Search the catalog's city and IANA timezone values, save the canonical selection, and let Flutter place suggestions in the available space around the keyboard.
+- [x] Verify narrowing, selection, preserved preferences, invalid input and a tappable dropdown on a compact screen with the keyboard open; all 34 Flutter tests and Dart analysis pass locally.
+- [x] Extend the existing native runtime test to search and save a timezone using the real bundled engine catalog.
+- [ ] Push and verify the updated runtime test inside Android WebView and iOS WKWebView; record the result in RELEASES.md.
+
 ## Android offline planner startup
 
 - [x] Reproduce the original loader failure in Android WebView: diagnostic run 41601164582 shows the initial `data:` document denied with HTTP 403, followed by the exact reported error.

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:rephase/data/models.dart';
 import 'package:rephase/engine/bundled_mobile_engine.dart';
+import 'package:rephase/features/profile/preferences_editor.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -13,7 +15,7 @@ void main() {
     await tester.pumpWidget(
       const MaterialApp(home: Scaffold(body: Text('Offline engine check'))),
     );
-    await tester.runAsync(() async {
+    final catalog = await tester.runAsync(() async {
       final engine = BundledMobileEngine();
       try {
         final bootstrap = await engine.call('bootstrap');
@@ -73,9 +75,44 @@ void main() {
         });
         expect(clock['localDateTime'], '2026-11-01T01:30');
         expect(clock['choice'], 'later');
+        return bootstrap;
       } finally {
         await engine.dispose();
       }
     });
+
+    expect(catalog, isNotNull);
+    Preferences? saved;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: PreferencesEditor(
+              preferences: Preferences.fromJson(
+                Map<String, dynamic>.from(
+                  catalog!['defaultPreferences'] as Map,
+                ),
+              ),
+              catalog: catalog,
+              onSave: (value) async => saved = value,
+            ),
+          ),
+        ),
+      ),
+    );
+    final timeZone = find.widgetWithText(TextFormField, 'Home time zone');
+    await tester.tap(timeZone);
+    await tester.enterText(timeZone, 'Syd');
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Australia/Sydney'));
+    FocusManager.instance.primaryFocus?.unfocus();
+    await tester.pumpAndSettle();
+
+    final save = find.widgetWithText(FilledButton, 'Save preferences');
+    await tester.ensureVisible(save);
+    await tester.tap(save);
+    await tester.pumpAndSettle();
+    expect(saved?.homeTimeZone, 'Australia/Sydney');
   }, timeout: const Timeout(Duration(minutes: 2)));
 }

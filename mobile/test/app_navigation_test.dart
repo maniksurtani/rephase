@@ -40,7 +40,10 @@ class _Engine implements MobileEngine {
               'timeZone': 'America/Los_Angeles',
             },
           ],
-          'timeZones': ['Pacific/Honolulu', 'America/Los_Angeles'],
+          'timeZones': [
+            {'value': 'Pacific/Honolulu', 'city': 'Honolulu'},
+            {'value': 'America/Los_Angeles', 'city': 'Los Angeles'},
+          ],
           'loyaltyPrograms': [],
           'memberships': [],
           'loungeAirports': [

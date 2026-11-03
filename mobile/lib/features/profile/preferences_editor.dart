@@ -99,9 +99,10 @@ class _PreferencesEditorState extends State<PreferencesEditor> {
   Widget build(BuildContext context) {
     final dirty = jsonEncode(_draft) != jsonEncode(_base);
     final sleep = (_draft['sleepHours'] as num? ?? 8).toDouble();
-    final zones = (widget.catalog['timeZones'] as List? ?? const [])
-        .whereType<String>()
-        .toList();
+    final timeZones = _records(
+      'timeZones',
+    ).where((zone) => zone['value'] is String).toList();
+    final zones = timeZones.map((zone) => zone['value'] as String).toSet();
     final memberships = (_draft['loungeMemberships'] as List? ?? const [])
         .whereType<String>()
         .toList();
@@ -114,10 +115,21 @@ class _PreferencesEditorState extends State<PreferencesEditor> {
           Autocomplete<String>(
             textEditingController: _timeZoneController,
             focusNode: _timeZoneFocus,
+            optionsViewOpenDirection: OptionsViewOpenDirection.mostSpace,
             optionsBuilder: (value) {
-              final query = value.text.toLowerCase().replaceAll(' ', '_');
-              return zones
-                  .where((zone) => zone.toLowerCase().contains(query))
+              final words = value.text
+                  .trim()
+                  .toLowerCase()
+                  .replaceAll('_', ' ')
+                  .split(RegExp(r'\s+'));
+              return timeZones
+                  .where((zone) {
+                    final text = '${zone['value']} ${zone['city'] ?? ''}'
+                        .toLowerCase()
+                        .replaceAll('_', ' ');
+                    return words.every(text.contains);
+                  })
+                  .map((zone) => zone['value'] as String)
                   .take(30);
             },
             onSelected: (value) => _set('homeTimeZone', value),

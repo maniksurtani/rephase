@@ -1,5 +1,11 @@
 # Release evidence
 
+## 3 November 2026 — native timezone autocomplete
+
+The native settings field filtered the engine's timezone catalog as strings, although the actual catalog contains `{value, city}` records. Every option was discarded, so typing showed no suggestions and timezone validation rejected all entries. Test fixtures incorrectly used strings and masked the failure. The field now searches the records' city and IANA values, saves the canonical IANA selection, and uses Flutter's available-space dropdown placement to keep suggestions accessible around the keyboard. The shared native settings component fixes both Android and iOS.
+
+Regression tests reproduced the failure with realistic catalog records before the fix. They cover narrowing and city search, selection and saved preferences, invalid input, and tappable options above a compact-screen keyboard. All 34 Flutter tests and Dart analysis pass locally. The existing native integration test now also exercises the actual settings field with the real bundled engine catalog, selecting and saving `Australia/Sydney`; native CI verification is pending. Android's `requestCursorUpdates on inactive InputConnection` warning alone did not identify this application data mismatch.
+
 ## 3 November 2026 — Android offline document loading
 
 Source [`f970a18`](https://github.com/maniksurtani/rephase/commit/f970a18afe67a9323b7d4152e00fcb775e83500f), including loader fix [`9b224fa`](https://github.com/maniksurtani/rephase/commit/9b224faa1635a5ae075d52e15d903a9db37e28c8).
