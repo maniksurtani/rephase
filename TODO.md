@@ -9,7 +9,7 @@ Updated 2026-11-03. Active work is kept here; the previous complete checklist is
 - [x] Skip web checks for mobile-only changes and skip mobile checks for Markdown-only changes; preserve exact-commit web release provenance.
 - [x] Cache the pinned Flutter SDK and engine artifacts, Gradle and iOS dependency downloads; retain revision checks and native diagnostics.
 - [x] Make installable APK artifacts explicit manual/release outputs and document the workflows.
-- [ ] Validate workflow syntax and trigger scenarios, push, and verify the new jobs. Record measured results without assuming warm-cache savings.
+- [x] Validate workflow syntax and 28 trigger scenarios, push, and verify the new jobs. Fast checks passed in 76s cold / 74s with cache hits; both native runtimes and web Checks passed. Record native cache seeding without assuming warm-build savings.
 
 ## Native timezone autocomplete
 

@@ -6,7 +6,15 @@ Mobile CI now separates fast Flutter formatting/analysis/widget tests from full 
 
 A shared setup action caches the pinned Flutter SDK, including engine artifacts, separately for quick/Android/iOS profiles, verifies its framework revision and caches Pub packages. Full native jobs also cache Gradle dependencies/wrappers and iOS dependency downloads. Compiled Xcode outputs are rebuilt. Installable APKs are produced only for published releases or explicit manual requests; routine full runs compile only the integration host. Native logs, execution bounds and the existing limited VM-startup recovery remain intact.
 
-Actionlint and whitespace validation pass. A local matrix checks 28 change scenarios against the actual push/PR filters, including widget-only edits, docs, shared engine/data/licenses, native platform files and mixed web/mobile changes. Live workflow verification and cache timing are pending; no warm-cache speedup is claimed before measurement.
+Actionlint and whitespace validation pass. A local matrix checks 28 change scenarios against the actual push/PR filters, including widget-only edits, docs, shared engine/data/licenses, native platform files and mixed web/mobile changes.
+
+Source [`a8bb6f0`](https://github.com/maniksurtani/rephase/commit/a8bb6f08b8f6627be20d7a6ce664a0f2cde600e9). [First fast run 41638259857](https://github.com/maniksurtani/rephase/actions/runs/41638259857) passed all 34 Flutter tests, formatting and analysis in 76 seconds. [Warm fast run 41638511551](https://github.com/maniksurtani/rephase/actions/runs/41638511551) passed in 74 seconds with exact SDK/Pub cache hits. Flutter setup fell from 29 to 8 seconds and Pub setup from 5 to 1 second; variation in npm, analysis and test time offset much of that improvement in the overall job. The compressed SDK cache was 371,655,875 bytes and restored in 4.704 seconds. Routine widget feedback now uses this workflow rather than both native builds.
+
+[Web Checks 41638259893](https://github.com/maniksurtani/rephase/actions/runs/41638259893) passed all 597 unit/runtime tests, 49 browser scenarios, lint, formatting, types and build in 3m25s. This CI change intentionally touched the web workflow; later mobile-only changes skip it.
+
+[Native checks 41638259765](https://github.com/maniksurtani/rephase/actions/runs/41638259765) passed both real device runtimes. Android's runtime stage took 20 seconds and correctly skipped both installable APK steps. The cold Android job, including cache seeding, took 10m42s; its integration compilation took 6m13s. The Flutter SDK cache for the Android profile (1,175,854,226 compressed bytes) and Gradle dependency, wrapper and transform caches were saved. Gradle compiled task-output caching is not enabled.
+
+The cold iOS job took 21m24s, including 14m29s compilation and a passing 2m23s WKWebView runtime stage on the first attempt. Its Flutter SDK cache (663,271,151 compressed bytes) and dependency download cache (38,269,557 bytes) were saved. Full native builds remain expensive; the demonstrated routine-feedback improvement comes from selecting the 74–76-second workflow for ordinary widget changes. Warm native build savings remain unmeasured and will be observable on the next relevant or scheduled run without an extra benchmark build.
 
 ## 3 November 2026 — native timezone autocomplete
 
