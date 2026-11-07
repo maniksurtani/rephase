@@ -8,7 +8,7 @@ Updated 2026-11-07. Active work is kept here; the previous complete checklist is
 - [x] Bound preparation by trip creation/reported history, protect usual preflight wake time, and compare routine sleep with limited extra-rest windows.
 - [x] Keep destination sleep at the selected local anchor while carrying the body-clock state forward for light guidance; retain airborne/airport buffers and home-time strategies.
 - [x] Verify QF11 late entry, earlier/later routines, early departures, DST, the Pacific itinerary and unchanged supplement/observation boundaries; ten relevant browser scenarios and shared mobile-engine parity pass locally.
-- [ ] Publish the shared web/native engine fix after exact-commit CI and deployment verification.
+- [x] Publish the shared web/native engine fix: Checks 42353883770, Mobile checks 42353883748, both native runtimes in 42353883810, and verified-artifact Cloudflare deployment 42354196880 pass.
 
 ## Native trip reminders
 
@@ -28,6 +28,7 @@ Updated 2026-11-07. Active work is kept here; the previous complete checklist is
 - [x] Cache the pinned Flutter SDK and engine artifacts, Gradle and iOS dependency downloads; retain revision checks and native diagnostics.
 - [x] Make installable APK artifacts explicit manual/release outputs and document the workflows.
 - [x] Validate workflow syntax and 28 trigger scenarios, push, and verify the new jobs. Fast checks passed in 76s cold / 74s with cache hits; both native runtimes and web Checks passed. Record native cache seeding without assuming warm-build savings.
+- [ ] Investigate intermittent iOS simulator VM discovery stalls: the 6 November nightly failed before tests, and run 42353883810 passed after the existing single simulator restart. Preserve bounded recovery and never retry assertion failures.
 
 ## Native timezone autocomplete
 
