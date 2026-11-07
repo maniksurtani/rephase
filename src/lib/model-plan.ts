@@ -11,6 +11,12 @@ import type { CircadianSample, CircadianState } from './circadian';
 import { dateInZone, localToInstant } from './time';
 import { flightAirborneTiming } from './flight-timing';
 import { planningStayLabel, type PlanningContext } from './planning-context';
+import {
+  availablePreparationStart,
+  groundSleepDetail,
+  groundSleepSchedule,
+  type SleepChoice,
+} from './sleep-policy';
 import type {
   AdaptationStrategy,
   AdherenceRecord,
@@ -21,7 +27,7 @@ import type {
   Trip,
 } from './types';
 
-export const MODEL_PLAN_VERSION = 'model-2.0.0';
+export const MODEL_PLAN_VERSION = 'model-2.1.0';
 const HOUR = 3_600_000,
   DAY = 24 * HOUR,
   MINUTE = 60_000;
@@ -307,6 +313,7 @@ function tripStages(
   trip: Trip,
   prefs: Preferences,
   context: PlanningContext,
+  now: number,
 ): {
   stages: Stage[];
   start: number;
@@ -328,7 +335,8 @@ function tripStages(
     last = flights[flights.length - 1],
     firstDestination = flights.find((flight) => flight.leg.stayAfter === 'destination') ?? last;
   const requestedStart = first.departure - prefs.preparationDays * DAY,
-    start = Math.max(requestedStart, last.arrival - 90 * DAY),
+    boundedStart = Math.max(requestedStart, last.arrival - 90 * DAY),
+    start = availablePreparationStart(trip, boundedStart, first.departure, now),
     end = Math.min(start + 90 * DAY, last.arrival + 7 * DAY);
   const stages: Stage[] = [],
     warnings: string[] = [];
@@ -425,9 +433,13 @@ function tripStages(
       strategy: 'home',
       adapt: false,
     });
-  if (start > requestedStart)
+  if (boundedStart > requestedStart)
     warnings.push(
       'Some preparation time is omitted to keep every flight inside the 90-day model horizon.',
+    );
+  if (start > boundedStart)
+    warnings.push(
+      'Preparation starts when this trip was created, or at earlier reported sleep/light history. Earlier preparation is not assumed.',
     );
   if (end < last.arrival + 7 * DAY)
     warnings.push('Some post-trip days are omitted by the 90-day model horizon.');
@@ -439,7 +451,14 @@ function candidateSleeps(
   prefs: Preferences,
   direction: Direction,
   frozenPartialTarget?: number,
-): { sleeps: Range[]; targetHours: number; wakeHours: number; routeHours: number } {
+  sleepChoice: SleepChoice = 'routine',
+): {
+  sleeps: Range[];
+  targetHours: number;
+  wakeHours: number;
+  routeHours: number;
+  disruptionHours?: number;
+} {
   const baselineWake = wrap(
     sleepWake(dateInZone(stage.start, prefs.homeTimeZone), prefs.homeTimeZone, prefs, true) / HOUR,
   );
@@ -469,6 +488,20 @@ function candidateSleeps(
   const route = direction === 'advance' ? wrap(currentWake - wanted) : wrap(wanted - currentWake);
   if (stage.kind === 'blocked')
     return { sleeps: [], targetHours, wakeHours: currentWake, routeHours: route };
+  if (stage.kind === 'ground' && stage.adapt) {
+    return {
+      ...groundSleepSchedule(stage, prefs, {
+        zone: stage.zone,
+        preparation: stage.stage === 'preparation',
+        direction,
+        choice: sleepChoice,
+        routeHours: route,
+      }),
+      targetHours,
+      wakeHours: currentWake,
+      routeHours: route,
+    };
+  }
   if (stage.kind === 'ground' && !stage.adapt) {
     if (stage.stage === 'travel' && stage.end - stage.start < (prefs.sleepHours + 1) * HOUR)
       return {
@@ -495,7 +528,8 @@ function candidateSleeps(
   const sleeps: Range[] = [];
   for (let day = -1; day <= Math.ceil((stage.end - stage.start) / DAY) + 2; day++) {
     const baseWake = midnight(stage.start) + day * DAY + currentWake * HOUR;
-    // Preparation moves at most 1 h/day; ground plans use the same bounded change and preserve elapsed sleep duration.
+    // In-flight sleep follows the carried phase estimate inside the protected
+    // airborne window. Ground opportunities use civil-time constraints above.
     const progress = stage.adapt ? Math.min(route, Math.max(0, (baseWake - stage.start) / DAY)) : 0;
     const wake = baseWake + (direction === 'advance' ? -progress : progress) * HOUR;
     sleeps.push({ start: wake - prefs.sleepHours * HOUR, end: wake });
@@ -542,6 +576,7 @@ function runCandidate(
   trip: Trip,
   direction: Direction,
   context: PlanningContext,
+  sleepChoice: SleepChoice = 'routine',
 ): Beam {
   const next: Beam = {
     ...beam,
@@ -557,7 +592,11 @@ function runCandidate(
     prefs,
     direction,
     stage.targetKey ? beam.partialTargets[stage.targetKey] : undefined,
+    sleepChoice,
   );
+  // Prefer less disruption when modeled phase outcomes are similar. This is a
+  // transparent scheduling tradeoff, not a clinically calibrated fatigue model.
+  next.score += 0.5 * (schedule.disruptionHours ?? 0);
   if (stage.strategy === 'partial' && stage.targetKey)
     next.partialTargets[stage.targetKey] = schedule.targetHours;
   const fullSleeps = schedule.sleeps
@@ -580,7 +619,7 @@ function runCandidate(
           ? stage.lieFlat
             ? 'Sleep starts at least 30 minutes after takeoff and ends at least 60 minutes before landing.'
             : 'Rest or nap as your seat allows. An eye mask, earplugs and head support may help. Rest starts at least 30 minutes after takeoff and ends at least 60 minutes before landing.'
-          : `Aim for ${prefs.sleepHours} hours of sleep. Bedtime moves by at most one hour per day.`,
+          : groundSleepDetail(prefs.sleepHours, stage.stage === 'preparation'),
         'Sleep supports alertness and recovery.',
       ),
     );
@@ -708,7 +747,7 @@ function runCandidate(
           : stage.kind === 'flight'
             ? 'Only a protected rest opportunity is offered in flight; seat comfort does not change the body-clock model.'
             : stage.adapt
-              ? `${direction === 'advance' ? 'Earlier' : 'Later'} adjustment was selected by simulating feasible candidate schedules. Sleep changes by at most 1 hour/day; estimated response can vary by hours.`
+              ? `${direction === 'advance' ? 'Earlier' : 'Later'} adjustment uses practical sleep opportunities and timed light. Estimated response can vary by hours.`
               : 'Maintain the home sleep schedule when practical; the simulated state continues through connections and previous destinations.',
     });
     next.inputs.push(
@@ -986,7 +1025,7 @@ export function generateModelPlanWithDiagnostics(
     end,
     warnings: stageWarnings,
     flights,
-  } = tripStages(trip, prefs, options.context);
+  } = tripStages(trip, prefs, options.context, options.now ?? Date.now());
   const validLogs = (trip.adherence ?? []).filter(
     (record) =>
       record.tripId === trip.id &&
@@ -1022,8 +1061,22 @@ export function generateModelPlanWithDiagnostics(
       for (const direction of stage.adapt
         ? (['advance', 'delay'] as const)
         : (['advance'] as const)) {
-        candidates.push(runCandidate(parent, stage, prefs, trip, direction, options.context));
+        let candidate = runCandidate(parent, stage, prefs, trip, direction, options.context);
         evaluatedCandidates++;
+        if (stage.adapt && stage.kind === 'ground') {
+          const extended = runCandidate(
+            parent,
+            stage,
+            prefs,
+            trip,
+            direction,
+            options.context,
+            'extended',
+          );
+          evaluatedCandidates++;
+          if (extended.score < candidate.score) candidate = extended;
+        }
+        candidates.push(candidate);
       }
     // Bounded beam retains competing routes through subsequent destinations instead of resetting at each stop.
     beam = candidates.sort((a, b) => a.score - b.score).slice(0, 3);
@@ -1060,7 +1113,7 @@ export function generateModelPlanWithDiagnostics(
     );
   else if (Math.abs(reportedHabit - prefs.sleepHours) > 0.01)
     warnings.push(
-      `Your usual bedtime/wake interval is ${rounded(reportedHabit)} hours, separate from your requested ${prefs.sleepHours} hours. Initial and past darkness follows the actual usual times; future sleep opportunities preserve the requested duration, so a home-time bedtime may move earlier or later. This does not infer sleep quality.`,
+      `Your usual bedtime/wake interval is ${rounded(reportedHabit)} hours, separate from your requested ${prefs.sleepHours} hours. Initial and past darkness follows the actual usual times. Future windows protect requested sleep when travel permits and may allow extra time for quiet rest. This does not infer sleep quality.`,
     );
   if (prefs.sleepHours < 7)
     warnings.push(
@@ -1111,8 +1164,8 @@ export function generateModelPlanWithDiagnostics(
         assumptions: [
           `Habitual 150 lux waking / 0 lux sleep baseline uses usual bedtime/wake duration (${rounded(baselineSleepHours(prefs))} hours), initialized through 21 repeated days; biological entrainment is not established for every person or schedule.`,
           'Fixed published light-only model parameters; no personalized biological measurements. Target x-minimum timing is derived from the target habitual sleep/light oscillator, not a fixed wake-minus-hours rule.',
-          'Two directional candidates per adapting stage, beam width 3, 15-minute search integration and 5-minute selected-route sensitivity replay. Light windows forecast actual modeled x minima; an angular phase proxy is used only if a trajectory has no minimum.',
-          'At most one hour/day planned sleep changes, preserving requested elapsed sleep duration when unconstrained. Partial targets are established once per stay and shared by preparation and that destination.',
+          'Two directional routes per adapting stage compare routine and bounded extra-rest schedules, with a 0.5-point cost per hour of extension. Beam width 3, 15-minute search integration and 5-minute selected-route sensitivity replay. Light windows forecast modeled x minima; an angular proxy is a fallback.',
+          'Preparation preserves usual wake time, with optional earlier bedtimes limited to one hour per available night and two hours total. Destination sleep honors the chosen local bedtime/wake anchor, with at most one extra hour for rest. These are practical policy bounds, not physiological shift rates; requested sleep is protected when travel allows. Partial phase targets remain shared across preparation and the destination.',
           'Gate times include default 30-minute taxi allowances; explicit airborne times override them.',
           'No phase-shift benefit from seat class, sleep quality, caffeine, or melatonin is inferred.',
         ],

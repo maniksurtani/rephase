@@ -302,7 +302,7 @@ test('date-line connection retains sleep after recording and ends after its reco
   await page.setViewportSize({ width: 390, height: 844 });
   await openPlan(
     page,
-    { ...itinerary, legs: itinerary.legs.slice(0, 4) },
+    { ...itinerary, createdAt: '2026-10-01T00:00:00Z', legs: itinerary.legs.slice(0, 4) },
     'Australia/Sydney',
     { planningMode: 'model', preparationDays: 3, melatonin: false },
     '2026-10-26T10:00:00Z',

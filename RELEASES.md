@@ -1,5 +1,13 @@
 # Release evidence
 
+## 7 November 2026 — practical sleep opportunities
+
+Late trip entry previously counted preparation days before the trip existed, and translated estimated body-clock phase into fixed-duration bed/wake times. The candidate search could therefore favor very early alarms before departure or daytime sleep at a destination. Preparation now starts at trip creation (or earlier reported exposure), protects usual wake time when flight timing allows, and compares routine sleep against bounded extra-rest opportunities. Destination sleep uses the selected local bedtime/wake anchor; the estimated body-clock state still carries through the journey and drives light guidance. The chosen sleep windows enter the simulation rather than being clamped only for display. Melatonin eligibility is unchanged.
+
+An illustrative QF11 fixture entered on 7 November for departure on 8 November at 11:20, using a usual 23:00–07:00 Sydney routine, previously recommended 19:38–03:38 on the final preparation night. It now recommends 23:00–07:00 and omits unavailable earlier preparation. These flight times and preferences are test inputs, not the traveler's confirmed booking or an exact reproduction of Timeshifter. An early departure still permits an earlier wake, with an earlier bedtime to preserve sleep when time allows. The October Pacific fixture retains practical San Francisco nights, recorded history, in-flight rest and date-line continuity. Longer windows represent an opportunity for sleep or dim-light rest, not modeled additional sleep or a guarantee of faster adaptation.
+
+Local planner regressions cover late entry, custom routines, early departures, DST, reported history and the Pacific itinerary. Ten relevant browser scenarios pass, including the mobile QF11 timeline, midnight continuation, date-line travel and recorded-history display. Formatting, types, lint, the production build and Chromium parity of the offline mobile bundle also pass. Full-suite CI and deployment results will be recorded after the exact-commit release checks complete. Both web and native apps consume the shared planner; installed native apps need rebuilding to receive this engine update.
+
 ## 3 November 2026 — native trip reminders
 
 iOS and Android now offer Profile → Trip reminders, with explicit notification permission and a test reminder. Local OS requests cover the nearest 60 future sleep/rest, light, dim-light, optional caffeine and optional melatonin windows across saved trips. The existing offline planner supplies all recommendations. UTC schedules survive device time-zone changes; joined intervals avoid duplicate bedtime alerts across midnight/date-line fragments. Recorded/past guidance and disabled optional aids are excluded.

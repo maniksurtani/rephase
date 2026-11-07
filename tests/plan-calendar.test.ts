@@ -404,7 +404,16 @@ describe('calendar date presentation', () => {
       travelSegments: [],
     });
     expect(sunday!.actions.some((action) => action.type === 'sleep')).toBe(true);
-    expect(sunday!.actions.every((action) => action.origin === 'original-plan')).toBe(true);
+    expect(
+      sunday!.actions
+        .filter((action) => Date.parse(action.end) <= now)
+        .every((action) => action.origin === 'original-plan'),
+    ).toBe(true);
+    // A practical local bedtime is still ahead that evening; only elapsed
+    // guidance is reconstructed history, rather than every action on Sunday.
+    expect(
+      sunday!.actions.some((action) => action.type === 'sleep' && Date.parse(action.start) >= now),
+    ).toBe(true);
     expect(isCalendarDayCurrent(sunday!, now)).toBe(true);
     expect(calendar.find((day) => day.date === '2026-10-15')).toMatchObject({
       stage: 'preparation',

@@ -8,8 +8,9 @@ import { planningStayLabel, type PlanningContext } from './planning-context';
 import { validatePreferences, validateTrip } from './itinerary';
 import { flightAirborneTiming } from './flight-timing';
 import { limitPlanToArrival } from './plan-horizon';
+import { availablePreparationStart, groundSleepDetail, groundSleepSchedule } from './sleep-policy';
 
-export const PLAN_VERSION = 'rules-1.2.0';
+export const PLAN_VERSION = 'rules-1.3.0';
 const HOUR = 3_600_000;
 const DAY = 24 * HOUR;
 const MAX_HORIZON = 90 * DAY;
@@ -106,7 +107,12 @@ function phaseOccurrences(range: Range, phase: number): number[] {
  * Phase moves only by an assumed population pace during destination/preparation time.
  * Chronotype is context; it does not add an invented offset to habitual sleep timing.
  */
-export function generateRulesPlan(trip: Trip, prefs: Preferences, context: PlanningContext): Plan {
+export function generateRulesPlan(
+  trip: Trip,
+  prefs: Preferences,
+  context: PlanningContext,
+  now = Date.now(),
+): Plan {
   const errors = validateTrip(trip);
   if (errors.length) throw new RangeError(errors.join('\n'));
   validatePreferences(prefs);
@@ -126,15 +132,20 @@ export function generateRulesPlan(trip: Trip, prefs: Preferences, context: Plann
     flights.find((flight) => flight.leg.stayAfter === 'destination') ?? last;
   const requestedStart = first.departure - prefs.preparationDays * DAY;
   // Preserve every flight before optional preparation/post-trip time when the trip approaches the cap.
-  const horizonStart = Math.max(requestedStart, last.arrival - MAX_HORIZON);
+  const boundedStart = Math.max(requestedStart, last.arrival - MAX_HORIZON);
+  const horizonStart = availablePreparationStart(trip, boundedStart, first.departure, now);
   const horizonEnd = Math.min(horizonStart + MAX_HORIZON, last.arrival + 7 * DAY);
   const warnings = new Set<string>([
     'This is an evidence-informed rules prototype, not a clinically validated or calibrated circadian model. Adjustment and remaining shifts are planning assumptions, not measured outcomes.',
     'Biological timing is estimated from usual wake time. Even sleep diaries cannot precisely measure circadian phase; individual timing can differ by hours.',
   ]);
-  if (horizonStart > requestedStart)
+  if (boundedStart > requestedStart)
     warnings.add(
       'Some preparation time is omitted so every flight fits inside the 90-day planning horizon.',
+    );
+  if (horizonStart > boundedStart)
+    warnings.add(
+      'Preparation starts when this trip was created, or at earlier reported sleep/light history. Earlier preparation is not assumed.',
     );
   if (horizonEnd < last.arrival + 7 * DAY)
     warnings.add('The complete plan is capped at 90 days, so some post-trip days are omitted.');
@@ -259,6 +270,16 @@ export function generateRulesPlan(trip: Trip, prefs: Preferences, context: Plann
       segment.strategy === 'home' ? homePhase(segmentDate, prefs) : firstTarget,
     );
     const sleepRouteShift = segment.strategy === 'partial' ? routeShift / 2 : routeShift;
+    const practicalSleeps =
+      !segment.flight && segment.strategy !== 'home'
+        ? groundSleepSchedule(segment, prefs, {
+            zone: segment.zone,
+            preparation: segment.stage === 'preparation',
+            direction: sleepRouteShift >= 0 ? 'advance' : 'delay',
+            choice: segment.stage === 'preparation' ? 'extended' : 'routine',
+            routeHours: Math.abs(sleepRouteShift),
+          }).sleeps
+        : null;
     if (segment.adapt && Math.abs(routeShift) >= 8) {
       segmentUncertain = true;
       phaseUncertain = true;
@@ -326,7 +347,7 @@ export function generateRulesPlan(trip: Trip, prefs: Preferences, context: Plann
           ' Precise phase interventions are omitted because a large shift makes the estimated phase uncertain.';
       if (segment.stage === 'preparation')
         day.note +=
-          ' Preparation is optional and moves at most 1 hour/day; preserve your sleep duration.';
+          ' Preparation preserves usual wake time, with at most one hour of earlier bedtime per available night and two hours total.';
 
       const add = (
         type: PlanAction['type'],
@@ -363,12 +384,10 @@ export function generateRulesPlan(trip: Trip, prefs: Preferences, context: Plann
       };
 
       let sleeps: Range[];
-      if (!segment.flight && segment.strategy === 'adapt' && segment.stage !== 'preparation') {
-        sleeps = [-1, 0, 1].map((offset) =>
-          targetSleep(plusDate(piece.date, offset), piece.zone, prefs),
-        );
+      if (practicalSleeps) {
+        sleeps = practicalSleeps;
       } else {
-        // Preparation, partial adjustment, connections, and home-time strategies follow the evolving estimate.
+        // In-flight sleep, connections, and home-time strategies follow the evolving estimate.
         // Each night uses one phase estimate across display-day boundaries, preserving duration.
         sleeps = phaseOccurrences(piece, segmentInitialPhase).map((baselineMinimum) => {
           const elapsedDays = Math.max(0, baselineMinimum - segment.start) / DAY;
@@ -401,7 +420,7 @@ export function generateRulesPlan(trip: Trip, prefs: Preferences, context: Plann
             ? segment.lieFlat
               ? 'Sleep starts at least 30 minutes after takeoff and ends at least 60 minutes before landing.'
               : 'Rest or nap as your seat allows. An eye mask, earplugs and head support may help. Rest starts at least 30 minutes after takeoff and ends at least 60 minutes before landing.'
-            : `Aim for ${prefs.sleepHours} hours of sleep.`,
+            : groundSleepDetail(prefs.sleepHours, segment.stage === 'preparation'),
           'Protect sleep while gradually aligning the schedule. Travel fatigue and sleep debt also affect how you feel.',
         );
 
@@ -547,7 +566,7 @@ export function generatePlan(trip: Trip, prefs: Preferences, options: ModelPlanO
     decoratePlanWithMeals(
       decoratePlanWithTravel(
         prefs.planningMode === 'rules'
-          ? generateRulesPlan(trip, prefs, options.context)
+          ? generateRulesPlan(trip, prefs, options.context, options.now)
           : generateModelPlan(trip, prefs, options),
         trip,
       ),

@@ -20,8 +20,8 @@ const personalData: AppData = {
 };
 
 /** Seed the real local persistence boundary; no planner or flight cards are mocked. */
-async function openPersonalData(page: Page, data = personalData) {
-  await page.clock.setFixedTime(new Date('2026-10-17T12:05:00.000Z'));
+async function openPersonalData(page: Page, data = personalData, now = '2026-10-17T12:05:00.000Z') {
+  await page.clock.setFixedTime(new Date(now));
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'New time zone. Same you.' })).toBeVisible();
   await seedGuestData(page, data);
@@ -94,6 +94,61 @@ test.beforeEach(async ({ page }) => {
       json: { googleClientId: null, syncAvailable: false, flightLookupAvailable: false },
     }),
   );
+});
+
+test('a QF11 trip entered the day before departure preserves the usual wake time', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const now = '2026-11-07T00:00:00Z';
+  // Illustrative booking: this regression exercises the real planner and UI.
+  const trip: Trip = {
+    id: 'qf11-late-entry',
+    name: 'Sydney to Los Angeles',
+    createdAt: now,
+    updatedAt: now,
+    legs: [
+      {
+        ...itinerary.legs[0],
+        id: 'qf11',
+        flightNumber: 'QF11',
+        arrivalAirport: 'LAX',
+        departureDateTime: '2026-11-08T11:20',
+        arrivalDateTime: '2026-11-08T06:00',
+        arrivalTimeZone: 'America/Los_Angeles',
+        travelClass: 'business',
+        lieFlat: true,
+      },
+    ],
+  };
+  await openPersonalData(
+    page,
+    {
+      schemaVersion: 1,
+      preferences: { ...preferences, preparationDays: 3 },
+      trips: [trip],
+      selectedTripId: trip.id,
+    },
+    now,
+  );
+  await page.getByRole('button', { name: 'Explore your plan', exact: true }).click();
+  await expect(planDay(page, '2026-11-07')).toBeVisible();
+  await expect(planDay(page, '2026-11-06')).toHaveCount(0);
+  await planDay(page, '2026-11-07').click();
+  const bedtime = page.locator('.timeline-entry[data-guidance="sleep"]');
+  await expect(bedtime).toHaveCount(1);
+  await expect(bedtime).toContainText('8 h');
+  const start = Number(await bedtime.getAttribute('data-start'));
+  expect(start).toBeGreaterThanOrEqual(Date.parse('2026-11-07T22:00:00+11:00'));
+  await bedtime.scrollIntoViewIfNeeded();
+  await captureDesign(page, 'artifacts/qf11-practical-bedtime-mobile.png');
+  await planDay(page, '2026-11-08').click();
+  const morning = page.locator('.timeline-entry[data-guidance="sleep"]').first();
+  await expect(morning).toHaveAttribute(
+    'data-end',
+    String(Date.parse('2026-11-08T07:00:00+11:00')),
+  );
+  await expect(morning).toContainText('07:00');
 });
 
 test('Today and the full plan retain all five flights with both local clocks and date-line transit days', async ({
@@ -194,6 +249,7 @@ test('Today and the full plan retain all five flights with both local clocks and
 test('body-clock estimates show modeled movement rather than a repeated zero', async ({ page }) => {
   await openPersonalData(page, {
     ...personalData,
+    trips: [{ ...itinerary, createdAt: '2026-10-01T00:00:00Z' }],
     preferences: { ...preferences, preparationDays: 3 },
   });
   await page.getByRole('button', { name: 'Explore your plan', exact: true }).click();
@@ -262,7 +318,7 @@ test('body-clock estimates show modeled movement rather than a repeated zero', a
   await planDay(page, '2026-10-18').click();
   await expect(page.locator('.agenda-heading h2')).toHaveText('Sunday 18 October');
   await expect(page.locator('.agenda-heading .stage-label')).toHaveText('Stay in Honolulu');
-  await expect(page.locator('.timeline-entry[data-guidance="sleep"]')).toBeVisible();
+  await expect(page.locator('.timeline-entry[data-guidance="sleep"]').first()).toBeVisible();
   await expect(page.getByText('Planned · not recorded', { exact: true }).first()).toBeVisible();
   await expect(
     page.getByText('No saved recommendations for this day.', { exact: true }),
@@ -276,7 +332,7 @@ test('body-clock estimates show modeled movement rather than a repeated zero', a
   await page.getByRole('button', { name: 'Explore your plan', exact: true }).click();
   await planDay(page, '2026-10-18').click();
   await expect(page.locator('.agenda-heading h2')).toHaveText('Sunday 18 October');
-  await expect(page.locator('.timeline-entry[data-guidance="sleep"]')).toBeVisible();
+  await expect(page.locator('.timeline-entry[data-guidance="sleep"]').first()).toBeVisible();
   await expect(page.getByText('Planned · not recorded', { exact: true }).first()).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(
     true,

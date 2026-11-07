@@ -1,6 +1,14 @@
 # Rephase build tasks
 
-Updated 2026-11-03. Active work is kept here; the previous complete checklist is preserved in [the task archive](docs/archive/TODO-2026-10-16.md). Release evidence is in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md).
+Updated 2026-11-07. Active work is kept here; the previous complete checklist is preserved in [the task archive](docs/archive/TODO-2026-10-16.md). Release evidence is in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md).
+
+## Practical sleep opportunities
+
+- [x] Reproduce late trip entry counting unavailable preparation and rigidly advancing wake time; identify that circadian error scoring has no practical sleep constraints.
+- [x] Bound preparation by trip creation/reported history, protect usual preflight wake time, and compare routine sleep with limited extra-rest windows.
+- [x] Keep destination sleep at the selected local anchor while carrying the body-clock state forward for light guidance; retain airborne/airport buffers and home-time strategies.
+- [x] Verify QF11 late entry, earlier/later routines, early departures, DST, the Pacific itinerary and unchanged supplement/observation boundaries; ten relevant browser scenarios and shared mobile-engine parity pass locally.
+- [ ] Publish the shared web/native engine fix after exact-commit CI and deployment verification.
 
 ## Native trip reminders
 

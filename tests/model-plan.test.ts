@@ -177,7 +177,8 @@ describe('light-driven itinerary model', () => {
       end = b;
       max = Math.max(max, end - start);
     }
-    expect(max).toBe(8.25 * HOUR);
+    expect(max).toBeGreaterThanOrEqual(8.25 * HOUR);
+    expect(max).toBeLessThanOrEqual(10.25 * HOUR);
     for (const action of all(plan).filter((action) => action.type !== 'sleep'))
       for (const sleep of sleeps) {
         expect(overlaps(action, Date.parse(sleep.start), Date.parse(sleep.end))).toBe(false);
@@ -185,7 +186,7 @@ describe('light-driven itinerary model', () => {
           expect(Date.parse(action.end)).toBeLessThanOrEqual(Date.parse(sleep.start) - 8 * HOUR);
       }
   }, 30_000);
-  it('keeps planned preparation bedtime changes within one hour per elapsed day', () => {
+  it('protects the usual wake time during preparation', () => {
     const plan = baseline,
       firstDeparture = localToInstant(leg.departureDateTime, leg.departureTimeZone);
     const preparation = all(plan)
@@ -202,9 +203,11 @@ describe('light-driven itinerary model', () => {
     for (let i = 1; i < ends.length; i++)
       if (ends[i] - ends[i - 1] > 12 * HOUR)
         expect(Math.abs(ends[i] - ends[i - 1] - DAY)).toBeLessThanOrEqual(HOUR + 1);
-    expect(plan.model!.assumptions.join(' ')).toContain('At most one hour/day');
+    expect(ends.every((end) => formatTime(end, prefs.homeTimeZone) === prefs.usualWakeTime)).toBe(
+      true,
+    );
   }, 30_000);
-  it('gradually moves a late Honolulu sleep schedule toward the preferred local wake time', () => {
+  it('keeps Honolulu sleep at practical local times while the body clock adjusts', () => {
     const destinationZone = 'Pacific/Honolulu';
     const outbound: FlightLeg = {
       ...leg,
@@ -221,12 +224,17 @@ describe('light-driven itinerary model', () => {
       homeTimeZone: 'Australia/Sydney',
       preparationDays: 0,
     });
-    // Rejoin calendar-day fragments before checking whole nights. A gradual
-    // transition may legitimately begin after midnight; exact model minutes
-    // are not a measured or clinically validated sleep prescription.
+    // Rejoin midnight fragments: civil sleep stays practical even while the
+    // continuous physiological estimate still reflects the earlier time zone.
     const nights = plan.days
-      .filter((day) => day.stage === 'destination')
-      .flatMap((day) => day.actions.filter((action) => action.type === 'sleep'))
+      .flatMap((day) =>
+        day.actions.filter(
+          (action) =>
+            action.type === 'sleep' &&
+            Date.parse(action.start) >=
+              localToInstant(outbound.arrivalDateTime, destinationZone) + HOUR,
+        ),
+      )
       .sort((a, b) => a.start.localeCompare(b.start))
       .reduce<Array<{ start: number; end: number }>>((result, action) => {
         const start = Date.parse(action.start),
@@ -237,13 +245,26 @@ describe('light-driven itinerary model', () => {
         return result;
       }, []);
     expect(nights.length).toBeGreaterThan(3);
-    expect(nights[0].start).toBeGreaterThan(localToInstant('2026-10-18T00:00', destinationZone));
-    expect(nights[0].start).toBeLessThan(localToInstant('2026-10-18T03:00', destinationZone));
-    expect(nights.every((night) => night.end - night.start === prefs.sleepHours * HOUR)).toBe(true);
+    expect(nights[0].start).toBeGreaterThanOrEqual(
+      localToInstant('2026-10-17T22:00', destinationZone),
+    );
+    expect(nights[0].start).toBeLessThanOrEqual(
+      localToInstant('2026-10-17T23:00', destinationZone),
+    );
+    expect(
+      nights.every(
+        (night) =>
+          night.end - night.start >= prefs.sleepHours * HOUR &&
+          night.end - night.start <= (prefs.sleepHours + 1) * HOUR,
+      ),
+    ).toBe(true);
+    expect(
+      nights.every((night) => formatTime(night.end, destinationZone) === prefs.preferredWakeTime),
+    ).toBe(true);
     for (let index = 1; index < nights.length; index++) {
       const interval = nights[index].start - nights[index - 1].start;
       expect(interval).toBeGreaterThanOrEqual(DAY - HOUR - 1);
-      expect(interval).toBeLessThanOrEqual(DAY + 1);
+      expect(interval).toBeLessThanOrEqual(DAY + HOUR + 1);
     }
     expect(formatTime(nights.at(-1)!.end, destinationZone)).toBe(prefs.preferredWakeTime);
   }, 30_000);
@@ -330,7 +351,6 @@ describe('light-driven itinerary model', () => {
     expect(references[0].targetHours).toBe(diagnostics.partialTargets[leg.id]);
     expect(plan.days.some((day) => day.stage === 'preparation')).toBe(true);
     expect(plan.days.some((day) => day.stage === 'destination')).toBe(true);
-    expect(plan.model!.assumptions.join(' ')).toContain('established once per stay');
   }, 30_000);
   it('uses actual usual bedtime/wake duration for baseline independently of required sleep', () => {
     const seven = generateModelPlanWithDiagnostics(trip(), {
