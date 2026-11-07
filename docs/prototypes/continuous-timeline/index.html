@@ -1,0 +1,2007 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Rephase — Continuous journey concepts</title>
+    <style>
+      @font-face {
+        font-family: DM;
+        src: url('../../../public/fonts/dm-sans-400.ttf');
+        font-display: swap;
+      }
+      @font-face {
+        font-family: Manrope;
+        src: url('../../../public/fonts/manrope-700.ttf');
+        font-weight: 700;
+        font-display: swap;
+      }
+      :root {
+        color-scheme: dark;
+        --bg: #0f111b;
+        --panel: #171a27;
+        --text: #f0edf6;
+        --muted: #999caf;
+        --line: #2d3043;
+        --sleep: #b5a0e3;
+        --light: #eac36e;
+        --coffee: #d8aa81;
+        --awake: #95bcb0;
+        --flight: #e4b485;
+        --dark: #8496b7;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        color: var(--text);
+        background: radial-gradient(ellipse at 72% 0%, #25203777, transparent 45%), #0c0e16;
+        font:
+          14px DM,
+          system-ui,
+          sans-serif;
+      }
+      button,
+      select {
+        font: inherit;
+        color: inherit;
+        cursor: pointer;
+      }
+      button {
+        border: 0;
+        background: none;
+      }
+      button:focus-visible,
+      select:focus-visible,
+      a:focus-visible {
+        outline: 2px solid var(--sleep);
+        outline-offset: 4px;
+      }
+      button:hover {
+        filter: brightness(1.16);
+      }
+      button:disabled {
+        cursor: default;
+      }
+      a {
+        color: inherit;
+      }
+      h1,
+      h2,
+      h3,
+      h4,
+      p {
+        margin: 0;
+      }
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-family: Manrope, DM, system-ui, sans-serif;
+      }
+      svg {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+        vertical-align: middle;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.65;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .page {
+        max-width: 1260px;
+        margin: auto;
+        padding: 32px 34px 48px;
+      }
+      .masthead {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 34px;
+      }
+      .wordmark {
+        font:
+          700 25px Manrope,
+          system-ui;
+        letter-spacing: -1.1px;
+      }
+      .wordmark span {
+        color: var(--sleep);
+      }
+      .design-tag {
+        text-transform: uppercase;
+        font-size: 10px;
+        letter-spacing: 2px;
+        color: #a6a3b5;
+      }
+      .intro {
+        display: flex;
+        gap: 40px;
+        align-items: end;
+        justify-content: space-between;
+        margin-bottom: 30px;
+      }
+      .intro h1 {
+        font-size: 43px;
+        letter-spacing: -1.8px;
+        line-height: 1.14;
+      }
+      .intro h1 span {
+        color: #b9a8d7;
+      }
+      .intro p {
+        max-width: 390px;
+        color: #a8a7bb;
+        line-height: 1.75;
+        font-size: 14px;
+        padding-bottom: 3px;
+      }
+      .controls {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 15px 0;
+        border-top: 1px solid #282839;
+        border-bottom: 1px solid #282839;
+      }
+      .segmented {
+        display: flex;
+        padding: 4px;
+        background: #191b28;
+        border: 1px solid #2a2c3b;
+        border-radius: 11px;
+        gap: 3px;
+      }
+      .segmented button {
+        border-radius: 7px;
+        padding: 9px 13px;
+        font-size: 12px;
+        white-space: nowrap;
+        color: #a3a3b6;
+      }
+      .segmented button[aria-pressed='true'] {
+        background: #353044;
+        color: #e9ddfc;
+      }
+      .control-caption {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 1.4px;
+        color: #9393a8;
+        margin-left: 10px;
+      }
+      .compress {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-left: auto;
+        font-size: 12px;
+        color: #b3b1c3;
+        cursor: pointer;
+      }
+      input[type='checkbox'] {
+        accent-color: #bc9feb;
+        width: 15px;
+        height: 15px;
+      }
+      .review-hint {
+        color: #8e90a4;
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        font-size: 11px;
+        margin: 13px 0 25px;
+      }
+      .review-hint span:last-child {
+        color: #6f748b;
+      }
+      .mobile-options {
+        display: none;
+      }
+      .comparison {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 26px;
+      }
+      .concept-heading {
+        min-height: 77px;
+      }
+      .concept-heading h2 {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        font-size: 19px;
+        letter-spacing: -0.5px;
+      }
+      .option-letter {
+        display: grid;
+        place-items: center;
+        width: 25px;
+        height: 25px;
+        border: 1px solid #4b435e;
+        border-radius: 8px;
+        color: #bfa7e8;
+        font:
+          12px DM,
+          system-ui;
+      }
+      .recommend {
+        margin-left: auto;
+        padding: 5px 8px;
+        border-radius: 20px;
+        background: #26332f;
+        color: #9ec6b5;
+        font:
+          10px DM,
+          system-ui;
+      }
+      .concept-heading p {
+        color: #9396aa;
+        font-size: 12px;
+        line-height: 1.6;
+        margin-top: 9px;
+      }
+      .phone {
+        position: relative;
+        height: 760px;
+        background: var(--bg);
+        border: 1px solid #373548;
+        border-radius: 31px;
+        box-shadow:
+          0 24px 60px #0006,
+          inset 0 0 0 4px #171822;
+        padding: 5px;
+        overflow: hidden;
+      }
+      .device {
+        height: 100%;
+        border-radius: 26px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+      }
+      .status {
+        height: 29px;
+        flex-shrink: 0;
+        display: flex;
+        padding: 8px 18px 0;
+        font-size: 11px;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .status .right {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .status svg {
+        width: 13px;
+        height: 13px;
+      }
+      .battery {
+        width: 19px;
+        height: 9px;
+        border: 1px solid #8c8d99;
+        border-radius: 3px;
+        padding: 1px;
+      }
+      .battery::before {
+        content: '';
+        display: block;
+        width: 80%;
+        height: 100%;
+        background: #e5e2ed;
+        border-radius: 1px;
+      }
+      .app-header {
+        padding: 15px 18px 12px;
+        flex-shrink: 0;
+      }
+      .app-header .eyebrow {
+        color: #a4a1b6;
+        font-size: 10px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .app-header .eyebrow svg {
+        color: var(--sleep);
+        width: 15px;
+        height: 15px;
+      }
+      .app-header h3 {
+        font-size: 19px;
+        letter-spacing: -0.65px;
+        margin-top: 5px;
+      }
+      .trip-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 8px;
+        font-size: 11px;
+        color: #9397ad;
+      }
+      .trip-meta button {
+        color: #b9a3df;
+        padding: 0;
+        font-size: 11px;
+      }
+      .context {
+        flex-shrink: 0;
+        min-height: 38px;
+        padding: 10px 17px;
+        font-size: 12px;
+        background: #1c1c2b;
+        border-top: 1px solid #292a3b;
+        border-bottom: 1px solid #2c2b3b;
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .context .place {
+        color: #c7b4e9;
+      }
+      .context .date {
+        color: #b4b4c8;
+      }
+      .context svg {
+        width: 12px;
+        height: 12px;
+      }
+      .lane-key {
+        height: 35px;
+        flex-shrink: 0;
+        display: grid;
+        grid-template-columns: 64px repeat(3, 1fr) 42px;
+        align-items: center;
+        background: #11131f;
+        color: #8d93a9;
+        text-align: center;
+        font-size: 9px;
+      }
+      .lane-key span {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+      }
+      .lane-key svg {
+        width: 12px;
+        height: 12px;
+      }
+      .lane-key span:nth-child(2) {
+        color: var(--sleep);
+      }
+      .lane-key span:nth-child(3) {
+        color: var(--light);
+      }
+      .lane-key span:nth-child(4) {
+        color: var(--coffee);
+      }
+      .lane-key span:nth-child(5) {
+        color: var(--flight);
+      }
+      .scroll {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        overscroll-behavior: contain;
+        scrollbar-width: thin;
+        scrollbar-color: #3c354e transparent;
+        position: relative;
+        scroll-behavior: smooth;
+      }
+      .timeline {
+        position: relative;
+        margin-top: 12px;
+        isolation: isolate;
+        min-height: 600px;
+      }
+      .rail {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 66px;
+        width: 2px;
+        background: #303144;
+        z-index: -1;
+      }
+      .time-label {
+        position: absolute;
+        left: 7px;
+        width: 47px;
+        top: 9px;
+        color: #bab9cd;
+        font-size: 12px;
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      .time-label small {
+        display: block;
+        font-size: 8px;
+        margin-top: 4px;
+        color: #737c95;
+      }
+      .time-line {
+        position: absolute;
+        left: 60px;
+        right: 15px;
+        border-top: 1px solid #212535;
+        pointer-events: none;
+      }
+      .activity {
+        position: absolute;
+        border-radius: 9px;
+        color: var(--color);
+        background: var(--fill);
+        border: 1px solid var(--edge);
+        min-height: 12px;
+        text-align: left;
+        padding: 0;
+        z-index: 1;
+        overflow: hidden;
+      }
+      .activity::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        background: linear-gradient(110deg, #ffffff0b, transparent 65%);
+        pointer-events: none;
+      }
+      .activity.sleep {
+        --color: #c7b2ee;
+        --fill: #6e5988;
+        --edge: #ab8ed1;
+      }
+      .activity.awake {
+        --color: #a1c2b7;
+        --fill: #21312c;
+        --edge: #476057;
+      }
+      .activity.light {
+        --color: #ffe3a0;
+        --fill: #926e2d;
+        --edge: #d2a74d;
+      }
+      .activity.dim {
+        --color: #b6c7e3;
+        --fill: #2e3e58;
+        --edge: #596b89;
+      }
+      .activity.caffeine {
+        --color: #f2cbaa;
+        --fill: #604731;
+        --edge: #af835d;
+      }
+      .activity.melatonin {
+        --color: #ddc3fa;
+        --fill: #4e3b66;
+        --edge: #a780cf;
+      }
+      .activity svg {
+        width: 14px;
+        height: 14px;
+      }
+      .band-top {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        gap: 7px;
+        padding: 10px 3px;
+        font-size: 10px;
+        line-height: 1.2;
+      }
+      .band-duration {
+        opacity: 0.78;
+        font-size: 9px;
+        text-align: center;
+      }
+      .flight-band {
+        position: absolute;
+        width: 3px;
+        left: calc(100% - 25px);
+        border-radius: 3px;
+        background: #a4774f;
+        z-index: 0;
+      }
+      .flight-band .plane {
+        position: absolute;
+        top: 0;
+        left: -7px;
+        border-radius: 50%;
+        color: #f3c99f;
+        background: #29221f;
+        padding: 3px;
+        transform: translateY(-50%);
+      }
+      .flight-band .plane svg {
+        width: 12px;
+        height: 12px;
+      }
+      .flight-band .landing {
+        top: auto;
+        bottom: 0;
+        transform: translateY(50%);
+      }
+      .flight-band .flight-name {
+        position: sticky;
+        top: 12px;
+        display: block;
+        writing-mode: vertical-rl;
+        margin-left: 8px;
+        margin-top: 27px;
+        font-size: 9px;
+        letter-spacing: 1.1px;
+        color: #cca983;
+        white-space: nowrap;
+        width: 12px;
+        line-height: 1;
+      }
+      .day-break {
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 42px;
+        padding: 11px 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(100deg, #262135, #1a1c2a);
+        border-top: 1px solid #494056;
+        border-bottom: 1px solid #383145;
+        z-index: 5;
+      }
+      .day-break .day-name {
+        font-size: 11px;
+        font-weight: bold;
+        color: #ddd2ed;
+      }
+      .day-break .date-note {
+        margin-left: auto;
+        font-size: 9px;
+        color: #a3a0b7;
+      }
+      .day-break svg {
+        width: 13px;
+        height: 13px;
+        color: #bda7df;
+      }
+      .clock-switch {
+        position: absolute;
+        left: 8px;
+        right: 8px;
+        min-height: 112px;
+        border-radius: 13px;
+        background: linear-gradient(115deg, #30283f, #222335);
+        border: 1px solid #716084;
+        z-index: 7;
+        padding: 12px 13px;
+        text-align: left;
+        box-shadow: 0 8px 18px #0003;
+      }
+      .clock-switch .switch-label {
+        color: #cebbea;
+        text-transform: uppercase;
+        font-size: 9px;
+        letter-spacing: 1.2px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .clock-switch svg {
+        width: 13px;
+        height: 13px;
+      }
+      .switch-clocks {
+        display: grid;
+        grid-template-columns: 1fr 26px 1fr;
+        align-items: center;
+        margin-top: 10px;
+        gap: 4px;
+      }
+      .switch-clocks strong {
+        font:
+          700 20px Manrope,
+          system-ui;
+        letter-spacing: -0.5px;
+      }
+      .switch-clocks .new strong {
+        color: #e7d8fc;
+      }
+      .switch-clocks span {
+        display: block;
+        margin-top: 3px;
+        color: #b9b2c8;
+        font-size: 10px;
+      }
+      .switch-note {
+        margin-top: 9px;
+        color: #b8afc8;
+        font-size: 9px;
+        display: flex;
+        justify-content: space-between;
+        gap: 5px;
+      }
+      .switch-note .continues {
+        color: #c6afe8;
+      }
+      .event {
+        position: absolute;
+        left: 0;
+        right: 0;
+        z-index: 3;
+      }
+      .event-button {
+        display: block;
+        width: calc(100% - 99px);
+        margin-left: 88px;
+        border: 1px solid #36364b;
+        border-radius: 10px;
+        padding: 11px 12px;
+        text-align: left;
+        background: #1c1f2d;
+      }
+      .event-button .event-main {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+      }
+      .event-button .event-main svg {
+        width: 15px;
+        height: 15px;
+        color: var(--event-color, #c1a9e9);
+      }
+      .event-button strong {
+        font-weight: 500;
+        min-width: 0;
+      }
+      .event-button .event-duration {
+        margin-left: auto;
+        color: #a2a2b9;
+        font-size: 10px;
+        white-space: nowrap;
+      }
+      .event-button .description {
+        color: #9398ad;
+        font-size: 10px;
+        line-height: 1.5;
+        margin-top: 6px;
+      }
+      .event .dot {
+        position: absolute;
+        left: 62px;
+        top: 17px;
+        border: 2px solid var(--event-color, #b6a0de);
+        background: var(--bg);
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+      }
+      .event.flight-event .event-button {
+        border-color: #514033;
+        background: linear-gradient(110deg, #2c241f, #211f24);
+      }
+      .event.flight-event .event-main {
+        color: #f0c69c;
+      }
+      .event.mini .event-button {
+        background: transparent;
+        border-color: transparent;
+        padding: 9px 0;
+      }
+      .event.mini .event-main {
+        font-size: 11px;
+        color: #aabfb8;
+      }
+      .event.mini .dot {
+        width: 6px;
+        height: 6px;
+        left: 64px;
+        top: 15px;
+        border-width: 1px;
+      }
+      .fold {
+        position: absolute;
+        width: 6px;
+        left: 64px;
+        background: var(--bg);
+        border-left: 2px dotted #6d7d7b;
+        z-index: 2;
+        pointer-events: none;
+      }
+      .now-line {
+        position: absolute;
+        left: 8px;
+        right: 12px;
+        height: 1px;
+        background: #a7c7b2;
+        z-index: 8;
+        pointer-events: none;
+      }
+      .now-line span {
+        position: absolute;
+        right: 0;
+        top: -8px;
+        background: #a7c7b2;
+        border-radius: 5px;
+        padding: 3px 6px;
+        color: #15271d;
+        font-size: 8px;
+        font-weight: bold;
+        letter-spacing: 0.8px;
+      }
+      .finish {
+        position: absolute;
+        left: 80px;
+        right: 14px;
+        padding: 14px;
+        border: 1px solid #334b45;
+        border-radius: 13px;
+        background: #172824;
+        text-align: center;
+      }
+      .finish svg {
+        color: #a1c5b6;
+        margin-bottom: 8px;
+      }
+      .finish strong {
+        font:
+          700 12px Manrope,
+          system-ui;
+        display: block;
+      }
+      .finish span {
+        display: block;
+        color: #9bb1aa;
+        font-size: 10px;
+        margin-top: 5px;
+      }
+      .app-nav {
+        height: 57px;
+        flex-shrink: 0;
+        border-top: 1px solid #2d2c40;
+        background: #161825;
+        display: flex;
+        align-items: center;
+        justify-content: space-evenly;
+        padding: 4px 10px 9px;
+      }
+      .app-nav button {
+        min-width: 67px;
+        min-height: 42px;
+        color: #8c90a8;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        font-size: 9px;
+      }
+      .app-nav button.selected {
+        color: #c7a9ee;
+      }
+      .app-nav svg {
+        width: 18px;
+        height: 18px;
+      }
+      .home-indicator {
+        position: absolute;
+        bottom: 4px;
+        left: calc(50% - 40px);
+        width: 80px;
+        height: 3px;
+        background: #a39eaf;
+        border-radius: 2px;
+      }
+      .concept-note {
+        margin: 18px 3px 0;
+        color: #a2a4b8;
+        font-size: 12px;
+        line-height: 1.7;
+      }
+      .concept-note strong {
+        color: #ddd7ea;
+        font-weight: 500;
+      }
+      .concept-note .tradeoff {
+        display: block;
+        margin-top: 7px;
+        color: #747d96;
+        font-size: 11px;
+      }
+      .flow .activity {
+        left: 76px;
+        width: 4px;
+        border: none;
+        border-radius: 4px;
+        opacity: 0.8;
+      }
+      .flow .activity.awake {
+        left: 65px;
+        width: 3px;
+        opacity: 0.55;
+      }
+      .flow .activity.light,
+      .flow .activity.dim {
+        left: 81px;
+      }
+      .flow .activity.caffeine {
+        left: 86px;
+        width: 2px;
+        opacity: 0.55;
+      }
+      .flow .activity .band-top {
+        display: none;
+      }
+      .flow .flight-band {
+        left: 60px;
+        width: 2px;
+        opacity: 0.75;
+      }
+      .flow .flight-band .plane {
+        left: -6px;
+      }
+      .flow .flight-band .flight-name {
+        display: none;
+      }
+      .flow .event-button {
+        margin-left: 95px;
+        width: calc(100% - 108px);
+      }
+      .flow .event .dot {
+        left: 63px;
+      }
+      .flow .fold {
+        left: 65px;
+      }
+      .bands .rail {
+        left: 63px;
+        background: #292c3e;
+        width: 1px;
+      }
+      .bands .activity {
+        width: calc((100% - 112px) / 3 - 15px);
+        left: calc(71px + var(--lane) * ((100% - 112px) / 3));
+        border-radius: 16px;
+        overflow: visible;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+      }
+      .bands .band-top {
+        position: sticky;
+        top: 8px;
+        padding: 8px 2px;
+        gap: 4px;
+        width: 100%;
+      }
+      .bands .activity.awake {
+        background: #182420;
+        border-color: #314a41;
+      }
+      .bands .activity.awake .band-top {
+        color: #8fab9f;
+      }
+      .bands .activity.melatonin {
+        min-height: 32px;
+        width: calc((100% - 112px) / 3 - 10px);
+      }
+      .bands .activity.melatonin .band-top {
+        padding: 6px 0;
+      }
+      .bands .activity.melatonin .band-duration {
+        display: none;
+      }
+      .bands .activity.melatonin .band-top span {
+        display: none;
+      }
+      .bands .time-label {
+        font-size: 10px;
+        top: 5px;
+        color: #9396ad;
+      }
+      .bands .flight-band {
+        left: calc(100% - 24px);
+      }
+      .bands .fold {
+        left: 63px;
+        width: 2px;
+      }
+      .bands .event {
+        pointer-events: none;
+      }
+      .bands .event-button {
+        pointer-events: auto;
+        margin-left: 73px;
+        width: calc(100% - 113px);
+        border-radius: 8px;
+        padding: 9px 10px;
+      }
+      .bands .event-button .event-main {
+        font-size: 10px;
+      }
+      .bands .event-button .event-duration {
+        font-size: 9px;
+      }
+      .bands .event .dot {
+        display: none;
+      }
+      .bands .finish {
+        left: 73px;
+      }
+      .chapters .rail {
+        left: 58px;
+      }
+      .chapters .event .dot {
+        left: 54px;
+      }
+      .chapters .time-label {
+        width: 42px;
+        left: 4px;
+      }
+      .chapters .event-button {
+        margin-left: 77px;
+        width: calc(100% - 91px);
+        border-left: 2px solid var(--event-color, #bba1e8);
+        border-radius: 5px 12px 12px 5px;
+        padding: 12px;
+      }
+      .chapters .event-button .event-main {
+        font-size: 12px;
+      }
+      .chapters .event-button .description {
+        color: #a6a5b8;
+        font-size: 11px;
+      }
+      .chapters .event.mini .event-button {
+        border-left: 0;
+      }
+      .chapters .event.mini .dot {
+        left: 56px;
+      }
+      .chapters .activity {
+        left: 57px;
+        width: 4px;
+        border: 0;
+        border-radius: 3px;
+      }
+      .chapters .activity .band-top {
+        display: none;
+      }
+      .chapters .activity.light,
+      .chapters .activity.dim {
+        left: 63px;
+        width: 3px;
+      }
+      .chapters .activity.caffeine {
+        left: 68px;
+        width: 2px;
+      }
+      .chapters .flight-band {
+        left: 56px;
+        width: 6px;
+        background: #7d5b42;
+      }
+      .chapters .flight-band .flight-name {
+        display: none;
+      }
+      .chapters .flight-band .plane {
+        left: -5px;
+      }
+      .chapters .fold {
+        left: 57px;
+      }
+      .flight-envelope {
+        position: absolute;
+        left: 71px;
+        right: 9px;
+        border: 1px solid #7d5b4266;
+        background: linear-gradient(120deg, #392c2455, #2e263144);
+        border-radius: 16px;
+        z-index: -1;
+      }
+      .chapters .clock-switch {
+        left: 10px;
+        right: 10px;
+        background: linear-gradient(110deg, #342940, #292533);
+      }
+      .chapters .event.flight-event .event-button {
+        border-color: #7d5b42;
+      }
+      .footnote {
+        margin-top: 32px;
+        border-top: 1px solid #282839;
+        padding-top: 22px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        font-size: 12px;
+        color: #9698ad;
+        line-height: 1.8;
+      }
+      .footnote strong {
+        display: block;
+        color: #c6bdd7;
+        margin-bottom: 4px;
+        font-size: 12px;
+      }
+      .footnote .rec {
+        color: #bca7dc;
+      }
+      dialog {
+        width: min(390px, calc(100vw - 28px));
+        padding: 0;
+        border: 1px solid #62506f;
+        border-radius: 23px;
+        background: #1b1d2b;
+        color: var(--text);
+        box-shadow: 0 22px 100px #000a;
+      }
+      dialog::backdrop {
+        background: #040610b8;
+        backdrop-filter: blur(6px);
+      }
+      .dialog-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 23px 22px 0;
+      }
+      .dialog-head h3 {
+        font-size: 20px;
+      }
+      .dialog-close {
+        border: 1px solid #414052;
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        font-size: 20px;
+        color: #bab3c8;
+      }
+      .dialog-body {
+        padding: 19px 23px 26px;
+      }
+      .dialog-body p {
+        line-height: 1.7;
+        color: #b2aec3;
+        font-size: 13px;
+        margin-bottom: 15px;
+      }
+      .detail-clocks {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin: 15px 0;
+      }
+      .detail-clocks div {
+        background: #262638;
+        border: 1px solid #3b384e;
+        border-radius: 12px;
+        padding: 13px;
+      }
+      .detail-clocks small {
+        color: #aaa2bc;
+        font-size: 10px;
+        display: block;
+      }
+      .detail-clocks strong {
+        display: block;
+        margin: 7px 0;
+        font:
+          700 22px Manrope,
+          system-ui;
+      }
+      .detail-clocks span {
+        font-size: 11px;
+        color: #c6bdd5;
+      }
+      .detail-row {
+        display: flex;
+        justify-content: space-between;
+        border-top: 1px solid #343345;
+        padding: 12px 0;
+        color: #b3aec2;
+        font-size: 12px;
+        gap: 15px;
+      }
+      .detail-row strong {
+        color: #e1d9ec;
+        font-weight: normal;
+        text-align: right;
+      }
+      .dialog-done {
+        width: 100%;
+        background: #b8a1e2;
+        border-radius: 10px;
+        padding: 12px;
+        color: #221a32;
+        margin-top: 10px;
+      }
+      .sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .scroll {
+          scroll-behavior: auto;
+        }
+      }
+      @media (max-width: 1000px) and (min-width: 701px) {
+        .page {
+          padding: 25px 18px;
+        }
+        .comparison {
+          gap: 14px;
+        }
+        .phone {
+          height: 740px;
+        }
+        .app-header {
+          padding: 13px;
+        }
+        .app-header h3 {
+          font-size: 16px;
+        }
+        .recommend {
+          display: none;
+        }
+        .event-button {
+          padding: 10px 8px;
+        }
+        .event-main {
+          flex-wrap: wrap;
+        }
+      }
+      @media (max-width: 700px) {
+        .page {
+          padding: 19px 14px 30px;
+        }
+        .masthead {
+          margin-bottom: 22px;
+        }
+        .wordmark {
+          font-size: 23px;
+        }
+        .design-tag {
+          font-size: 8px;
+          letter-spacing: 1.3px;
+        }
+        .intro {
+          display: block;
+          margin-bottom: 20px;
+        }
+        .intro h1 {
+          font-size: 33px;
+        }
+        .intro p {
+          margin-top: 14px;
+          font-size: 12px;
+          line-height: 1.6;
+        }
+        .controls {
+          gap: 8px;
+        }
+        .segmented {
+          width: 100%;
+        }
+        .segmented button {
+          flex: 1;
+          padding: 9px 8px;
+          font-size: 11px;
+        }
+        .control-caption {
+          margin-left: 0;
+        }
+        .jump-controls {
+          flex: 1;
+          width: auto;
+        }
+        .compress {
+          margin-left: 0;
+          font-size: 11px;
+        }
+        .review-hint {
+          margin: 12px 0 16px;
+          gap: 5px;
+          font-size: 10px;
+        }
+        .mobile-options {
+          display: flex;
+          margin-bottom: 20px;
+        }
+        .comparison {
+          display: block;
+        }
+        .concept {
+          display: none;
+          max-width: 390px;
+          margin: auto;
+        }
+        .concept.active {
+          display: block;
+        }
+        .concept-heading {
+          min-height: 70px;
+        }
+        .phone {
+          height: min(760px, calc(100svh - 48px));
+          min-height: 575px;
+          border-radius: 27px;
+        }
+        .device {
+          border-radius: 22px;
+        }
+        .footnote {
+          grid-template-columns: 1fr;
+          gap: 16px;
+          margin-top: 25px;
+          font-size: 11px;
+        }
+      }
+      body.capture .masthead {
+        margin-bottom: 24px;
+      }
+      body.capture .intro {
+        margin-bottom: 23px;
+      }
+      body.capture .footnote {
+        display: none;
+      }
+      body.capture .phone {
+        height: 760px;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <header class="masthead">
+        <div class="wordmark">rephase<span>.</span></div>
+        <div class="design-tag">Design study / 01 &nbsp; · &nbsp; November 2026</div>
+      </header>
+      <section class="intro">
+        <h1>One journey.<br /><span>A continuous rhythm.</span></h1>
+        <p>
+          Three ways to move through days, flights and changing clocks. The same journey, with a
+          different balance of calm, detail and context.
+        </p>
+      </section>
+      <div class="controls" aria-label="Prototype controls">
+        <div class="segmented" aria-label="Sample journey">
+          <button data-scenario="qf11" aria-pressed="true">Sydney → Los Angeles</button
+          ><button data-scenario="pacific" aria-pressed="false">LAX → Melbourne</button>
+        </div>
+        <span class="control-caption">Jump to</span>
+        <div class="segmented jump-controls" aria-label="Timeline position">
+          <button data-jump="start" aria-pressed="false">Start</button
+          ><button data-jump="flight" aria-pressed="false">Flight</button
+          ><button data-jump="switch" aria-pressed="true">Clock change</button>
+        </div>
+        <label class="compress"
+          ><input id="compress" type="checkbox" checked /> Compress quiet time</label
+        >
+      </div>
+      <p class="review-hint">
+        <span>Scroll inside each phone. Tap an activity or the clock-change banner.</span
+        ><span>Illustrative schedules for layout comparison, not live recommendations.</span>
+      </p>
+      <div class="segmented mobile-options" aria-label="Choose a concept">
+        <button data-concept="flow" aria-pressed="true">A · Flow</button
+        ><button data-concept="bands" aria-pressed="false">B · Bands</button
+        ><button data-concept="chapters" aria-pressed="false">C · Journey cards</button>
+      </div>
+      <section class="comparison" aria-label="Three timeline concepts"></section>
+      <footer class="footnote">
+        <div>
+          <strong class="rec">My recommendation: A, with B’s continuous activity bands.</strong>Flow
+          gives the day room to breathe and keeps the next action easy to find. A subtle flight
+          track and a full-width clock-change card make the journey continuous without repeating
+          flight details.
+        </div>
+        <div>
+          <strong>A change of clock, never a break in the journey.</strong>The clock handoff is an
+          explicit display choice during the flight. Events remain ordered by elapsed time. A rest
+          period continues through the handoff, even when the local date moves backwards or skips
+          ahead.
+        </div>
+      </footer>
+    </main>
+    <dialog id="details" aria-labelledby="detail-title">
+      <div class="dialog-head">
+        <h3 id="detail-title"></h3>
+        <button class="dialog-close" aria-label="Close details">×</button>
+      </div>
+      <div class="dialog-body"></div>
+    </dialog>
+    <script>
+      'use strict';
+      const icons = {
+        moon: '<path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5 8.5 8.5 0 1 0 20.5 14.5Z"/>',
+        sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/>',
+        coffee:
+          '<path d="M5 8h11v8a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4Zm11 1h2a3 3 0 0 1 0 6h-2M8 2v3m4-3v3M3 22h17"/>',
+        plane: '<path d="m21 3-6 8 4 8-2 1-6-6-5 4 1 3-2 1-3-7 7-5-6-6 2-1 8 4 6-6Z"/>',
+        clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v6l4 2"/>',
+        arrow: '<path d="M4 12h16m-6-6 6 6-6 6"/>',
+        down: '<path d="M12 4v16m-6-6 6 6 6-6"/>',
+        spark: '<path d="m12 2 2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5Z"/>',
+        awake: '<path d="M3 20h18M5 15a7 7 0 0 1 14 0M12 2v3M3 6l2 2m14 0 2-2M1 13h3m16 0h3"/>',
+        chair:
+          '<path d="M6 11V6a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3v5M4 11a2 2 0 0 1 2 2v2h12v-2a2 2 0 0 1 4 0v6H2v-6a2 2 0 0 1 2-2Zm1 8v3m14-3v3"/>',
+        check: '<circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/>',
+        route:
+          '<circle cx="6" cy="5" r="2"/><circle cx="18" cy="19" r="2"/><path d="M6 7v6a4 4 0 0 0 4 4h4m4 0V9a4 4 0 0 0-4-4h-4"/>',
+        signal: '<path d="M4 18v-3m5 3v-6m5 6V9m5 9V5"/>',
+      };
+      const svg = (name) =>
+        `<svg viewBox="0 0 24 24" aria-hidden="true">${icons[name] || icons.clock}</svg>`;
+      const HOUR = 3600000,
+        ms = (s) => Date.parse(s);
+      const types = {
+        sleep: { name: 'Sleep', icon: 'moon', color: '#bba2e7', lane: 0 },
+        awake: { name: 'Awake', icon: 'awake', color: '#95bcb0', lane: 0 },
+        light: { name: 'Daylight', icon: 'sun', color: '#eac36e', lane: 1 },
+        dim: { name: 'Dim light', icon: 'moon', color: '#8da4c7', lane: 1 },
+        caffeine: { name: 'Caffeine', icon: 'coffee', color: '#d8aa81', lane: 2 },
+        melatonin: { name: 'Melatonin', icon: 'spark', color: '#d1aff4', lane: 2 },
+        lounge: { name: 'Lounge time', icon: 'chair', color: '#b7b4ca' },
+        flight: { name: 'Flight', icon: 'plane', color: '#e4b485' },
+        arrival: { name: 'Arrival', icon: 'plane', color: '#e4b485' },
+      };
+      const span = (id, kind, start, end, label, detail) => ({
+        id,
+        kind,
+        start: ms(start),
+        end: ms(end),
+        label: label || types[kind].name,
+        detail,
+      });
+      const flight = (id, from, to, start, end) => ({
+        id,
+        from,
+        to,
+        start: ms(start),
+        end: ms(end),
+      });
+      const scenarios = {
+        qf11: {
+          title: 'Sydney → Los Angeles',
+          meta: 'QF11 · Sunday 8 November',
+          origin: 'Australia/Sydney',
+          originCity: 'Sydney',
+          destination: 'America/Los_Angeles',
+          destinationCity: 'Los Angeles',
+          start: ms('2026-11-07T18:00:00+11:00'),
+          end: ms('2026-11-09T08:00:00-08:00'),
+          now: ms('2026-11-07T18:50:00+11:00'),
+          handoff: ms('2026-11-08T20:30:00+11:00'),
+          flights: [
+            flight('QF11', 'SYD', 'LAX', '2026-11-08T11:20:00+11:00', '2026-11-08T06:00:00-08:00'),
+          ],
+          activities: [
+            span(
+              'quiet',
+              'dim',
+              '2026-11-07T21:00:00+11:00',
+              '2026-11-07T23:00:00+11:00',
+              'Wind down',
+              'Lower the lights and ease into your usual bedtime.',
+            ),
+            span(
+              'home-sleep',
+              'sleep',
+              '2026-11-07T23:00:00+11:00',
+              '2026-11-08T07:00:00+11:00',
+              'Bedtime',
+              'An eight-hour window, with your usual morning wake time.',
+            ),
+            span(
+              'morning-light',
+              'light',
+              '2026-11-08T07:00:00+11:00',
+              '2026-11-08T08:30:00+11:00',
+              'Morning daylight',
+              'Get outside while you start your day.',
+            ),
+            span(
+              'morning-coffee',
+              'caffeine',
+              '2026-11-08T07:00:00+11:00',
+              '2026-11-08T09:00:00+11:00',
+              'Optional caffeine',
+              'Your usual coffee can fit in this window.',
+            ),
+            span(
+              'lounge',
+              'lounge',
+              '2026-11-08T09:20:00+11:00',
+              '2026-11-08T10:20:00+11:00',
+              'Lounge before boarding',
+              'Time to eat, recharge and settle in before the flight.',
+            ),
+            span(
+              'cabin-sleep',
+              'sleep',
+              '2026-11-08T17:30:00+11:00',
+              '2026-11-08T04:30:00-08:00',
+              'Sleep on board',
+              'One continuous rest window. Sleep through meal service; eat after waking.',
+            ),
+            span(
+              'arrival-light',
+              'light',
+              '2026-11-08T07:00:00-08:00',
+              '2026-11-08T09:00:00-08:00',
+              'Welcome the morning',
+              'Daylight after arrival, when practical.',
+            ),
+            span(
+              'arrival-coffee',
+              'caffeine',
+              '2026-11-08T07:00:00-08:00',
+              '2026-11-08T08:30:00-08:00',
+              'Optional caffeine',
+              'A morning coffee window after arrival.',
+            ),
+            span(
+              'destination-dim',
+              'dim',
+              '2026-11-08T21:00:00-08:00',
+              '2026-11-08T23:00:00-08:00',
+              'Dim the lights',
+              'Ease into a local evening routine.',
+            ),
+            span(
+              'melatonin',
+              'melatonin',
+              '2026-11-08T22:30:00-08:00',
+              '2026-11-08T22:45:00-08:00',
+              'Optional melatonin',
+              'An example of how an optional reminder appears when included in a plan. Usage guidance would expand here.',
+            ),
+            span(
+              'local-sleep',
+              'sleep',
+              '2026-11-08T23:00:00-08:00',
+              '2026-11-09T07:00:00-08:00',
+              'Local bedtime',
+              'An eight-hour sleep opportunity in Los Angeles.',
+            ),
+          ],
+        },
+        pacific: {
+          title: 'San Francisco → Melbourne',
+          meta: 'AA6276 + QF94 · via Los Angeles',
+          origin: 'America/Los_Angeles',
+          originCity: 'Los Angeles',
+          destination: 'Australia/Melbourne',
+          destinationCity: 'Melbourne',
+          start: ms('2026-10-24T14:00:00-07:00'),
+          end: ms('2026-10-27T08:00:00+11:00'),
+          now: ms('2026-10-24T14:30:00-07:00'),
+          handoff: ms('2026-10-25T06:30:00-07:00'),
+          flights: [
+            flight(
+              'AA6276',
+              'SFO',
+              'LAX',
+              '2026-10-24T16:07:00-07:00',
+              '2026-10-24T17:44:00-07:00',
+            ),
+            flight('QF94', 'LAX', 'MEL', '2026-10-24T23:40:00-07:00', '2026-10-26T09:30:00+11:00'),
+          ],
+          activities: [
+            span(
+              'lounge',
+              'lounge',
+              '2026-10-24T18:30:00-07:00',
+              '2026-10-24T21:45:00-07:00',
+              'Lounge during transit',
+              'A meal and a shower before your long flight. Explore lounges in Los Angeles.',
+            ),
+            span(
+              'cabin-dim',
+              'dim',
+              '2026-10-25T00:40:00-07:00',
+              '2026-10-25T01:30:00-07:00',
+              'Settle in',
+              'Lower the lights when cabin conditions allow.',
+            ),
+            span(
+              'cabin-sleep',
+              'sleep',
+              '2026-10-25T01:30:00-07:00',
+              '2026-10-25T09:30:00-07:00',
+              'Sleep on board',
+              'Eight hours of rest, continuing through the change to Melbourne time.',
+            ),
+            span(
+              'arrival-light',
+              'light',
+              '2026-10-26T10:30:00+11:00',
+              '2026-10-26T12:00:00+11:00',
+              'A Melbourne morning',
+              'Some outdoor daylight after you arrive.',
+            ),
+            span(
+              'arrival-coffee',
+              'caffeine',
+              '2026-10-26T10:30:00+11:00',
+              '2026-10-26T12:00:00+11:00',
+              'Optional caffeine',
+              'A morning coffee window, followed by a local evening.',
+            ),
+            span(
+              'destination-dim',
+              'dim',
+              '2026-10-26T21:00:00+11:00',
+              '2026-10-26T23:00:00+11:00',
+              'Wind down',
+              'Let your evening follow the local clock.',
+            ),
+            span(
+              'local-sleep',
+              'sleep',
+              '2026-10-26T23:00:00+11:00',
+              '2026-10-27T07:00:00+11:00',
+              'Local bedtime',
+              'Eight hours before your usual morning routine.',
+            ),
+          ],
+        },
+      };
+      const concepts = [
+        {
+          id: 'flow',
+          letter: 'A',
+          name: 'Flow',
+          tag: 'Recommended',
+          summary: 'A calm agenda that keeps moving.',
+          description:
+            '<strong>Guidance first.</strong> One compact rail, small cards and a clear change of clock. Details are a tap away.',
+          tradeoff:
+            'Best everyday balance. Vertical distance is compressed, so it is not a ruler for duration.',
+        },
+        {
+          id: 'bands',
+          letter: 'B',
+          name: 'Bands',
+          summary: 'See the rhythm of your whole day.',
+          description:
+            '<strong>Patterns at a glance.</strong> Sleep, light and caffeine run in parallel, with the flight alongside them.',
+          tradeoff:
+            'Closest to your reference. More compact information, but depends more on the legend.',
+        },
+        {
+          id: 'chapters',
+          letter: 'C',
+          name: 'Journey cards',
+          summary: 'Each flight is a chapter of the story.',
+          description:
+            '<strong>More travel context.</strong> A flight encloses its rest plan, with the clock change tucked into the same journey.',
+          tradeoff: 'Clearest flight context and larger tap targets. Requires more scrolling.',
+        },
+      ];
+      let scenarioKey = 'qf11',
+        jumpTarget = 'switch',
+        compact = true;
+      const views = [];
+      const zoneAt = (t) =>
+        t < scenarios[scenarioKey].handoff
+          ? scenarios[scenarioKey].origin
+          : scenarios[scenarioKey].destination;
+      const cityAt = (t) => {
+        const s = scenarios[scenarioKey];
+        if (t >= s.handoff) return s.destinationCity;
+        return scenarioKey === 'pacific' && t < s.flights[0].end ? 'San Francisco' : s.originCity;
+      };
+      const formatters = new Map();
+      function fmt(t, zone, kind = 'time') {
+        const options =
+          kind === 'time'
+            ? { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }
+            : kind === 'date'
+              ? { weekday: 'short', day: 'numeric', month: 'short' }
+              : { year: 'numeric', month: '2-digit', day: '2-digit' };
+        const key = `${zone}:${kind}`;
+        if (!formatters.has(key))
+          formatters.set(
+            key,
+            new Intl.DateTimeFormat(kind === 'key' ? 'en-CA' : 'en-GB', {
+              timeZone: zone,
+              ...options,
+            }),
+          );
+        return formatters.get(key).format(t);
+      }
+      function duration(a, b) {
+        const min = Math.round((b - a) / 60000),
+          h = Math.floor(min / 60),
+          m = min % 60;
+        return `${h ? `${h}h` : ''}${h && m ? ' ' : ''}${m ? `${m}m` : ''}`;
+      }
+      function allActivities(s) {
+        const sleep = s.activities
+            .filter((a) => a.kind === 'sleep')
+            .sort((a, b) => a.start - b.start),
+          awake = [];
+        let start = s.start;
+        for (const a of sleep) {
+          if (a.start > start)
+            awake.push(
+              span(
+                `awake-${start}`,
+                'awake',
+                new Date(start).toISOString(),
+                new Date(a.start).toISOString(),
+                'Awake',
+                'Continue your day; other guidance appears alongside this awake period.',
+              ),
+            );
+          start = a.end;
+        }
+        if (start < s.end)
+          awake.push(
+            span(
+              'awake-final',
+              'awake',
+              new Date(start).toISOString(),
+              new Date(s.end).toISOString(),
+              'Awake',
+              'Back to your local morning routine.',
+            ),
+          );
+        return [...s.activities, ...awake];
+      }
+      function eventsFor(s, activities, concept) {
+        const events = activities
+          .filter((a) => concept !== 'bands' || a.kind === 'lounge')
+          .map((a) => ({ ...a, type: 'activity' }));
+        for (const f of s.flights) {
+          events.push({
+            id: `dep-${f.id}`,
+            kind: 'flight',
+            start: f.start,
+            end: f.end,
+            label: `${f.id} · ${f.from} → ${f.to}`,
+            detail: 'Flight details & meal plan',
+            flight: f,
+            type: 'flight',
+          });
+          events.push({
+            id: `arr-${f.id}`,
+            kind: 'arrival',
+            start: f.end,
+            end: f.end,
+            label: `Arrive in ${f.to === 'MEL' ? 'Melbourne' : f.to === 'LAX' ? 'Los Angeles' : f.to}`,
+            detail: 'Airport time, then your local day.',
+            flight: f,
+            type: 'arrival',
+          });
+        }
+        return events.sort((a, b) => a.start - b.start);
+      }
+      function boundaries(s) {
+        const result = [];
+        for (const [a, b, zone] of [
+          [s.start, s.handoff, s.origin],
+          [s.handoff, s.end, s.destination],
+        ]) {
+          let previous = fmt(a, zone, 'key');
+          for (let t = Math.ceil(a / 60000) * 60000; t <= b; t += 60000) {
+            const key = fmt(t, zone, 'key');
+            if (key !== previous) {
+              if (t > a && t < b) result.push({ at: t, zone });
+              previous = key;
+            }
+          }
+        }
+        return result;
+      }
+      function buildLayout(s, activities, concept) {
+        const events = eventsFor(s, activities, concept),
+          days = boundaries(s),
+          points = new Set([s.start, s.end, s.handoff]);
+        for (const a of activities) {
+          points.add(a.start);
+          points.add(a.end);
+        }
+        for (const f of s.flights) {
+          points.add(f.start);
+          points.add(f.end);
+        }
+        for (const d of days) points.add(d.at);
+        const cuts = [...points].filter((t) => t >= s.start && t <= s.end).sort((a, b) => a - b),
+          nodes = [],
+          segments = [];
+        let y = 0;
+        for (let i = 0; i < cuts.length; i++) {
+          const t = cuts[i],
+            day = days.find((d) => d.at === t),
+            switching = t === s.handoff,
+            first = t === s.start;
+          const marker = switching ? 132 : day || first ? 52 : 0;
+          const ev = events.filter((e) => e.start === t),
+            heights = ev.map((e) =>
+              e.kind === 'awake' ? 34 : concept === 'chapters' ? 82 : concept === 'bands' ? 48 : 60,
+            );
+          nodes.push({
+            t,
+            y,
+            contentY: y + marker,
+            marker,
+            day,
+            first,
+            switching,
+            events: ev,
+            heights,
+          });
+          if (i === cuts.length - 1) break;
+          const next = cuts[i + 1],
+            hours = (next - t) / HOUR;
+          const quiet = !activities.some(
+            (a) => a.kind !== 'awake' && a.kind !== 'lounge' && a.start <= t && a.end >= next,
+          );
+          const folded = compact && hours > 2 && (quiet || concept !== 'bands');
+          const scale = concept === 'bands' ? 39 : concept === 'chapters' ? 34 : 31;
+          const min = concept === 'bands' ? 28 : 42;
+          const physical = folded ? 65 : hours * scale;
+          const content = Math.max(min, physical, heights.reduce((a, b) => a + b, 0) + 10);
+          segments.push({ start: t, end: next, top: y + marker, height: content, folded, quiet });
+          y += marker + content;
+        }
+        const timeY = (t) => {
+          const exact = nodes.find((n) => n.t === t);
+          if (exact) return exact.contentY;
+          const part = segments.find((p) => p.start < t && p.end > t);
+          return part ? part.top + (part.height * (t - part.start)) / (part.end - part.start) : y;
+        };
+        return { nodes, segments, events, days, height: y + 140, timeY };
+      }
+      function clockSwitch(s) {
+        const a = fmt(s.handoff, s.origin),
+          b = fmt(s.handoff, s.destination),
+          sleep = s.activities.find(
+            (a) => a.kind === 'sleep' && a.start < s.handoff && a.end > s.handoff,
+          );
+        const change = scenarioKey === 'qf11' ? '−19h' : '+18h';
+        return `<span class="switch-label">${svg('clock')} Use ${s.destinationCity} time</span><span class="switch-clocks"><span><strong>${a}</strong><span>${s.originCity} · ${fmt(s.handoff, s.origin, 'date')}</span></span>${svg('arrow')}<span class="new"><strong>${b}</strong><span>${s.destinationCity} · ${fmt(s.handoff, s.destination, 'date')}</span></span></span><span class="switch-note"><span>Clock ${change} · same flight</span>${sleep ? `<span class="continues">${svg('moon')} ${duration(s.handoff, sleep.end)} rest left</span>` : ''}</span>`;
+      }
+      function eventHtml(e, y, concept, showTime = true) {
+        const meta = types[e.kind],
+          mini = e.kind === 'awake',
+          extra = concept === 'chapters' && !mini;
+        return `<div class="event ${mini ? 'mini' : ''} ${e.type === 'flight' ? 'flight-event' : ''}" style="top:${y}px;--event-color:${meta.color || '#b9a0df'}" data-at="${e.start}">${showTime ? `<span class="time-label">${fmt(e.start, zoneAt(e.start))}</span>` : ''}<i class="dot"></i><button class="event-button" data-detail="${e.id}" aria-label="${e.label}, ${fmt(e.start, zoneAt(e.start))}"><span class="event-main">${svg(meta.icon)}<strong>${e.label}</strong>${e.end > e.start ? `<span class="event-duration">${duration(e.start, e.end)}</span>` : ''}</span>${extra ? `<span class="description">${e.type === 'flight' ? 'On board · tap for times & meal plan' : e.kind === 'sleep' ? `Until ${fmt(e.end, zoneAt(e.end))}${zoneAt(e.start) !== zoneAt(e.end) ? ` ${cityAt(e.end)} time` : ''}` : e.kind === 'lounge' ? 'A quiet stop before your next flight' : 'Tap for details'}</span>` : ''}</button></div>`;
+      }
+      function renderView(c) {
+        const s = scenarios[scenarioKey],
+          activities = allActivities(s),
+          layout = buildLayout(s, activities, c.id);
+        const article = document.createElement('article');
+        article.className = `concept ${c.id} ${c.id === 'flow' ? 'active' : ''}`;
+        article.dataset.conceptId = c.id;
+        article.innerHTML = `<div class="concept-heading"><h2><span class="option-letter">${c.letter}</span>${c.name}${c.tag ? `<span class="recommend">${c.tag}</span>` : ''}</h2><p>${c.summary}</p></div><div class="phone"><div class="device"><div class="status"><span>18:50</span><span class="right">${svg('signal')}<span class="battery"></span></span></div><header class="app-header"><div class="eyebrow">Your journey ${svg('moon')}</div><h3>${s.title}</h3><div class="trip-meta"><span>${s.meta}</span><button data-trip aria-label="View trip details">Details ↗</button></div></header><div class="context"><span class="date"></span><span class="place"></span></div>${c.id === 'bands' ? `<div class="lane-key"><span>Time</span><span>${svg('moon')} Rest</span><span>${svg('sun')} Light</span><span>${svg('coffee')} Caffeine</span><span>${svg('plane')}</span></div>` : ''}<div class="scroll" tabindex="0" role="region" aria-label="${c.name} continuous journey timeline"><div class="timeline" style="height:${layout.height}px"><div class="rail"></div></div></div><nav class="app-nav" aria-label="${c.name} timeline shortcuts"><button data-now>${svg('sun')}Now</button><button class="selected" data-start>${svg('route')}Journey</button><button data-trip>${svg('plane')}Trip details</button></nav><div class="home-indicator"></div></div></div><p class="concept-note">${c.description}<span class="tradeoff">${c.tradeoff}</span></p>`;
+        const timeline = article.querySelector('.timeline'),
+          scroll = article.querySelector('.scroll');
+        let html = '';
+        for (const f of s.flights) {
+          const top = layout.timeY(f.start),
+            bottom = layout.timeY(f.end);
+          if (c.id === 'chapters')
+            html += `<div class="flight-envelope" style="top:${top - 6}px;height:${bottom - top + 70}px"></div>`;
+          html += `<div class="flight-band" data-flight="${f.id}" data-start="${f.start}" data-end="${f.end}" style="top:${top + 20}px;height:${bottom - top}px"><span class="plane">${svg('plane')}</span><span class="flight-name">${f.id}</span><span class="plane landing">${svg('plane')}</span></div>`;
+        }
+        for (const a of activities.filter((a) => a.kind !== 'lounge')) {
+          const start = layout.timeY(a.start),
+            end = layout.timeY(a.end),
+            meta = types[a.kind],
+            tag = c.id === 'bands' ? 'button' : 'div';
+          html += `<${tag} class="activity ${a.kind}" data-activity="${a.id}" ${c.id === 'bands' ? `data-detail="${a.id}" aria-label="${a.label}, ${duration(a.start, a.end)}"` : 'aria-hidden="true"'} data-start="${a.start}" data-end="${a.end}" style="top:${start}px;height:${Math.max(16, end - start - 2)}px;--lane:${meta.lane}"><span class="band-top">${svg(meta.icon)}<span>${meta.name}</span><span class="band-duration">${duration(a.start, a.end)}</span></span></${tag}>`;
+        }
+        for (const node of layout.nodes) {
+          if (node.switching)
+            html += `<button class="clock-switch" style="top:${node.y + 6}px" data-detail="switch" data-handoff="${node.t}" aria-label="Switch to ${s.destinationCity} time">${clockSwitch(s)}</button>`;
+          else if (node.day || node.first)
+            html += `<div class="day-break" style="top:${node.y}px" data-day-at="${node.t}">${svg('moon')}<span class="day-name">${fmt(node.t, zoneAt(node.t), 'date')}</span><span class="date-note">${cityAt(node.t)}${node.first ? '' : ' · 00:00'}</span></div>`;
+          let eventY = node.contentY;
+          for (let i = 0; i < node.events.length; i++) {
+            html += eventHtml(node.events[i], eventY, c.id, i === 0);
+            eventY += node.heights[i];
+          }
+        }
+        for (const part of layout.segments) {
+          if (part.folded)
+            html += `<div class="fold" style="top:${part.top + 33}px;height:${Math.max(12, part.height - 45)}px" aria-hidden="true"></div>`;
+          if (c.id === 'bands') {
+            const startHour = Math.ceil(part.start / HOUR) * HOUR;
+            for (let t = startHour; t < part.end; t += HOUR) {
+              if (part.folded && t > startHour) continue;
+              const y = layout.timeY(t);
+              if (layout.events.some((e) => Math.abs(layout.timeY(e.start) - y) < 27)) continue;
+              html += `<div class="time-line" style="top:${y}px"></div><span class="time-label" style="top:${y - 5}px">${fmt(t, zoneAt(t))}</span>`;
+            }
+          }
+        }
+        const nowY = layout.timeY(s.now);
+        html += `<div class="now-line" style="top:${nowY}px"><span>NOW · ${fmt(s.now, zoneAt(s.now))}</span></div><div class="finish" style="top:${layout.height - 112}px">${svg('check')}<strong>Journey complete</strong><span>Back to your local rhythm.</span></div>`;
+        timeline.insertAdjacentHTML('beforeend', html);
+        const view = { c, article, scroll, layout, activities };
+        views.push(view);
+        const context = () => {
+          const y = scroll.scrollTop + 8;
+          let node = layout.nodes[0];
+          for (const n of layout.nodes) {
+            if (n.y <= y) node = n;
+            else break;
+          }
+          article.querySelector('.context .date').textContent = fmt(node.t, zoneAt(node.t), 'date');
+          article.querySelector('.context .place').innerHTML = `${svg('clock')} ${cityAt(node.t)}`;
+        };
+        scroll.addEventListener('scroll', context, { passive: true });
+        context();
+        article
+          .querySelectorAll('[data-detail]')
+          .forEach((el) => el.addEventListener('click', () => openDetail(el.dataset.detail, view)));
+        article
+          .querySelectorAll('[data-trip]')
+          .forEach((el) => el.addEventListener('click', () => openDetail('trip', view)));
+        article
+          .querySelector('[data-now]')
+          .addEventListener('click', () =>
+            scroll.scrollTo({ top: Math.max(0, layout.timeY(s.now) - 90), behavior: 'smooth' }),
+          );
+        article
+          .querySelector('[data-start]')
+          .addEventListener('click', () => scroll.scrollTo({ top: 0, behavior: 'smooth' }));
+        return article;
+      }
+      function openDetail(id, view) {
+        const s = scenarios[scenarioKey],
+          modal = document.querySelector('#details'),
+          body = modal.querySelector('.dialog-body');
+        let title = '',
+          html = '';
+        const clockPair = (t) =>
+          `<div class="detail-clocks"><div><small>${s.originCity}</small><strong>${fmt(t, s.origin)}</strong><span>${fmt(t, s.origin, 'date')}</span></div><div><small>${s.destinationCity}</small><strong>${fmt(t, s.destination)}</strong><span>${fmt(t, s.destination, 'date')}</span></div></div>`;
+        const cities = {
+          SYD: 'Sydney',
+          SFO: 'San Francisco',
+          LAX: 'Los Angeles',
+          MEL: 'Melbourne',
+        };
+        const flightRows = (f) => {
+          const arrivalZone = f.to === 'MEL' || scenarioKey === 'qf11' ? s.destination : s.origin;
+          return `<div class="detail-row"><span>${f.id} · ${f.from} → ${f.to}</span><strong>${duration(f.start, f.end)}</strong></div><div class="detail-row"><span>Departure · ${fmt(f.start, s.origin, 'date')}</span><strong>${fmt(f.start, s.origin)} ${cities[f.from]}</strong></div><div class="detail-row"><span>Arrival · ${fmt(f.end, arrivalZone, 'date')}</span><strong>${fmt(f.end, arrivalZone)} ${cities[f.to]}</strong></div>`;
+        };
+        if (id === 'switch') {
+          title = `Use ${s.destinationCity} time`;
+          html = `<p>Both clocks below show the same moment. Your flight and any rest in progress continue through the change.</p>${clockPair(s.handoff)}<p>From this point, the timeline uses ${s.destinationCity} time. Local dates can move forward or backward; the journey keeps moving forward.</p>`;
+        } else if (id === 'trip') {
+          title = 'Your flights';
+          html = s.flights.map(flightRows).join('');
+        } else {
+          const e =
+            view.layout.events.find((e) => e.id === id) || view.activities.find((a) => a.id === id);
+          if (!e) return;
+          title = e.label;
+          if (e.flight) html = flightRows(e.flight);
+          else {
+            html = `<p>${e.detail}</p><div class="detail-row"><span>Duration</span><strong>${duration(e.start, e.end)}</strong></div><div class="detail-row"><span>Starts</span><strong>${fmt(e.start, zoneAt(e.start))} · ${cityAt(e.start)}</strong></div><div class="detail-row"><span>Ends</span><strong>${fmt(e.end, zoneAt(e.end))} · ${cityAt(e.end)}</strong></div>`;
+            if (e.start < s.handoff && e.end > s.handoff)
+              html += `<p style="margin-top:16px">This is one continuous ${duration(e.start, e.end)} window, even though the clock changes partway through.</p>`;
+            if (e.id === 'cabin-sleep')
+              html += `<div class="detail-row"><span>Meal service</span><strong>Let me sleep</strong></div>`;
+          }
+        }
+        modal.querySelector('#detail-title').textContent = title;
+        body.innerHTML = html + '<button class="dialog-done">Done</button>';
+        body.querySelector('.dialog-done').addEventListener('click', () => modal.close());
+        modal.showModal();
+      }
+      function jump(where, behavior = 'smooth') {
+        jumpTarget = where;
+        document
+          .querySelectorAll('[data-jump]')
+          .forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.jump === where)));
+        const s = scenarios[scenarioKey];
+        for (const v of views) {
+          const top =
+            where === 'start'
+              ? 0
+              : where === 'flight'
+                ? v.layout.timeY(s.flights.at(-1).start) - 50
+                : v.layout.nodes.find((n) => n.switching).y - 180;
+          v.scroll.scrollTo({ top: Math.max(0, top), behavior });
+        }
+      }
+      function selectConcept(name) {
+        document
+          .querySelectorAll('.concept')
+          .forEach((el) => el.classList.toggle('active', el.dataset.conceptId === name));
+        document
+          .querySelectorAll('[data-concept]')
+          .forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.concept === name)));
+        requestAnimationFrame(() => jump(jumpTarget, 'instant'));
+      }
+      function render() {
+        const selected =
+          document.querySelector('[data-concept][aria-pressed="true"]')?.dataset.concept || 'flow';
+        views.length = 0;
+        const board = document.querySelector('.comparison');
+        board.replaceChildren(...concepts.map(renderView));
+        selectConcept(selected);
+        requestAnimationFrame(() => jump(jumpTarget, 'instant'));
+      }
+      document.querySelectorAll('[data-scenario]').forEach((b) =>
+        b.addEventListener('click', () => {
+          scenarioKey = b.dataset.scenario;
+          document
+            .querySelectorAll('[data-scenario]')
+            .forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+          render();
+        }),
+      );
+      document
+        .querySelectorAll('[data-jump]')
+        .forEach((b) => b.addEventListener('click', () => jump(b.dataset.jump)));
+      document
+        .querySelectorAll('[data-concept]')
+        .forEach((b) => b.addEventListener('click', () => selectConcept(b.dataset.concept)));
+      document.querySelector('#compress').addEventListener('change', (e) => {
+        compact = e.target.checked;
+        render();
+      });
+      document
+        .querySelector('.dialog-close')
+        .addEventListener('click', () => document.querySelector('#details').close());
+      document.querySelector('#details').addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) {
+          const r = e.currentTarget.getBoundingClientRect();
+          if (
+            e.clientX < r.left ||
+            e.clientX > r.right ||
+            e.clientY < r.top ||
+            e.clientY > r.bottom
+          )
+            e.currentTarget.close();
+        }
+      });
+      const params = new URLSearchParams(location.search);
+      if (params.get('scenario') === 'pacific') scenarioKey = 'pacific';
+      if (['start', 'flight', 'switch'].includes(params.get('focus')))
+        jumpTarget = params.get('focus');
+      if (params.has('capture')) document.body.classList.add('capture');
+      document
+        .querySelectorAll('[data-scenario]')
+        .forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.scenario === scenarioKey)));
+      render();
+      if (['flow', 'bands', 'chapters'].includes(params.get('concept')))
+        selectConcept(params.get('concept'));
+      // Expose only the sample geometry for screenshot/smoke checks, not application state.
+      window.timelineConcepts = {
+        get scenario() {
+          return scenarios[scenarioKey];
+        },
+        get views() {
+          return views;
+        },
+        jump,
+      };
+    </script>
+  </body>
+</html>

@@ -2,6 +2,12 @@
 
 Updated 2026-11-07. Active work is kept here; the previous complete checklist is preserved in [the task archive](docs/archive/TODO-2026-10-16.md). Release evidence is in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md).
 
+## Continuous timeline design study
+
+- [x] Mock up three interactive mobile concepts with continuous scrolling, local midnight dividers, explicit in-flight clock changes, persistent flight/rest spans, compressed quiet time and expandable details. See [the comparison and previews](docs/prototypes/continuous-timeline/README.md).
+- [x] Check the Sydney–Los Angeles and SFO–LAX–Melbourne examples, narrow-screen overflow, clock/date continuity and prototype interactions.
+- [ ] Choose a direction after design review, then connect it to real plan data and adapt the presentation for web and Flutter.
+
 ## Practical sleep opportunities
 
 - [x] Reproduce late trip entry counting unavailable preparation and rigidly advancing wake time; identify that circadian error scoring has no practical sleep constraints.
