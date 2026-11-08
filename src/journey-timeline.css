@@ -1,0 +1,451 @@
+.journey-timeline {
+  min-width: 0;
+  max-width: 760px;
+}
+.journey-dates {
+  margin: 0 0 18px;
+  gap: 10px;
+}
+.journey-dates .day-button {
+  min-width: 92px;
+  width: 92px;
+  min-height: 130px;
+  padding: 14px 8px;
+  border-radius: 36px;
+}
+.journey-dates .day-button strong {
+  font-size: 27px;
+  margin: 6px 0;
+}
+.journey-dates .day-button small {
+  font-size: 11px;
+}
+.journey-toolbar {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 14px 8px;
+  border-bottom: 1px solid #353349;
+}
+.journey-context {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  gap: 5px 14px;
+  font-size: 13px;
+  min-width: 0;
+}
+.journey-context span {
+  color: #a8a6bb;
+}
+.journey-toolbar button {
+  min-height: 40px;
+}
+.journey-viewport {
+  height: min(76svh, 860px);
+  min-height: 450px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior-y: contain;
+  scrollbar-width: thin;
+  border-bottom: 1px solid #353349;
+}
+.journey-canvas {
+  position: relative;
+  container-type: inline-size;
+  --clock: 54px;
+  --flight: clamp(66px, 20cqw, 98px);
+  --track: calc((100cqw - var(--clock) - var(--flight) - 20px) / 3);
+}
+.journey-rail {
+  position: absolute;
+  left: 48px;
+  width: 1px;
+  border-left: 1px solid #393c50;
+}
+.journey-rail.compressed {
+  border-left: 2px dotted #85a297;
+}
+.journey-tick {
+  position: absolute;
+  left: 0;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  transform: translateY(-7px);
+  pointer-events: none;
+}
+.journey-tick time {
+  width: 43px;
+  flex-shrink: 0;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: #b8b2c9;
+}
+.journey-tick > span {
+  margin-left: 7px;
+  border-top: 1px solid #292c3d;
+  flex: 1;
+}
+.journey-band {
+  position: absolute;
+  left: calc(var(--clock) + var(--lane) * var(--track));
+  width: calc(var(--track) / var(--divisions) - 9px);
+  padding: 0 2px;
+  border: 1px solid var(--edge);
+  border-radius: 17px;
+  background: var(--fill);
+  color: var(--ink);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  z-index: 2;
+  min-width: 0;
+  cursor: pointer;
+}
+.journey-awake {
+  --fill: #1c302a;
+  --edge: #507367;
+  --ink: #b9d5cb;
+}
+.journey-sleep {
+  --fill: #5e4c78;
+  --edge: #bd9fe6;
+  --ink: #f0e3ff;
+}
+.journey-rest {
+  --fill: #384765;
+  --edge: #97add8;
+  --ink: #d0def8;
+}
+.journey-light {
+  --fill: #6f5b29;
+  --edge: #e7c975;
+  --ink: #fff0bc;
+}
+.journey-avoid-light {
+  --fill: #293a51;
+  --edge: #829cc2;
+  --ink: #cfddf4;
+}
+.journey-caffeine {
+  --fill: #543e2d;
+  --edge: #b88e65;
+  --ink: #f0d4b7;
+}
+.journey-melatonin {
+  --fill: #503d62;
+  --edge: #c6a0de;
+  --ink: #eed4ff;
+}
+.journey-band-label {
+  position: sticky;
+  top: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 10px 0;
+  width: 100%;
+  min-width: 0;
+  font-size: clamp(9px, 3cqw, 13px);
+  line-height: 1.25;
+}
+.journey-band-label strong {
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.journey-band-label small {
+  font-size: 9px;
+  opacity: 0.85;
+}
+.journey-flight-span {
+  position: absolute;
+  right: calc(9px + var(--flight) / 2);
+  width: 2px;
+  background: #b89874;
+}
+.journey-flight-span > span {
+  position: sticky;
+  top: 12px;
+  display: block;
+  writing-mode: vertical-rl;
+  padding-top: 10px;
+  margin-left: 6px;
+  font-size: 9px;
+  color: #d3af84;
+  letter-spacing: 1px;
+}
+.journey-flight-marker {
+  position: absolute;
+  right: 8px;
+  width: var(--flight);
+  min-height: 72px;
+  border: 1px solid #826244;
+  border-radius: 10px;
+  background: #30271f;
+  color: #e7c39a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 8px 3px;
+  z-index: 3;
+}
+.journey-flight-marker strong {
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.journey-flight-marker small {
+  font-size: 10px;
+}
+.journey-flight-marker.journey-lounge {
+  color: #c9b5e4;
+  background: #272335;
+  border-color: #61536f;
+}
+.journey-midnight {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 39px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0 12px;
+  background: #202130;
+  border-block: 1px solid #3d3c51;
+  z-index: 4;
+  font-size: 12px;
+}
+.journey-midnight strong {
+  font-weight: 500;
+}
+.journey-midnight span {
+  font-size: 11px;
+  color: #b3abc6;
+  text-align: right;
+}
+.journey-clock-fold {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+.journey-fold-paper {
+  position: absolute;
+  inset: 0;
+  background: #1d1f2d;
+  clip-path: polygon(
+    0 5%,
+    4% 2%,
+    8% 5%,
+    12% 2%,
+    16% 5%,
+    20% 2%,
+    24% 5%,
+    28% 2%,
+    32% 5%,
+    36% 2%,
+    40% 5%,
+    44% 2%,
+    48% 5%,
+    52% 2%,
+    56% 5%,
+    60% 2%,
+    64% 5%,
+    68% 2%,
+    72% 5%,
+    76% 2%,
+    80% 5%,
+    84% 2%,
+    88% 5%,
+    92% 2%,
+    96% 5%,
+    100% 2%,
+    100% 95%,
+    96% 98%,
+    92% 95%,
+    88% 98%,
+    84% 95%,
+    80% 98%,
+    76% 95%,
+    72% 98%,
+    68% 95%,
+    64% 98%,
+    60% 95%,
+    56% 98%,
+    52% 95%,
+    48% 98%,
+    44% 95%,
+    40% 98%,
+    36% 95%,
+    32% 98%,
+    28% 95%,
+    24% 98%,
+    20% 95%,
+    16% 98%,
+    12% 95%,
+    8% 98%,
+    4% 95%,
+    0 98%
+  );
+}
+.journey-fold-clock {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+.journey-fold-clock.before {
+  top: 15px;
+  color: #b2aec3;
+}
+.journey-fold-clock.after {
+  bottom: 16px;
+  color: #eedff9;
+}
+.journey-fold-clock strong {
+  font:
+    700 20px Manrope,
+    sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+.journey-fold-clock small {
+  display: block;
+  margin-top: 4px;
+  font-size: 10px;
+  color: #aca5bc;
+}
+.journey-fold-seam {
+  position: absolute;
+  top: 65px;
+  height: 19px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  background: repeating-linear-gradient(
+    125deg,
+    transparent,
+    transparent 4px,
+    #77718f55 4px,
+    #77718f55 5px
+  );
+  border-block: 1px solid #77718f55;
+}
+.journey-fold-seam span {
+  padding: 0 10px;
+  background: #1d1f2d;
+  color: #c7b2e3;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-size: 9px;
+  line-height: 17px;
+}
+.journey-now {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 1px solid #b0d8c9;
+  z-index: 6;
+  pointer-events: none;
+}
+.journey-now span {
+  position: absolute;
+  right: 8px;
+  top: -9px;
+  background: #b0d8c9;
+  color: #14251f;
+  font-size: 10px;
+  padding: 2px 9px;
+  border-radius: 4px;
+}
+.journey-complete {
+  position: absolute;
+  left: 54px;
+  right: 8px;
+  margin: 0;
+  border: 0;
+}
+.journey-complete h3 {
+  font-size: 14px;
+}
+.journey-complete p {
+  font-size: 12px;
+}
+.journey-details .action-card {
+  margin-top: 14px;
+}
+.journey-key p {
+  display: flex;
+  gap: 14px;
+  margin: 15px 0;
+  font-size: 14px;
+  color: #bcb4d0;
+}
+.journey-key svg {
+  flex-shrink: 0;
+}
+.journey-timeline button:focus-visible {
+  outline: 2px solid #e1c7ff;
+  outline-offset: 3px;
+}
+@media (max-width: 600px) {
+  .journey-toolbar {
+    gap: 12px;
+    padding-inline: 0;
+  }
+  .journey-context {
+    flex-direction: column;
+    font-size: 12px;
+  }
+  .journey-canvas {
+    --clock: 47px;
+    --flight: 66px;
+  }
+  .journey-rail {
+    left: 42px;
+  }
+  .journey-tick time {
+    width: 38px;
+    font-size: 10px;
+  }
+  .journey-tick > span {
+    margin-left: 5px;
+  }
+  .journey-complete {
+    left: 47px;
+  }
+  .journey-flight-marker strong {
+    font-size: 11px;
+  }
+  .journey-flight-marker small {
+    font-size: 9px;
+  }
+}
+.journey-lounge .flight-lounge-link {
+  margin: 0;
+  padding: 0;
+}
+.journey-lounge .lounge-plan-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 3px;
+  min-height: 52px;
+  font-size: 11px;
+}
+.journey-lounge .lounge-link-airport {
+  display: block;
+  font-size: 10px;
+  margin-top: 4px;
+}

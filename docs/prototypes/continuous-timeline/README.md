@@ -26,7 +26,7 @@ Scroll each phone, tap bands or flight markers for details, switch sample journe
 
 Previews: [comparison](previews/bands-refined-comparison.png), [forward date-line crossing](previews/bands-refined-date-line.png), [separate flight track](previews/bands-flight-separation.png). Individual phone views: [divider](previews/bands-divider-mobile.png), [axis](previews/bands-axis-mobile.png), [fold](previews/bands-fold-mobile.png).
 
-This remains a review prototype. The production web and Flutter timelines have not been changed. After choosing the clock-change treatment, integrate the presentation with the shared planner's real intervals and existing detail controls.
+**Selected: option 3, Clock fold.** The web and Flutter apps now implement this treatment with real planner intervals, shared presentation geometry and existing detail controls. See [the system design](../../../DESIGN.md#continuous-bands-timeline). This page remains a historical comparison with illustrative fixtures.
 
 Focused browser checks cover both journeys, continuous flight/sleep spans, day and clock changes, details and key interactions, keyboard dismissal, and compression. All 18 treatment/viewport combinations (320–1360px) fit without horizontal overflow and keep at least 20px between flight markers and recommendation bands. No browser script errors occurred. Production and native build suites are unnecessary for this design-only change.
 

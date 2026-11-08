@@ -45,6 +45,20 @@ void main() {
         expect(days, isNotEmpty);
         expect(days.map((day) => day['date']).toSet().length, days.length);
         expect(result['loungeContexts'], hasLength(4));
+        final journey = Map<String, dynamic>.from(result['journey'] as Map);
+        expect(jsonObjects(journey['points']), isNotEmpty);
+        expect(
+          jsonObjects(
+            journey['bands'],
+          ).where((band) => band['kind'] == 'flight'),
+          hasLength(4),
+        );
+        expect(
+          jsonObjects(
+            journey['markers'],
+          ).where((marker) => marker['kind'] == 'clock'),
+          isNotEmpty,
+        );
         final reminders = remindersForPlan(
           owner: 'guest',
           trip: Trip.fromJson(trip),
@@ -64,6 +78,7 @@ void main() {
           'now': now + 60000,
         });
         expect(refreshed['plan'], result['plan']);
+        expect(refreshed['journey'], result['journey']);
 
         final gap = await engine.call('localTime', {
           'dateTime': '2026-03-08T02:30',

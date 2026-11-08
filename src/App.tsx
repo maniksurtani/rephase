@@ -21,7 +21,6 @@ import {
   X,
 } from 'lucide-react';
 import './styles.css';
-import './timeline.css';
 import './lounges.css';
 import { usePlanning } from './lib/usePlanning';
 import { usePlanView } from './lib/usePlanView';
@@ -161,8 +160,14 @@ export default function App(props: AppProps) {
     setTab('lounges');
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
-  function renderLoungeLink(opportunity: LoungeFlightContext) {
-    return <LoungeOpportunityLink opportunity={opportunity} onExplore={exploreLounges} />;
+  function renderLoungeLink(opportunity: LoungeFlightContext, compact = false) {
+    return (
+      <LoungeOpportunityLink
+        opportunity={opportunity}
+        onExplore={exploreLounges}
+        compact={compact}
+      />
+    );
   }
   function flightWithLounges(segment: PlanTravelSegment) {
     const opportunity = loungeOpportunities.find((value) => value.legId === segment.id);
@@ -423,6 +428,7 @@ export default function App(props: AppProps) {
 
           {tab === 'plan' && (
             <PlanView
+              now={now}
               trip={trip}
               plan={plan}
               view={view}

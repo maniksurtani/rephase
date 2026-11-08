@@ -95,16 +95,16 @@ test('Today removes elapsed morning advice using the device clock, including imm
   // Only the summary is filtered; the full plan retains historical advice.
   await page.getByRole('button', { name: 'Explore your plan', exact: true }).click();
   await page.locator('.day-button[data-date="2026-10-18"]').click();
-  await expect(page.locator('.day-timeline .timeline-clock time').first()).toHaveAttribute(
-    'datetime',
-    '2026-10-18T10:00:00.000Z',
-  );
-  await expect(
-    page.locator('.day-timeline').getByRole('heading', { name: 'Optional caffeine', exact: true }),
-  ).toBeVisible();
-  await expect(
-    page.locator('.day-timeline').getByRole('heading', { name: 'Seek bright light', exact: true }),
-  ).toBeVisible();
+  for (const kind of ['caffeine', 'light']) {
+    const historical = await page
+      .locator(`.journey-band[data-kind="${kind}"]`)
+      .evaluateAll((nodes) =>
+        nodes.some(
+          (node) => Number(node.getAttribute('data-end')) <= Date.parse('2026-10-19T01:45:00Z'),
+        ),
+      );
+    expect(historical).toBe(true);
+  }
 });
 
 test('Today uses Honolulu’s calendar date across UTC midnight without hiding the next bedtime', async ({
@@ -121,7 +121,5 @@ test('Today uses Honolulu’s calendar date across UTC midnight without hiding t
   ).toBeVisible();
   await page.getByRole('button', { name: 'Explore your plan', exact: true }).click();
   await page.locator('.day-button[data-date="2026-10-18"]').click();
-  await expect(
-    page.locator('.day-timeline').getByRole('heading', { name: 'Bedtime', exact: true }).first(),
-  ).toBeVisible();
+  await expect(page.locator('.journey-band[data-kind="sleep"]').first()).toBeVisible();
 });

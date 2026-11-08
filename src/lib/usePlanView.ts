@@ -37,7 +37,12 @@ export function usePlanView(
     () => selectPlanTiming(calendarDays, allActions, flights, selectedDayId, now),
     [calendarDays, allActions, flights, selectedDayId, now],
   );
-  return { calendarDays, ...timing, isDemo: trip?.id.startsWith('demo-') ?? false };
+  return {
+    calendarDays,
+    ...timing,
+    requestedDayId: selectedDayId,
+    isDemo: trip?.id.startsWith('demo-') ?? false,
+  };
 }
 
 export type PlanViewState = ReturnType<typeof usePlanView>;

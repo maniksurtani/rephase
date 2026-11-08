@@ -1,6 +1,6 @@
 # Rephase for iOS and Android
 
-A native Flutter app alongside the React web app. Today, the day timeline, multi-flight trips, Lounge Explorer and Profile use Flutter widgets. Planning and lounge matching run offline using the same bundled TypeScript code and datasets as the web application.
+A native Flutter app alongside the React web app. Today, the continuous Bands timeline, multi-flight trips, Lounge Explorer and Profile use Flutter widgets. Planning and lounge matching run offline using the same bundled TypeScript code and datasets as the web application.
 
 ## Mac setup
 
@@ -116,6 +116,8 @@ The API key used for flight lookup stays in the Worker. Never put `RAPIDAPI_KEY`
 - `scripts/build-mobile-engine.mjs`: bundles the engine, airport catalog, lounge guides and preserved upstream notices. Generated assets are rebuilt rather than checked into Git.
 
 The system WebView supplies the standard JavaScript/Intl timezone runtime on both platforms. This avoids maintaining a second circadian model and keeps calculations off the Flutter widget tree. Saved inputs remain schema 1, including unknown fields from newer web releases. Clock-only updates reuse the existing numerical plan.
+
+The Plan uses the shared `src/lib/journey-timeline.ts` presentation through the bridge's `journey` field. Native widgets render continuous bands, local midnight dividers, folded clock changes, separate flight markers and preflight lounge links. Date buttons and Now scroll within the journey; details open in native sheets. The midpoint clock handoff shows the same instant in both airport zones and does not change guidance or reminder times. Existing installed apps need rebuilding with `npm run mobile -- run` to receive the new widgets and bundled presentation model.
 
 Android loads the planner at a fixed synthetic HTTPS URL. Its request interceptor serves only that initial main-frame GET from the bundled HTML in memory; every other request receives an empty 403 response. This requires no HTTP server or network connection. iOS uses the same HTML through its initial-data API. Android startup waits for the actual planner document rather than an incidental blank-page callback. Debug builds report WebView script and main-document HTTP errors in the Flutter log.
 

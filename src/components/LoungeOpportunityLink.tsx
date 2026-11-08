@@ -5,9 +5,11 @@ import type { LoungeFlightContext } from '../lib/lounge-windows';
 export function LoungeOpportunityLink({
   opportunity,
   onExplore,
+  compact = false,
 }: {
   opportunity: LoungeFlightContext;
   onExplore: (opportunity: LoungeFlightContext) => void;
+  compact?: boolean;
 }) {
   return (
     <div className="flight-lounge-link" data-flight-id={opportunity.legId}>
@@ -19,9 +21,13 @@ export function LoungeOpportunityLink({
       >
         <Armchair size={15} aria-hidden="true" />
         <span>
-          Lounge Explorer <span className="lounge-link-airport">· {opportunity.airport}</span>
+          {compact ? 'Lounges' : 'Lounge Explorer'}{' '}
+          <span className="lounge-link-airport">
+            {compact ? '' : '· '}
+            {opportunity.airport}
+          </span>
         </span>
-        <ArrowUpRight size={13} aria-hidden="true" />
+        {!compact && <ArrowUpRight size={13} aria-hidden="true" />}
       </button>
     </div>
   );

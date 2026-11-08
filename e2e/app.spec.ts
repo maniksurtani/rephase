@@ -17,7 +17,7 @@ test('desktop example produces a dated plan and calendar export', async ({ page 
   await expect(page.getByText('Example trip', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Explore your plan' }).click();
   await expect(page.getByRole('heading', { name: 'Your travel plan' })).toBeVisible();
-  await expect(page.getByText('All times in', { exact: false })).toBeVisible();
+  await expect(page.locator('.journey-context')).toBeVisible();
   const downloadEvent = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Calendar', exact: true }).click();
   const download = await downloadEvent;
@@ -113,17 +113,15 @@ test('production shell and a saved account namespace reopen offline', async ({ p
         { id: 'offline-account', name: 'Offline traveler', email: 'traveler@example.com' },
         'lastAccount',
       );
-    transaction
-      .objectStore('state')
-      .put(
-        {
-          schemaVersion: 1,
-          preferences: { ...preferences, sleepHours: 9.5 },
-          trips: [],
-          selectedTripId: null,
-        },
-        'account:offline-account',
-      );
+    transaction.objectStore('state').put(
+      {
+        schemaVersion: 1,
+        preferences: { ...preferences, sleepHours: 9.5 },
+        trips: [],
+        selectedTripId: null,
+      },
+      'account:offline-account',
+    );
     await new Promise<void>((resolve, reject) => {
       transaction.oncomplete = () => resolve();
       transaction.onerror = () => reject(transaction.error);
@@ -205,9 +203,12 @@ test('recorded actual experience persists after reload', async ({ page }) => {
   await page.getByRole('button', { name: 'Create my plan', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'My recent flight', exact: true })).toBeVisible();
   await page.locator('.day-button').first().click();
+  await page.locator('.journey-band:not([data-kind="awake"])').first().click();
   await page.getByRole('button', { name: 'Record what happened', exact: true }).first().click();
   await page.getByRole('combobox', { name: 'What happened?' }).selectOption('missed');
   await page.getByRole('button', { name: 'Save record', exact: true }).click();
+  await expect(page.getByRole('dialog', { name: 'Record your actual experience' })).toHaveCount(0);
+  await page.keyboard.press('Escape');
   await expect(page.getByText('Your recorded history', { exact: false })).toBeVisible();
   await page.getByText('Your recorded history', { exact: false }).click();
   await expect(

@@ -1,13 +1,9 @@
-import { useLayoutEffect, useRef, type ReactNode } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import type { LoungeFlightContext } from '../lib/lounge-windows';
 import {
   ArrowRight,
   ArrowUpRight,
-  CircleCheck,
-  ChevronLeft,
-  ChevronRight,
   Download,
-  Globe2,
   Info,
   Moon,
   Pencil,
@@ -24,15 +20,16 @@ import {
   plural,
   remainingAdjustmentLabel,
   time,
-  zoneName,
 } from '../lib/display';
 import { planDayCity } from '../lib/plan-places';
 import { exportCalendar } from '../lib/export';
-import { DayTimeline } from '../components/DayTimeline';
+import { JourneyTimeline } from '../components/JourneyTimeline';
+import { buildJourneyTimeline } from '../lib/journey-timeline';
 import { ActionCard, actionMeta } from '../components/ActionCard';
 
 interface PlanViewProps {
   trip: Trip | null;
+  now: Date;
   plan: Plan | null;
   view: PlanViewState;
   loading: boolean;
@@ -43,10 +40,11 @@ interface PlanViewProps {
   onScience: () => void;
   onRecord: (action: PlanAction) => void;
   loungeContexts: LoungeFlightContext[];
-  renderBeforeFlight: (context: LoungeFlightContext) => ReactNode;
+  renderBeforeFlight: (context: LoungeFlightContext, compact?: boolean) => ReactNode;
 }
 export function PlanView({
   trip,
+  now,
   plan,
   view,
   loading,
@@ -60,22 +58,20 @@ export function PlanView({
   renderBeforeFlight,
 }: PlanViewProps) {
   const { calendarDays, selectedDay, currentAction, isDemo } = view;
-  const dayNavigationRef = useRef<HTMLDivElement>(null);
-  const selectedDayRef = useRef<HTMLButtonElement>(null);
-
-  useLayoutEffect(() => {
-    const navigation = dayNavigationRef.current;
-    const selected = selectedDayRef.current;
-    if (!navigation || !selected) return;
-    const strip = navigation.getBoundingClientRect();
-    const tile = selected.getBoundingClientRect();
-    if (tile.left >= strip.left && tile.right <= strip.right) return;
-    // Scroll only the date strip; scrollIntoView can also move the page vertically.
-    navigation.scrollTo({
-      left: navigation.scrollLeft + tile.left - strip.left - (strip.width - tile.width) / 2,
-      behavior: 'instant',
-    });
-  }, [calendarDays, selectedDay?.id]);
+  const journey = useMemo(
+    () => buildJourneyTimeline(calendarDays, { loungeContexts }),
+    [calendarDays, loungeContexts],
+  );
+  const flights = useMemo(
+    () => [
+      ...new Map(
+        calendarDays.flatMap((day) =>
+          day.travelSegments.map((flight) => [flight.id, flight] as const),
+        ),
+      ).values(),
+    ],
+    [calendarDays],
+  );
 
   return (
     <>
@@ -136,123 +132,26 @@ export function PlanView({
               </button>
             </div>
           )}
-          <div
-            ref={dayNavigationRef}
-            className="day-navigation"
-            role="group"
-            aria-label="Choose a plan day"
-          >
-            {calendarDays.map((day) => (
-              <button
-                type="button"
-                key={day.id}
-                ref={day.id === selectedDay?.id ? selectedDayRef : undefined}
-                className={`day-button ${day.travelSegments?.length ? 'travel-day' : ''} ${day.id === selectedDay?.id ? 'selected' : ''}`}
-                data-date={day.date}
-                data-zone={day.timeZone}
-                title={`${dateLabel(day.date, 'long')} · ${planDayCity(day)}${day.travelSegments?.length ? ` · ${day.travelSegments.map((segment) => segment.flightNumber || `${segment.departureAirport} → ${segment.arrivalAirport}`).join(', ')}` : ''}`}
-                aria-pressed={day.id === selectedDay?.id}
-                onClick={() => onSelectDay(day.id)}
-              >
-                <span>{dateLabel(day.date).split(',')[0].split(' ')[0]}</span>
-                <strong>{Number(day.date.slice(8, 10))}</strong>
-                <small>
-                  {day.travelSegments?.length ? (
-                    <>
-                      <Plane size={11} />
-                      Travel
-                    </>
-                  ) : day.stage === 'preparation' ? (
-                    'Prepare'
-                  ) : (
-                    planDayCity(day)
-                  )}
-                </small>
-                {Boolean(day.travelSegments?.length) && (
-                  <span className="day-zone">
-                    {[
-                      ...new Set(
-                        day.travelSegments.flatMap((segment) => [
-                          segment.departureAirport,
-                          segment.arrivalAirport,
-                        ]),
-                      ),
-                    ].join(' · ')}
-                  </span>
-                )}
-              </button>
-            ))}
-          </div>
-          {selectedDay && (
+          {selectedDay && journey && (
             <div className="plan-layout">
-              <section>
-                <div className="agenda-heading">
-                  <div>
-                    <span className={`stage-label ${selectedDay.stage}`}>
-                      {selectedDay.travelSegments?.length ? <Plane size={13} /> : <span />}
-                      {selectedDay.label}
-                    </span>
-                    <h2>{dateLabel(selectedDay.date, 'long')}</h2>
-                    <p className="timezone-caption">
-                      <Globe2 size={14} />
-                      {selectedDay.travelSegments?.length
-                        ? 'One date, both airport clocks. Every time includes its local date.'
-                        : `All times in ${planDayCity(selectedDay)} · ${zoneName(selectedDay.timeZone, selectedDay.actions[0]?.start)}`}
-                    </p>
-                  </div>
-                  <div className="day-arrows">
-                    <button
-                      type="button"
-                      className="icon-button"
-                      aria-label="Previous plan day"
-                      disabled={calendarDays.indexOf(selectedDay) === 0}
-                      onClick={() =>
-                        onSelectDay(calendarDays[calendarDays.indexOf(selectedDay) - 1]?.id)
-                      }
-                    >
-                      <ChevronLeft size={18} />
-                    </button>
-                    <button
-                      type="button"
-                      className="icon-button"
-                      aria-label="Next plan day"
-                      disabled={calendarDays.indexOf(selectedDay) === calendarDays.length - 1}
-                      onClick={() =>
-                        onSelectDay(calendarDays[calendarDays.indexOf(selectedDay) + 1]?.id)
-                      }
-                    >
-                      <ChevronRight size={18} />
-                    </button>
-                  </div>
-                </div>
-                <DayTimeline
-                  key={selectedDay.id}
-                  day={selectedDay}
-                  loungeContexts={loungeContexts}
-                  renderBeforeFlight={renderBeforeFlight}
-                  renderAction={(action, sleepEpisode) => (
-                    <ActionCard
-                      key={action.id}
-                      action={action}
-                      timeline
-                      sleepEpisode={sleepEpisode}
-                      travelSegments={selectedDay.travelSegments}
-                      isCurrent={!isDemo && action.id === currentAction?.id}
-                      record={trip.adherence?.find((entry) => entry.actionId === action.id)}
-                      onRecord={isDemo ? undefined : onRecord}
-                    />
-                  )}
-                />
-                {selectedDay.tripComplete && (
-                  <div className="trip-complete" role="note">
-                    <CircleCheck size={20} aria-hidden="true" />
-                    <div>
-                      <h3>Trip complete</h3>
-                      <p>Return to your usual routine.</p>
-                    </div>
-                  </div>
+              <JourneyTimeline
+                key={trip.id}
+                timeline={journey}
+                now={now.getTime()}
+                initialDate={view.requestedDayId ?? undefined}
+                onDate={onSelectDay}
+                renderBeforeFlight={renderBeforeFlight}
+                renderAction={(action, sleepEpisode) => (
+                  <ActionCard
+                    action={action}
+                    sleepEpisode={sleepEpisode}
+                    travelSegments={flights}
+                    isCurrent={!isDemo && action.id === currentAction?.id}
+                    record={trip.adherence?.find((entry) => entry.actionId === action.id)}
+                    onRecord={isDemo ? undefined : onRecord}
+                  />
                 )}
-              </section>
+              />
               <aside className="plan-aside">
                 <section className="plan-note-card">
                   <span className="eyebrow muted">

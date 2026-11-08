@@ -39,26 +39,19 @@ function noHorizontalOverflow(page: Page) {
 
 async function expectPreflightLoungeEntry(page: Page, flightId: string, departure: string) {
   const link = page.locator(`.flight-lounge-link[data-flight-id="${flightId}"]`);
-  const lounge = page.locator('.timeline-entry[data-kind="lounge"]').filter({ has: link });
-  const flight = page
-    .locator('.timeline-entry[data-kind="flight"]')
-    .filter({ has: page.locator(`.flight-segment-card[data-flight-id="${flightId}"]`) });
+  const lounge = page.locator('.journey-flight-marker[data-kind="lounge"]').filter({ has: link });
+  const flight = page.locator(
+    `.journey-flight-marker[data-flight-id="${flightId}"][data-phase="departure"]`,
+  );
   await expect(lounge).toHaveCount(1);
   await expect(flight).toHaveCount(1);
   const start = Number(await lounge.getAttribute('data-start'));
   expect(start).toBeLessThan(Date.parse(departure));
   expect(start).toBeLessThan(Number(await flight.getAttribute('data-start')));
-  // Merely placing the link above the card at the departure timestamp is not
-  // enough: it needs a distinct earlier time on the rail and earlier geometry.
-  await expect(
-    lounge.locator('xpath=ancestor::li[1]').locator('.timeline-clock time'),
-  ).toHaveAttribute('datetime', new Date(start).toISOString());
   const [loungeBounds, flightBounds] = await Promise.all([
     lounge.boundingBox(),
     flight.boundingBox(),
   ]);
-  expect(loungeBounds).not.toBeNull();
-  expect(flightBounds).not.toBeNull();
   expect(loungeBounds!.y + loungeBounds!.height).toBeLessThanOrEqual(flightBounds!.y);
   return start;
 }
@@ -285,7 +278,9 @@ test('compact mobile lounge links precede departures and preserve flight context
       exact: true,
     });
     await expect(button).toBeVisible();
-    await expect(page.locator(`.flight-segment-card[data-flight-id="${leg.id}"]`)).toBeVisible();
+    await expect(
+      page.locator(`.journey-flight-marker[data-flight-id="${leg.id}"][data-phase="departure"]`),
+    ).toBeVisible();
     await expectPreflightLoungeEntry(
       page,
       leg.id,
@@ -293,7 +288,9 @@ test('compact mobile lounge links precede departures and preserve flight context
     );
     expect(
       await button.evaluate((node, flightId) => {
-        const card = document.querySelector(`.flight-segment-card[data-flight-id="${flightId}"]`);
+        const card = document.querySelector(
+          `.journey-flight-marker[data-flight-id="${flightId}"][data-phase="departure"]`,
+        );
         return (
           card !== null &&
           Boolean(node.compareDocumentPosition(card) & Node.DOCUMENT_POSITION_FOLLOWING)
@@ -301,7 +298,7 @@ test('compact mobile lounge links precede departures and preserve flight context
       }, leg.id),
     ).toBe(true);
     const bounds = await button.boundingBox();
-    expect(bounds?.height).toBeLessThanOrEqual(60);
+    expect(bounds?.height).toBeLessThanOrEqual(72);
     expect(await noHorizontalOverflow(page)).toBe(true);
   }
   await page.getByRole('button', { name: 'Explore lounges in MEL', exact: true }).click();
@@ -313,20 +310,13 @@ test('compact mobile lounge links precede departures and preserve flight context
   );
   await expect(page.locator('.lounge-card, .lounge-recommended')).toHaveCount(0);
   await navigation.getByRole('button', { name: 'Your plan', exact: true }).click();
-  // QF94 remains in transit on the 25th and arrives on the 26th. Its
-  // pre-departure lounge window belongs only to the LAX departure day.
-  for (const date of ['2026-10-25', '2026-10-26']) {
-    await page.locator(`.day-button[data-date="${date}"]`).click();
-    await expect(page.locator('.flight-segment-card[data-flight-id="qf94"]')).toHaveCount(0);
-    await expect(
-      page.locator('.timeline-entry[data-flight-id="qf94"][data-phase="continuation"]'),
-    ).toBeVisible();
-    await expect(
-      page.getByRole('button', { name: 'Explore lounges in LAX', exact: true }),
-    ).toHaveCount(0);
-  }
+  // One uninterrupted flight and one earlier lounge shortcut survive scrolling across all three dates.
+  await expect(page.locator('.journey-flight-span[data-flight-id="qf94"]')).toHaveCount(1);
+  await expect(page.locator('.flight-lounge-link[data-flight-id="qf94"]')).toHaveCount(1);
   await page.locator('.day-button[data-date="2026-10-24"]').click();
-  const connection = page.locator('.flight-segment-card[data-flight-id="qf94"]');
+  const connection = page.locator(
+    '.journey-flight-marker[data-flight-id="qf94"][data-phase="departure"]',
+  );
   await expect(connection).toBeVisible();
   await page.getByRole('button', { name: 'Explore lounges in LAX', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Lounge Explorer', exact: true })).toBeVisible();
@@ -380,7 +370,9 @@ test('compact mobile lounge links precede departures and preserve flight context
   await expect(page.getByRole('heading', { name: itinerary.name, exact: true })).toBeVisible();
   await navigation.getByRole('button', { name: 'Your plan', exact: true }).click();
   await page.locator('.day-button[data-date="2026-10-24"]').click();
-  await expect(page.locator('.flight-segment-card[data-flight-id="qf94"]')).toBeVisible();
+  await expect(
+    page.locator('.journey-flight-marker[data-flight-id="qf94"][data-phase="departure"]'),
+  ).toBeVisible();
   await expectPreflightLoungeEntry(page, 'qf94', '2026-10-25T02:05:00Z');
   await expect(
     page.getByRole('button', { name: 'Explore lounges in SFO', exact: true }),
@@ -452,31 +444,27 @@ test('an after-midnight connection keeps its lounge visit before departure on th
     .click();
   await page.locator('.day-button[data-date="2026-10-24"]').click();
   const link = page.locator('.flight-lounge-link[data-flight-id="after-midnight-departure"]');
-  const lounge = page.locator('.timeline-entry[data-kind="lounge"]').filter({ has: link });
+  const lounge = page.locator('.journey-flight-marker[data-kind="lounge"]').filter({ has: link });
   await expect(lounge).toHaveCount(1);
   const at = Number(await lounge.getAttribute('data-start'));
   expect(at).toBe(Date.parse('2026-10-25T05:40:00Z')); // 24 October, 22:40 PDT
-  const localClock = lounge.locator('xpath=ancestor::li[1]').locator('.timeline-clock time');
-  await expect(localClock).toHaveAttribute('datetime', new Date(at).toISOString());
+  const localClock = page.locator(`.journey-tick time[datetime="${new Date(at).toISOString()}"]`);
   await expect(localClock).toContainText('22:40');
-  await expect(localClock).toContainText('24 Oct');
-  const end24 = Number(await page.locator('.day-timeline').getAttribute('data-end'));
-  expect(at).toBeLessThan(end24);
-
   await page.locator('.day-button[data-date="2026-10-25"]').click();
-  expect(Number(await page.locator('.day-timeline').getAttribute('data-start'))).toBe(end24);
-  await expect(link).toHaveCount(0);
+  await expect(link).toHaveCount(1);
   const departure = page.locator(
-    '.timeline-entry[data-flight-id="after-midnight-departure"][data-phase="departure"]',
+    '.journey-flight-marker[data-flight-id="after-midnight-departure"][data-phase="departure"]',
   );
-  await expect(departure).toHaveCount(1);
-  const departureAt = Number(await departure.getAttribute('data-start'));
-  expect(departureAt).toBe(Date.parse('2026-10-25T08:00:00Z'));
-  expect(end24).toBeLessThanOrEqual(departureAt);
-  await departure.locator('.flight-details > summary').click();
-  await expect(departure.locator('[aria-label="Departure"] .flight-clock-origin')).toContainText(
+  expect(Number(await departure.getAttribute('data-start'))).toBe(
+    Date.parse('2026-10-25T08:00:00Z'),
+  );
+  await departure.click();
+  const details = page.getByRole('dialog', { name: 'Your flight', exact: true });
+  await details.locator('.flight-details > summary').click();
+  await expect(details.locator('[aria-label="Departure"] .flight-clock-origin')).toContainText(
     '01:00',
   );
+  await details.getByRole('button', { name: 'Close dialog' }).click();
 
   await page.locator('.day-button[data-date="2026-10-24"]').click();
   await lounge.scrollIntoViewIfNeeded();

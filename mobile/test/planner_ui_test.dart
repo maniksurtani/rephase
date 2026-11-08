@@ -5,7 +5,7 @@ import 'package:rephase/app_controller.dart';
 import 'package:rephase/data/models.dart';
 import 'package:rephase/engine/mobile_engine.dart';
 import 'package:rephase/features/plan/action_card.dart';
-import 'package:rephase/features/plan/day_timeline.dart';
+import 'package:rephase/features/plan/journey_timeline.dart';
 import 'package:rephase/features/plan/plan_screen.dart';
 import 'package:rephase/features/today/today_screen.dart';
 import 'package:rephase/ui/theme.dart';
@@ -116,72 +116,146 @@ void main() {
   );
 
   testWidgets(
-    'the preflight lounge link precedes the flight and opens its airport context',
+    'continuous native bands keep flights separate, disclose guidance, and link lounges',
     (tester) async {
       mobileSize(tester);
       final controller = _Controller({});
       addTearDown(controller.dispose);
-      final flight = <String, dynamic>{
+      final start = controller.now
+          .subtract(const Duration(hours: 2))
+          .millisecondsSinceEpoch;
+      final flight = {
         'id': 'leg',
-        'flightNumber': 'AS812',
-        'departureAirport': 'HNL',
-        'arrivalAirport': 'SFO',
-        'departureCity': 'Honolulu',
-        'arrivalCity': 'San Francisco',
+        'flightNumber': 'QF94',
+        'departureAirport': 'LAX',
+        'arrivalAirport': 'MEL',
+        'departureCity': 'Los Angeles',
+        'arrivalCity': 'Melbourne',
         'departureClock': clock('11:00'),
-        'arrivalClock': {...clock('19:00'), 'zone': 'PDT'},
-        'aircraft': {'model': 'Boeing 737'},
+        'arrivalClock': clock('19:00'),
+        'aircraft': {'model': 'Boeing 787'},
       };
-      final lounge = <String, dynamic>{
-        'id': 'lounge:leg',
-        'kind': 'lounge',
-        'start': 1000,
-        'end': 1000,
-        'lounge': {'legId': 'leg', 'airport': 'HNL'},
-      };
-      final travel = <String, dynamic>{
-        'id': 'leg',
-        'kind': 'flight',
-        'start': 2000,
-        'end': 9000,
-        'flight': flight,
-      };
-      final day = <String, dynamic>{
-        'id': '2026-10-18',
-        'date': '2026-10-18',
-        'city': 'Honolulu',
-        'travelSegments': [flight],
-        'timeline': {
-          'start': 1000,
-          'end': 9000,
-          'entries': [lounge, travel],
-          'bands': [
-            {'kind': 'flight'},
-          ],
-        },
-        'steps': [
+      final journey = <String, dynamic>{
+        'start': start,
+        'end': start + 86400000,
+        'height': 1900,
+        'days': [
           {
-            'start': 1000,
-            'end': 2000,
-            'clock': clock('10:00'),
-            'endClock': clock('11:00'),
-            'compressed': false,
-            'entries': [lounge],
-            'bands': [],
+            'date': '2026-10-18',
+            'at': start,
+            'y': 0,
+            'city': 'Los Angeles',
+            'travel': true,
           },
           {
-            'start': 2000,
-            'end': 9000,
-            'clock': clock('11:00'),
-            'endClock': clock('18:00'),
-            'compressed': true,
-            'entries': [travel],
-            'bands': [
-              {'kind': 'flight', 'start': 2000, 'end': 9000},
-            ],
+            'date': '2026-10-19',
+            'at': start + 43200000,
+            'y': 1050,
+            'city': 'Melbourne',
+            'travel': true,
           },
         ],
-        'lastClock': clock('18:00'),
+        'points': [
+          {
+            'at': start,
+            'end': start + 43200000,
+            'top': 0,
+            'y': 46,
+            'height': 1004,
+            'clock': clock('00:00'),
+            'city': 'Los Angeles',
+          },
+          {
+            'at': start + 43200000,
+            'end': start + 86400000,
+            'top': 1050,
+            'y': 1194,
+            'height': 586,
+            'clock': clock('01:00', date: '2026-10-19'),
+            'city': 'Melbourne',
+          },
+          {
+            'at': start + 86400000,
+            'end': start + 86400000,
+            'top': 1780,
+            'y': 1780,
+            'height': 0,
+            'clock': clock('12:00', date: '2026-10-19'),
+            'city': 'Melbourne',
+          },
+        ],
+        'ticks': [],
+        'bands': [
+          {
+            'id': 'awake',
+            'kind': 'awake',
+            'label': 'Awake',
+            'duration': '8h',
+            'top': 46,
+            'height': 500,
+            'lane': 0,
+            'laneCount': 1,
+            'actions': [],
+          },
+          {
+            'id': 'sleep',
+            'kind': 'sleep',
+            'label': 'Sleep',
+            'duration': '8h',
+            'top': 548,
+            'height': 900,
+            'lane': 0,
+            'laneCount': 1,
+            'actions': [advice('sleep', 'sleep', 'Bedtime')],
+          },
+          {
+            'id': 'flight',
+            'kind': 'flight',
+            'top': 250,
+            'height': 1250,
+            'flight': flight,
+          },
+        ],
+        'events': [
+          {
+            'top': 150,
+            'entry': {
+              'id': 'lounge:leg',
+              'kind': 'lounge',
+              'lounge': {'legId': 'leg', 'airport': 'LAX'},
+            },
+          },
+          {
+            'top': 250,
+            'entry': {
+              'id': 'leg',
+              'kind': 'flight',
+              'phase': 'departure',
+              'flight': flight,
+            },
+          },
+        ],
+        'markers': [
+          {
+            'at': start,
+            'top': 0,
+            'height': 46,
+            'kind': 'day',
+            'clock': clock('00:00'),
+            'city': 'Los Angeles',
+          },
+          {
+            'at': start + 43200000,
+            'top': 1050,
+            'height': 144,
+            'kind': 'clock',
+            'fromClock': clock('07:00'),
+            'clock': clock('01:00', date: '2026-10-19'),
+            'fromCity': 'Los Angeles',
+            'city': 'Melbourne',
+            'change': '+18h',
+          },
+        ],
       };
       String? opened;
       final router = GoRouter(
@@ -189,8 +263,12 @@ void main() {
           GoRoute(
             path: '/',
             builder: (_, _) => Scaffold(
-              body: SingleChildScrollView(
-                child: DayTimeline(day: day, controller: controller),
+              body: Padding(
+                padding: const EdgeInsets.all(16),
+                child: JourneyTimeline(
+                  journey: journey,
+                  controller: controller,
+                ),
               ),
             ),
           ),
@@ -207,177 +285,72 @@ void main() {
       await tester.pumpWidget(
         MaterialApp.router(theme: rephaseTheme(), routerConfig: router),
       );
-      expect(
-        tester.getTopLeft(find.text('Explore HNL lounges')).dy,
-        lessThan(tester.getTopLeft(find.text('HNL → SFO')).dy),
-      );
-      expect(find.text('Aircraft · Boeing 737'), findsNothing);
-      expect(find.text('…'), findsNothing);
-      await tester.tap(find.text('Explore HNL lounges'));
       await tester.pumpAndSettle();
-      expect(opened, '/lounges?airport=HNL&leg=leg');
-      expect(tester.takeException(), isNull);
-    },
-  );
-
-  testWidgets(
-    'date-line continuations keep sleep totals and show arrival without repeated flight details',
-    (tester) async {
-      mobileSize(tester);
-      final controller = _Controller({});
-      addTearDown(controller.dispose);
-      num at(String iso) => DateTime.parse(iso).millisecondsSinceEpoch;
-      Json local(String time, String date, String zone) => {
-        'time': time,
-        'date': '${date.substring(8)} Oct',
-        'dateKey': date,
-        'zone': zone,
-      };
-      final start = at('2026-10-25T06:40Z');
-      final restStart = at('2026-10-25T11:16Z');
-      final midnight = at('2026-10-25T13:00Z');
-      final arrival = at('2026-10-25T22:30Z');
-      final flight = {
-        'id': 'qf94',
-        'flightNumber': 'QF94',
-        'arrivalCity': 'Melbourne',
-        'arrivalAirport': 'MEL',
-      };
-      final continuing = {
-        'id': 'qf94:continuation',
-        'kind': 'flight',
-        'phase': 'continuation',
-        'start': start,
-        'end': midnight,
-        'continuesAfter': true,
-        'flight': flight,
-      };
-      final rest = {
-        'kind': 'action',
-        'start': restStart,
-        'end': midnight,
-        'action': advice('rest', 'sleep', 'Rest or nap'),
-        'sleepEpisode': {
-          'start': restStart,
-          'end': restStart + const Duration(hours: 8).inMilliseconds,
-          'continuesAfter': true,
-        },
-      };
-      final day = <String, dynamic>{
-        'date': '2026-10-25',
-        'travelSegments': [flight],
-        'timeline': {
-          'start': start,
-          'end': midnight,
-          'entries': [continuing, rest],
-          'bands': [],
-        },
-        'steps': [
-          {
-            'start': start,
-            'end': restStart,
-            'clock': local('17:40', '2026-10-25', 'AEDT'),
-            'entries': [continuing],
-            'clockChange': {
-              'city': 'Melbourne',
-              'fromClock': local('23:40', '2026-10-24', 'PDT'),
-              'toClock': local('17:40', '2026-10-25', 'AEDT'),
-            },
-          },
-          {
-            'start': restStart,
-            'end': midnight,
-            'clock': local('22:16', '2026-10-25', 'AEDT'),
-            'entries': [rest],
-          },
-        ],
-        'lastClock': local('00:00', '2026-10-26', 'AEDT'),
-      };
-      Widget timeline(Json day) => host(
-        SingleChildScrollView(
-          child: DayTimeline(day: day, controller: controller),
-        ),
+      final band = find.byKey(const ValueKey('journey-band:awake'));
+      final flightMarker = find.byKey(const ValueKey('journey-event:leg'));
+      expect(
+        tester.getTopRight(band).dx,
+        lessThan(tester.getTopLeft(flightMarker).dx),
       );
-      await tester.pumpWidget(timeline(day));
-      expect(find.textContaining('Clock change · Melbourne'), findsOneWidget);
-      expect(find.textContaining('QF94 · In flight'), findsOneWidget);
-      expect(find.text('8 h total · continues after this day'), findsOneWidget);
-      expect(find.text('Flight details'), findsNothing);
-
-      final landing = {
-        ...continuing,
-        'id': 'qf94:arrival',
-        'phase': 'arrival',
-        'start': arrival,
-        'end': arrival,
-      };
-      await tester.pumpWidget(
-        timeline({
-          'date': '2026-10-26',
-          'timeline': {
-            'start': arrival,
-            'end': arrival,
-            'entries': [landing],
-            'bands': [],
-          },
-          'steps': [],
-          'lastClock': local('09:30', '2026-10-26', 'AEDT'),
-        }),
+      expect(
+        find.byKey(const ValueKey('journey-flight-span:leg')),
+        findsOneWidget,
       );
-      expect(find.text('QF94 · Arrive in Melbourne'), findsOneWidget);
-      expect(find.text('Flight details'), findsNothing);
-      expect(find.text('End of this day'), findsNothing);
+      await tester.ensureVisible(flightMarker);
+      await tester.tap(flightMarker);
+      await tester.pumpAndSettle();
+      expect(find.text('Aircraft · Boeing 787'), findsNothing);
+      await tester.tap(find.text('Flight details'));
+      await tester.pumpAndSettle();
+      expect(find.text('Aircraft · Boeing 787'), findsOneWidget);
+      await tester.tap(find.byTooltip('Close details'));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(
+        find.byKey(const ValueKey('journey-band:sleep')),
+      );
+      await tester.tap(
+        find.byKey(const ValueKey('journey-band:sleep')),
+        warnIfMissed: false,
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Why this helps'), findsOneWidget);
+      await tester.tap(find.text('Why this helps'));
+      await tester.pumpAndSettle();
+      expect(find.text('Timing helps your body clock adjust.'), findsOneWidget);
+      await tester.tap(find.byTooltip('Close details'));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(
+        find.byKey(const ValueKey('journey-date:2026-10-19')),
+      );
+      await tester.tap(find.byKey(const ValueKey('journey-date:2026-10-19')));
+      await tester.pumpAndSettle();
+      expect(find.text('CLOCK CHANGES +18h'), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('journey-flight-span:leg')),
+        findsOneWidget,
+      );
+      await tester.tap(find.text('Now').first);
+      await tester.pumpAndSettle();
+      final lounge = find.byKey(const ValueKey('journey-event:lounge:leg'));
+      await tester.ensureVisible(lounge);
+      await tester.tap(lounge);
+      await tester.pumpAndSettle();
+      expect(opened, '/lounges?airport=LAX&leg=leg');
       expect(tester.takeException(), isNull);
-    },
-  );
 
-  testWidgets(
-    'Sunday remains selectable without recommendations and supports large mobile text',
-    (tester) async {
-      mobileSize(tester);
-      Json day(String date, String city) => {
-        'id': date,
-        'date': date,
-        'city': city,
-        'stage': 'destination',
-        'label': 'Stay in $city',
-        'travelSegments': [],
-        'timeline': {'entries': []},
-        'steps': [],
-      };
-      final controller = _Controller({
+      controller.view = {
+        'journey': journey,
         'plan': {'summary': {}},
-        'days': [
-          day('2026-10-17', 'Honolulu'),
-          day('2026-10-18', 'Honolulu'),
-          {...day('2026-10-19', 'San Francisco'), 'tripComplete': true},
-        ],
-        'today': {'dayId': '2026-10-17'},
-      });
-      addTearDown(controller.dispose);
+        'days': [],
+      };
       await tester.pumpWidget(
         host(PlanScreen(controller: controller), textScale: 1.5),
       );
       await tester.pumpAndSettle();
-      expect(find.text('18'), findsOneWidget);
-      await tester.tap(find.text('18'));
+      await tester.tap(find.byKey(const ValueKey('journey-date:2026-10-19')));
       await tester.pumpAndSettle();
-      await tester.drag(find.byType(PlanScreen), const Offset(0, -320));
-      await tester.pumpAndSettle();
-      expect(find.text('Sunday, 18 October'), findsOneWidget);
-      expect(
-        find.text('No saved recommendations for this day.'),
-        findsOneWidget,
-      );
-      expect(find.text('Stay in Honolulu'), findsOneWidget);
-      expect(find.text('Trip complete'), findsNothing);
-      await tester.ensureVisible(find.byTooltip('Next day'));
-      await tester.tap(find.byTooltip('Next day'));
-      await tester.pumpAndSettle();
-      await tester.ensureVisible(find.text('Trip complete'));
-      expect(find.text('Trip complete'), findsOneWidget);
-      expect(find.text('Return to your usual routine.'), findsOneWidget);
       expect(tester.takeException(), isNull);
+      expect(find.text('CLOCK CHANGES +18h'), findsOneWidget);
     },
   );
 

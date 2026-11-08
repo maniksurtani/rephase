@@ -36,267 +36,16 @@ async function openPlan(
   await page.getByRole('button', { name: 'Explore your plan', exact: true }).click();
 }
 
-async function intervals(page: Page, selector: string) {
-  return page.locator(selector).evaluateAll((nodes) =>
-    nodes.map((node) => ({
-      start: Number(node.getAttribute('data-start')),
-      end: Number(node.getAttribute('data-end')),
-    })),
-  );
-}
-
-async function expectChronologicalRail(page: Page) {
-  await expect(page.locator('.day-timeline')).toBeVisible();
-  const rows = await intervals(page, '.timeline-step:not(.timeline-end)');
-  expect(rows.length).toBeGreaterThan(2);
-  for (const [index, row] of rows.entries()) {
-    expect(Number.isFinite(row.start)).toBe(true);
-    expect(row.end).toBeGreaterThan(row.start);
-    if (index) expect(row.start).toBe(rows[index - 1].end);
-  }
-  // Only elapsed periods marked as compressed use dotted geometry. Check the
-  // neutral rail and every concurrent guidance lane, not decorative text.
-  const styles = await page.locator('.timeline-step:not(.timeline-end)').evaluateAll((nodes) =>
-    nodes.map((node) => ({
-      compressed: node.getAttribute('data-compressed') === 'true',
-      rail: getComputedStyle(node.querySelector('.timeline-rail')!).borderLeftStyle,
-      bands: [...node.querySelectorAll('.timeline-band')].map((band) => ({
-        border: getComputedStyle(band).borderLeftStyle,
-        width: Number.parseFloat(getComputedStyle(band).width),
-        background: getComputedStyle(band).backgroundColor,
-      })),
-    })),
-  );
-  expect(styles.some((style) => style.compressed)).toBe(true);
-  for (const style of styles) {
-    expect(style.rail).toBe(style.compressed ? 'dotted' : 'solid');
-    for (const band of style.bands) {
-      expect(band.width).toBeGreaterThan(0);
-      if (style.compressed) {
-        expect(band.border).toBe('dotted');
-        expect(band.background).toBe('rgba(0, 0, 0, 0)');
-      } else {
-        expect(band.background).not.toBe('rgba(0, 0, 0, 0)');
-      }
-    }
-  }
-  await expect(page.locator('.timeline-ellipsis')).toHaveCount(0);
-  const entries = await intervals(page, '.timeline-entry');
-  expect(entries.length).toBeGreaterThan(0);
-  for (const [index, entry] of entries.entries()) {
-    expect(entry.end).toBeGreaterThanOrEqual(entry.start);
-    if (index) expect(entry.start).toBeGreaterThanOrEqual(entries[index - 1].start);
-  }
-  for (const kind of ['sleep', 'flight']) {
-    const bandIds = await page
-      .locator(`.timeline-band[data-kind="${kind}"]`)
-      .evaluateAll((nodes) => [...new Set(nodes.map((node) => node.getAttribute('data-band-id')))]);
-    // A continuing band carries its meaning past other recommendations;
-    // crossing a clock boundary must not repeat the same status text.
-    expect(await page.locator(`.timeline-status.timeline-${kind}`).count()).toBeLessThanOrEqual(
-      bandIds.length,
-    );
-  }
-  return rows;
-}
-
 test.beforeEach(async ({ page }) => {
   await page.route('**/api/config', (route) =>
     route.fulfill({
       json: { googleClientId: null, syncAvailable: false, flightLookupAvailable: false },
     }),
   );
+  await page.emulateMedia({ reducedMotion: 'reduce' });
 });
 
-test('daily timeline shows concurrent duration bands and keeps explanation and recording controls', async ({
-  page,
-}) => {
-  await page.setViewportSize({ width: 1440, height: 1000 });
-  await openPlan(page);
-  await page.locator('.day-button[data-date="2026-10-20"]').click();
-  const rows = await expectChronologicalRail(page);
-  expect(rows.at(-1)!.end - rows[0].start).toBe(24 * 3_600_000);
-  for (const kind of ['awake', 'sleep', 'light', 'caffeine', 'melatonin']) {
-    await expect(page.locator(`.timeline-band[data-kind="${kind}"]`).first()).toBeVisible();
-  }
-  // Caffeine can coincide with awake time. Independent lanes preserve both
-  // recommendations rather than treating overlapping cards as sequential time.
-  const simultaneous = page
-    .locator(
-      '.timeline-step:has(.timeline-band[data-kind="caffeine"]):has(.timeline-band[data-kind="awake"])',
-    )
-    .first();
-  await expect(simultaneous).toBeVisible();
-  const [caffeine, awake] = await Promise.all([
-    simultaneous.locator('.timeline-band[data-kind="caffeine"]').boundingBox(),
-    simultaneous.locator('.timeline-band[data-kind="awake"]').boundingBox(),
-  ]);
-  expect(caffeine).not.toBeNull();
-  expect(awake).not.toBeNull();
-  expect(caffeine!.x).toBeGreaterThan(awake!.x);
-  expect(caffeine!.y).toBe(awake!.y);
-  expect(caffeine!.height).toBe(awake!.height);
-  // Long periods with unchanged guidance stay compact. Their actual UTC
-  // duration remains available even though the rail is not an hourly ruler.
-  const quietRows = page.locator('.timeline-step:not(.timeline-end):not(:has(.timeline-entry))');
-  const gaps = await quietRows.evaluateAll((nodes) =>
-    nodes.map((node) => ({
-      minutes:
-        (Number(node.getAttribute('data-end')) - Number(node.getAttribute('data-start'))) / 60_000,
-      height: node.getBoundingClientRect().height,
-      compressed: node.getAttribute('data-compressed') === 'true',
-      rail: getComputedStyle(node.querySelector('.timeline-rail')!).borderLeftStyle,
-    })),
-  );
-  const longGap = gaps.find((gap) => gap.minutes >= 120);
-  expect(longGap).toBeDefined();
-  expect(longGap!.compressed).toBe(true);
-  expect(longGap!.rail).toBe('dotted');
-  expect(longGap!.height).toBeLessThanOrEqual(160);
-  const sleepIntervals = await intervals(page, '.timeline-band[data-kind="sleep"]');
-  const awakeIntervals = await intervals(page, '.timeline-band[data-kind="awake"]');
-  for (const sleep of sleepIntervals)
-    for (const awake of awakeIntervals) {
-      expect(sleep.start < awake.end && sleep.end > awake.start).toBe(false);
-    }
-  await expect(page.locator('.day-timeline .action-time').first()).toBeHidden();
-
-  const action = page.locator('.timeline-entry .action-card').first();
-  await action.getByRole('button', { name: 'Why this helps', exact: true }).click();
-  await expect(action.locator('.action-explanation')).toBeVisible();
-  await action.getByRole('button', { name: 'Record what happened', exact: true }).click();
-  const record = page.getByRole('dialog', { name: 'Record your actual experience', exact: true });
-  await expect(record.getByRole('combobox', { name: 'What happened?' })).toBeVisible();
-  await record.getByRole('button', { name: 'Cancel', exact: true }).click();
-  await expect(record).toHaveCount(0);
-  await page.locator('.day-timeline').scrollIntoViewIfNeeded();
-  await captureDesign(page, 'artifacts/timeline-stay-desktop.png');
-});
-
-test('mobile timeline retains date-line flights, simultaneous rest, two-flight days and meal details', async ({
-  page,
-}) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-  await openPlan(page);
-  await page.locator('.day-button[data-date="2026-10-17"]').click();
-  await expectChronologicalRail(page);
-  await expect(
-    page
-      .locator(
-        '.timeline-step:has(.timeline-band[data-kind="flight"]):has(.timeline-band[data-kind="rest"])',
-      )
-      .first(),
-  ).toBeVisible();
-  const outbound = page.locator('.day-timeline .flight-segment-card[data-flight-id="qf103"]');
-  await expect(outbound).toHaveCount(1);
-  await outbound.locator('.flight-details > summary').click();
-  const departure = outbound.getByRole('region', { name: 'Departure', exact: true });
-  await expect(departure.locator('.flight-clock-origin')).toContainText('17 Oct');
-  await expect(departure.locator('.flight-clock-destination')).toContainText('16 Oct');
-
-  // The long awake afternoon in Honolulu used to produce repeated 12:00,
-  // 15:00, 18:00 and 21:00 rows. Keep its real boundaries and evening advice.
-  const quietSpans = await intervals(
-    page,
-    '.timeline-step:not(.timeline-end):not(:has(.timeline-entry))',
-  );
-  const longest = quietSpans.reduce((best, span) =>
-    span.end - span.start > best.end - best.start ? span : best,
-  );
-  const quietTail = page.locator(
-    `.timeline-step:not(.timeline-end)[data-start="${longest.start}"]`,
-  );
-  await expect(quietTail).toHaveCount(1);
-  const tailStart = Number(await quietTail.getAttribute('data-start'));
-  const tailEnd = Number(await quietTail.getAttribute('data-end'));
-  expect(tailEnd - tailStart).toBeGreaterThan(6 * 3_600_000);
-  await expect(quietTail).toHaveAttribute('data-compressed', 'true');
-  await expect(quietTail.locator('.timeline-rail')).toHaveCSS('border-left-style', 'dotted');
-  await expect(quietTail.locator('.timeline-elapsed')).toContainText(
-    'elapsed. Timeline compressed.',
-  );
-  await expect(quietTail.locator('.timeline-status.timeline-awake')).toHaveCount(1);
-  expect((await quietTail.boundingBox())!.height).toBeLessThanOrEqual(160);
-  const tailRows = (await intervals(page, '.timeline-step:not(.timeline-end)')).filter(
-    (row) => row.start >= tailStart && row.start < tailEnd,
-  );
-  expect(tailRows).toEqual([{ start: tailStart, end: tailEnd }]);
-  await expect(
-    page.locator(`.timeline-step[data-start="${tailEnd}"] .timeline-entry`),
-  ).not.toHaveCount(0);
-  const clocks = await page.locator('.timeline-clock time strong').allTextContents();
-  for (const artificialTick of ['12:00', '15:00', '18:00', '21:00'])
-    expect(clocks).not.toContain(artificialTick);
-  const endClock = page.locator('.timeline-end .timeline-clock time');
-  await expect(endClock).toContainText('00:00');
-  await expect(endClock).toContainText('18 Oct');
-  await quietTail.scrollIntoViewIfNeeded();
-  await captureDesign(page, 'artifacts/timeline-quiet-gap-mobile.png');
-
-  await page.locator('.day-button[data-date="2026-10-24"]').click();
-  await expectChronologicalRail(page);
-  await expect(
-    page.locator('.day-timeline .flight-segment-card[data-flight-id="aa6276"]'),
-  ).toHaveCount(1);
-  const flight = page.locator('.day-timeline .flight-segment-card[data-flight-id="qf94"]');
-  await expect(flight).toHaveCount(1);
-  const flightDetails = flight.locator('.flight-details');
-  await expect(flightDetails).not.toHaveAttribute('open', '');
-  await expect(flight.locator('.flight-segment-events')).toBeHidden();
-  await flightDetails.locator('summary').focus();
-  await page.keyboard.press('Enter');
-  await expect(flightDetails).toHaveAttribute('open', '');
-  await expect(flight.locator('.flight-segment-events')).toBeVisible();
-  await expect(flight.locator('.flight-clock-origin')).toHaveCount(2);
-  await expect(flight.locator('.flight-clock-destination')).toHaveCount(2);
-  await expect(flight.locator('.meal-policy')).toBeVisible();
-  const details = flight.locator('.meal-details');
-  await expect(details).not.toHaveAttribute('open', '');
-  await flightDetails.locator('summary').focus();
-  await page.keyboard.press('Space');
-  await expect(flightDetails).not.toHaveAttribute('open', '');
-  await details.locator('summary').click();
-  await expect(details).toHaveAttribute('open', '');
-  await expect(flightDetails).not.toHaveAttribute('open', '');
-  await expect(details.locator('.meal-reason')).toBeVisible();
-  await flightDetails.locator('summary').click();
-  await expect(flightDetails).toHaveAttribute('open', '');
-  await expect(details).toHaveAttribute('open', '');
-  expect(
-    await page.evaluate(
-      () =>
-        Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) <=
-        window.innerWidth,
-    ),
-  ).toBe(true);
-  await details.locator('summary').click();
-  await expect(details).not.toHaveAttribute('open', '');
-  await expect(flightDetails).toHaveAttribute('open', '');
-  await flightDetails.locator('summary').click();
-  await flight.scrollIntoViewIfNeeded();
-  await captureDesign(page, 'artifacts/timeline-flight-mobile.png');
-  await page.locator('.day-button[data-date="2026-10-20"]').click();
-  await page.locator('.day-timeline').scrollIntoViewIfNeeded();
-  await captureDesign(page, 'artifacts/timeline-stay-mobile.png');
-  const stay = page.locator('.day-button[data-date="2026-10-20"]');
-  await expect(stay).toContainText('San Francisco');
-  await expect(page.locator('.agenda-heading .timezone-caption')).toHaveText(
-    'All times in San Francisco · PDT',
-  );
-  const radius = await stay.evaluate((element) =>
-    parseFloat(getComputedStyle(element).borderTopLeftRadius),
-  );
-  expect(radius).toBeGreaterThanOrEqual(25);
-  expect(
-    await page.evaluate(
-      () =>
-        Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) <=
-        window.innerWidth,
-    ),
-  ).toBe(true);
-});
-
-test('date-line connection retains sleep after recording and ends after its recovery day', async ({
+test('continuous bands preserve date-line spans, distinct clock folds, flight details and recording', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
@@ -304,165 +53,116 @@ test('date-line connection retains sleep after recording and ends after its reco
     page,
     { ...itinerary, createdAt: '2026-10-01T00:00:00Z', legs: itinerary.legs.slice(0, 4) },
     'Australia/Sydney',
-    { planningMode: 'model', preparationDays: 3, melatonin: false },
-    '2026-10-26T10:00:00Z',
+    { planningMode: 'model', preparationDays: 3 },
   );
-  // Exercise a real saved observation: the model must keep unrecorded earlier
-  // guidance visible without treating it as evidence that the traveler slept.
-  await page.locator('.day-button[data-date="2026-10-14"]').click();
-  await page
-    .locator('.action-card.sleep')
-    .getByRole('button', { name: 'Record what happened', exact: true })
-    .first()
-    .click();
-  await page
-    .getByRole('dialog', { name: 'Record your actual experience', exact: true })
-    .getByRole('button', { name: 'Save record', exact: true })
-    .click();
-  await expect(
-    page.getByRole('heading', { name: 'Logged sleep · completed', exact: true }),
-  ).toBeVisible();
-  await page.getByRole('button', { name: 'Dismiss notification', exact: true }).click();
+  const journey = page.locator('.journey-timeline');
+  await expect(journey).toBeVisible();
   const dates = await page
     .locator('.day-button')
-    .evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-date')));
+    .evaluateAll((nodes) => nodes.map((n) => n.getAttribute('data-date')));
+  expect(new Set(dates).size).toBe(dates.length);
+  expect(dates).toContain('2026-10-18');
   expect(dates.at(-1)).toBe('2026-10-27');
-  expect(dates.every((date) => date! <= '2026-10-27')).toBe(true);
-  const boundary = async (attribute: 'data-start' | 'data-end') =>
-    Number(await page.locator('.day-timeline').getAttribute(attribute));
-  await page.locator('.day-button[data-date="2026-10-24"]').click();
-  await expect(
-    page.locator('.timeline-entry[data-flight-id="aa6276"][data-phase="departure"]'),
-  ).toBeVisible();
-  const sleep24 = page.locator('.timeline-entry[data-guidance="sleep"]');
-  await expect(sleep24).toBeVisible();
-  await expect(sleep24).toContainText('Planned · not recorded');
-  await expect(page.locator('.trip-complete')).toHaveCount(0);
-  const departure = page.locator('.timeline-entry[data-flight-id="qf94"][data-phase="departure"]');
-  await expect(departure).toBeVisible();
-  await expect(departure).toHaveAttribute('data-start', String(Date.parse('2026-10-25T06:40:00Z')));
-  const end24 = await boundary('data-end');
-  expect(end24).toBe(Date.parse('2026-10-25T06:40:00Z'));
-  await captureDesign(
-    page.locator('.plan-layout > section'),
-    'artifacts/timeline-date-line-24-mobile.png',
-  );
-
-  await page.locator('.day-button[data-date="2026-10-25"]').click();
-  expect(await boundary('data-start')).toBe(end24);
-  await expect(page.locator('.timeline-entry[data-flight-id="aa6276"]')).toHaveCount(0);
-  await expect(page.locator('.flight-segment-card[data-flight-id="qf94"]')).toHaveCount(0);
-  await expect(
-    page.locator('.timeline-entry[data-flight-id="qf94"][data-phase="continuation"]'),
-  ).toBeVisible();
-  await expect(page.locator('.timeline-clock time strong').first()).toHaveText('17:40');
-  await expect(page.locator('.timeline-range')).toContainText('6 h 20 min');
-  await expect(page.locator('.timeline-clock-change')).toContainText(/Los Angeles|LAX/);
-  await expect(page.locator('.timeline-clock-change')).toContainText(/Melbourne|MEL/);
-  const rest25 = page.locator('.timeline-entry[data-guidance="rest"]');
-  await expect(rest25).toContainText('8 h');
-  await expect(rest25).toContainText(/continues/i);
-  await expect(rest25).toContainText('Planned · not recorded');
-  const end25 = await boundary('data-end');
-  expect(end25).toBe(Date.parse('2026-10-25T13:00:00Z'));
-  await captureDesign(
-    page.locator('.plan-layout > section'),
-    'artifacts/timeline-date-line-25-mobile.png',
-  );
-
-  await page.locator('.day-button[data-date="2026-10-26"]').click();
-  expect(await boundary('data-start')).toBe(end25);
-  const arrival = page.locator('.timeline-entry[data-flight-id="qf94"][data-phase="arrival"]');
-  await expect(arrival).toBeVisible();
-  await expect(arrival).toHaveAttribute('data-start', String(Date.parse('2026-10-25T22:30:00Z')));
-  await expect(arrival).toContainText('09:30');
-  await expect(page.locator('.flight-segment-card[data-flight-id="qf94"]')).toHaveCount(0);
-  const rest26 = page.locator('.timeline-entry[data-guidance="rest"]');
-  await expect(rest26).toContainText('8 h');
-  await expect(rest26).toContainText(/continued/i);
-  const bedtime = page.locator('.timeline-entry[data-guidance="sleep"]').last();
-  await expect(bedtime).toContainText('8 h');
-  await expect(bedtime).toContainText(/continues/i);
-  await expect(bedtime.locator('.travel-action-clocks')).toHaveCount(0);
+  const qf94 = page.locator('.journey-flight-span[data-flight-id="qf94"]');
+  await expect(qf94).toHaveCount(1);
+  const fold = page.locator('.journey-clock-fold').filter({ hasText: 'Melbourne' });
+  await expect(fold).toHaveCount(1);
+  await expect(fold).toContainText('25 Oct');
+  await expect(fold).toContainText('26 Oct');
+  await expect(fold).toContainText('+18h');
+  await expect(fold).toHaveAttribute('role', 'note');
+  const at = Number(await fold.getAttribute('data-at'));
+  expect(at).toBeGreaterThan(Number(await qf94.getAttribute('data-start')));
+  expect(at).toBeLessThan(Number(await qf94.getAttribute('data-end')));
+  await expect(page.locator('.journey-midnight').filter({ hasText: '25 Oct' })).toHaveCount(1);
+  const sleep = await page
+    .locator('.journey-band[data-kind="rest"], .journey-band[data-kind="sleep"]')
+    .evaluateAll((nodes) =>
+      nodes.map((n) => ({
+        start: Number(n.getAttribute('data-start')),
+        end: Number(n.getAttribute('data-end')),
+      })),
+    );
+  expect(sleep.some((s) => s.start < at && s.end > at)).toBe(true);
+  const bandGap = await journey.evaluate((el) => {
+    const bands = [...el.querySelectorAll('.journey-band')].map((b) => b.getBoundingClientRect());
+    return Math.min(
+      ...[...el.querySelectorAll('.journey-flight-marker')].flatMap((e) =>
+        bands.map((b) => e.getBoundingClientRect().left - b.right),
+      ),
+    );
+  });
+  expect(bandGap).toBeGreaterThan(8);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-  await captureDesign(
-    page.locator('.plan-layout > section'),
-    'artifacts/timeline-date-line-26-mobile.png',
+  await fold.scrollIntoViewIfNeeded();
+  await captureDesign(page, 'artifacts/continuous-clock-fold-mobile.png');
+
+  await page
+    .locator('.journey-flight-marker[data-flight-id="qf94"][data-phase="departure"]')
+    .click();
+  const details = page.getByRole('dialog', { name: 'Your flight', exact: true });
+  await details.locator('.flight-details > summary').click();
+  await expect(details.locator('.flight-clock-origin')).toHaveCount(2);
+  await expect(details.locator('.flight-clock-destination')).toHaveCount(2);
+  await details.locator('.meal-details > summary').click();
+  await expect(details.locator('.meal-reason')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(details).toHaveCount(0);
+
+  await page.locator('.journey-band[data-kind="sleep"]').first().click();
+  const guidance = page.getByRole('dialog', { name: 'Sleep', exact: true });
+  await guidance.getByRole('button', { name: 'Why this helps', exact: true }).first().click();
+  await expect(guidance.locator('.action-explanation').first()).toBeVisible();
+  await guidance.getByRole('button', { name: 'Record what happened', exact: true }).first().click();
+  const record = page.getByRole('dialog', { name: 'Record your actual experience', exact: true });
+  await expect(record.getByRole('combobox', { name: 'What happened?' })).toBeVisible();
+  await record.getByRole('button', { name: 'Cancel', exact: true }).click();
+  await guidance.getByRole('button', { name: 'Close dialog' }).click();
+  await page.getByRole('button', { name: 'Key', exact: true }).click();
+  await expect(page.getByRole('dialog', { name: 'Reading your timeline' })).toContainText(
+    'Both clocks show the same instant',
   );
-  await expect(page.locator('.trip-complete')).toHaveCount(0);
-  const end26 = await boundary('data-end');
-  await page.locator('.day-button[data-date="2026-10-27"]').click();
-  expect(await boundary('data-start')).toBe(end26);
-  await expect(page.locator('.trip-complete')).toContainText('Trip complete');
-  await expect(page.getByRole('button', { name: 'Next plan day', exact: true })).toBeDisabled();
-  await expect(page.locator('.day-button[data-date="2026-10-28"]')).toHaveCount(0);
-  await captureDesign(
-    page.locator('.plan-layout > section'),
-    'artifacts/timeline-trip-complete-mobile.png',
-  );
+  await page.keyboard.press('Escape');
 });
 
-test('repeated daylight-saving hour retains a 25-hour civil day, prior-evening lounge and a 90-minute flight', async ({
+test('current time and scrolling keep date navigation in view without replacing the journey', async ({
   page,
 }) => {
-  const trip: Trip = {
-    id: 'dst-fall-back',
-    name: 'Daylight saving flight',
-    createdAt: '2026-10-15T00:00:00Z',
-    updatedAt: '2026-10-15T00:00:00Z',
-    legs: [
-      {
-        id: 'dst-flight',
-        flightNumber: 'TEST101',
-        departureAirport: 'JFK',
-        arrivalAirport: 'BOS',
-        departureDateTime: '2026-11-01T01:15',
-        arrivalDateTime: '2026-11-01T01:45',
-        departureTimeZone: 'America/New_York',
-        arrivalTimeZone: 'America/New_York',
-        departureDisambiguation: 'earlier',
-        arrivalDisambiguation: 'later',
-        stayAfter: 'destination',
-        strategy: 'adapt',
-        travelClass: 'economy',
-        lieFlat: false,
-      },
-    ],
-  };
-  await openPlan(page, trip, 'America/New_York');
-  await page.locator('.day-button[data-date="2026-11-01"]').click();
-  const rows = await expectChronologicalRail(page);
-  // The 01:15 departure has a 23:15 pre-flight lounge visit the evening before.
-  // Keep that real lead-in without mistaking it for an extra DST calendar hour.
-  const midnight = Date.parse('2026-11-01T04:00:00Z');
-  expect(rows[0].start).toBeLessThanOrEqual(Date.parse('2026-11-01T03:15:00Z'));
-  expect(rows.at(-1)!.end).toBe(Date.parse('2026-11-02T05:00:00Z'));
-  expect(rows.at(-1)!.end - midnight).toBe(25 * 3_600_000);
-  await expect(page.locator('.timeline-entry[data-kind="lounge"]')).toHaveAttribute(
-    'data-start',
-    String(Date.parse('2026-11-01T03:15:00Z')),
-  );
-  await expect(page.locator('.timeline-heading')).toContainText(/EDT|GMT[−-]4/);
-  await expect(page.locator('.timeline-heading')).toContainText(/EST|GMT[−-]5/);
-  const entries = await intervals(
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openPlan(
     page,
-    '.timeline-entry[data-kind="flight"][data-phase="departure"]',
+    itinerary,
+    'Australia/Sydney',
+    { preparationDays: 3 },
+    '2026-10-22T19:00:00Z',
   );
-  expect(entries).toEqual([
-    { start: Date.parse('2026-11-01T05:15:00Z'), end: Date.parse('2026-11-01T06:45:00Z') },
-  ]);
-  const flight = page.locator('.day-timeline .flight-segment-card[data-flight-id="dst-flight"]');
-  await flight.locator('.flight-details > summary').click();
-  await expect(flight.locator('[aria-label="Departure"] .flight-clock-origin')).toContainText(
-    '01:15',
-  );
-  await expect(flight.locator('[aria-label="Departure"] .flight-clock-origin')).toContainText(
-    /EDT|GMT[−-]4/,
-  );
-  await expect(flight.locator('[aria-label="Arrival"] .flight-clock-destination')).toContainText(
-    '01:45',
-  );
-  await expect(flight.locator('[aria-label="Arrival"] .flight-clock-destination')).toContainText(
-    /EST|GMT[−-]5/,
-  );
+  const selected = page.locator('.day-button[aria-pressed="true"]');
+  await expect(selected).toHaveAttribute('data-date', '2026-10-22');
+  expect(
+    await selected.evaluate((el) => {
+      const a = el.getBoundingClientRect(),
+        b = el.parentElement!.getBoundingClientRect();
+      return a.left >= b.left - 1 && a.right <= b.right + 1;
+    }),
+  ).toBe(true);
+  await expect(page.locator('.journey-context')).toContainText('San Francisco');
+  const viewport = page.locator('.journey-viewport');
+  const canvasHeight = await page.locator('.journey-canvas').getAttribute('style');
+  await page.locator('.day-button[data-date="2026-10-24"]').click();
+  await expect(selected).toHaveAttribute('data-date', '2026-10-24');
+  await expect(page.locator('.journey-canvas')).toHaveAttribute('style', canvasHeight!);
+  await viewport.evaluate((el) => {
+    const target = el.querySelectorAll<HTMLElement>('.journey-midnight, .journey-clock-fold');
+    const day = [...target].find((n) => n.textContent?.includes('26 Oct'))!;
+    el.scrollTo({ top: parseFloat(day.style.top), behavior: 'instant' });
+  });
+  await expect(selected).toHaveAttribute('data-date', '2026-10-26');
+  await page.getByRole('button', { name: 'Now', exact: true }).click();
+  await expect(selected).toHaveAttribute('data-date', '2026-10-22');
+  const instant = await page.locator('.journey-now').boundingBox();
+  const bounds = await viewport.boundingBox();
+  expect(instant!.y).toBeGreaterThanOrEqual(bounds!.y);
+  expect(instant!.y).toBeLessThan(bounds!.y + bounds!.height);
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await captureDesign(page, 'artifacts/continuous-bands-desktop.png');
 });

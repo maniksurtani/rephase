@@ -71,13 +71,9 @@ async function expectSanFranciscoStay(page: Page) {
     await expect(day).toContainText('San Francisco');
     await expect(day).not.toContainText('Los Angeles');
     await expect(day).toHaveAttribute('title', /San Francisco/);
-    await expect(day).toHaveAttribute('data-zone', 'America/Los_Angeles');
   }
   await planDay(page, '2026-10-20').click();
-  await expect(page.locator('.agenda-heading .stage-label')).toHaveText('Stay in San Francisco');
-  await expect(page.locator('.agenda-heading .timezone-caption')).toHaveText(
-    'All times in San Francisco · PDT',
-  );
+  await expect(page.locator('.journey-context')).toContainText('San Francisco');
   await expect(page.locator('.plan-aside .eyebrow')).toContainText('San Francisco');
   expect(
     await page.evaluate(
@@ -135,20 +131,20 @@ test('a QF11 trip entered the day before departure preserves the usual wake time
   await expect(planDay(page, '2026-11-07')).toBeVisible();
   await expect(planDay(page, '2026-11-06')).toHaveCount(0);
   await planDay(page, '2026-11-07').click();
-  const bedtime = page.locator('.timeline-entry[data-guidance="sleep"]');
+  const bedtime = page.locator('.journey-band[data-kind="sleep"]').first();
   await expect(bedtime).toHaveCount(1);
-  await expect(bedtime).toContainText('8 h');
+  await expect(bedtime).toContainText('8h');
   const start = Number(await bedtime.getAttribute('data-start'));
   expect(start).toBeGreaterThanOrEqual(Date.parse('2026-11-07T22:00:00+11:00'));
   await bedtime.scrollIntoViewIfNeeded();
   await captureDesign(page, 'artifacts/qf11-practical-bedtime-mobile.png');
   await planDay(page, '2026-11-08').click();
-  const morning = page.locator('.timeline-entry[data-guidance="sleep"]').first();
+  const morning = page.locator('.journey-band[data-kind="sleep"]').first();
   await expect(morning).toHaveAttribute(
     'data-end',
     String(Date.parse('2026-11-08T07:00:00+11:00')),
   );
-  await expect(morning).toContainText('07:00');
+  await expect(morning).toContainText('8h');
 });
 
 test('Today and the full plan retain all five flights with both local clocks and date-line transit days', async ({
@@ -202,37 +198,20 @@ test('Today and the full plan retain all five flights with both local clocks and
     await expect(day).toHaveClass(/travel-day/);
     await expect(day).toContainText('Travel');
     await day.click();
+    await page
+      .locator(`.journey-flight-marker[data-flight-id="${leg.id}"][data-phase="departure"]`)
+      .click();
     await expect(flightCard(page, leg.id)).toBeVisible();
     await expect(flightCard(page, leg.id)).toContainText(leg.flightNumber);
     mealWindowCount += await expectMealAdvice(page, leg.id);
+    await page.getByRole('button', { name: 'Close dialog', exact: true }).click();
   }
   expect(mealWindowCount).toBeGreaterThan(0);
 
   await expectSanFranciscoStay(page);
 
-  await planDay(page, '2026-10-24', 'America/Los_Angeles').click();
-  await expect(flightCard(page, 'aa6276')).toBeVisible();
-  await expect(flightCard(page, 'qf94')).toBeVisible();
-  await planDay(page, '2026-10-25', 'Australia/Melbourne').click();
-  await expect(flightCard(page, 'qf94')).toHaveCount(0);
-  await expect(
-    page.locator('.timeline-entry[data-flight-id="qf94"][data-phase="continuation"]'),
-  ).toBeVisible();
-  await planDay(page, '2026-10-27', 'Australia/Sydney').click();
-  await expect(flightCard(page, 'qf490')).toBeVisible();
-  await expect(planDay(page, '2026-10-16', 'Pacific/Honolulu')).toHaveCount(0);
-
-  await planDay(page, '2026-10-17', 'Pacific/Honolulu').click();
-  await expect(flightCard(page, 'qf103').locator('.meal-policy')).toHaveText(
-    'Let me sleep through meal service',
-  );
-  const actionClocks = page.locator('.travel-action-clocks').first();
-  await expect(actionClocks).toBeVisible();
-  await expect(actionClocks.locator('.travel-action-clock')).toHaveCount(2);
-  await expect(actionClocks).toContainText('Origin · SYD');
-  await expect(actionClocks).toContainText('Destination · HNL');
-  await expect(actionClocks.locator('time')).toHaveCount(4);
-  await expect(actionClocks.locator('time').first()).toHaveText(/\d{1,2} Oct \d{2}:\d{2}/);
+  await expect(page.locator('.journey-flight-span')).toHaveCount(5);
+  await expect(page.locator('.journey-clock-fold').filter({ hasText: 'Melbourne' })).toHaveCount(1);
 
   // Existing stored trips also need the itinerary city on Today after reopening.
   await page.clock.setFixedTime(new Date('2026-10-20T19:00:00.000Z'));
@@ -290,112 +269,6 @@ test('body-clock estimates show modeled movement rather than a repeated zero', a
     estimates.some((estimate) => /(?:About|Under).*\b(?:earlier|later)\b/.test(estimate)),
   ).toBe(true);
   await captureDesign(page, 'artifacts/planner-phase-desktop.png');
-
-  // Saving an earlier observation replans only the future. Unrecorded earlier
-  // advice remains visible as a plan, separate from the saved observation.
-  await page.clock.setFixedTime(new Date('2026-10-18T23:13:00.000Z'));
-  await planDay(page, '2026-10-14').click();
-  await page.getByRole('button', { name: 'Record what happened', exact: true }).first().click();
-  const record = page.getByRole('dialog', { name: 'Record your actual experience', exact: true });
-  await record.getByRole('button', { name: 'Save record', exact: true }).click();
-  await expect(
-    page.getByRole('heading', { name: 'Logged sleep · completed', exact: true }),
-  ).toBeVisible();
-
-  const dates = await page
-    .locator('.day-button')
-    .evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-date')));
-  expect(dates.slice(0, 6)).toEqual([
-    '2026-10-14',
-    '2026-10-15',
-    '2026-10-16',
-    '2026-10-17',
-    '2026-10-18',
-    '2026-10-19',
-  ]);
-  expect(new Set(dates).size).toBe(dates.length);
-  await expect(planDay(page, '2026-10-18')).toContainText('Honolulu');
-  await planDay(page, '2026-10-18').click();
-  await expect(page.locator('.agenda-heading h2')).toHaveText('Sunday 18 October');
-  await expect(page.locator('.agenda-heading .stage-label')).toHaveText('Stay in Honolulu');
-  await expect(page.locator('.timeline-entry[data-guidance="sleep"]').first()).toBeVisible();
-  await expect(page.getByText('Planned · not recorded', { exact: true }).first()).toBeVisible();
-  await expect(
-    page.getByText('No saved recommendations for this day.', { exact: true }),
-  ).toHaveCount(0);
-  await captureDesign(page, 'artifacts/planner-recorded-stay-desktop.png');
-
-  await planDay(page, '2026-10-19').click();
-  await expect(flightCard(page, 'as812')).toBeVisible();
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.reload();
-  await page.getByRole('button', { name: 'Explore your plan', exact: true }).click();
-  await planDay(page, '2026-10-18').click();
-  await expect(page.locator('.agenda-heading h2')).toHaveText('Sunday 18 October');
-  await expect(page.locator('.timeline-entry[data-guidance="sleep"]').first()).toBeVisible();
-  await expect(page.getByText('Planned · not recorded', { exact: true }).first()).toBeVisible();
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(
-    true,
-  );
-  await captureDesign(page, 'artifacts/planner-recorded-stay-mobile.png');
-});
-
-test('the mobile date strip follows the current day and day arrows without moving the page', async ({
-  page,
-}) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-  await openPersonalData(page, {
-    ...personalData,
-    preferences: { ...preferences, preparationDays: 3 },
-  });
-  await page.clock.setFixedTime(new Date('2026-10-25T12:36:00.000Z'));
-  await page.reload();
-  await page
-    .getByRole('navigation', { name: 'Mobile navigation' })
-    .getByRole('button', { name: 'Your plan', exact: true })
-    .click();
-
-  async function expectSelectedDateInStrip(date: string) {
-    const selected = planDay(page, date);
-    await expect(selected).toHaveAttribute('aria-pressed', 'true');
-    // Neither a click on the date nor scrollIntoView can hide a missing app
-    // scroll: read its clipped position before any interaction with the tile.
-    await expect
-      .poll(
-        () =>
-          selected.evaluate((element) => {
-            const tile = element.getBoundingClientRect();
-            const strip = element.parentElement!.getBoundingClientRect();
-            return tile.left >= strip.left - 1 && tile.right <= strip.right + 1;
-          }),
-        { timeout: 5000 },
-      )
-      .toBe(true);
-  }
-
-  await expect(page.locator('.agenda-heading h2')).toHaveText('Sunday 25 October');
-  await expectSelectedDateInStrip('2026-10-25');
-  expect(await page.evaluate(() => window.scrollY)).toBe(0);
-  expect(
-    await page.locator('.day-navigation').evaluate((element) => element.scrollLeft),
-  ).toBeGreaterThan(0);
-  await captureDesign(page, 'artifacts/planner-current-date-mobile.png');
-
-  // Move backwards far enough to leave the initially visible dates, then
-  // forwards again. Keep the arrow on screen before measuring page movement.
-  for (const [direction, dates] of [
-    ['Previous', ['2026-10-24', '2026-10-23', '2026-10-22', '2026-10-21']],
-    ['Next', ['2026-10-22', '2026-10-23', '2026-10-24', '2026-10-25', '2026-10-26']],
-  ] as const) {
-    const arrow = page.getByRole('button', { name: `${direction} plan day`, exact: true });
-    for (const date of dates) {
-      await arrow.scrollIntoViewIfNeeded();
-      const pageTop = await page.evaluate(() => window.scrollY);
-      await arrow.click();
-      await expectSelectedDateInStrip(date);
-      expect(await page.evaluate(() => window.scrollY)).toBe(pageTop);
-    }
-  }
 });
 
 test('minute-only flight entry defaults arrival until edited and preserves existing arrival on reopening', async ({
@@ -484,11 +357,13 @@ test('Today keeps a short daytime flight visible when no recommendation is curre
   ).toHaveCount(0);
   await page.getByRole('button', { name: 'Explore your plan', exact: true }).click();
   await planDay(page, '2026-10-17', 'UTC').click();
-  await expect(flightCard(page, 'short-flight')).toBeVisible();
-  await expect(page.getByRole('heading', { name: /Rest or nap/ })).toHaveCount(0);
-  await expect(page.locator('.day-timeline')).toBeVisible();
+  await expect(
+    page.locator('.journey-flight-marker[data-flight-id="short-flight"][data-phase="departure"]'),
+  ).toBeVisible();
+  await expect(page.locator('.journey-band[data-kind="rest"]')).toHaveCount(0);
+  await expect(page.locator('.journey-timeline')).toBeVisible();
   const displayedIntervals = await page
-    .locator('.timeline-entry[data-kind="action"]')
+    .locator('.journey-band:not([data-kind="awake"])')
     .evaluateAll((nodes) =>
       nodes.map((node) => ({
         start: Number(node.getAttribute('data-start')),

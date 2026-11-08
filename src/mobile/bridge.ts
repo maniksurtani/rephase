@@ -21,6 +21,7 @@ import { createPlanningContext } from '../lib/planning-airports';
 import { localToInstant } from '../lib/time';
 import { searchTimeZones } from '../lib/time-zones';
 import { buildTimelineSteps } from '../lib/timeline-steps';
+import { buildJourneyTimeline } from '../lib/journey-timeline';
 import { actionTravelSegment, travelClock } from '../lib/travel-clocks';
 import type { AppData, Plan, PlanAction, PlanTravelSegment, Preferences, Trip } from '../lib/types';
 import { validateAppData } from '../lib/validation';
@@ -147,8 +148,21 @@ function presentPlan(plan: Plan, trip: Trip, now: number) {
   ].sort((a, b) => Date.parse(a.departure) - Date.parse(b.departure));
   const timing = selectPlanTiming(grouped, actions, flights, null, new Date(now));
   const preview = timing.timelineDay ? todayPreview(timing.timelineDay, now, grouped) : undefined;
+  const journey = buildJourneyTimeline(grouped, { loungeContexts });
+  const presentedJourney = journey && {
+    ...journey,
+    bands: journey.bands.map((band) => ({ ...band, actions: band.actions.map(action) })),
+    events: journey.events.map((event) => ({
+      ...event,
+      entry: {
+        ...event.entry,
+        ...(event.entry.kind === 'flight' ? { flight: flight(event.entry.flight) } : {}),
+      },
+    })),
+  };
   return {
     plan,
+    journey: presentedJourney,
     days,
     loungeContexts,
     today: {

@@ -7,7 +7,10 @@ Updated 2026-11-08. Active work is kept here; the previous complete checklist is
 - [x] Mock up three interactive mobile concepts with continuous scrolling, local midnight dividers, explicit in-flight clock changes, persistent flight/rest spans, compressed quiet time and expandable details. See [the comparison and previews](docs/prototypes/continuous-timeline/README.md).
 - [x] Check the Sydney–Los Angeles and SFO–LAX–Melbourne examples, narrow-screen overflow, clock/date continuity and prototype interactions.
 - [x] Select Bands for further design iteration; compare three structural timezone-change cues, place flight details in a separate right-hand track, and replace column headings with direct band labels and an optional key.
-- [ ] Choose the timezone-change treatment from [the refined Bands comparison](docs/prototypes/continuous-timeline/bands.html), then connect it to real plan data and adapt the presentation for web and Flutter.
+- [x] Choose Clock fold (option 3) from the refined Bands comparison.
+- [x] Build a shared continuous journey presentation from real planner intervals, with local midnights, in-flight clock folds, continuous sleep/flight bands and date navigation.
+- [x] Implement the Bands presentation on web and Flutter, retaining guidance, recording and meals in expandable details, with direct lounge links before departures.
+- [ ] Verify date-line/DST journeys, current-time navigation, narrow screens and native accessibility; publish the web release and mobile source updates.
 
 ## Practical sleep opportunities
 

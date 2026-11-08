@@ -7,6 +7,9 @@ import { webcrypto } from 'node:crypto';
 import { buildMobileEngine } from '../scripts/build-mobile-engine.mjs';
 import { DEFAULT_PREFERENCES } from '../src/lib/defaults';
 import { buildCalendar } from '../src/lib/export';
+import { buildJourneyTimeline } from '../src/lib/journey-timeline';
+import { groupPlanDays } from '../src/lib/plan-calendar';
+import { buildFlightLoungeContexts } from '../src/lib/lounge-windows';
 import { generatePlan } from './support/planning';
 import { evaluateAirportLounges } from '../src/lib/lounge-access';
 import { loungeDataFor } from '../src/lib/lounge-data';
@@ -56,6 +59,22 @@ describe('bundled offline mobile boundary', () => {
       result.today.previewActions.every((action: Result) => Date.parse(action.end) > now),
     ).toBe(true);
     expect(result.days.every((day: Result) => !('allActions' in day))).toBe(true);
+    const sharedJourney = buildJourneyTimeline(groupPlanDays(result.plan.days), {
+      loungeContexts: buildFlightLoungeContexts(trip),
+    })!;
+    expect(result.journey.markers).toEqual(sharedJourney.markers);
+    expect(result.journey.points).toEqual(sharedJourney.points);
+    expect(
+      result.journey.bands.map((band: Result) => [
+        band.id,
+        band.start,
+        band.end,
+        band.top,
+        band.height,
+      ]),
+    ).toEqual(
+      sharedJourney.bands.map((band) => [band.id, band.start, band.end, band.top, band.height]),
+    );
     const onboard = result.days.find((day: Result) => day.date === '2026-10-25');
     expect(onboard.steps[0].clock).toMatchObject({ time: '17:40', dateKey: '2026-10-25' });
     expect(onboard.steps[0].clockChange).toMatchObject({

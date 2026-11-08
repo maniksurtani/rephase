@@ -1,5 +1,11 @@
 # Release evidence
 
+## 8 November 2026 — continuous Bands timeline
+
+Web, iOS and Android now present the full journey as continuously scrolling activity bands. Clock fold, selected from the design study, distinguishes timezone changes from recommendations. Flights occupy a separate track; local midnight dividers, date navigation, Now, preflight lounge links and tap-to-open guidance/flight/meal details preserve the existing planner information. The shared presentation retains original recommendation intervals and recording IDs, joins midnight sleep fragments and keeps elapsed durations continuous across date-line and DST changes. No recommendation, notification or saved-data schema changes are required.
+
+Locally, all 609 unit/runtime tests and 43 Flutter tests pass, along with formatting, static analysis, types and the production build. Targeted browser checks cover the Pacific itinerary, current-time navigation, recording, flight/meal disclosures, lounge context, account flows and optional melatonin. Visual review at 320, 390 and 1440 pixels confirms no horizontal overflow; Flutter's larger-text layout also passes. The native integration check now verifies that both platform runtimes return the continuous presentation and preserve it across a clock-only refresh. Published CI and deployment evidence will be added after release verification.
+
 ## 7 November 2026 — practical sleep opportunities
 
 Late trip entry previously counted preparation days before the trip existed, and translated estimated body-clock phase into fixed-duration bed/wake times. The candidate search could therefore favor very early alarms before departure or daytime sleep at a destination. Preparation now starts at trip creation (or earlier reported exposure), protects usual wake time when flight timing allows, and compares routine sleep against bounded extra-rest opportunities. Destination sleep uses the selected local bedtime/wake anchor; the estimated body-clock state still carries through the journey and drives light guidance. The chosen sleep windows enter the simulation rather than being clamped only for display. Melatonin eligibility is unchanged.

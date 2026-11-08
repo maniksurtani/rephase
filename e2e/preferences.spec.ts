@@ -180,22 +180,14 @@ test.describe('mobile preferences', () => {
         await expect(usage).toBeHidden();
       }
     };
-    for (let index = 0; index < (await days.count()); index++) {
-      await days.nth(index).tap();
-      const guidance = page.getByRole('heading', { name: /^Optional melatonin/ }).first();
-      if (await guidance.count()) {
-        await expect(guidance).toBeVisible();
-        const card = page.locator('.action-card.melatonin').first();
-        await checkGuidance(card, { keyboard: true });
-        melatoninStart = Number(await card.getAttribute('data-start'));
-        await guidance.evaluate((element) =>
-          element.closest('.action-card')!.scrollIntoView({ block: 'center' }),
-        );
-        await captureDesign(page, 'artifacts/preferences-melatonin-guidance-mobile.png');
-        foundGuidance = true;
-        break;
-      }
-    }
+    const band = page.locator('.journey-band[data-kind="melatonin"]').first();
+    await band.tap();
+    const card = page.locator('.journey-details .action-card.melatonin').first();
+    await checkGuidance(card, { keyboard: true });
+    melatoninStart = Number(await card.getAttribute('data-start'));
+    foundGuidance = true;
+    await captureDesign(page, 'artifacts/preferences-melatonin-guidance-mobile.png');
+    await page.getByRole('button', { name: 'Close dialog' }).tap();
     expect(
       foundGuidance,
       'The established eastbound fixture should offer optional bedtime guidance.',
