@@ -325,6 +325,12 @@ void main() {
       await tester.tap(find.byKey(const ValueKey('journey-date:2026-10-19')));
       await tester.pumpAndSettle();
       expect(find.text('CLOCK CHANGES +18h'), findsOneWidget);
+      await tester.tapAt(
+        tester.getTopLeft(find.byKey(const ValueKey('journey-scroll'))) +
+            const Offset(70, 50),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Why this helps'), findsNothing);
       expect(
         find.byKey(const ValueKey('journey-flight-span:leg')),
         findsOneWidget,

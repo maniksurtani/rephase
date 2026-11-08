@@ -727,7 +727,7 @@ class _ClockFold extends StatelessWidget {
       label:
           'Clock change: ${marker['fromCity']} ${from['date']} ${from['time']} to ${marker['city']} ${to['date']} ${to['time']}. Same instant.',
       excludeSemantics: true,
-      child: IgnorePointer(
+      child: AbsorbPointer(
         child: ClipPath(
           clipper: _FoldClipper(),
           child: ColoredBox(

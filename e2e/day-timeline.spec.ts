@@ -95,6 +95,9 @@ test('continuous bands preserve date-line spans, distinct clock folds, flight de
   expect(bandGap).toBeGreaterThan(8);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await fold.scrollIntoViewIfNeeded();
+  // The structural fold must not open an activity underneath it.
+  await fold.click({ position: { x: 78, y: 50 } });
+  await expect(page.getByRole('dialog')).toHaveCount(0);
   await captureDesign(page, 'artifacts/continuous-clock-fold-mobile.png');
 
   await page
