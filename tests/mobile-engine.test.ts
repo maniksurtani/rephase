@@ -183,6 +183,12 @@ describe('bundled offline mobile boundary', () => {
 
   it('uses the shared catalogs, validation, merge, lounge rules and calendar exporter', () => {
     const catalog = invoke('bootstrap');
+    expect(catalog.loungeAirports.map((airport: Result) => airport.airport)).toEqual(
+      expect.arrayContaining(['SLC', 'SIN', 'CNS', 'LHR', 'MUC']),
+    );
+    expect(catalog.memberships.map((membership: Result) => membership.id)).toEqual(
+      expect.arrayContaining(['delta-sky-club', 'amex-platinum', 'delta-skymiles-reserve']),
+    );
     expect(catalog.airports.find((airport: Result) => airport.code === 'SFO').city).toBe(
       'San Francisco',
     );

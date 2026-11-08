@@ -21,6 +21,9 @@ class MembershipSettings extends StatelessWidget {
     'united-club',
     'alaska-lounge-plus',
     'admirals-club',
+    'delta-sky-club',
+    'amex-platinum',
+    'delta-skymiles-reserve',
   };
 
   List<Map<String, dynamic>> _tiers(Map<String, dynamic> program) =>
@@ -110,7 +113,7 @@ class MembershipSettings extends StatelessWidget {
         ),
         const SizedBox(height: 20),
         Text(
-          'Lounge memberships',
+          'Lounge memberships and cards',
           style: Theme.of(context).textTheme.titleMedium,
         ),
         const SizedBox(height: 8),

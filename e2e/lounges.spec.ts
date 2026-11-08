@@ -264,6 +264,50 @@ test('confirmed airline and terminal unlock a sourced lounge recommendation, and
   await expect(firstLounge.locator('.lounge-recommended')).toHaveCount(0);
 });
 
+test('new airport guides work on a narrow screen with saved card and airline memberships', async ({
+  page,
+}) => {
+  const api = new LoungeAccountApi();
+  api.data.preferences.loungeMemberships = [
+    'qantas-platinum',
+    'priority-pass',
+    'amex-platinum',
+    'united-premier-1k',
+  ];
+  await api.install(page);
+  await page.clock.setFixedTime(new Date('2026-11-08T12:00:00Z'));
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openLounges(page);
+  await page.getByLabel('Visit date', { exact: true }).fill('2026-11-10');
+  await page.getByLabel('From', { exact: true }).fill('16:00');
+  await page.getByLabel('Until', { exact: true }).fill('17:30');
+  await page.getByLabel('Departure time', { exact: true }).fill('18:00');
+  for (const [airport, lounge] of [
+    ['CNS', 'cns-qantas-club'],
+    ['SIN', 'sin-qantas-first'],
+    ['LHR', 'lhr-qantas'],
+    ['MUC', 'muc-lufthansa-senator-h24'],
+    ['SLC', 'slc-centurion'],
+  ]) {
+    await page.getByRole('combobox', { name: 'Airport', exact: true }).fill(airport);
+    await expect(page.locator(`.lounge-card[data-lounge-id="${lounge}"]`)).toBeVisible();
+    expect(await noHorizontalOverflow(page)).toBe(true);
+  }
+  await page
+    .getByRole('combobox', { name: 'Departure terminal', exact: true })
+    .selectOption('Concourse B');
+  const centurion = page.locator('.lounge-card[data-lounge-id="slc-centurion"]');
+  await expect(centurion.locator('.lounge-access')).toHaveText('Access matches');
+  await expect(centurion.locator('.lounge-recommended')).toBeVisible();
+  await centurion.scrollIntoViewIfNeeded();
+  await captureDesign(page, 'artifacts/lounges-expanded-slc-mobile.png');
+  await page.getByRole('button', { name: 'Edit memberships', exact: true }).click();
+  await expect(
+    page.getByRole('checkbox', { name: 'American Express Platinum Card', exact: true }),
+  ).toBeChecked();
+  expect(await noHorizontalOverflow(page)).toBe(true);
+});
+
 test('compact mobile lounge links precede departures and preserve flight context for useful, short and uncovered visits', async ({
   page,
 }) => {

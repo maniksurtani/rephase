@@ -1,0 +1,685 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "SIN",
+  "timeZone": "Asia/Singapore",
+  "updatedAt": "2026-11-08",
+  "lounges": [
+    {
+      "id": "sin-qantas-first",
+      "name": "Qantas First Lounge",
+      "terminal": "T1",
+      "location": "After immigration, turn right towards the airline lounges.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "15:45",
+            "close": "23:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "restaurant",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "qantas-platinum-oneworld",
+          "label": "Qantas Platinum or Platinum One on a oneworld flight",
+          "membershipsAnyOf": [
+            "qantas-platinum",
+            "qantas-platinum-one"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "international",
+          "sourceIds": [
+            "qantas-access",
+            "oneworld-access"
+          ]
+        },
+        {
+          "id": "oneworld-emerald",
+          "label": "oneworld Emerald on a oneworld flight",
+          "membershipsAnyOf": [
+            "oneworld-emerald"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "international",
+          "conditions": [
+            "Verify the issuing program's lounge exceptions."
+          ],
+          "sourceIds": [
+            "oneworld-access"
+          ]
+        },
+        {
+          "id": "qantas-first",
+          "label": "Qantas international First",
+          "cabinsAnyOf": [
+            "first"
+          ],
+          "operatingCarriersAnyOf": [
+            "QF"
+          ],
+          "marketingCarriersAnyOf": [
+            "QF"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "qantas-access"
+          ]
+        },
+        {
+          "id": "oneworld-first",
+          "label": "International First on a oneworld flight",
+          "cabinsAnyOf": [
+            "first"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "international",
+          "conditions": [
+            "Confirm the ticketed First fare includes lounge access."
+          ],
+          "sourceIds": [
+            "oneworld-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "qantas-location",
+          "title": "Qantas Singapore First Lounge",
+          "url": "https://www.qantas.com/en-au/at-the-airport/lounges/locations/singapore-first",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "qantas-access",
+          "title": "Qantas lounge access",
+          "url": "https://www.qantas.com/en-au/at-the-airport/lounges/access",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "oneworld-access",
+          "title": "oneworld lounge eligibility and exceptions",
+          "url": "https://www.oneworld.com/airport-lounges",
+          "checkedOn": "2026-11-08"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "Restaurant dining and showers for eligible First or Emerald travelers.",
+        "bestFor": [
+          "dining",
+          "showers"
+        ]
+      }
+    },
+    {
+      "id": "sin-qantas-business",
+      "name": "Qantas International Business Lounge",
+      "terminal": "T1",
+      "location": "After immigration, turn left and take the escalator to the airline lounges.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              4
+            ],
+            "open": "10:40",
+            "close": "01:00"
+          },
+          {
+            "days": [
+              2,
+              5,
+              7
+            ],
+            "open": "08:00",
+            "close": "10:00"
+          },
+          {
+            "days": [
+              2,
+              3,
+              5,
+              6,
+              7
+            ],
+            "open": "14:30",
+            "close": "01:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "qantas-status-oneworld",
+          "label": "Qantas Gold, Platinum or Platinum One on a oneworld flight",
+          "membershipsAnyOf": [
+            "qantas-gold",
+            "qantas-platinum",
+            "qantas-platinum-one"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "international",
+          "sourceIds": [
+            "qantas-access",
+            "oneworld-access"
+          ]
+        },
+        {
+          "id": "oneworld-status",
+          "label": "oneworld Sapphire or Emerald on a oneworld flight",
+          "membershipsAnyOf": [
+            "oneworld-sapphire",
+            "oneworld-emerald"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "international",
+          "conditions": [
+            "Verify the issuing program's route and lounge exceptions."
+          ],
+          "sourceIds": [
+            "oneworld-access"
+          ]
+        },
+        {
+          "id": "qantas-club-qantas",
+          "label": "Qantas Club on a Qantas flight",
+          "membershipsAnyOf": [
+            "qantas-club"
+          ],
+          "operatingCarriersAnyOf": [
+            "QF"
+          ],
+          "marketingCarriersAnyOf": [
+            "QF"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "qantas-access"
+          ]
+        },
+        {
+          "id": "qantas-premium",
+          "label": "Qantas international Business or First",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingCarriersAnyOf": [
+            "QF"
+          ],
+          "marketingCarriersAnyOf": [
+            "QF"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "qantas-access"
+          ]
+        },
+        {
+          "id": "oneworld-premium",
+          "label": "International Business or First on a oneworld flight",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "international",
+          "conditions": [
+            "Confirm lounge access is included in the fare; some Business Light or Lite fares exclude it."
+          ],
+          "sourceIds": [
+            "oneworld-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "qantas-location",
+          "title": "Qantas Singapore International Business Lounge",
+          "url": "https://www.qantas.com/en-au/at-the-airport/lounges/locations/singapore-international-business",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "qantas-access",
+          "title": "Qantas lounge access",
+          "url": "https://www.qantas.com/en-au/at-the-airport/lounges/access",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "oneworld-access",
+          "title": "oneworld lounge eligibility and exceptions",
+          "url": "https://www.oneworld.com/airport-lounges",
+          "checkedOn": "2026-11-08"
+        }
+      ],
+      "photos": [],
+      "note": "Opening times vary by weekday, including a mid-day closure on Tuesday, Friday and Sunday."
+    },
+    {
+      "id": "sin-krisflyer-gold-t2",
+      "name": "KrisFlyer Gold Lounge — Terminal 2",
+      "terminal": "T2",
+      "location": "Level 3, departure transit hall, towards the E gates.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "no",
+        "dining": "snacks",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "star-gold",
+          "label": "Star Alliance Gold in Economy or Premium Economy",
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingAlliance": "star",
+          "cabinsAnyOf": [
+            "economy",
+            "premium-economy"
+          ],
+          "sourceIds": [
+            "singapore-gold",
+            "singapore-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "singapore-gold",
+          "title": "KrisFlyer Gold lounge locations and facilities",
+          "url": "https://www.singaporeair.com/en_UK/sg/flying-withus/before-the-flight/lounges/krisflyergold/",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "singapore-access",
+          "title": "Singapore Airlines lounge eligibility",
+          "url": "https://www.singaporeair.com/content/dam/sia/web-assets/pdfs/flying-withus/lounge/SilverKris-Lounge-and-KrisFlyer-Gold-Lounge-Access.pdf",
+          "checkedOn": "2026-11-08"
+        }
+      ],
+      "photos": [],
+      "note": "For departing Singapore Airlines or Star Alliance flights. Scoot is not a Star Alliance airline."
+    },
+    {
+      "id": "sin-silverkris-business-t2",
+      "name": "SilverKris Business Lounge — Terminal 2",
+      "terminal": "T2",
+      "location": "Level 3, departure transit hall, towards the E gates.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "snacks",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "star-premium",
+          "label": "Star Alliance Business or First",
+          "operatingAlliance": "star",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "sourceIds": [
+            "singapore-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "singapore-silverkris",
+          "title": "SilverKris lounge locations and facilities",
+          "url": "https://www.singaporeair.com/en_UK/sg/flying-withus/before-the-flight/lounges/silverkris/",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "singapore-access",
+          "title": "Singapore Airlines lounge eligibility",
+          "url": "https://www.singaporeair.com/content/dam/sia/web-assets/pdfs/flying-withus/lounge/SilverKris-Lounge-and-KrisFlyer-Gold-Lounge-Access.pdf",
+          "checkedOn": "2026-11-08"
+        }
+      ],
+      "photos": [],
+      "note": "Star Alliance Gold alone uses KrisFlyer Gold at Changi. PPS and Solitaire PPS members can check their additional access benefits with Singapore Airlines. Terminal 2 lounge redevelopment is ongoing; follow airport signage."
+    },
+    {
+      "id": "sin-krisflyer-gold-t3",
+      "name": "KrisFlyer Gold Lounge — Terminal 3",
+      "terminal": "T3",
+      "location": "Level 3, departure transit hall, towards the A gates.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "snacks",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "star-gold",
+          "label": "Star Alliance Gold in Economy or Premium Economy",
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingAlliance": "star",
+          "cabinsAnyOf": [
+            "economy",
+            "premium-economy"
+          ],
+          "sourceIds": [
+            "singapore-gold",
+            "singapore-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "singapore-gold",
+          "title": "KrisFlyer Gold lounge locations and facilities",
+          "url": "https://www.singaporeair.com/en_UK/sg/flying-withus/before-the-flight/lounges/krisflyergold/",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "singapore-access",
+          "title": "Singapore Airlines lounge eligibility",
+          "url": "https://www.singaporeair.com/content/dam/sia/web-assets/pdfs/flying-withus/lounge/SilverKris-Lounge-and-KrisFlyer-Gold-Lounge-Access.pdf",
+          "checkedOn": "2026-11-08"
+        }
+      ],
+      "photos": [],
+      "note": "For departing Singapore Airlines or Star Alliance flights. Scoot is not a Star Alliance airline."
+    },
+    {
+      "id": "sin-silverkris-business-t3",
+      "name": "SilverKris Business Lounge — Terminal 3",
+      "terminal": "T3",
+      "location": "Level 3, departure transit hall, towards the A gates.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "snacks",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "star-premium",
+          "label": "Star Alliance Business or First",
+          "operatingAlliance": "star",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "sourceIds": [
+            "singapore-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "singapore-silverkris",
+          "title": "SilverKris lounge locations and facilities",
+          "url": "https://www.singaporeair.com/en_UK/sg/flying-withus/before-the-flight/lounges/silverkris/",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "singapore-access",
+          "title": "Singapore Airlines lounge eligibility",
+          "url": "https://www.singaporeair.com/content/dam/sia/web-assets/pdfs/flying-withus/lounge/SilverKris-Lounge-and-KrisFlyer-Gold-Lounge-Access.pdf",
+          "checkedOn": "2026-11-08"
+        }
+      ],
+      "photos": [],
+      "note": "Star Alliance Gold alone uses KrisFlyer Gold at Changi. PPS and Solitaire PPS members can check their additional access benefits with Singapore Airlines."
+    },
+    {
+      "id": "sin-plaza-premium-t1",
+      "name": "Plaza Premium Lounge",
+      "terminal": "T1",
+      "location": "Level 3, west departure transit hall, near the C gates.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "maxVisitMinutes": 120,
+          "route": "international",
+          "sourceIds": [
+            "priority-pass"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass location, hours and entry conditions",
+          "url": "https://www.prioritypass.com/en-GB/lounges/singapore/singapore-changi-airport/sin16-plaza-premium-lounge",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "changi-location",
+          "title": "Changi Airport: Plaza Premium Lounge",
+          "url": "https://www.changiairport.com/en/at-changi/facilities-and-services-directory/plaza-premium-lounge.html",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "changi-showers",
+          "title": "Changi Airport shower and spa services",
+          "url": "https://www.changiairport.com/en/at-changi/facilities-and-services-directory/shower-and-spa-services.html",
+          "checkedOn": "2026-11-08"
+        }
+      ],
+      "photos": [],
+      "note": "Priority Pass visits are limited to two hours. Showers cost extra; check separate charges for private rest facilities."
+    },
+    {
+      "id": "sin-blossom-t4",
+      "name": "Blossom — SATS & Plaza Premium Lounge",
+      "terminal": "T4",
+      "location": "Mezzanine Level 2M, departure transit area near the Heritage Zone.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "maxVisitMinutes": 180,
+          "route": "international",
+          "sourceIds": [
+            "priority-pass"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass location, hours and entry conditions",
+          "url": "https://www.prioritypass.com/en-GB/lounges/singapore/singapore-changi-airport/sin20-blossom-lounge",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "changi-location",
+          "title": "Changi Airport: Blossom Lounge",
+          "url": "https://www.changiairport.com/en/at-changi/facilities-and-services-directory/blossom-sats-and-plaza-premium-lounge.html",
+          "checkedOn": "2026-11-08"
+        }
+      ],
+      "photos": [],
+      "note": "Showers cost extra and depend on availability. Allow time for the separate Terminal 4 transfer and security process."
+    }
+  ]
+}

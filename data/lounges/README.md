@@ -1,6 +1,6 @@
 # Lounge research data
 
-Edit one JSON file per airport: `SYD.json`, `HNL.json`, `SFO.json` and `LAX.json`. The app reads these files at build time; browsing and matching do not need a lounge API or server. `schema.json` is the editor/CI contract, and `src/lib/lounge-types.ts` defines the matching types.
+Edit one JSON file per airport, named with its three-letter IATA code (for example `SIN.json`). The app reads these files at build time; browsing and matching do not need a lounge API or server. `schema.json` is the editor/CI contract, and `src/lib/lounge-types.ts` defines the matching types.
 
 ## Research and editing workflow
 
@@ -95,3 +95,31 @@ The existing `lax-qantas-business` record is displayed as **Qantas / oneworld Bu
 United Premier Gold, Platinum and 1K now have an explicit international-departure rule for the LAX Star Alliance Lounge. The reviewed [ANA eligibility page](https://www.ana.co.jp/en/us/travel-information/lounges/los-angeles/) supports Star Alliance Gold access on international Star Alliance departures, while warning that domestic-transfer criteria may differ. The existing generic Star Alliance Gold rule leaves domestic United access conditional pending a directly verified applicable policy; the app does not interpret an international-only researched rule as a worldwide denial. This lounge is distinct from United Club and Polaris lounges. Its opening hours remain unverified. Source review dates changed only for pages opened during this review.
 
 Airport files named with three uppercase IATA letters (for example `SFO.json`) are discovered automatically by the app and the same schema/semantic tests. No import list needs updating.
+
+
+## Coverage expansion: 8 November 2026
+
+The guide now contains **42 selected lounges at nine airports**, including 26 new records:
+
+| Airport | Added lounges |
+| --- | --- |
+| SLC | Delta Sky Club A and B; Centurion Lounge |
+| SIN | Qantas First and Business; KrisFlyer Gold and SilverKris Business in T2/T3; Plaza Premium T1; Blossom T4 |
+| CNS | Qantas Club in domestic T2 |
+| LHR | Qantas and Cathay First/Business in T3; Galleries Club South in T5; SilverKris Business in T2; No1 T3; Plaza Premium T4/T5 |
+| MUC | Airport Lounge World and Europe in T1; Lufthansa Business and Senator at G28 and H24 in T2 |
+
+Access, current locations and opening rules were checked against the linked primary sources in each record. The full facilities lists embedded in the official Priority Pass pages confirm additional shower/Wi-Fi details and separate shower charges. Amenities remain unknown where the current page did not establish them; no unlicensed photos were added. Aegean's official Star Alliance directory supplies Munich's individual Lufthansa locations, hours and shower facilities; Lufthansa supplies the access policy and service descriptions.
+
+Material distinctions:
+
+- Qantas Singapore Business has different weekday hours, morning sessions and overnight closing times. London Qantas publishes a later Sunday opening. These are separate weekly periods, not one guessed daily interval.
+- Singapore Star Alliance Gold in Economy/Premium Economy uses KrisFlyer Gold. SilverKris Business does not grant access on that status alone at SIN, but does at LHR. PPS/Solitaire PPS exceptions and SilverKris First are not yet covered.
+- Cairns' airport directory currently lists only the domestic Qantas Club. Its flight-dependent hours remain uncertain to the matcher; no fixed timetable or operating international lounge is invented.
+- Delta domestic First and Delta elite status in Economy do not imply Sky Club entry. Card variants, annual visit allowances and Basic/Light fare exclusions remain conditional. Sky Club and Centurion entry windows use the ordinary three-hour rule; qualifying connection exceptions are explained but not inferred without the needed itinerary context. Delta Sky Club, Amex Platinum and Delta SkyMiles Reserve selections are available in web/native Profile and persist through the shared account contract.
+- Delta's current SLC location pages and Amex's individual pages did not expose usable hours (the latter returned `InvalidDateTime`). Sky Club hours remain unknown despite search snippets showing a schedule. Centurion's own page supplies its fixed hours. This avoids offering a supposedly open Sky Club from an unverified timetable.
+- Heathrow terminals are not freely interchangeable airside. A mismatched terminal stays conditional. Priority Pass's T4/T5 Plaza Premium and SIN T1 Plaza Premium visits are limited to **two hours**; No1 T3 and Blossom permit three.
+- Munich World is now in the new T1 pier at the **A gates**, in the non-Schengen area. Europe is T1 D, Schengen. Destination-country rules distinguish these areas and the Lufthansa G/H lounges; an unknown country stays conditional. The German Federal Foreign Office's [Schengen state list](https://www.auswaertiges-amt.de/en/visa-service/buergerservice/faq/17-schengenstaaten-606722), checked 8 November 2026, lists the 29 encoded states. UK/Ireland/Cyprus are not treated as Schengen destinations.
+- Amex's Lufthansa lounge benefit ended on **1 October 2026**, as stated on its [Munich Senator G24 listing](https://www.americanexpress.com/en-us/travel/lounges/the-platinum-card/MUC/lufthansa-senator-lounge-gate-g24-schengen-terminal-2-dyxPYMRZ4m/), checked 8 November 2026. No Amex-only rule grants Lufthansa access.
+
+This is curated coverage, not a complete airport inventory. Follow-ups include SIN's SATS/Marhaba lounges and PPS membership support, Heathrow's other BA/United/airline lounges, Munich's K/L satellite lounges, Centurion Card selections and verified fixed SLC Sky Club hours. The existing offline-data workflow applies equally to web and native apps; installed native apps need rebuilding to receive these bundled records.

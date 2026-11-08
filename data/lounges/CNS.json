@@ -1,0 +1,132 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "CNS",
+  "timeZone": "Australia/Brisbane",
+  "updatedAt": "2026-11-08",
+  "lounges": [
+    {
+      "id": "cns-qantas-club",
+      "name": "Qantas Club",
+      "terminal": "T2",
+      "location": "Domestic departures: after security, head towards Gate 20 and take the escalator to the upper level.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "flight-dependent",
+        "note": "Opens one hour before each Qantas-operated service and closes after the final Qantas departure."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "snacks",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "qantas-status",
+          "label": "Qantas Gold, Platinum or Platinum One",
+          "membershipsAnyOf": [
+            "qantas-gold",
+            "qantas-platinum",
+            "qantas-platinum-one"
+          ],
+          "operatingCarriersAnyOf": [
+            "QF",
+            "JQ"
+          ],
+          "marketingCarriersAnyOf": [
+            "QF",
+            "JQ"
+          ],
+          "route": "domestic",
+          "sourceIds": [
+            "qantas-access"
+          ]
+        },
+        {
+          "id": "qantas-club",
+          "label": "Qantas Club on Qantas or Jetstar",
+          "membershipsAnyOf": [
+            "qantas-club"
+          ],
+          "operatingCarriersAnyOf": [
+            "QF",
+            "JQ"
+          ],
+          "marketingCarriersAnyOf": [
+            "QF",
+            "JQ"
+          ],
+          "route": "domestic",
+          "conditions": [
+            "Check that your Qantas Club membership type covers this departure; Flexible memberships have additional restrictions."
+          ],
+          "sourceIds": [
+            "qantas-access"
+          ]
+        },
+        {
+          "id": "qantas-business",
+          "label": "Qantas domestic Business",
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "QF"
+          ],
+          "marketingCarriersAnyOf": [
+            "QF"
+          ],
+          "route": "domestic",
+          "sourceIds": [
+            "qantas-access"
+          ]
+        },
+        {
+          "id": "oneworld-status",
+          "label": "oneworld Sapphire or Emerald",
+          "membershipsAnyOf": [
+            "oneworld-sapphire",
+            "oneworld-emerald"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "domestic",
+          "sourceIds": [
+            "oneworld-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "qantas-access",
+          "title": "Qantas lounge access",
+          "url": "https://www.qantas.com/en-au/at-the-airport/lounges/access",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "oneworld-access",
+          "title": "oneworld lounge eligibility and exceptions",
+          "url": "https://www.oneworld.com/airport-lounges",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "qantas-location",
+          "title": "Qantas Cairns Club",
+          "url": "https://www.qantas.com/en-au/at-the-airport/lounges/locations/cairns-qantas-club",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "airport-directory",
+          "title": "Cairns Airport lounge directory",
+          "url": "https://www.cairnsairport.com.au/travelling/airport-guide/lounges/",
+          "checkedOn": "2026-11-08"
+        }
+      ],
+      "photos": [],
+      "note": "Domestic Terminal 2 only. The current airport directory lists this lounge; an operating international Terminal 1 lounge has not been verified."
+    }
+  ]
+}

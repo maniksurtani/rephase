@@ -31,6 +31,9 @@ const programs = <Map<String, dynamic>>[
 const memberships = <Map<String, dynamic>>[
   {'id': 'priority-pass', 'label': 'Priority Pass'},
   {'id': 'qantas-club', 'label': 'Qantas Club'},
+  {'id': 'delta-sky-club', 'label': 'Delta Sky Club membership'},
+  {'id': 'amex-platinum', 'label': 'American Express Platinum Card'},
+  {'id': 'delta-skymiles-reserve', 'label': 'Delta SkyMiles Reserve Card'},
 ];
 
 const timeZones = <Map<String, dynamic>>[
@@ -121,6 +124,17 @@ void main() {
       await tester.tap(find.byTooltip('Remove United MileagePlus'));
       await tester.pumpAndSettle();
       expect(selected, ['priority-pass']);
+      for (final membership in memberships.skip(2)) {
+        final chip = find.widgetWithText(
+          FilterChip,
+          membership['label'] as String,
+        );
+        await tester.ensureVisible(chip);
+        await tester.tap(chip);
+        await tester.pumpAndSettle();
+        expect(selected, contains(membership['id']));
+      }
+      expect(selected, contains('priority-pass'));
       expect(tester.takeException(), isNull);
     },
   );

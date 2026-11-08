@@ -1,0 +1,455 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "SLC",
+  "timeZone": "America/Denver",
+  "updatedAt": "2026-11-08",
+  "lounges": [
+    {
+      "id": "slc-delta-sky-club-a",
+      "name": "Delta Sky Club — Concourse A",
+      "terminal": "Concourse A",
+      "location": "Concourse A, Level 2, east of the Airport Plaza.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "unknown",
+        "note": "The current Delta/Amex pages did not expose usable opening hours. Confirm in the Delta app."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "club-member",
+          "label": "Delta Sky Club member on Delta",
+          "membershipsAnyOf": [
+            "delta-sky-club"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Your ticket must not be Delta Main Basic or an equivalent excluded fare."
+          ],
+          "sourceIds": [
+            "delta-access"
+          ]
+        },
+        {
+          "id": "delta-one",
+          "label": "Delta One",
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Confirm the ticket is Delta One; ordinary domestic First does not qualify."
+          ],
+          "sourceIds": [
+            "delta-access"
+          ]
+        },
+        {
+          "id": "delta-medallion-premium",
+          "label": "Delta Gold, Platinum or Diamond on an international premium ticket",
+          "membershipsAnyOf": [
+            "delta-gold-medallion",
+            "delta-platinum-medallion",
+            "delta-diamond-medallion"
+          ],
+          "cabinsAnyOf": [
+            "premium-economy",
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "route": "international",
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Confirm Delta Premium Select or Delta One on the qualifying international itinerary; Caribbean routes are excluded."
+          ],
+          "sourceIds": [
+            "delta-access"
+          ]
+        },
+        {
+          "id": "skyteam-status",
+          "label": "Non-Delta SkyTeam Elite Plus on an international flight",
+          "membershipsAnyOf": [
+            "skyteam-elite-plus"
+          ],
+          "operatingAlliance": "skyteam",
+          "route": "international",
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Status must be issued by a non-Delta program; Delta Medallion alone does not qualify in Economy. Caribbean routes and Basic/Light fares are excluded."
+          ],
+          "sourceIds": [
+            "delta-access"
+          ]
+        },
+        {
+          "id": "amex-platinum",
+          "label": "Eligible Amex Platinum Card on Delta",
+          "membershipsAnyOf": [
+            "amex-platinum"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Confirm your card issuer includes Sky Club access and that you have visits remaining or accept the extra visit fee. Basic/Light fares are excluded."
+          ],
+          "sourceIds": [
+            "delta-access"
+          ]
+        },
+        {
+          "id": "reserve-operated",
+          "label": "Delta SkyMiles Reserve on Delta",
+          "membershipsAnyOf": [
+            "delta-skymiles-reserve"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Confirm remaining card visits or the extra visit fee. Basic/Light fares are excluded."
+          ],
+          "sourceIds": [
+            "delta-access"
+          ]
+        },
+        {
+          "id": "reserve-marketed",
+          "label": "Delta SkyMiles Reserve on a Delta-marketed flight",
+          "membershipsAnyOf": [
+            "delta-skymiles-reserve"
+          ],
+          "marketingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Confirm remaining card visits or the extra visit fee. Basic/Light fares are excluded."
+          ],
+          "sourceIds": [
+            "delta-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "delta-access",
+          "title": "Delta Sky Club access and fare exclusions",
+          "url": "https://www.delta.com/us/en/delta-sky-club/access",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "airport-directory",
+          "title": "Salt Lake City Airport services and lounges",
+          "url": "https://slcairport.com/airport-services.html",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "amex-location",
+          "title": "American Express Sky Club location and facilities",
+          "url": "https://www.americanexpress.com/en-us/travel/lounges/delta-reserve/SLC/Delta-Sky-Club-Main-Terminal-Concourse-A-snROYZlzWB/",
+          "checkedOn": "2026-11-08"
+        }
+      ],
+      "photos": [],
+      "note": "Ordinary domestic First and Priority Pass alone do not provide entry. Connections can have an exception to the three-hour entry limit; verify with Delta."
+    },
+    {
+      "id": "slc-delta-sky-club-b",
+      "name": "Delta Sky Club — Concourse B",
+      "terminal": "Concourse B",
+      "location": "Concourse B centerpoint, near Gate B26.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "unknown",
+        "note": "The current Delta/Amex pages did not expose usable opening hours. Confirm in the Delta app."
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "club-member",
+          "label": "Delta Sky Club member on Delta",
+          "membershipsAnyOf": [
+            "delta-sky-club"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Your ticket must not be Delta Main Basic or an equivalent excluded fare."
+          ],
+          "sourceIds": [
+            "delta-access"
+          ]
+        },
+        {
+          "id": "delta-one",
+          "label": "Delta One",
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Confirm the ticket is Delta One; ordinary domestic First does not qualify."
+          ],
+          "sourceIds": [
+            "delta-access"
+          ]
+        },
+        {
+          "id": "delta-medallion-premium",
+          "label": "Delta Gold, Platinum or Diamond on an international premium ticket",
+          "membershipsAnyOf": [
+            "delta-gold-medallion",
+            "delta-platinum-medallion",
+            "delta-diamond-medallion"
+          ],
+          "cabinsAnyOf": [
+            "premium-economy",
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "route": "international",
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Confirm Delta Premium Select or Delta One on the qualifying international itinerary; Caribbean routes are excluded."
+          ],
+          "sourceIds": [
+            "delta-access"
+          ]
+        },
+        {
+          "id": "skyteam-status",
+          "label": "Non-Delta SkyTeam Elite Plus on an international flight",
+          "membershipsAnyOf": [
+            "skyteam-elite-plus"
+          ],
+          "operatingAlliance": "skyteam",
+          "route": "international",
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Status must be issued by a non-Delta program; Delta Medallion alone does not qualify in Economy. Caribbean routes and Basic/Light fares are excluded."
+          ],
+          "sourceIds": [
+            "delta-access"
+          ]
+        },
+        {
+          "id": "amex-platinum",
+          "label": "Eligible Amex Platinum Card on Delta",
+          "membershipsAnyOf": [
+            "amex-platinum"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Confirm your card issuer includes Sky Club access and that you have visits remaining or accept the extra visit fee. Basic/Light fares are excluded."
+          ],
+          "sourceIds": [
+            "delta-access"
+          ]
+        },
+        {
+          "id": "reserve-operated",
+          "label": "Delta SkyMiles Reserve on Delta",
+          "membershipsAnyOf": [
+            "delta-skymiles-reserve"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Confirm remaining card visits or the extra visit fee. Basic/Light fares are excluded."
+          ],
+          "sourceIds": [
+            "delta-access"
+          ]
+        },
+        {
+          "id": "reserve-marketed",
+          "label": "Delta SkyMiles Reserve on a Delta-marketed flight",
+          "membershipsAnyOf": [
+            "delta-skymiles-reserve"
+          ],
+          "marketingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Confirm remaining card visits or the extra visit fee. Basic/Light fares are excluded."
+          ],
+          "sourceIds": [
+            "delta-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "delta-access",
+          "title": "Delta Sky Club access and fare exclusions",
+          "url": "https://www.delta.com/us/en/delta-sky-club/access",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "airport-directory",
+          "title": "Salt Lake City Airport services and lounges",
+          "url": "https://slcairport.com/airport-services.html",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "amex-location",
+          "title": "American Express Sky Club location and facilities",
+          "url": "https://www.americanexpress.com/en-us/travel/lounges/the-platinum-card/SLC/Delta-Sky-Club-Concourse-B-Pv7vP5LBeo/",
+          "checkedOn": "2026-11-08"
+        }
+      ],
+      "photos": [],
+      "note": "Ordinary domestic First and Priority Pass alone do not provide entry. Connections can have an exception to the three-hour entry limit; verify with Delta."
+    },
+    {
+      "id": "slc-centurion",
+      "name": "The Centurion Lounge",
+      "terminal": "Concourse B",
+      "location": "Adjacent to Gate B31.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "04:45",
+            "close": "23:15"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "platinum",
+          "label": "American Express Platinum Card",
+          "membershipsAnyOf": [
+            "amex-platinum"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "note": "Consumer, Business or Corporate Platinum Card, matching ID and confirmed same-day departing boarding pass required.",
+          "sourceIds": [
+            "centurion-access"
+          ]
+        },
+        {
+          "id": "reserve-operated",
+          "label": "Delta SkyMiles Reserve on Delta",
+          "membershipsAnyOf": [
+            "delta-skymiles-reserve"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "sourceIds": [
+            "centurion-access"
+          ]
+        },
+        {
+          "id": "reserve-marketed",
+          "label": "Delta SkyMiles Reserve on a Delta-marketed flight",
+          "membershipsAnyOf": [
+            "delta-skymiles-reserve"
+          ],
+          "marketingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "sourceIds": [
+            "centurion-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "centurion-access",
+          "title": "Centurion Lounge admission policy",
+          "url": "https://thecenturionlounge-prod.americanexpress.com/info/access/",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "centurion-location",
+          "title": "Centurion Lounge Salt Lake City",
+          "url": "https://www.thecenturionlounge.com/locations/slc/",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "airport-directory",
+          "title": "Salt Lake City Airport services and lounges",
+          "url": "https://slcairport.com/airport-services.html",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "amex-facilities",
+          "title": "American Express Centurion SLC facilities",
+          "url": "https://www.americanexpress.com/en-us/travel/lounges/the-platinum-card/SLC/The-Centurion-Lounge-Concourse-B-QwpjoOEs8k/",
+          "checkedOn": "2026-11-08"
+        }
+      ],
+      "photos": [],
+      "note": "The connecting-flight entry exception can extend to five hours. Centurion Card access is not yet represented in the membership picker.",
+      "recommendation": {
+        "summary": "Showers and a recovery room in Concourse B for eligible Amex cardholders.",
+        "bestFor": [
+          "showers",
+          "quiet"
+        ]
+      }
+    }
+  ]
+}

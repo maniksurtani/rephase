@@ -2,6 +2,12 @@
 
 Updated 2026-11-08. Active work is kept here; the previous complete checklist is preserved in [the task archive](docs/archive/TODO-2026-10-16.md). Release evidence is in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md).
 
+## Lounge coverage for upcoming trips
+
+- [x] Research SLC, SIN, CNS, LHR and MUC using current airline, airport, operator and membership sources; record hours, amenities, access restrictions and terminal context.
+- [x] Add the airport JSON guides to the shared web/native dataset and any membership support needed to represent verified access.
+- [ ] Verify eligible, conditional, closed and wrong-terminal cases; update coverage documentation and publish the checked release.
+
 ## Continuous Bands timeline
 
 - [x] Mock up three interactive mobile concepts with continuous scrolling, local midnight dividers, explicit in-flight clock changes, persistent flight/rest spans, compressed quiet time and expandable details. See [the comparison and previews](docs/prototypes/continuous-timeline/README.md).

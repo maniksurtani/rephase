@@ -15,6 +15,9 @@ const paidMemberships = new Set([
   'united-club',
   'alaska-lounge-plus',
   'admirals-club',
+  'delta-sky-club',
+  'amex-platinum',
+  'delta-skymiles-reserve',
 ]);
 type LoyaltyProgram = (typeof LOYALTY_PROGRAMS)[number];
 const alliances = [
@@ -264,7 +267,7 @@ export function LoungeMembershipSettings({ memberships, onChange }: Props) {
       </div>
 
       <fieldset className="lounge-programs lounge-paid-memberships">
-        <legend>Lounge memberships</legend>
+        <legend>Lounge memberships and cards</legend>
         {LOUNGE_MEMBERSHIPS.filter((program) => paidMemberships.has(program.id)).map((program) => (
           <label key={program.id}>
             <input

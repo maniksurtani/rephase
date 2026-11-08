@@ -1,0 +1,687 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "LHR",
+  "timeZone": "Europe/London",
+  "updatedAt": "2026-11-08",
+  "lounges": [
+    {
+      "id": "lhr-qantas",
+      "name": "Qantas London Lounge",
+      "terminal": "T3",
+      "location": "Lounge B, after security.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6
+            ],
+            "open": "06:00",
+            "close": "20:00"
+          },
+          {
+            "days": [
+              7
+            ],
+            "open": "08:00",
+            "close": "20:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "restaurant",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "qantas-status-oneworld",
+          "label": "Qantas Gold, Platinum or Platinum One on a oneworld flight",
+          "membershipsAnyOf": [
+            "qantas-gold",
+            "qantas-platinum",
+            "qantas-platinum-one"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "international",
+          "sourceIds": [
+            "qantas-access",
+            "oneworld-access"
+          ]
+        },
+        {
+          "id": "oneworld-status",
+          "label": "oneworld Sapphire or Emerald on a oneworld flight",
+          "membershipsAnyOf": [
+            "oneworld-sapphire",
+            "oneworld-emerald"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "international",
+          "conditions": [
+            "Verify the issuing program's route and lounge exceptions."
+          ],
+          "sourceIds": [
+            "oneworld-access"
+          ]
+        },
+        {
+          "id": "qantas-club-qantas",
+          "label": "Qantas Club on a Qantas flight",
+          "membershipsAnyOf": [
+            "qantas-club"
+          ],
+          "operatingCarriersAnyOf": [
+            "QF"
+          ],
+          "marketingCarriersAnyOf": [
+            "QF"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "qantas-access"
+          ]
+        },
+        {
+          "id": "qantas-premium",
+          "label": "Qantas international Business or First",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingCarriersAnyOf": [
+            "QF"
+          ],
+          "marketingCarriersAnyOf": [
+            "QF"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "qantas-access"
+          ]
+        },
+        {
+          "id": "oneworld-premium",
+          "label": "International Business or First on a oneworld flight",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "international",
+          "conditions": [
+            "Confirm lounge access is included in the fare; some Business Light or Lite fares exclude it."
+          ],
+          "sourceIds": [
+            "oneworld-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "qantas-access",
+          "title": "Qantas lounge access",
+          "url": "https://www.qantas.com/en-au/at-the-airport/lounges/access",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "oneworld-access",
+          "title": "oneworld lounge eligibility and exceptions",
+          "url": "https://www.oneworld.com/airport-lounges",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "qantas-location",
+          "title": "Qantas London Lounge",
+          "url": "https://www.qantas.com/en-au/at-the-airport/lounges/locations/london-international",
+          "checkedOn": "2026-11-08"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "Restaurant dining and showers for eligible Qantas or oneworld travelers departing Terminal 3.",
+        "bestFor": [
+          "dining",
+          "showers"
+        ]
+      }
+    },
+    {
+      "id": "lhr-cathay-business",
+      "name": "Cathay Pacific Business Lounge",
+      "terminal": "T3",
+      "location": "Lounge C, near Gate 11.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:30",
+            "close": "21:30"
+          }
+        ],
+        "note": "May remain open until the last Cathay Pacific departure."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "oneworld-status",
+          "label": "oneworld Sapphire or Emerald",
+          "membershipsAnyOf": [
+            "oneworld-sapphire",
+            "oneworld-emerald"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "sourceIds": [
+            "oneworld-access"
+          ]
+        },
+        {
+          "id": "oneworld-premium",
+          "label": "oneworld Business or First",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "conditions": [
+            "Confirm this fare includes lounge access; complimentary upgrades and some Business Lite/Light fares do not."
+          ],
+          "sourceIds": [
+            "oneworld-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "cathay-location",
+          "title": "Cathay Pacific Heathrow lounges",
+          "url": "https://www.cathaypacific.com/cx/en_GB/destinations/lounges/london-lhr/cathay-pacific-lounge.html",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "cathay-access",
+          "title": "Cathay Pacific lounge admittance",
+          "url": "https://www.cathaypacific.com/cx/en_GB/destinations/lounges/all-lounges-admittance.html",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "oneworld-access",
+          "title": "oneworld lounge eligibility and exceptions",
+          "url": "https://www.oneworld.com/airport-lounges",
+          "checkedOn": "2026-11-08"
+        }
+      ],
+      "photos": [],
+      "note": "First has a dining room; Business has a noodle bar and food hall. Complimentary upgrades alone do not grant First lounge access."
+    },
+    {
+      "id": "lhr-cathay-first",
+      "name": "Cathay Pacific First Lounge",
+      "terminal": "T3",
+      "location": "Lounge C, near Gate 11.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:30",
+            "close": "21:30"
+          }
+        ],
+        "note": "May remain open until the last Cathay Pacific departure."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "restaurant",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "oneworld-status",
+          "label": "oneworld Emerald",
+          "membershipsAnyOf": [
+            "oneworld-emerald"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "sourceIds": [
+            "oneworld-access"
+          ]
+        },
+        {
+          "id": "oneworld-premium",
+          "label": "Ticketed oneworld First",
+          "cabinsAnyOf": [
+            "first"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "conditions": [
+            "Confirm this fare includes lounge access; complimentary upgrades and some Business Lite/Light fares do not."
+          ],
+          "sourceIds": [
+            "oneworld-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "cathay-location",
+          "title": "Cathay Pacific Heathrow lounges",
+          "url": "https://www.cathaypacific.com/cx/en_GB/destinations/lounges/london-lhr/cathay-pacific-lounge.html",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "cathay-access",
+          "title": "Cathay Pacific lounge admittance",
+          "url": "https://www.cathaypacific.com/cx/en_GB/destinations/lounges/all-lounges-admittance.html",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "oneworld-access",
+          "title": "oneworld lounge eligibility and exceptions",
+          "url": "https://www.oneworld.com/airport-lounges",
+          "checkedOn": "2026-11-08"
+        }
+      ],
+      "photos": [],
+      "note": "First has a dining room; Business has a noodle bar and food hall. Complimentary upgrades alone do not grant First lounge access."
+    },
+    {
+      "id": "lhr-ba-galleries-club-south",
+      "name": "British Airways Galleries Club South",
+      "terminal": "T5",
+      "location": "Terminal 5A, south departures, after security.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:00",
+            "close": "22:30"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "ba-status",
+          "label": "British Airways Silver or Gold on British Airways",
+          "membershipsAnyOf": [
+            "british-airways-silver",
+            "british-airways-gold"
+          ],
+          "operatingCarriersAnyOf": [
+            "BA"
+          ],
+          "sourceIds": [
+            "ba-terminal"
+          ]
+        },
+        {
+          "id": "ba-premium",
+          "label": "British Airways Club Europe, Club World or First",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingCarriersAnyOf": [
+            "BA"
+          ],
+          "sourceIds": [
+            "ba-terminal"
+          ]
+        },
+        {
+          "id": "oneworld-status",
+          "label": "oneworld Sapphire or Emerald",
+          "membershipsAnyOf": [
+            "oneworld-sapphire",
+            "oneworld-emerald"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "sourceIds": [
+            "oneworld-access"
+          ]
+        },
+        {
+          "id": "oneworld-premium",
+          "label": "oneworld Business or First",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "conditions": [
+            "Confirm this fare includes lounge access; complimentary upgrades and some Business Lite/Light fares do not."
+          ],
+          "sourceIds": [
+            "oneworld-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "ba-terminal",
+          "title": "British Airways Heathrow Terminal 5 lounges",
+          "url": "https://www.britishairways.com/content/en/qa/information/airport-information/london-heathrow-airport/heathrow-t5",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "oneworld-access",
+          "title": "oneworld lounge eligibility and exceptions",
+          "url": "https://www.oneworld.com/airport-lounges",
+          "checkedOn": "2026-11-08"
+        }
+      ],
+      "photos": [],
+      "note": "For T5C departures, BA advises leaving the lounge at least 40 minutes before departure. Other Galleries locations are not yet included."
+    },
+    {
+      "id": "lhr-silverkris-business",
+      "name": "SilverKris Business Lounge",
+      "terminal": "T2",
+      "location": "Terminal 2B departures; use the lift lobby next to World Duty Free.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:30",
+            "close": "22:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "snacks",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "star-premium",
+          "label": "Star Alliance Business or First",
+          "operatingAlliance": "star",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "sourceIds": [
+            "singapore-access"
+          ]
+        },
+        {
+          "id": "star-gold",
+          "label": "Star Alliance Gold",
+          "operatingAlliance": "star",
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "sourceIds": [
+            "singapore-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "singapore-silverkris",
+          "title": "SilverKris lounge locations and facilities",
+          "url": "https://www.singaporeair.com/en_UK/sg/flying-withus/before-the-flight/lounges/silverkris/",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "singapore-access",
+          "title": "Singapore Airlines lounge eligibility",
+          "url": "https://www.singaporeair.com/content/dam/sia/web-assets/pdfs/flying-withus/lounge/SilverKris-Lounge-and-KrisFlyer-Gold-Lounge-Access.pdf",
+          "checkedOn": "2026-11-08"
+        }
+      ],
+      "photos": [],
+      "note": "Allow for the walk between Terminal 2A and the satellite Terminal 2B."
+    },
+    {
+      "id": "lhr-no1-t3",
+      "name": "No1 Lounge",
+      "terminal": "T3",
+      "location": "Lounge F, one floor above the departure concourse near Gates 13–22.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:00",
+            "close": "22:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "maxVisitMinutes": 180,
+          "route": "international",
+          "sourceIds": [
+            "priority-pass"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass location, hours and entry conditions",
+          "url": "https://www.prioritypass.com/en-GB/lounges/united-kingdom/heathrow/lhr25-no1-lounge-heathrow",
+          "checkedOn": "2026-11-08"
+        }
+      ],
+      "photos": [],
+      "note": "Terminal-specific departures lounge; a boarding pass for another terminal does not establish airside access. Priority Pass warns of capacity restrictions; optional advance reservations cost extra."
+    },
+    {
+      "id": "lhr-plaza-premium-t4",
+      "name": "Plaza Premium Lounge",
+      "terminal": "T4",
+      "location": "Level 2 departures, opposite Gates A10 and B10.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:00",
+            "close": "22:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "maxVisitMinutes": 120,
+          "route": "international",
+          "sourceIds": [
+            "priority-pass"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass location, hours and entry conditions",
+          "url": "https://www.prioritypass.com/en-GB/lounges/united-kingdom/heathrow/lhr13-plaza-premium-lounge",
+          "checkedOn": "2026-11-08"
+        }
+      ],
+      "photos": [],
+      "note": "Terminal-specific departures lounge; a boarding pass for another terminal does not establish airside access. Priority Pass visits are limited to two hours. Showers cost extra."
+    },
+    {
+      "id": "lhr-plaza-premium-t5",
+      "name": "Plaza Premium Lounge",
+      "terminal": "T5",
+      "location": "After security, next to Gate A7.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:30",
+            "close": "21:30"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "maxVisitMinutes": 120,
+          "sourceIds": [
+            "priority-pass"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass location, hours and entry conditions",
+          "url": "https://www.prioritypass.com/en-GB/lounges/united-kingdom/heathrow/lhr30-plaza-premium-lounge-terminal-5-departures",
+          "checkedOn": "2026-11-08"
+        }
+      ],
+      "photos": [],
+      "note": "Terminal-specific departures lounge; a boarding pass for another terminal does not establish airside access. Priority Pass visits are limited to two hours. Showers cost extra."
+    }
+  ]
+}

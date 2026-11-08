@@ -100,7 +100,7 @@ const ALLIANCES: Record<string, LoungeAlliance> = {
   VS: 'skyteam',
   UX: 'skyteam',
 };
-const NON_ALLIANCE_CARRIERS = new Set(['B6', 'EK', 'F9', 'G4', 'JQ', 'NK', 'VA', 'WN']);
+const NON_ALLIANCE_CARRIERS = new Set(['B6', 'EK', 'F9', 'G4', 'JQ', 'NK', 'TR', 'VA', 'WN']);
 
 export function loungeCarrierAlliance(carrier?: string): LoungeAlliance | undefined {
   return carrier ? ALLIANCES[carrier.trim().toUpperCase()] : undefined;

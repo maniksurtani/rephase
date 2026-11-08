@@ -17,9 +17,9 @@ Give your research assistant this prompt together with `schema.json` and the air
 After editing, run:
 
 ```sh
-npx vitest run tests/lounge-data.test.ts tests/lounge-access.test.ts tests/lounge-windows.test.ts tests/lounge-preferences.test.ts
+npx vitest run tests/lounge-data.test.ts tests/lounge-access.test.ts tests/lounge-airports.test.ts tests/lounge-windows.test.ts tests/lounge-preferences.test.ts
 npm run typecheck
 npm run build
 ```
 
-For another airport, add its JSON import to `src/lib/lounge-data.ts` and register it in `tests/lounge-data.test.ts`. Extend the explicit airport-country map in `src/lib/lounge-windows.ts` when known, so route buffers and country checks can be resolved. Otherwise the engine keeps unknown routes conservative. New membership IDs or scoring inputs require coordinated type/schema/validation/UI and test changes. Photo files must exist under `public/lounges/<lounge-id>/` before data checks pass.
+For another airport, add `data/lounges/ABC.json` using its uppercase three-letter IATA code. The web/native bundle and data tests discover it automatically; no import list or test registration is needed. Extend the explicit airport-country map in `src/lib/lounge-windows.ts` when known, so route buffers and country checks can be resolved. Otherwise the engine keeps unknown routes conservative. New membership IDs or scoring inputs require coordinated type/schema/validation/UI and test changes. Photo files must exist under `public/lounges/<lounge-id>/` before data checks pass.

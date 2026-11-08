@@ -1,0 +1,933 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "MUC",
+  "timeZone": "Europe/Berlin",
+  "updatedAt": "2026-11-08",
+  "lounges": [
+    {
+      "id": "muc-airport-lounge-world",
+      "name": "Airport Lounge World",
+      "terminal": "T1",
+      "location": "New Terminal 1 pier, A gates, Level 4, after non-Schengen passport control.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:00",
+            "close": "21:45"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "maxVisitMinutes": 180,
+          "maxMinutesBeforeDeparture": 180,
+          "excludedDestinationCountries": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "priority-pass",
+            "schengen-states"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "airport-location",
+          "title": "Munich Airport Lounge World",
+          "url": "https://www.munich-airport.com/airport-lounge-world-35487554",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass location, hours and entry conditions",
+          "url": "https://www.prioritypass.com/en-GB/lounges/germany/munich/muc2-airport-lounge-world",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "schengen-states",
+          "title": "German Federal Foreign Office: Schengen states",
+          "url": "https://www.auswaertiges-amt.de/en/visa-service/buergerservice/faq/17-schengenstaaten-606722",
+          "checkedOn": "2026-11-08"
+        }
+      ],
+      "photos": [],
+      "note": "Non-Schengen departures only. Day beds depend on availability.",
+      "recommendation": {
+        "summary": "Showers, a buffet and day beds for a non-Schengen Terminal 1 departure.",
+        "bestFor": [
+          "showers",
+          "dining",
+          "quiet"
+        ]
+      }
+    },
+    {
+      "id": "muc-airport-lounge-europe",
+      "name": "Airport Lounge Europe",
+      "terminal": "T1",
+      "location": "Terminal 1, module D, Level 5, Schengen departures.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:00",
+            "close": "21:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "maxVisitMinutes": 180,
+          "maxMinutesBeforeDeparture": 180,
+          "destinationCountriesAnyOf": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ],
+          "sourceIds": [
+            "priority-pass",
+            "schengen-states"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "airport-location",
+          "title": "Munich Airport Lounge Europe",
+          "url": "https://www.munich-airport.com/airport-lounge-europe-725693",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass location, hours and entry conditions",
+          "url": "https://www.prioritypass.com/en-GB/lounges/germany/munich/mune-airport-lounge-europe",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "schengen-states",
+          "title": "German Federal Foreign Office: Schengen states",
+          "url": "https://www.auswaertiges-amt.de/en/visa-service/buergerservice/faq/17-schengenstaaten-606722",
+          "checkedOn": "2026-11-08"
+        }
+      ],
+      "photos": [],
+      "note": "Schengen departures only. The airport warns of occasional temporary closures due to capacity."
+    },
+    {
+      "id": "muc-lufthansa-business-g28",
+      "name": "Lufthansa Business Lounge — G28",
+      "terminal": "T2",
+      "location": "Departures G, opposite Gate G28; Schengen area, Level 4.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:00",
+            "close": "22:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "star-gold",
+          "label": "Star Alliance Gold",
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingAlliance": "star",
+          "destinationCountriesAnyOf": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ],
+          "sourceIds": [
+            "lufthansa-access",
+            "schengen-states"
+          ]
+        },
+        {
+          "id": "star-premium",
+          "label": "Star Alliance Business or First",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingAlliance": "star",
+          "destinationCountriesAnyOf": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ],
+          "sourceIds": [
+            "lufthansa-access",
+            "schengen-states"
+          ]
+        },
+        {
+          "id": "frequent-traveller",
+          "label": "Miles & More Frequent Traveller",
+          "membershipsAnyOf": [
+            "miles-and-more-frequent-traveller"
+          ],
+          "operatingAlliance": "star",
+          "destinationCountriesAnyOf": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ],
+          "sourceIds": [
+            "lufthansa-access",
+            "schengen-states"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "lufthansa-access",
+          "title": "Lufthansa lounge admission rules",
+          "url": "https://www.lufthansa.com/de/en/admission-rules",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "lufthansa-locations",
+          "title": "Aegean / Star Alliance Munich lounge directory",
+          "url": "https://en.aegeanair.com/travel-info/travelling-with-aegean/at-the-airport/lounge-finder/?AirlineCode=A3&AirportCode=MUC&CabinClass=B&FFPStatus=Senator&FrequentFlyer=Miles+%26+More&ShowMore=true",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "lufthansa-facilities",
+          "title": "Lufthansa lounge facilities",
+          "url": "https://www.lufthansa.com/de/en/during-your-trip/lounges",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "schengen-states",
+          "title": "German Federal Foreign Office: Schengen states",
+          "url": "https://www.auswaertiges-amt.de/en/visa-service/buergerservice/faq/17-schengenstaaten-606722",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "amex-policy-change",
+          "title": "Amex Lufthansa lounge benefit ends 1 October 2026",
+          "url": "https://www.americanexpress.com/en-us/travel/lounges/the-platinum-card/MUC/lufthansa-senator-lounge-gate-g24-schengen-terminal-2-dyxPYMRZ4m/",
+          "checkedOn": "2026-11-08"
+        }
+      ],
+      "photos": [],
+      "note": "Amex Platinum lounge access through the Global Lounge Collection ended on 1 October 2026; airline/status eligibility still applies."
+    },
+    {
+      "id": "muc-lufthansa-senator-g28",
+      "name": "Lufthansa Senator Lounge — G28",
+      "terminal": "T2",
+      "location": "Departures G, opposite Gate G28; Schengen area, Level 4.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:00",
+            "close": "22:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "star-gold",
+          "label": "Star Alliance Gold",
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingAlliance": "star",
+          "destinationCountriesAnyOf": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ],
+          "sourceIds": [
+            "lufthansa-access",
+            "schengen-states"
+          ]
+        },
+        {
+          "id": "star-premium",
+          "label": "Star Alliance First",
+          "cabinsAnyOf": [
+            "first"
+          ],
+          "operatingAlliance": "star",
+          "destinationCountriesAnyOf": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ],
+          "sourceIds": [
+            "lufthansa-access",
+            "schengen-states"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "lufthansa-access",
+          "title": "Lufthansa lounge admission rules",
+          "url": "https://www.lufthansa.com/de/en/admission-rules",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "lufthansa-locations",
+          "title": "Aegean / Star Alliance Munich lounge directory",
+          "url": "https://en.aegeanair.com/travel-info/travelling-with-aegean/at-the-airport/lounge-finder/?AirlineCode=A3&AirportCode=MUC&CabinClass=B&FFPStatus=Senator&FrequentFlyer=Miles+%26+More&ShowMore=true",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "lufthansa-facilities",
+          "title": "Lufthansa lounge facilities",
+          "url": "https://www.lufthansa.com/de/en/during-your-trip/lounges",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "schengen-states",
+          "title": "German Federal Foreign Office: Schengen states",
+          "url": "https://www.auswaertiges-amt.de/en/visa-service/buergerservice/faq/17-schengenstaaten-606722",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "amex-policy-change",
+          "title": "Amex Lufthansa lounge benefit ends 1 October 2026",
+          "url": "https://www.americanexpress.com/en-us/travel/lounges/the-platinum-card/MUC/lufthansa-senator-lounge-gate-g24-schengen-terminal-2-dyxPYMRZ4m/",
+          "checkedOn": "2026-11-08"
+        }
+      ],
+      "photos": [],
+      "note": "Amex Platinum lounge access through the Global Lounge Collection ended on 1 October 2026; airline/status eligibility still applies."
+    },
+    {
+      "id": "muc-lufthansa-business-h24",
+      "name": "Lufthansa Business Lounge — H24",
+      "terminal": "T2",
+      "location": "Departures H, opposite Gate H24; non-Schengen area, Level 5.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:00",
+            "close": "22:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "star-gold",
+          "label": "Star Alliance Gold",
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingAlliance": "star",
+          "excludedDestinationCountries": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "lufthansa-access",
+            "schengen-states"
+          ]
+        },
+        {
+          "id": "star-premium",
+          "label": "Star Alliance Business or First",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingAlliance": "star",
+          "excludedDestinationCountries": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "lufthansa-access",
+            "schengen-states"
+          ]
+        },
+        {
+          "id": "frequent-traveller",
+          "label": "Miles & More Frequent Traveller",
+          "membershipsAnyOf": [
+            "miles-and-more-frequent-traveller"
+          ],
+          "operatingAlliance": "star",
+          "excludedDestinationCountries": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "lufthansa-access",
+            "schengen-states"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "lufthansa-access",
+          "title": "Lufthansa lounge admission rules",
+          "url": "https://www.lufthansa.com/de/en/admission-rules",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "lufthansa-locations",
+          "title": "Aegean / Star Alliance Munich lounge directory",
+          "url": "https://en.aegeanair.com/travel-info/travelling-with-aegean/at-the-airport/lounge-finder/?AirlineCode=A3&AirportCode=MUC&CabinClass=B&FFPStatus=Senator&FrequentFlyer=Miles+%26+More&ShowMore=true",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "lufthansa-facilities",
+          "title": "Lufthansa lounge facilities",
+          "url": "https://www.lufthansa.com/de/en/during-your-trip/lounges",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "schengen-states",
+          "title": "German Federal Foreign Office: Schengen states",
+          "url": "https://www.auswaertiges-amt.de/en/visa-service/buergerservice/faq/17-schengenstaaten-606722",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "amex-policy-change",
+          "title": "Amex Lufthansa lounge benefit ends 1 October 2026",
+          "url": "https://www.americanexpress.com/en-us/travel/lounges/the-platinum-card/MUC/lufthansa-senator-lounge-gate-g24-schengen-terminal-2-dyxPYMRZ4m/",
+          "checkedOn": "2026-11-08"
+        }
+      ],
+      "photos": [],
+      "note": "Amex Platinum lounge access through the Global Lounge Collection ended on 1 October 2026; airline/status eligibility still applies."
+    },
+    {
+      "id": "muc-lufthansa-senator-h24",
+      "name": "Lufthansa Senator Lounge — H24",
+      "terminal": "T2",
+      "location": "Departures H, opposite Gate H24; non-Schengen area, Level 5.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:00",
+            "close": "22:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "star-gold",
+          "label": "Star Alliance Gold",
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingAlliance": "star",
+          "excludedDestinationCountries": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "lufthansa-access",
+            "schengen-states"
+          ]
+        },
+        {
+          "id": "star-premium",
+          "label": "Star Alliance First",
+          "cabinsAnyOf": [
+            "first"
+          ],
+          "operatingAlliance": "star",
+          "excludedDestinationCountries": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "lufthansa-access",
+            "schengen-states"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "lufthansa-access",
+          "title": "Lufthansa lounge admission rules",
+          "url": "https://www.lufthansa.com/de/en/admission-rules",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "lufthansa-locations",
+          "title": "Aegean / Star Alliance Munich lounge directory",
+          "url": "https://en.aegeanair.com/travel-info/travelling-with-aegean/at-the-airport/lounge-finder/?AirlineCode=A3&AirportCode=MUC&CabinClass=B&FFPStatus=Senator&FrequentFlyer=Miles+%26+More&ShowMore=true",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "lufthansa-facilities",
+          "title": "Lufthansa lounge facilities",
+          "url": "https://www.lufthansa.com/de/en/during-your-trip/lounges",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "schengen-states",
+          "title": "German Federal Foreign Office: Schengen states",
+          "url": "https://www.auswaertiges-amt.de/en/visa-service/buergerservice/faq/17-schengenstaaten-606722",
+          "checkedOn": "2026-11-08"
+        },
+        {
+          "id": "amex-policy-change",
+          "title": "Amex Lufthansa lounge benefit ends 1 October 2026",
+          "url": "https://www.americanexpress.com/en-us/travel/lounges/the-platinum-card/MUC/lufthansa-senator-lounge-gate-g24-schengen-terminal-2-dyxPYMRZ4m/",
+          "checkedOn": "2026-11-08"
+        }
+      ],
+      "photos": [],
+      "note": "Amex Platinum lounge access through the Global Lounge Collection ended on 1 October 2026; airline/status eligibility still applies."
+    }
+  ]
+}

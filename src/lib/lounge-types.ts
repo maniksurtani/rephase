@@ -14,6 +14,9 @@ const LEGACY_LOUNGE_MEMBERSHIPS = [
   { id: 'alaska-lounge-plus', label: 'Alaska Lounge+' },
   { id: 'admirals-club', label: 'Admirals Club' },
   { id: 'skyteam-elite-plus', label: 'SkyTeam Elite Plus' },
+  { id: 'delta-sky-club', label: 'Delta Sky Club membership' },
+  { id: 'amex-platinum', label: 'American Express Platinum Card' },
+  { id: 'delta-skymiles-reserve', label: 'Delta SkyMiles Reserve Card' },
 ] as const;
 
 /** Flat IDs retain compatibility with existing local/account snapshots and airport rules. */
