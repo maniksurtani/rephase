@@ -48,11 +48,20 @@ async function expectPreflightLoungeEntry(page: Page, flightId: string, departur
   const start = Number(await lounge.getAttribute('data-start'));
   expect(start).toBeLessThan(Date.parse(departure));
   expect(start).toBeLessThan(Number(await flight.getAttribute('data-start')));
-  const [loungeBounds, flightBounds] = await Promise.all([
-    lounge.boundingBox(),
-    flight.boundingBox(),
-  ]);
-  expect(loungeBounds!.y + loungeBounds!.height).toBeLessThanOrEqual(flightBounds!.y);
+  // Read both rectangles in one frame, including while a date jump is animating.
+  const positions = await page.locator('.journey-canvas').evaluate((canvas, id) => {
+    const lounge = canvas
+      .querySelector(`.flight-lounge-link[data-flight-id="${id}"]`)!
+      .closest('.journey-flight-marker')!;
+    const flight = canvas.querySelector(
+      `.journey-flight-marker[data-flight-id="${id}"][data-phase="departure"]`,
+    )!;
+    return {
+      loungeEnd: lounge.getBoundingClientRect().bottom,
+      flightStart: flight.getBoundingClientRect().top,
+    };
+  }, flightId);
+  expect(positions.loungeEnd).toBeLessThanOrEqual(positions.flightStart);
   return start;
 }
 

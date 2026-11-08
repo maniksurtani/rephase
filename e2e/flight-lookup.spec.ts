@@ -112,12 +112,15 @@ test('flight number and date are the default entry while guests can reveal manua
   await expect(page.getByRole('heading', { name: 'My next journey', exact: true })).toBeVisible();
   const dismiss = page.getByRole('button', { name: 'Dismiss notification', exact: true });
   if (await dismiss.isVisible()) await dismiss.click();
+  await page.locator('.journey-band[data-kind="sleep"]').first().click();
   const bedtime = page.getByRole('heading', { name: 'Bedtime', exact: true }).first();
   await expect(bedtime).toBeVisible();
   await bedtime.evaluate((element) =>
     element.closest('.action-card')!.scrollIntoView({ block: 'center' }),
   );
   await captureDesign(page, 'artifacts/copy-bedtime-mobile.png');
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog')).toHaveCount(0);
   const footer = page.locator('.page-footer');
   await footer.scrollIntoViewIfNeeded();
   await expect(
@@ -206,7 +209,10 @@ test('a confirmed lookup preserves its aircraft, schedule and chosen cabin throu
   await expect.poll(() => api.data.trips[0]?.legs[0].aircraft?.model).toBe(aircraftModel);
   expect(api.data.trips[0].legs[0].lieFlat).toBe(true);
   await page.locator('.day-button[data-date="2026-12-01"]').click();
-  const flight = page.locator('.flight-segment-card');
+  await page.locator('.journey-flight-marker[data-phase="departure"]').click();
+  const flight = page
+    .getByRole('dialog', { name: 'Your flight', exact: true })
+    .locator('.flight-segment-card');
   await expect(flight.locator('.flight-segment-aircraft')).toBeHidden();
   await flight.locator('.flight-details > summary').click();
   await expect(flight.locator('.flight-segment-aircraft')).toHaveText(
