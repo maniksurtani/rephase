@@ -6,7 +6,7 @@ Updated 2026-11-08. Active work is kept here; the previous complete checklist is
 
 - [x] Research SLC, SIN, CNS, LHR and MUC using current airline, airport, operator and membership sources; record hours, amenities, access restrictions and terminal context.
 - [x] Add the airport JSON guides to the shared web/native dataset and any membership support needed to represent verified access.
-- [ ] Verify eligible, conditional, closed and wrong-terminal cases; update coverage documentation and publish the checked release.
+- [x] Verify eligible, conditional, closed and wrong-terminal cases; update coverage documentation and publish the checked release. Checks 42523650116, Mobile checks 42523649988, both native runtimes in 42523649979 and Cloudflare deployment 42523979205 passed; evidence is in RELEASES.md.
 
 ## Continuous Bands timeline
 

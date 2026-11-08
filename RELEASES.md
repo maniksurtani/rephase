@@ -1,5 +1,15 @@
 # Release evidence
 
+## 8 November 2026 — lounge guides for upcoming airports
+
+Added 26 researched lounge records at SLC (3), SIN (8), CNS (1), LHR (8) and MUC (6), bringing the shared offline guide to 42 lounges across nine airports. Each record includes primary sources and review dates, local opening rules, terminal context, access eligibility and verified amenities. Unverified facilities and SLC Sky Club hours remain unknown. Munich's Schengen/non-Schengen areas, Singapore's KrisFlyer Gold versus SilverKris eligibility, weekday Qantas hours and Delta's cabin/card restrictions are covered by targeted regressions. Profile now supports Delta Sky Club membership, Amex Platinum and Delta SkyMiles Reserve on web and Flutter.
+
+Source [`ccd99d6`](https://github.com/maniksurtani/rephase/commit/ccd99d6f8fecc70a2d85ca386830a427c4372daf). [Checks 42523650116](https://github.com/maniksurtani/rephase/actions/runs/42523650116) passed all 621 unit/runtime checks and 48 browser scenarios, including mobile-width access to every new airport and saved card selections. [Mobile checks 42523649988](https://github.com/maniksurtani/rephase/actions/runs/42523649988) passed formatting, analysis and all 43 Flutter tests. The native boundary regression confirms the five airports and new membership IDs are bundled. The 390px SLC recommendation screenshot was visually reviewed without horizontal overflow.
+
+[Deployment 42523979205](https://github.com/maniksurtani/rephase/actions/runs/42523979205) reused verified artifact `13634129495` and published to rephase.surtani.org; Cloudflare version `7cd14650-6361-45da-bcc4-459eff299c6d`, offline shell `0af980198cd8b4ee`. No new API credentials or D1 migrations were needed. Automatic deployment remains disabled; the verified workflow was dispatched manually. Installed native apps need rebuilding to receive the new bundled guide and membership selections.
+
+[Native runtime checks 42523649979](https://github.com/maniksurtani/rephase/actions/runs/42523649979): Android WebView passed after a 3m05s build and 41s runtime check. iOS WKWebView passed after an 11m54s build and 1m47s runtime check. Both platform hosts successfully loaded and exercised the updated offline bundle.
+
 ## 8 November 2026 — continuous Bands timeline
 
 Web, iOS and Android now present the full journey as continuously scrolling activity bands. Clock fold, selected from the design study, distinguishes timezone changes from recommendations. Flights occupy a separate track; local midnight dividers, date navigation, Now, preflight lounge links and tap-to-open guidance/flight/meal details preserve the existing planner information. The shared presentation retains original recommendation intervals and recording IDs, joins midnight sleep fragments and keeps elapsed durations continuous across date-line and DST changes. No recommendation, notification or saved-data schema changes are required.
