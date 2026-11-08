@@ -1,4 +1,36 @@
-# Continuous journey — three UI concepts
+# Continuous journey — timeline design studies
+
+## Bands, refined · 8 November 2026
+
+The selected direction is **Bands**. Open the new [interactive comparison](bands.html) to review three treatments for the timezone change:
+
+| Treatment                           | Visual cue                                                                 | Tradeoff                                                   |
+| ----------------------------------- | -------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| **1 · Clock divider** (recommended) | A flat, full-width divider with both clocks and dates between two rules    | Clearest at a glance; briefly covers the activity tracks   |
+| **2 · Axis handoff**                | The old and new clocks appear on the left axis, separated by a dashed line | Keeps every band visible; city and date labels are smaller |
+| **3 · Clock fold**                  | A zigzag edge and hatched seam between the two clocks                      | An obvious change of scale with a stronger visual style    |
+
+These are structural timeline markers without the rounded styling or tap interaction used for activities. The flight and sleep intervals continue through the clock change in all three versions.
+
+Flight details now occupy their own narrow track to the right of every activity band, with departure and arrival markers that expand on tap. The previous **Rest / Light / Caffeine** headings described the three columns. They have been removed: each band says **Awake**, **Sleep**, **Daylight**, **Dim light** or **Caffeine**, with an optional **Key** for explanation. Concurrent recommendations still line up vertically.
+
+On a Mac, from the repository root:
+
+```sh
+open docs/prototypes/continuous-timeline/bands.html
+```
+
+Or serve the repository with `python3 -m http.server 5180` and open <http://localhost:5180/docs/prototypes/continuous-timeline/bands.html>. The page works without a backend, account or build step. All schedules are illustrative design fixtures.
+
+Scroll each phone, tap bands or flight markers for details, switch sample journeys, and use **Start / Flight / Clock change** to align the comparison. Narrow screens show one treatment at a time using tabs. Deep links accept `?scenario=pacific&concept=fold&focus=switch`; treatment names are `divider`, `axis`, `fold`.
+
+Previews: [comparison](previews/bands-refined-comparison.png), [forward date-line crossing](previews/bands-refined-date-line.png), [separate flight track](previews/bands-flight-separation.png). Individual phone views: [divider](previews/bands-divider-mobile.png), [axis](previews/bands-axis-mobile.png), [fold](previews/bands-fold-mobile.png).
+
+This remains a review prototype. The production web and Flutter timelines have not been changed. After choosing the clock-change treatment, integrate the presentation with the shared planner's real intervals and existing detail controls.
+
+Focused browser checks cover both journeys, continuous flight/sleep spans, day and clock changes, details and key interactions, keyboard dismissal, and compression. All 18 treatment/viewport combinations (320–1360px) fit without horizontal overflow and keep at least 20px between flight markers and recommendation bands. No browser script errors occurred. Production and native build suites are unnecessary for this design-only change.
+
+## Original three directions · 7 November 2026
 
 Interactive design study for Rephase, 7 November 2026. Open [index.html](index.html) in a browser. No build, sign-in or network access is needed. The repository's local fonts are optional; system fonts are the fallback.
 
@@ -16,7 +48,7 @@ Or serve the repository with `python3 -m http.server 5180` and open <http://loca
 | **B · Bands**         | Parallel rest, light and caffeine bands; a separate flight track | Easier to scan overlap, but relies more on the legend                             |
 | **C · Journey cards** | More context, larger cards and a container spanning each flight  | More vertical scrolling                                                           |
 
-Recommendation: start with A's compact navigation and expandable details, with stronger continuous activity bands from B. This is a proposal for review, not an implemented change to the production plan or the Flutter UI.
+The initial proposal combined A's compact navigation with B's activity bands. Review selected **B · Bands** for further iteration; the newer comparison above develops that direction. The original concepts remain available for reference.
 
 ## Try it
 

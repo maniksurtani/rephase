@@ -1,0 +1,2357 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Rephase — Bands, refined</title>
+    <style>
+      @font-face {
+        font-family: DM;
+        src: url('../../../public/fonts/dm-sans-400.ttf');
+        font-display: swap;
+      }
+      @font-face {
+        font-family: Manrope;
+        src: url('../../../public/fonts/manrope-700.ttf');
+        font-weight: 700;
+        font-display: swap;
+      }
+      :root {
+        color-scheme: dark;
+        --bg: #0f111b;
+        --panel: #171a27;
+        --text: #f0edf6;
+        --muted: #999caf;
+        --line: #2d3043;
+        --sleep: #b5a0e3;
+        --light: #eac36e;
+        --coffee: #d8aa81;
+        --awake: #95bcb0;
+        --flight: #e4b485;
+        --dark: #8496b7;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        color: var(--text);
+        background: radial-gradient(ellipse at 72% 0%, #25203777, transparent 45%), #0c0e16;
+        font:
+          14px DM,
+          system-ui,
+          sans-serif;
+      }
+      button,
+      select {
+        font: inherit;
+        color: inherit;
+        cursor: pointer;
+      }
+      button {
+        border: 0;
+        background: none;
+      }
+      button:focus-visible,
+      select:focus-visible,
+      a:focus-visible {
+        outline: 2px solid var(--sleep);
+        outline-offset: 4px;
+      }
+      button:hover {
+        filter: brightness(1.16);
+      }
+      button:disabled {
+        cursor: default;
+      }
+      a {
+        color: inherit;
+      }
+      h1,
+      h2,
+      h3,
+      h4,
+      p {
+        margin: 0;
+      }
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-family: Manrope, DM, system-ui, sans-serif;
+      }
+      svg {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+        vertical-align: middle;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.65;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .page {
+        max-width: 1260px;
+        margin: auto;
+        padding: 32px 34px 48px;
+      }
+      .masthead {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 34px;
+      }
+      .wordmark {
+        font:
+          700 25px Manrope,
+          system-ui;
+        letter-spacing: -1.1px;
+      }
+      .wordmark span {
+        color: var(--sleep);
+      }
+      .design-tag {
+        text-transform: uppercase;
+        font-size: 10px;
+        letter-spacing: 2px;
+        color: #a6a3b5;
+      }
+      .intro {
+        display: flex;
+        gap: 40px;
+        align-items: end;
+        justify-content: space-between;
+        margin-bottom: 30px;
+      }
+      .intro h1 {
+        font-size: 43px;
+        letter-spacing: -1.8px;
+        line-height: 1.14;
+      }
+      .intro h1 span {
+        color: #b9a8d7;
+      }
+      .intro p {
+        max-width: 390px;
+        color: #a8a7bb;
+        line-height: 1.75;
+        font-size: 14px;
+        padding-bottom: 3px;
+      }
+      .controls {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 15px 0;
+        border-top: 1px solid #282839;
+        border-bottom: 1px solid #282839;
+      }
+      .segmented {
+        display: flex;
+        padding: 4px;
+        background: #191b28;
+        border: 1px solid #2a2c3b;
+        border-radius: 11px;
+        gap: 3px;
+      }
+      .segmented button {
+        border-radius: 7px;
+        padding: 9px 13px;
+        font-size: 12px;
+        white-space: nowrap;
+        color: #a3a3b6;
+      }
+      .segmented button[aria-pressed='true'] {
+        background: #353044;
+        color: #e9ddfc;
+      }
+      .control-caption {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 1.4px;
+        color: #9393a8;
+        margin-left: 10px;
+      }
+      .compress {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-left: auto;
+        font-size: 12px;
+        color: #b3b1c3;
+        cursor: pointer;
+      }
+      input[type='checkbox'] {
+        accent-color: #bc9feb;
+        width: 15px;
+        height: 15px;
+      }
+      .review-hint {
+        color: #8e90a4;
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        font-size: 11px;
+        margin: 13px 0 25px;
+      }
+      .review-hint span:last-child {
+        color: #6f748b;
+      }
+      .mobile-options {
+        display: none;
+      }
+      .comparison {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 26px;
+      }
+      .concept-heading {
+        min-height: 77px;
+      }
+      .concept-heading h2 {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        font-size: 19px;
+        letter-spacing: -0.5px;
+      }
+      .option-letter {
+        display: grid;
+        place-items: center;
+        width: 25px;
+        height: 25px;
+        border: 1px solid #4b435e;
+        border-radius: 8px;
+        color: #bfa7e8;
+        font:
+          12px DM,
+          system-ui;
+      }
+      .recommend {
+        margin-left: auto;
+        padding: 5px 8px;
+        border-radius: 20px;
+        background: #26332f;
+        color: #9ec6b5;
+        font:
+          10px DM,
+          system-ui;
+      }
+      .concept-heading p {
+        color: #9396aa;
+        font-size: 12px;
+        line-height: 1.6;
+        margin-top: 9px;
+      }
+      .phone {
+        position: relative;
+        height: 760px;
+        background: var(--bg);
+        border: 1px solid #373548;
+        border-radius: 31px;
+        box-shadow:
+          0 24px 60px #0006,
+          inset 0 0 0 4px #171822;
+        padding: 5px;
+        overflow: hidden;
+      }
+      .device {
+        height: 100%;
+        border-radius: 26px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+      }
+      .status {
+        height: 29px;
+        flex-shrink: 0;
+        display: flex;
+        padding: 8px 18px 0;
+        font-size: 11px;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .status .right {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .status svg {
+        width: 13px;
+        height: 13px;
+      }
+      .battery {
+        width: 19px;
+        height: 9px;
+        border: 1px solid #8c8d99;
+        border-radius: 3px;
+        padding: 1px;
+      }
+      .battery::before {
+        content: '';
+        display: block;
+        width: 80%;
+        height: 100%;
+        background: #e5e2ed;
+        border-radius: 1px;
+      }
+      .app-header {
+        padding: 15px 18px 12px;
+        flex-shrink: 0;
+      }
+      .app-header .eyebrow {
+        color: #a4a1b6;
+        font-size: 10px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .app-header .eyebrow svg {
+        color: var(--sleep);
+        width: 15px;
+        height: 15px;
+      }
+      .app-header h3 {
+        font-size: 19px;
+        letter-spacing: -0.65px;
+        margin-top: 5px;
+      }
+      .trip-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 8px;
+        font-size: 11px;
+        color: #9397ad;
+      }
+      .trip-meta button {
+        color: #b9a3df;
+        padding: 0;
+        font-size: 11px;
+      }
+      .context {
+        flex-shrink: 0;
+        min-height: 38px;
+        padding: 10px 17px;
+        font-size: 12px;
+        background: #1c1c2b;
+        border-top: 1px solid #292a3b;
+        border-bottom: 1px solid #2c2b3b;
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .context .place {
+        color: #c7b4e9;
+      }
+      .context .date {
+        color: #b4b4c8;
+      }
+      .context svg {
+        width: 12px;
+        height: 12px;
+      }
+      .lane-key {
+        height: 35px;
+        flex-shrink: 0;
+        display: grid;
+        grid-template-columns: 64px repeat(3, 1fr) 42px;
+        align-items: center;
+        background: #11131f;
+        color: #8d93a9;
+        text-align: center;
+        font-size: 9px;
+      }
+      .lane-key span {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+      }
+      .lane-key svg {
+        width: 12px;
+        height: 12px;
+      }
+      .lane-key span:nth-child(2) {
+        color: var(--sleep);
+      }
+      .lane-key span:nth-child(3) {
+        color: var(--light);
+      }
+      .lane-key span:nth-child(4) {
+        color: var(--coffee);
+      }
+      .lane-key span:nth-child(5) {
+        color: var(--flight);
+      }
+      .scroll {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        overscroll-behavior: contain;
+        scrollbar-width: thin;
+        scrollbar-color: #3c354e transparent;
+        position: relative;
+        scroll-behavior: smooth;
+      }
+      .timeline {
+        position: relative;
+        margin-top: 12px;
+        isolation: isolate;
+        min-height: 600px;
+      }
+      .rail {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 66px;
+        width: 2px;
+        background: #303144;
+        z-index: -1;
+      }
+      .time-label {
+        position: absolute;
+        left: 7px;
+        width: 47px;
+        top: 9px;
+        color: #bab9cd;
+        font-size: 12px;
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      .time-label small {
+        display: block;
+        font-size: 8px;
+        margin-top: 4px;
+        color: #737c95;
+      }
+      .time-line {
+        position: absolute;
+        left: 60px;
+        right: 15px;
+        border-top: 1px solid #212535;
+        pointer-events: none;
+      }
+      .activity {
+        position: absolute;
+        border-radius: 9px;
+        color: var(--color);
+        background: var(--fill);
+        border: 1px solid var(--edge);
+        min-height: 12px;
+        text-align: left;
+        padding: 0;
+        z-index: 1;
+        overflow: hidden;
+      }
+      .activity::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        background: linear-gradient(110deg, #ffffff0b, transparent 65%);
+        pointer-events: none;
+      }
+      .activity.sleep {
+        --color: #c7b2ee;
+        --fill: #6e5988;
+        --edge: #ab8ed1;
+      }
+      .activity.awake {
+        --color: #a1c2b7;
+        --fill: #21312c;
+        --edge: #476057;
+      }
+      .activity.light {
+        --color: #ffe3a0;
+        --fill: #926e2d;
+        --edge: #d2a74d;
+      }
+      .activity.dim {
+        --color: #b6c7e3;
+        --fill: #2e3e58;
+        --edge: #596b89;
+      }
+      .activity.caffeine {
+        --color: #f2cbaa;
+        --fill: #604731;
+        --edge: #af835d;
+      }
+      .activity.melatonin {
+        --color: #ddc3fa;
+        --fill: #4e3b66;
+        --edge: #a780cf;
+      }
+      .activity svg {
+        width: 14px;
+        height: 14px;
+      }
+      .band-top {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        gap: 7px;
+        padding: 10px 3px;
+        font-size: 10px;
+        line-height: 1.2;
+      }
+      .band-duration {
+        opacity: 0.78;
+        font-size: 9px;
+        text-align: center;
+      }
+      .flight-band {
+        position: absolute;
+        width: 3px;
+        left: calc(100% - 25px);
+        border-radius: 3px;
+        background: #a4774f;
+        z-index: 0;
+      }
+      .flight-band .plane {
+        position: absolute;
+        top: 0;
+        left: -7px;
+        border-radius: 50%;
+        color: #f3c99f;
+        background: #29221f;
+        padding: 3px;
+        transform: translateY(-50%);
+      }
+      .flight-band .plane svg {
+        width: 12px;
+        height: 12px;
+      }
+      .flight-band .landing {
+        top: auto;
+        bottom: 0;
+        transform: translateY(50%);
+      }
+      .flight-band .flight-name {
+        position: sticky;
+        top: 12px;
+        display: block;
+        writing-mode: vertical-rl;
+        margin-left: 8px;
+        margin-top: 27px;
+        font-size: 9px;
+        letter-spacing: 1.1px;
+        color: #cca983;
+        white-space: nowrap;
+        width: 12px;
+        line-height: 1;
+      }
+      .day-break {
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 42px;
+        padding: 11px 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(100deg, #262135, #1a1c2a);
+        border-top: 1px solid #494056;
+        border-bottom: 1px solid #383145;
+        z-index: 5;
+      }
+      .day-break .day-name {
+        font-size: 11px;
+        font-weight: bold;
+        color: #ddd2ed;
+      }
+      .day-break .date-note {
+        margin-left: auto;
+        font-size: 9px;
+        color: #a3a0b7;
+      }
+      .day-break svg {
+        width: 13px;
+        height: 13px;
+        color: #bda7df;
+      }
+      .clock-switch {
+        position: absolute;
+        left: 8px;
+        right: 8px;
+        min-height: 112px;
+        border-radius: 13px;
+        background: linear-gradient(115deg, #30283f, #222335);
+        border: 1px solid #716084;
+        z-index: 7;
+        padding: 12px 13px;
+        text-align: left;
+        box-shadow: 0 8px 18px #0003;
+      }
+      .clock-switch .switch-label {
+        color: #cebbea;
+        text-transform: uppercase;
+        font-size: 9px;
+        letter-spacing: 1.2px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .clock-switch svg {
+        width: 13px;
+        height: 13px;
+      }
+      .switch-clocks {
+        display: grid;
+        grid-template-columns: 1fr 26px 1fr;
+        align-items: center;
+        margin-top: 10px;
+        gap: 4px;
+      }
+      .switch-clocks strong {
+        font:
+          700 20px Manrope,
+          system-ui;
+        letter-spacing: -0.5px;
+      }
+      .switch-clocks .new strong {
+        color: #e7d8fc;
+      }
+      .switch-clocks span {
+        display: block;
+        margin-top: 3px;
+        color: #b9b2c8;
+        font-size: 10px;
+      }
+      .switch-note {
+        margin-top: 9px;
+        color: #b8afc8;
+        font-size: 9px;
+        display: flex;
+        justify-content: space-between;
+        gap: 5px;
+      }
+      .switch-note .continues {
+        color: #c6afe8;
+      }
+      .event {
+        position: absolute;
+        left: 0;
+        right: 0;
+        z-index: 3;
+      }
+      .event-button {
+        display: block;
+        width: calc(100% - 99px);
+        margin-left: 88px;
+        border: 1px solid #36364b;
+        border-radius: 10px;
+        padding: 11px 12px;
+        text-align: left;
+        background: #1c1f2d;
+      }
+      .event-button .event-main {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+      }
+      .event-button .event-main svg {
+        width: 15px;
+        height: 15px;
+        color: var(--event-color, #c1a9e9);
+      }
+      .event-button strong {
+        font-weight: 500;
+        min-width: 0;
+      }
+      .event-button .event-duration {
+        margin-left: auto;
+        color: #a2a2b9;
+        font-size: 10px;
+        white-space: nowrap;
+      }
+      .event-button .description {
+        color: #9398ad;
+        font-size: 10px;
+        line-height: 1.5;
+        margin-top: 6px;
+      }
+      .event .dot {
+        position: absolute;
+        left: 62px;
+        top: 17px;
+        border: 2px solid var(--event-color, #b6a0de);
+        background: var(--bg);
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+      }
+      .event.flight-event .event-button {
+        border-color: #514033;
+        background: linear-gradient(110deg, #2c241f, #211f24);
+      }
+      .event.flight-event .event-main {
+        color: #f0c69c;
+      }
+      .event.mini .event-button {
+        background: transparent;
+        border-color: transparent;
+        padding: 9px 0;
+      }
+      .event.mini .event-main {
+        font-size: 11px;
+        color: #aabfb8;
+      }
+      .event.mini .dot {
+        width: 6px;
+        height: 6px;
+        left: 64px;
+        top: 15px;
+        border-width: 1px;
+      }
+      .fold {
+        position: absolute;
+        width: 6px;
+        left: 64px;
+        background: var(--bg);
+        border-left: 2px dotted #6d7d7b;
+        z-index: 2;
+        pointer-events: none;
+      }
+      .now-line {
+        position: absolute;
+        left: 8px;
+        right: 12px;
+        height: 1px;
+        background: #a7c7b2;
+        z-index: 8;
+        pointer-events: none;
+      }
+      .now-line span {
+        position: absolute;
+        right: 0;
+        top: -8px;
+        background: #a7c7b2;
+        border-radius: 5px;
+        padding: 3px 6px;
+        color: #15271d;
+        font-size: 8px;
+        font-weight: bold;
+        letter-spacing: 0.8px;
+      }
+      .finish {
+        position: absolute;
+        left: 80px;
+        right: 14px;
+        padding: 14px;
+        border: 1px solid #334b45;
+        border-radius: 13px;
+        background: #172824;
+        text-align: center;
+      }
+      .finish svg {
+        color: #a1c5b6;
+        margin-bottom: 8px;
+      }
+      .finish strong {
+        font:
+          700 12px Manrope,
+          system-ui;
+        display: block;
+      }
+      .finish span {
+        display: block;
+        color: #9bb1aa;
+        font-size: 10px;
+        margin-top: 5px;
+      }
+      .app-nav {
+        height: 57px;
+        flex-shrink: 0;
+        border-top: 1px solid #2d2c40;
+        background: #161825;
+        display: flex;
+        align-items: center;
+        justify-content: space-evenly;
+        padding: 4px 10px 9px;
+      }
+      .app-nav button {
+        min-width: 67px;
+        min-height: 42px;
+        color: #8c90a8;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        font-size: 9px;
+      }
+      .app-nav button.selected {
+        color: #c7a9ee;
+      }
+      .app-nav svg {
+        width: 18px;
+        height: 18px;
+      }
+      .home-indicator {
+        position: absolute;
+        bottom: 4px;
+        left: calc(50% - 40px);
+        width: 80px;
+        height: 3px;
+        background: #a39eaf;
+        border-radius: 2px;
+      }
+      .concept-note {
+        margin: 18px 3px 0;
+        color: #a2a4b8;
+        font-size: 12px;
+        line-height: 1.7;
+      }
+      .concept-note strong {
+        color: #ddd7ea;
+        font-weight: 500;
+      }
+      .concept-note .tradeoff {
+        display: block;
+        margin-top: 7px;
+        color: #747d96;
+        font-size: 11px;
+      }
+      .footnote {
+        margin-top: 32px;
+        border-top: 1px solid #282839;
+        padding-top: 22px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        font-size: 12px;
+        color: #9698ad;
+        line-height: 1.8;
+      }
+      .footnote strong {
+        display: block;
+        color: #c6bdd7;
+        margin-bottom: 4px;
+        font-size: 12px;
+      }
+      .footnote .rec {
+        color: #bca7dc;
+      }
+      dialog {
+        width: min(390px, calc(100vw - 28px));
+        padding: 0;
+        border: 1px solid #62506f;
+        border-radius: 23px;
+        background: #1b1d2b;
+        color: var(--text);
+        box-shadow: 0 22px 100px #000a;
+      }
+      dialog::backdrop {
+        background: #040610b8;
+        backdrop-filter: blur(6px);
+      }
+      .dialog-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 23px 22px 0;
+      }
+      .dialog-head h3 {
+        font-size: 20px;
+      }
+      .dialog-close {
+        border: 1px solid #414052;
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        font-size: 20px;
+        color: #bab3c8;
+      }
+      .dialog-body {
+        padding: 19px 23px 26px;
+      }
+      .dialog-body p {
+        line-height: 1.7;
+        color: #b2aec3;
+        font-size: 13px;
+        margin-bottom: 15px;
+      }
+      .detail-clocks {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin: 15px 0;
+      }
+      .detail-clocks div {
+        background: #262638;
+        border: 1px solid #3b384e;
+        border-radius: 12px;
+        padding: 13px;
+      }
+      .detail-clocks small {
+        color: #aaa2bc;
+        font-size: 10px;
+        display: block;
+      }
+      .detail-clocks strong {
+        display: block;
+        margin: 7px 0;
+        font:
+          700 22px Manrope,
+          system-ui;
+      }
+      .detail-clocks span {
+        font-size: 11px;
+        color: #c6bdd5;
+      }
+      .detail-row {
+        display: flex;
+        justify-content: space-between;
+        border-top: 1px solid #343345;
+        padding: 12px 0;
+        color: #b3aec2;
+        font-size: 12px;
+        gap: 15px;
+      }
+      .detail-row strong {
+        color: #e1d9ec;
+        font-weight: normal;
+        text-align: right;
+      }
+      .dialog-done {
+        width: 100%;
+        background: #b8a1e2;
+        border-radius: 10px;
+        padding: 12px;
+        color: #221a32;
+        margin-top: 10px;
+      }
+      .sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .scroll {
+          scroll-behavior: auto;
+        }
+      }
+      @media (max-width: 1100px) {
+        .page {
+          padding: 19px 14px 30px;
+        }
+        .masthead {
+          margin-bottom: 22px;
+        }
+        .wordmark {
+          font-size: 23px;
+        }
+        .design-tag {
+          font-size: 8px;
+          letter-spacing: 1.3px;
+        }
+        .intro {
+          display: block;
+          margin-bottom: 20px;
+        }
+        .intro h1 {
+          font-size: 33px;
+        }
+        .intro p {
+          margin-top: 14px;
+          font-size: 12px;
+          line-height: 1.6;
+        }
+        .controls {
+          gap: 8px;
+        }
+        .segmented {
+          width: 100%;
+        }
+        .segmented button {
+          flex: 1;
+          padding: 9px 8px;
+          font-size: 11px;
+        }
+        .control-caption {
+          margin-left: 0;
+        }
+        .jump-controls {
+          flex: 1;
+          width: auto;
+        }
+        .compress {
+          margin-left: 0;
+          font-size: 11px;
+        }
+        .review-hint {
+          margin: 12px 0 16px;
+          gap: 5px;
+          font-size: 10px;
+        }
+        .mobile-options {
+          display: flex;
+          margin-bottom: 20px;
+        }
+        .comparison {
+          display: block;
+        }
+        .concept {
+          display: none;
+          max-width: 390px;
+          margin: auto;
+        }
+        .concept.active {
+          display: block;
+        }
+        .concept-heading {
+          min-height: 70px;
+        }
+        .phone {
+          height: min(760px, calc(100svh - 48px));
+          min-height: 575px;
+          border-radius: 27px;
+        }
+        .device {
+          border-radius: 22px;
+        }
+        .footnote {
+          grid-template-columns: 1fr;
+          gap: 16px;
+          margin-top: 25px;
+          font-size: 11px;
+        }
+      }
+      body.capture .masthead {
+        margin-bottom: 24px;
+      }
+      body.capture .intro {
+        margin-bottom: 23px;
+      }
+      body.capture .footnote {
+        display: none;
+      }
+      body.capture .phone {
+        height: 760px;
+      }
+
+      /* The recommendation tracks and flight track never share horizontal space. */
+      .device {
+        container-type: inline-size;
+        --clock: 52px;
+        --flight: clamp(58px, 21cqw, 80px);
+        --track: calc((100cqw - var(--clock) - var(--flight) - 18px) / 3);
+      }
+      .comparison {
+        gap: 24px;
+      }
+      .app-header {
+        padding-bottom: 14px;
+      }
+      .trip-meta {
+        font-size: 11px;
+      }
+      .trip-meta .key-button {
+        min-height: 30px;
+        padding: 4px 7px;
+        display: flex;
+        gap: 5px;
+        align-items: center;
+      }
+      .key-button svg {
+        width: 13px;
+        height: 13px;
+      }
+      .context {
+        font-size: 11px;
+      }
+      .time-label {
+        left: 1px;
+        width: 43px;
+        font-size: 11px;
+        top: 2px;
+      }
+      .rail {
+        left: 47px;
+        width: 1px;
+        background: #303447;
+      }
+      .time-line {
+        left: 47px;
+        right: 12px;
+        border-top-color: #252a39;
+      }
+      .activity {
+        left: calc(var(--clock) + var(--lane) * var(--track));
+        width: calc(var(--track) - 10px);
+        border-radius: 16px;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        overflow: visible;
+      }
+      .activity.sleep {
+        --fill: #6b5485;
+        --edge: #b497d9;
+      }
+      .activity.awake {
+        --fill: #1c2e28;
+        --edge: #3c5d50;
+      }
+      .activity .band-top {
+        position: sticky;
+        top: 8px;
+        width: 100%;
+        padding: 10px 1px 8px;
+        gap: 5px;
+        font-size: clamp(9px, 3.1cqw, 12px);
+        line-height: 1.25;
+      }
+      .band-top svg {
+        width: 15px;
+        height: 15px;
+      }
+      .activity .band-duration {
+        font-size: 9px;
+        opacity: 0.85;
+      }
+      .activity .optional {
+        font-size: 8px;
+        opacity: 0.8;
+      }
+      .activity.melatonin .band-top {
+        padding: 5px 0;
+      }
+      .activity.melatonin .band-top span {
+        display: none;
+      }
+      .flight-band {
+        left: auto;
+        right: calc(9px + var(--flight) / 2);
+        width: 2px;
+        background: #bd976e;
+      }
+      .flight-band .flight-name {
+        margin-left: 7px;
+        letter-spacing: 1px;
+        color: #ddbd94;
+        font-size: 9px;
+      }
+      .flight-marker {
+        position: absolute;
+        right: 8px;
+        width: var(--flight);
+        border: 1px solid #6a523d;
+        border-radius: 9px;
+        background: linear-gradient(135deg, #372c23, #29231f);
+        padding: 9px 3px;
+        text-align: center;
+        z-index: 4;
+      }
+      .flight-marker strong {
+        display: block;
+        font:
+          700 12px Manrope,
+          system-ui;
+        line-height: 1.3;
+      }
+      .flight-marker .flight-title {
+        display: flex;
+        gap: 3px;
+        justify-content: center;
+        align-items: center;
+      }
+      .flight-marker svg {
+        width: 13px;
+        height: 13px;
+        color: #e9bd88;
+      }
+      .flight-marker .route {
+        display: block;
+        font-size: 9px;
+        color: #d6b79c;
+        margin-top: 7px;
+        white-space: nowrap;
+      }
+      .flight-marker .duration {
+        display: block;
+        font-size: 9px;
+        color: #ad9988;
+        margin-top: 4px;
+      }
+      .flight-marker.arrival {
+        padding: 8px 3px;
+        background: #25211e;
+        border-color: #574636;
+      }
+      .flight-marker.arrival strong {
+        font:
+          11px DM,
+          system-ui;
+      }
+      .flight-marker.lounge {
+        background: #212134;
+        border-color: #494158;
+      }
+      .flight-marker.lounge svg {
+        color: #c1abdf;
+      }
+      .flight-marker.lounge strong {
+        font-size: 10px;
+      }
+      .flight-marker.lounge .route {
+        color: #aea3c4;
+      }
+      .event-clock {
+        position: absolute;
+        left: 2px;
+        width: 40px;
+        font-size: 11px;
+        text-align: right;
+        color: #c2bdd2;
+        z-index: 3;
+        font-variant-numeric: tabular-nums;
+      }
+      .fold {
+        left: 47px;
+        border-color: #6b8f80;
+        width: 1px;
+      }
+      .day-break {
+        height: 39px;
+        background: #1e202d;
+        border-top-color: #404054;
+        border-bottom-color: #37384c;
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+      .day-break .day-name {
+        font-size: 11px;
+      }
+      .day-break .date-note {
+        font-size: 9px;
+      }
+      .finish {
+        left: 52px;
+        right: 12px;
+      }
+      .phone {
+        height: 780px;
+      }
+      body.capture .phone {
+        height: 780px;
+      }
+      .transition {
+        position: absolute;
+        left: 0;
+        right: 0;
+        z-index: 6;
+        font-variant-numeric: tabular-nums;
+        pointer-events: none;
+      }
+      .transition .city {
+        font-size: 11px;
+        color: #b9b6c9;
+      }
+      .transition .local-date {
+        display: block;
+        font-size: 9px;
+        color: #9295aa;
+        margin-top: 4px;
+      }
+      .transition .hour {
+        font:
+          700 19px Manrope,
+          system-ui;
+        letter-spacing: -0.4px;
+        color: #f0dfef;
+      }
+      .transition .before .hour {
+        color: #b2b3c1;
+      }
+      .clock-caption {
+        font-size: 8px;
+        letter-spacing: 1.4px;
+        color: #aaa1bd;
+        text-transform: uppercase;
+      }
+      /* 1: A flat, full-width change of scale, distinct from the rounded cards. */
+      .transition.divider {
+        height: 100px;
+        background: #151824;
+        border-top: 1px solid #77738d;
+        border-bottom: 1px solid #77738d;
+        padding: 10px 12px 11px;
+      }
+      .divider .clock-caption {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 9px;
+      }
+      .divider .clock-caption svg {
+        width: 11px;
+        height: 11px;
+      }
+      .divider .clock-pair {
+        display: grid;
+        grid-template-columns: 1fr 24px 1fr;
+        align-items: center;
+        gap: 6px;
+      }
+      .divider .clock-pair > svg {
+        width: 16px;
+        color: #b4b4c6;
+      }
+      .divider .clock-pair .after {
+        text-align: right;
+      }
+      .divider .hour {
+        font-size: 18px;
+      }
+      .divider .city {
+        display: inline;
+        font-size: 10px;
+      }
+      .divider .clock-line {
+        display: flex;
+        gap: 7px;
+        align-items: baseline;
+        flex-wrap: wrap;
+      }
+      .divider .after .clock-line {
+        justify-content: flex-end;
+      }
+      /* 2: Only the clock axis changes; the bands remain visually uninterrupted. */
+      .transition.axis {
+        height: 144px;
+      }
+      .axis::before {
+        content: '';
+        position: absolute;
+        left: 47px;
+        right: 10px;
+        top: 70px;
+        border-top: 1px dashed #a399bb9c;
+      }
+      .axis .clock-stack {
+        position: absolute;
+        left: 1px;
+        width: 43px;
+        text-align: right;
+      }
+      .axis .clock-stack.before {
+        top: 2px;
+      }
+      .axis .clock-stack.after {
+        top: 87px;
+      }
+      .axis .hour {
+        display: block;
+        font-size: 14px;
+        letter-spacing: 0;
+      }
+      .axis .city {
+        display: block;
+        font-size: 8px;
+        margin-top: 5px;
+        line-height: 1.2;
+      }
+      .axis .local-date {
+        font-size: 7px;
+        margin-top: 3px;
+        white-space: nowrap;
+      }
+      .axis .axis-arrow {
+        position: absolute;
+        left: 24px;
+        top: 57px;
+        width: 17px;
+        height: 25px;
+        color: #c5a5e5;
+      }
+      .axis .clock-change-amount {
+        position: absolute;
+        right: 11px;
+        top: 54px;
+        font-size: 8px;
+        letter-spacing: 0.6px;
+        color: #c8b6e2;
+        background: #11151e;
+        padding: 3px 5px;
+        border: 1px solid #746385;
+        border-radius: 2px;
+      }
+      /* 3: A folded line makes the clock jump part of the chart's geometry. */
+      .transition.folded {
+        height: 140px;
+      }
+      .folded .paper {
+        position: absolute;
+        inset: 0;
+        background: #191c29;
+        clip-path: polygon(
+          0 8%,
+          4% 4%,
+          8% 8%,
+          12% 4%,
+          16% 8%,
+          20% 4%,
+          24% 8%,
+          28% 4%,
+          32% 8%,
+          36% 4%,
+          40% 8%,
+          44% 4%,
+          48% 8%,
+          52% 4%,
+          56% 8%,
+          60% 4%,
+          64% 8%,
+          68% 4%,
+          72% 8%,
+          76% 4%,
+          80% 8%,
+          84% 4%,
+          88% 8%,
+          92% 4%,
+          96% 8%,
+          100% 4%,
+          100% 92%,
+          96% 96%,
+          92% 92%,
+          88% 96%,
+          84% 92%,
+          80% 96%,
+          76% 92%,
+          72% 96%,
+          68% 92%,
+          64% 96%,
+          60% 92%,
+          56% 96%,
+          52% 92%,
+          48% 96%,
+          44% 92%,
+          40% 96%,
+          36% 92%,
+          32% 96%,
+          28% 92%,
+          24% 96%,
+          20% 92%,
+          16% 96%,
+          12% 92%,
+          8% 96%,
+          4% 92%,
+          0 96%
+        );
+      }
+      .folded .paper::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 64px;
+        height: 17px;
+        background: repeating-linear-gradient(
+          125deg,
+          transparent,
+          transparent 4px,
+          #77718f44 4px,
+          #77718f44 5px
+        );
+        border-top: 1px solid #77718f44;
+        border-bottom: 1px solid #77718f44;
+      }
+      .folded .fold-clock {
+        position: absolute;
+        left: 13px;
+        right: 13px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .folded .before {
+        top: 17px;
+      }
+      .folded .after {
+        bottom: 12px;
+      }
+      .folded .local-date {
+        display: inline;
+        margin-left: 7px;
+      }
+      .folded .clock-caption {
+        position: absolute;
+        top: 67px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #191c29;
+        padding: 0 9px;
+        white-space: nowrap;
+        color: #c4b0de;
+      }
+      .key-list {
+        display: grid;
+        gap: 14px;
+      }
+      .key-item {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+      .key-item > svg {
+        width: 24px;
+        height: 24px;
+      }
+      .key-item strong {
+        display: block;
+        font-weight: 500;
+        font-size: 13px;
+      }
+      .key-item small {
+        display: block;
+        color: #a7a5bb;
+        font-size: 11px;
+        line-height: 1.6;
+        margin-top: 3px;
+      }
+      .key-note {
+        font-size: 11px !important;
+        margin: 20px 0 0 !important;
+      }
+      .intro h1 {
+        font-size: 40px;
+      }
+      .recommend {
+        font-size: 9px;
+        padding: 4px 7px;
+      }
+      .concept-heading {
+        min-height: 79px;
+      }
+      .micro-note {
+        font-size: 11px;
+        color: #9296ac;
+        line-height: 1.6;
+        margin-top: 8px;
+      }
+      @container (max-width:310px) {
+        .flight-marker strong {
+          font-size: 10px;
+        }
+        .flight-marker svg {
+          width: 11px;
+          height: 11px;
+        }
+        .flight-marker .route,
+        .flight-marker .duration {
+          font-size: 8px;
+        }
+        .activity .band-top {
+          font-size: 9px;
+          gap: 4px;
+        }
+        .activity .optional {
+          font-size: 7px;
+        }
+        .activity .band-duration {
+          font-size: 8px;
+        }
+        .divider .hour {
+          font-size: 16px;
+        }
+        .divider .city {
+          font-size: 9px;
+        }
+        .folded .city {
+          font-size: 10px;
+        }
+        .folded .local-date {
+          display: block;
+          margin-left: 0;
+        }
+      }
+      @media (max-width: 1100px) {
+        .intro h1 {
+          font-size: 32px;
+        }
+        .phone,
+        body.capture .phone {
+          height: min(790px, calc(100svh - 30px));
+          min-height: 600px;
+        }
+        .mobile-options button {
+          padding-left: 5px;
+          padding-right: 5px;
+          font-size: 10px;
+        }
+        .concept-heading h2 {
+          font-size: 18px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <header class="masthead">
+        <div class="wordmark">rephase<span>.</span></div>
+        <div class="design-tag">Design study / 02 &nbsp; · &nbsp; Bands, refined</div>
+      </header>
+      <section class="intro">
+        <h1>Clocks change.<br /><span>Your journey continues.</span></h1>
+        <p>
+          Three ways to show a timezone shift within the same continuous journey. Flight details sit
+          alongside the guidance; each band explains itself.
+        </p>
+      </section>
+      <div class="controls" aria-label="Prototype controls">
+        <div class="segmented" aria-label="Sample journey">
+          <button data-scenario="qf11" aria-pressed="true">Sydney → Los Angeles</button
+          ><button data-scenario="pacific" aria-pressed="false">LAX → Melbourne</button>
+        </div>
+        <span class="control-caption">Jump to</span>
+        <div class="segmented jump-controls" aria-label="Timeline position">
+          <button data-jump="start" aria-pressed="false">Start</button
+          ><button data-jump="flight" aria-pressed="false">Flight</button
+          ><button data-jump="switch" aria-pressed="true">Clock change</button>
+        </div>
+        <label class="compress"
+          ><input id="compress" type="checkbox" checked /> Compress quiet time</label
+        >
+      </div>
+      <p class="review-hint">
+        <span>Scroll each phone. Tap a band or flight for details; “Key” explains the colours.</span
+        ><span>Illustrative schedules for design review.</span>
+      </p>
+      <div class="segmented mobile-options" aria-label="Choose a timezone treatment">
+        <button data-concept="divider" aria-pressed="true">1 · Divider</button
+        ><button data-concept="axis" aria-pressed="false">2 · Axis handoff</button
+        ><button data-concept="fold" aria-pressed="false">3 · Clock fold</button>
+      </div>
+      <section class="comparison" aria-label="Three timezone treatments"></section>
+      <footer class="footnote">
+        <div>
+          <strong class="rec">A reserved track for the flight.</strong>Departure, arrival and lounge
+          markers occupy the right-hand track. Recommendation bands remain in their own columns, so
+          flight details never cover “Awake” or any other guidance.
+        </div>
+        <div>
+          <strong>Labels on the bands, not above them.</strong>“Rest / Light / Caffeine” were column
+          headings. The activity itself now says Awake, Sleep, Daylight, Dim light or Caffeine. The
+          optional Key explains the colours; there is no header row to interpret.
+        </div>
+      </footer>
+    </main>
+    <dialog id="details" aria-labelledby="detail-title">
+      <div class="dialog-head">
+        <h3 id="detail-title"></h3>
+        <button class="dialog-close" aria-label="Close details">×</button>
+      </div>
+      <div class="dialog-body"></div>
+    </dialog>
+    <script>
+      'use strict';
+      const icons = {
+        moon: '<path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5 8.5 8.5 0 1 0 20.5 14.5Z"/>',
+        sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/>',
+        coffee:
+          '<path d="M5 8h11v8a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4Zm11 1h2a3 3 0 0 1 0 6h-2M8 2v3m4-3v3M3 22h17"/>',
+        plane: '<path d="m21 3-6 8 4 8-2 1-6-6-5 4 1 3-2 1-3-7 7-5-6-6 2-1 8 4 6-6Z"/>',
+        clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v6l4 2"/>',
+        arrow: '<path d="M4 12h16m-6-6 6 6-6 6"/>',
+        down: '<path d="M12 4v16m-6-6 6 6 6-6"/>',
+        spark: '<path d="m12 2 2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5Z"/>',
+        awake: '<path d="M3 20h18M5 15a7 7 0 0 1 14 0M12 2v3M3 6l2 2m14 0 2-2M1 13h3m16 0h3"/>',
+        chair:
+          '<path d="M6 11V6a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3v5M4 11a2 2 0 0 1 2 2v2h12v-2a2 2 0 0 1 4 0v6H2v-6a2 2 0 0 1 2-2Zm1 8v3m14-3v3"/>',
+        check: '<circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/>',
+        route:
+          '<circle cx="6" cy="5" r="2"/><circle cx="18" cy="19" r="2"/><path d="M6 7v6a4 4 0 0 0 4 4h4m4 0V9a4 4 0 0 0-4-4h-4"/>',
+        signal: '<path d="M4 18v-3m5 3v-6m5 6V9m5 9V5"/>',
+      };
+      const svg = (name) =>
+        `<svg viewBox="0 0 24 24" aria-hidden="true">${icons[name] || icons.clock}</svg>`;
+      const HOUR = 3600000,
+        ms = (s) => Date.parse(s);
+      const types = {
+        sleep: { name: 'Sleep', icon: 'moon', color: '#bba2e7', lane: 0 },
+        awake: { name: 'Awake', icon: 'awake', color: '#95bcb0', lane: 0 },
+        light: { name: 'Daylight', icon: 'sun', color: '#eac36e', lane: 1 },
+        dim: { name: 'Dim light', icon: 'moon', color: '#8da4c7', lane: 1 },
+        caffeine: { name: 'Caffeine', icon: 'coffee', color: '#d8aa81', lane: 2 },
+        melatonin: { name: 'Melatonin', icon: 'spark', color: '#d1aff4', lane: 2 },
+        lounge: { name: 'Lounge time', icon: 'chair', color: '#b7b4ca' },
+        flight: { name: 'Flight', icon: 'plane', color: '#e4b485' },
+        arrival: { name: 'Arrival', icon: 'plane', color: '#e4b485' },
+      };
+      const span = (id, kind, start, end, label, detail) => ({
+        id,
+        kind,
+        start: ms(start),
+        end: ms(end),
+        label: label || types[kind].name,
+        detail,
+      });
+      const flight = (id, from, to, start, end) => ({
+        id,
+        from,
+        to,
+        start: ms(start),
+        end: ms(end),
+      });
+      const scenarios = {
+        qf11: {
+          title: 'Sydney → Los Angeles',
+          meta: 'QF11 · Sunday 8 November',
+          origin: 'Australia/Sydney',
+          originCity: 'Sydney',
+          destination: 'America/Los_Angeles',
+          destinationCity: 'Los Angeles',
+          start: ms('2026-11-07T18:00:00+11:00'),
+          end: ms('2026-11-09T08:00:00-08:00'),
+          now: ms('2026-11-07T18:50:00+11:00'),
+          handoff: ms('2026-11-08T20:30:00+11:00'),
+          flights: [
+            flight('QF11', 'SYD', 'LAX', '2026-11-08T11:20:00+11:00', '2026-11-08T06:00:00-08:00'),
+          ],
+          activities: [
+            span(
+              'quiet',
+              'dim',
+              '2026-11-07T21:00:00+11:00',
+              '2026-11-07T23:00:00+11:00',
+              'Wind down',
+              'Lower the lights and ease into your usual bedtime.',
+            ),
+            span(
+              'home-sleep',
+              'sleep',
+              '2026-11-07T23:00:00+11:00',
+              '2026-11-08T07:00:00+11:00',
+              'Bedtime',
+              'An eight-hour window, with your usual morning wake time.',
+            ),
+            span(
+              'morning-light',
+              'light',
+              '2026-11-08T07:00:00+11:00',
+              '2026-11-08T08:30:00+11:00',
+              'Morning daylight',
+              'Get outside while you start your day.',
+            ),
+            span(
+              'morning-coffee',
+              'caffeine',
+              '2026-11-08T07:00:00+11:00',
+              '2026-11-08T09:00:00+11:00',
+              'Optional caffeine',
+              'Your usual coffee can fit in this window.',
+            ),
+            span(
+              'lounge',
+              'lounge',
+              '2026-11-08T09:20:00+11:00',
+              '2026-11-08T10:20:00+11:00',
+              'Lounge before boarding',
+              'Time to eat, recharge and settle in before the flight.',
+            ),
+            span(
+              'cabin-sleep',
+              'sleep',
+              '2026-11-08T17:30:00+11:00',
+              '2026-11-08T04:30:00-08:00',
+              'Sleep on board',
+              'One continuous rest window. Sleep through meal service; eat after waking.',
+            ),
+            span(
+              'arrival-light',
+              'light',
+              '2026-11-08T07:00:00-08:00',
+              '2026-11-08T09:00:00-08:00',
+              'Welcome the morning',
+              'Daylight after arrival, when practical.',
+            ),
+            span(
+              'arrival-coffee',
+              'caffeine',
+              '2026-11-08T07:00:00-08:00',
+              '2026-11-08T08:30:00-08:00',
+              'Optional caffeine',
+              'A morning coffee window after arrival.',
+            ),
+            span(
+              'destination-dim',
+              'dim',
+              '2026-11-08T21:00:00-08:00',
+              '2026-11-08T23:00:00-08:00',
+              'Dim the lights',
+              'Ease into a local evening routine.',
+            ),
+            span(
+              'melatonin',
+              'melatonin',
+              '2026-11-08T22:30:00-08:00',
+              '2026-11-08T22:45:00-08:00',
+              'Optional melatonin',
+              'An example of how an optional reminder appears when included in a plan. Usage guidance would expand here.',
+            ),
+            span(
+              'local-sleep',
+              'sleep',
+              '2026-11-08T23:00:00-08:00',
+              '2026-11-09T07:00:00-08:00',
+              'Local bedtime',
+              'An eight-hour sleep opportunity in Los Angeles.',
+            ),
+          ],
+        },
+        pacific: {
+          title: 'San Francisco → Melbourne',
+          meta: 'AA6276 + QF94 · via Los Angeles',
+          origin: 'America/Los_Angeles',
+          originCity: 'Los Angeles',
+          destination: 'Australia/Melbourne',
+          destinationCity: 'Melbourne',
+          start: ms('2026-10-24T14:00:00-07:00'),
+          end: ms('2026-10-27T08:00:00+11:00'),
+          now: ms('2026-10-24T14:30:00-07:00'),
+          handoff: ms('2026-10-25T06:30:00-07:00'),
+          flights: [
+            flight(
+              'AA6276',
+              'SFO',
+              'LAX',
+              '2026-10-24T16:07:00-07:00',
+              '2026-10-24T17:44:00-07:00',
+            ),
+            flight('QF94', 'LAX', 'MEL', '2026-10-24T23:40:00-07:00', '2026-10-26T09:30:00+11:00'),
+          ],
+          activities: [
+            span(
+              'lounge',
+              'lounge',
+              '2026-10-24T18:30:00-07:00',
+              '2026-10-24T21:45:00-07:00',
+              'Lounge during transit',
+              'A meal and a shower before your long flight. Explore lounges in Los Angeles.',
+            ),
+            span(
+              'cabin-dim',
+              'dim',
+              '2026-10-25T00:40:00-07:00',
+              '2026-10-25T01:30:00-07:00',
+              'Settle in',
+              'Lower the lights when cabin conditions allow.',
+            ),
+            span(
+              'cabin-sleep',
+              'sleep',
+              '2026-10-25T01:30:00-07:00',
+              '2026-10-25T09:30:00-07:00',
+              'Sleep on board',
+              'Eight hours of rest, continuing through the change to Melbourne time.',
+            ),
+            span(
+              'arrival-light',
+              'light',
+              '2026-10-26T10:30:00+11:00',
+              '2026-10-26T12:00:00+11:00',
+              'A Melbourne morning',
+              'Some outdoor daylight after you arrive.',
+            ),
+            span(
+              'arrival-coffee',
+              'caffeine',
+              '2026-10-26T10:30:00+11:00',
+              '2026-10-26T12:00:00+11:00',
+              'Optional caffeine',
+              'A morning coffee window, followed by a local evening.',
+            ),
+            span(
+              'destination-dim',
+              'dim',
+              '2026-10-26T21:00:00+11:00',
+              '2026-10-26T23:00:00+11:00',
+              'Wind down',
+              'Let your evening follow the local clock.',
+            ),
+            span(
+              'local-sleep',
+              'sleep',
+              '2026-10-26T23:00:00+11:00',
+              '2026-10-27T07:00:00+11:00',
+              'Local bedtime',
+              'Eight hours before your usual morning routine.',
+            ),
+          ],
+        },
+      };
+      let scenarioKey = 'qf11',
+        jumpTarget = 'switch',
+        compact = true;
+      const views = [];
+      const zoneAt = (t) =>
+        t < scenarios[scenarioKey].handoff
+          ? scenarios[scenarioKey].origin
+          : scenarios[scenarioKey].destination;
+      const cityAt = (t) => {
+        const s = scenarios[scenarioKey];
+        if (t >= s.handoff) return s.destinationCity;
+        return scenarioKey === 'pacific' && t < s.flights[0].end ? 'San Francisco' : s.originCity;
+      };
+      const formatters = new Map();
+      function fmt(t, zone, kind = 'time') {
+        const options =
+          kind === 'time'
+            ? { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }
+            : kind === 'date'
+              ? { weekday: 'short', day: 'numeric', month: 'short' }
+              : { year: 'numeric', month: '2-digit', day: '2-digit' };
+        const key = `${zone}:${kind}`;
+        if (!formatters.has(key))
+          formatters.set(
+            key,
+            new Intl.DateTimeFormat(kind === 'key' ? 'en-CA' : 'en-GB', {
+              timeZone: zone,
+              ...options,
+            }),
+          );
+        return formatters.get(key).format(t);
+      }
+      function duration(a, b) {
+        const min = Math.round((b - a) / 60000),
+          h = Math.floor(min / 60),
+          m = min % 60;
+        return `${h ? `${h}h` : ''}${h && m ? ' ' : ''}${m ? `${m}m` : ''}`;
+      }
+      function allActivities(s) {
+        const sleep = s.activities
+            .filter((a) => a.kind === 'sleep')
+            .sort((a, b) => a.start - b.start),
+          awake = [];
+        let start = s.start;
+        for (const a of sleep) {
+          if (a.start > start)
+            awake.push(
+              span(
+                `awake-${start}`,
+                'awake',
+                new Date(start).toISOString(),
+                new Date(a.start).toISOString(),
+                'Awake',
+                'Continue your day; other guidance appears alongside this awake period.',
+              ),
+            );
+          start = a.end;
+        }
+        if (start < s.end)
+          awake.push(
+            span(
+              'awake-final',
+              'awake',
+              new Date(start).toISOString(),
+              new Date(s.end).toISOString(),
+              'Awake',
+              'Back to your local morning routine.',
+            ),
+          );
+        return [...s.activities, ...awake];
+      }
+      function eventsFor(s, activities, concept) {
+        const events = activities
+          .filter((a) => concept !== 'bands' || a.kind === 'lounge')
+          .map((a) => ({ ...a, type: 'activity' }));
+        for (const f of s.flights) {
+          events.push({
+            id: `dep-${f.id}`,
+            kind: 'flight',
+            start: f.start,
+            end: f.end,
+            label: `${f.id} · ${f.from} → ${f.to}`,
+            detail: 'Flight details & meal plan',
+            flight: f,
+            type: 'flight',
+          });
+          events.push({
+            id: `arr-${f.id}`,
+            kind: 'arrival',
+            start: f.end,
+            end: f.end,
+            label: `Arrive in ${f.to === 'MEL' ? 'Melbourne' : f.to === 'LAX' ? 'Los Angeles' : f.to}`,
+            detail: 'Airport time, then your local day.',
+            flight: f,
+            type: 'arrival',
+          });
+        }
+        return events.sort((a, b) => a.start - b.start);
+      }
+      function boundaries(s) {
+        const result = [];
+        for (const [a, b, zone] of [
+          [s.start, s.handoff, s.origin],
+          [s.handoff, s.end, s.destination],
+        ]) {
+          let previous = fmt(a, zone, 'key');
+          for (let t = Math.ceil(a / 60000) * 60000; t <= b; t += 60000) {
+            const key = fmt(t, zone, 'key');
+            if (key !== previous) {
+              if (t > a && t < b) result.push({ at: t, zone });
+              previous = key;
+            }
+          }
+        }
+        return result;
+      }
+      function buildLayout(s, activities, concept) {
+        const events = eventsFor(s, activities, 'bands'),
+          days = boundaries(s),
+          points = new Set([s.start, s.end, s.handoff]);
+        for (const a of activities) {
+          points.add(a.start);
+          points.add(a.end);
+        }
+        for (const f of s.flights) {
+          points.add(f.start);
+          points.add(f.end);
+        }
+        for (const d of days) points.add(d.at);
+        const cuts = [...points].filter((t) => t >= s.start && t <= s.end).sort((a, b) => a - b),
+          nodes = [],
+          segments = [];
+        let y = 0;
+        for (let i = 0; i < cuts.length; i++) {
+          const t = cuts[i],
+            day = days.find((d) => d.at === t),
+            switching = t === s.handoff,
+            first = t === s.start;
+          const marker = switching
+            ? { divider: 108, axis: 144, fold: 140 }[concept]
+            : day || first
+              ? 48
+              : 0;
+          const ev = events.filter((e) => e.start === t),
+            heights = ev.map((e) => (e.type === 'flight' ? 82 : e.type === 'arrival' ? 50 : 66));
+          nodes.push({
+            t,
+            y,
+            contentY: y + marker,
+            marker,
+            day,
+            first,
+            switching,
+            events: ev,
+            heights,
+          });
+          if (i === cuts.length - 1) break;
+          const next = cuts[i + 1],
+            hours = (next - t) / HOUR;
+          const quiet = !activities.some(
+            (a) => a.kind !== 'awake' && a.kind !== 'lounge' && a.start <= t && a.end >= next,
+          );
+          const folded = compact && quiet && hours > 2;
+          const scale = 39;
+          const startingBands = activities.filter((a) => a.start === t);
+          const min = startingBands.some((a) => a.kind === 'caffeine')
+            ? 88
+            : startingBands.some((a) => a.kind !== 'lounge' && a.kind !== 'melatonin')
+              ? 72
+              : 28;
+          const physical = folded ? 65 : hours * scale;
+          const content = Math.max(min, physical, heights.reduce((a, b) => a + b, 0) + 8);
+          segments.push({ start: t, end: next, top: y + marker, height: content, folded, quiet });
+          y += marker + content;
+        }
+        const timeY = (t) => {
+          const exact = nodes.find((n) => n.t === t);
+          if (exact) return exact.contentY;
+          const part = segments.find((p) => p.start < t && p.end > t);
+          return part ? part.top + (part.height * (t - part.start)) / (part.end - part.start) : y;
+        };
+        return { nodes, segments, events, days, height: y + 140, timeY };
+      }
+
+      const concepts = [
+        {
+          id: 'divider',
+          letter: '1',
+          name: 'Clock divider',
+          tag: 'Recommended',
+          summary: 'A clear boundary across the timeline.',
+          description:
+            '<strong>A flat divider.</strong> Both local clocks and dates sit between two rules. It reads like a change of scale, separate from the activity bands.',
+          tradeoff: 'The clearest explanation at a glance; briefly covers the tracks.',
+        },
+        {
+          id: 'axis',
+          letter: '2',
+          name: 'Axis handoff',
+          summary: 'Let the time axis do the explaining.',
+          description:
+            '<strong>A change on the axis.</strong> The old clock gives way to the new one in the margin. A fine dashed line marks the handoff, while every band stays visible.',
+          tradeoff: 'The lightest treatment; city and date labels are smaller.',
+        },
+        {
+          id: 'fold',
+          letter: '3',
+          name: 'Clock fold',
+          summary: 'A seam between the two local clocks.',
+          description:
+            '<strong>A folded line.</strong> A hatched seam separates the two local clocks. Flight and sleep continue in the same tracks below it.',
+          tradeoff: 'An unmistakable cue, with more visual character.',
+        },
+      ];
+      const movement = () =>
+        matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth';
+      function transition(s, variant, y) {
+        const oldClock = fmt(s.handoff, s.origin),
+          newClock = fmt(s.handoff, s.destination),
+          change = scenarioKey === 'qf11' ? '−19h' : '+18h';
+        const oldDate = fmt(s.handoff, s.origin, 'date'),
+          newDate = fmt(s.handoff, s.destination, 'date');
+        const clock = (side) =>
+          `<span class="hour">${side === 'before' ? oldClock : newClock}</span><span class="city">${side === 'before' ? s.originCity : s.destinationCity}</span><span class="local-date">${side === 'before' ? oldDate : newDate}</span>`;
+        let inside = '';
+        if (variant === 'divider')
+          inside = `<div class="clock-caption"><span>${svg('clock')} Timezone change</span><span>Clock ${change}</span></div><div class="clock-pair"><div class="before"><div class="clock-line"><strong class="hour">${oldClock}</strong><span class="city">${s.originCity}</span></div><span class="local-date">${oldDate}</span></div>${svg('arrow')}<div class="after"><div class="clock-line"><strong class="hour">${newClock}</strong><span class="city">${s.destinationCity}</span></div><span class="local-date">${newDate}</span></div></div>`;
+        else if (variant === 'axis')
+          inside = `<div class="clock-stack before">${clock('before')}</div><span class="axis-arrow">${svg('down')}</span><div class="clock-stack after">${clock('after')}</div><span class="clock-change-amount">CLOCK ${change}</span>`;
+        else
+          inside = `<div class="paper"></div><div class="fold-clock before"><div><span class="city">${s.originCity}</span><span class="local-date">${oldDate}</span></div><strong class="hour">${oldClock}</strong></div><span class="clock-caption">Clock changes ${change}</span><div class="fold-clock after"><div><span class="city">${s.destinationCity}</span><span class="local-date">${newDate}</span></div><strong class="hour">${newClock}</strong></div>`;
+        return `<section class="transition ${variant === 'fold' ? 'folded' : variant}" style="top:${y}px" data-handoff="${s.handoff}" aria-label="Timezone change: ${s.originCity} ${oldDate} ${oldClock} to ${s.destinationCity} ${newDate} ${newClock}, same instant">${inside}</section>`;
+      }
+      function renderView(c) {
+        const s = scenarios[scenarioKey],
+          activities = allActivities(s),
+          layout = buildLayout(s, activities, c.id);
+        const article = document.createElement('article');
+        article.className = `concept ${c.id === 'divider' ? 'active' : ''}`;
+        article.dataset.conceptId = c.id;
+        article.innerHTML = `<div class="concept-heading"><h2><span class="option-letter">${c.letter}</span>${c.name}${c.tag ? `<span class="recommend">${c.tag}</span>` : ''}</h2><p>${c.summary}</p></div><div class="phone"><div class="device"><div class="status"><span>18:50</span><span class="right">${svg('signal')}<span class="battery"></span></span></div><header class="app-header"><div class="eyebrow">Your journey ${svg('moon')}</div><h3>${s.title}</h3><div class="trip-meta"><span>${s.meta}</span><button class="key-button" data-detail="key" aria-label="Explain the activity bands">${svg('spark')} Key</button></div></header><div class="context"><span class="date"></span><span class="place"></span></div><div class="scroll" tabindex="0" role="region" aria-label="${c.name} continuous timeline"><div class="timeline" style="height:${layout.height}px"><div class="rail"></div></div></div><nav class="app-nav" aria-label="${c.name} shortcuts"><button data-now>${svg('sun')}Now</button><button class="selected" data-start>${svg('route')}Journey</button><button data-detail="trip">${svg('plane')}Trip details</button></nav><div class="home-indicator"></div></div></div><p class="concept-note">${c.description}<span class="tradeoff">${c.tradeoff}</span></p>`;
+        const timeline = article.querySelector('.timeline'),
+          scroll = article.querySelector('.scroll');
+        let html = '';
+        for (const f of s.flights) {
+          const top = layout.timeY(f.start) + 16,
+            bottom = layout.timeY(f.end) + 16;
+          html += `<div class="flight-band" data-flight="${f.id}" data-start="${f.start}" data-end="${f.end}" style="top:${top}px;height:${bottom - top}px"><span class="flight-name">${f.id}</span></div>`;
+        }
+        for (const a of activities.filter((a) => a.kind !== 'lounge')) {
+          const top = layout.timeY(a.start),
+            bottom = layout.timeY(a.end),
+            meta = types[a.kind];
+          html += `<button class="activity ${a.kind}" data-activity="${a.id}" data-detail="${a.id}" data-start="${a.start}" data-end="${a.end}" style="top:${top}px;height:${Math.max(28, bottom - top - 2)}px;--lane:${meta.lane}" aria-label="${a.label}, ${duration(a.start, a.end)}"><span class="band-top">${svg(meta.icon)}${a.kind === 'caffeine' ? '<span class="optional">Optional</span>' : ''}<span>${meta.name}</span><span class="band-duration">${duration(a.start, a.end)}</span></span></button>`;
+        }
+        for (const n of layout.nodes) {
+          if (n.switching) html += transition(s, c.id, n.y);
+          else if (n.day || n.first)
+            html += `<div class="day-break" style="top:${n.y}px" data-day-at="${n.t}">${svg('moon')}<span class="day-name">${fmt(n.t, zoneAt(n.t), 'date')}</span><span class="date-note">${cityAt(n.t)}${n.first ? '' : ' · 00:00'}</span></div>`;
+          let eventY = n.contentY;
+          for (let i = 0; i < n.events.length; i++) {
+            const e = n.events[i],
+              f = e.flight;
+            html += `<span class="event-clock" style="top:${eventY + 7}px">${fmt(e.start, zoneAt(e.start))}</span>`;
+            if (e.type === 'flight')
+              html += `<button class="flight-marker" data-detail="${e.id}" data-marker="departure" style="top:${eventY}px" aria-label="${f.id}, ${f.from} to ${f.to}, flight details"><span class="flight-title">${svg('plane')}<strong>${f.id}</strong></span><span class="route">${f.from}–${f.to}</span><span class="duration">${duration(f.start, f.end)}</span></button>`;
+            else if (e.type === 'arrival')
+              html += `<button class="flight-marker arrival" data-detail="${e.id}" data-marker="arrival" style="top:${eventY}px" aria-label="Arrival at ${f.to}, flight details"><strong>Arrive</strong><span class="route">${f.to} ${svg('check')}</span></button>`;
+            else
+              html += `<button class="flight-marker lounge" data-detail="${e.id}" data-marker="lounge" style="top:${eventY}px">${svg('chair')}<strong>Lounge</strong><span class="route">${duration(e.start, e.end)}</span></button>`;
+            eventY += n.heights[i];
+          }
+        }
+        for (const p of layout.segments) {
+          if (p.folded)
+            html += `<div class="fold" style="top:${p.top + 29}px;height:${Math.max(12, p.height - 41)}px" aria-hidden="true"></div>`;
+          for (let t = Math.ceil(p.start / HOUR) * HOUR; t < p.end; t += HOUR) {
+            if (p.folded && t > Math.ceil(p.start / HOUR) * HOUR) continue;
+            const y = layout.timeY(t);
+            if (layout.events.some((e) => Math.abs(layout.timeY(e.start) - y) < 27)) continue;
+            html += `<div class="time-line" style="top:${y}px"></div><span class="time-label" style="top:${y - 6}px">${fmt(t, zoneAt(t))}</span>`;
+          }
+        }
+        html += `<div class="now-line" style="top:${layout.timeY(s.now)}px"><span>NOW · ${fmt(s.now, zoneAt(s.now))}</span></div><div class="finish" style="top:${layout.height - 112}px">${svg('check')}<strong>Journey complete</strong><span>Back to your local rhythm.</span></div>`;
+        timeline.insertAdjacentHTML('beforeend', html);
+        const view = { c, article, scroll, layout, activities };
+        views.push(view);
+        function updateContext() {
+          let node = layout.nodes[0];
+          for (const n of layout.nodes) {
+            if (n.y <= scroll.scrollTop + 8) node = n;
+            else break;
+          }
+          article.querySelector('.context .date').textContent = fmt(node.t, zoneAt(node.t), 'date');
+          article.querySelector('.context .place').innerHTML = `${svg('clock')} ${cityAt(node.t)}`;
+        }
+        scroll.addEventListener('scroll', updateContext, { passive: true });
+        updateContext();
+        article
+          .querySelectorAll('[data-detail]')
+          .forEach((el) => el.addEventListener('click', () => openDetail(el.dataset.detail, view)));
+        article
+          .querySelector('[data-now]')
+          .addEventListener('click', () =>
+            scroll.scrollTo({ top: Math.max(0, layout.timeY(s.now) - 70), behavior: movement() }),
+          );
+        article
+          .querySelector('[data-start]')
+          .addEventListener('click', () => scroll.scrollTo({ top: 0, behavior: movement() }));
+        return article;
+      }
+      function openDetail(id, view) {
+        const s = scenarios[scenarioKey],
+          modal = document.querySelector('#details'),
+          body = modal.querySelector('.dialog-body');
+        let title = '',
+          html = '';
+        const cities = {
+          SYD: 'Sydney',
+          SFO: 'San Francisco',
+          LAX: 'Los Angeles',
+          MEL: 'Melbourne',
+        };
+        const flightRows = (f) => {
+          const zone = f.to === 'MEL' || scenarioKey === 'qf11' ? s.destination : s.origin;
+          return `<div class="detail-row"><span>${f.id} · ${f.from} → ${f.to}</span><strong>${duration(f.start, f.end)}</strong></div><div class="detail-row"><span>Departure · ${fmt(f.start, s.origin, 'date')}</span><strong>${fmt(f.start, s.origin)} ${cities[f.from]}</strong></div><div class="detail-row"><span>Arrival · ${fmt(f.end, zone, 'date')}</span><strong>${fmt(f.end, zone)} ${cities[f.to]}</strong></div>`;
+        };
+        if (id === 'key') {
+          title = 'Reading your timeline';
+          const meanings = {
+            awake: 'You are awake; other guidance can happen at the same time.',
+            sleep: 'A window for sleep or rest.',
+            light: 'Seek daylight when practical.',
+            dim: 'Keep light levels low.',
+            caffeine: 'Optional caffeine within this window.',
+            flight: 'The flight runs alongside your guidance.',
+          };
+          html =
+            '<div class="key-list">' +
+            ['awake', 'sleep', 'light', 'dim', 'caffeine', 'flight']
+              .map(
+                (k) =>
+                  `<div class="key-item"><span style="color:${types[k].color}">${svg(types[k].icon)}</span><div><strong>${types[k].name}</strong><small>${meanings[k]}</small></div></div>`,
+              )
+              .join('') +
+            '</div><p class="key-note">Bands that overlap vertically happen at the same time. Tap any band for its details.</p>';
+        } else if (id === 'trip') {
+          title = 'Your flights';
+          html = s.flights.map(flightRows).join('');
+        } else {
+          const e =
+            view.layout.events.find((e) => e.id === id) || view.activities.find((a) => a.id === id);
+          if (!e) return;
+          title = e.label;
+          if (e.flight) html = flightRows(e.flight);
+          else {
+            html = `<p>${e.detail}</p><div class="detail-row"><span>Duration</span><strong>${duration(e.start, e.end)}</strong></div><div class="detail-row"><span>Starts</span><strong>${fmt(e.start, zoneAt(e.start))} · ${cityAt(e.start)}</strong></div><div class="detail-row"><span>Ends</span><strong>${fmt(e.end, zoneAt(e.end))} · ${cityAt(e.end)}</strong></div>`;
+            if (e.start < s.handoff && e.end > s.handoff)
+              html +=
+                '<p style="margin-top:16px">This remains one continuous rest window through the change of clock.</p>';
+            if (e.id === 'cabin-sleep')
+              html +=
+                '<div class="detail-row"><span>Meal service</span><strong>Let me sleep</strong></div>';
+          }
+        }
+        modal.querySelector('#detail-title').textContent = title;
+        body.innerHTML = html + '<button class="dialog-done">Done</button>';
+        body.querySelector('.dialog-done').addEventListener('click', () => modal.close());
+        modal.showModal();
+      }
+      function jump(where, behavior = movement()) {
+        jumpTarget = where;
+        document
+          .querySelectorAll('[data-jump]')
+          .forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.jump === where)));
+        const s = scenarios[scenarioKey];
+        for (const v of views) {
+          const top =
+            where === 'start'
+              ? 0
+              : where === 'flight'
+                ? v.layout.timeY(s.flights.at(-1).start) - 60
+                : v.layout.nodes.find((n) => n.switching).y - 190;
+          v.scroll.scrollTo({ top: Math.max(0, top), behavior });
+        }
+      }
+      function selectConcept(name) {
+        document
+          .querySelectorAll('.concept')
+          .forEach((el) => el.classList.toggle('active', el.dataset.conceptId === name));
+        document
+          .querySelectorAll('[data-concept]')
+          .forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.concept === name)));
+        requestAnimationFrame(() => jump(jumpTarget, 'instant'));
+      }
+      function render() {
+        const selected =
+          document.querySelector('[data-concept][aria-pressed="true"]')?.dataset.concept ||
+          'divider';
+        views.length = 0;
+        document.querySelector('.comparison').replaceChildren(...concepts.map(renderView));
+        selectConcept(selected);
+        requestAnimationFrame(() => jump(jumpTarget, 'instant'));
+      }
+      document.querySelectorAll('[data-scenario]').forEach((b) =>
+        b.addEventListener('click', () => {
+          scenarioKey = b.dataset.scenario;
+          document
+            .querySelectorAll('[data-scenario]')
+            .forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+          render();
+        }),
+      );
+      document
+        .querySelectorAll('[data-jump]')
+        .forEach((b) => b.addEventListener('click', () => jump(b.dataset.jump)));
+      document
+        .querySelectorAll('[data-concept]')
+        .forEach((b) => b.addEventListener('click', () => selectConcept(b.dataset.concept)));
+      document.querySelector('#compress').addEventListener('change', (e) => {
+        compact = e.target.checked;
+        render();
+      });
+      document
+        .querySelector('.dialog-close')
+        .addEventListener('click', () => document.querySelector('#details').close());
+      document.querySelector('#details').addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) {
+          const r = e.currentTarget.getBoundingClientRect();
+          if (
+            e.clientX < r.left ||
+            e.clientX > r.right ||
+            e.clientY < r.top ||
+            e.clientY > r.bottom
+          )
+            e.currentTarget.close();
+        }
+      });
+      const params = new URLSearchParams(location.search);
+      if (params.get('scenario') === 'pacific') scenarioKey = 'pacific';
+      if (['start', 'flight', 'switch'].includes(params.get('focus')))
+        jumpTarget = params.get('focus');
+      if (params.has('capture')) document.body.classList.add('capture');
+      document
+        .querySelectorAll('[data-scenario]')
+        .forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.scenario === scenarioKey)));
+      render();
+      if (['divider', 'axis', 'fold'].includes(params.get('concept')))
+        selectConcept(params.get('concept'));
+      window.timelineConcepts = {
+        get scenario() {
+          return scenarios[scenarioKey];
+        },
+        get views() {
+          return views;
+        },
+        jump,
+      };
+    </script>
+  </body>
+</html>

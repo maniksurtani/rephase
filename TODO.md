@@ -1,12 +1,13 @@
 # Rephase build tasks
 
-Updated 2026-11-07. Active work is kept here; the previous complete checklist is preserved in [the task archive](docs/archive/TODO-2026-10-16.md). Release evidence is in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md).
+Updated 2026-11-08. Active work is kept here; the previous complete checklist is preserved in [the task archive](docs/archive/TODO-2026-10-16.md). Release evidence is in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md).
 
 ## Continuous timeline design study
 
 - [x] Mock up three interactive mobile concepts with continuous scrolling, local midnight dividers, explicit in-flight clock changes, persistent flight/rest spans, compressed quiet time and expandable details. See [the comparison and previews](docs/prototypes/continuous-timeline/README.md).
 - [x] Check the Sydney–Los Angeles and SFO–LAX–Melbourne examples, narrow-screen overflow, clock/date continuity and prototype interactions.
-- [ ] Choose a direction after design review, then connect it to real plan data and adapt the presentation for web and Flutter.
+- [x] Select Bands for further design iteration; compare three structural timezone-change cues, place flight details in a separate right-hand track, and replace column headings with direct band labels and an optional key.
+- [ ] Choose the timezone-change treatment from [the refined Bands comparison](docs/prototypes/continuous-timeline/bands.html), then connect it to real plan data and adapt the presentation for web and Flutter.
 
 ## Practical sleep opportunities
 
