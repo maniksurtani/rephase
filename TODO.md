@@ -2,7 +2,7 @@
 
 Updated 2026-11-08. Active work is kept here; the previous complete checklist is preserved in [the task archive](docs/archive/TODO-2026-10-16.md). Release evidence is in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md).
 
-## Continuous timeline design study
+## Continuous Bands timeline
 
 - [x] Mock up three interactive mobile concepts with continuous scrolling, local midnight dividers, explicit in-flight clock changes, persistent flight/rest spans, compressed quiet time and expandable details. See [the comparison and previews](docs/prototypes/continuous-timeline/README.md).
 - [x] Check the Sydney–Los Angeles and SFO–LAX–Melbourne examples, narrow-screen overflow, clock/date continuity and prototype interactions.
@@ -10,7 +10,7 @@ Updated 2026-11-08. Active work is kept here; the previous complete checklist is
 - [x] Choose Clock fold (option 3) from the refined Bands comparison.
 - [x] Build a shared continuous journey presentation from real planner intervals, with local midnights, in-flight clock folds, continuous sleep/flight bands and date navigation.
 - [x] Implement the Bands presentation on web and Flutter, retaining guidance, recording and meals in expandable details, with direct lounge links before departures.
-- [ ] Verify date-line/DST journeys, current-time navigation, narrow screens and native accessibility; publish the web release and mobile source updates.
+- [x] Verify date-line/DST journeys, current-time navigation, narrow screens, larger native text and noninteractive clock folds; publish the web release and mobile source updates. Checks 42499134347, Mobile checks 42499134252, both native runtimes in 42498153297 and Cloudflare deployment 42499591549 pass. See RELEASES.md.
 
 ## Practical sleep opportunities
 
