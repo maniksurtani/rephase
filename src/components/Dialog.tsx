@@ -14,7 +14,7 @@ const topLayer = () => layers.at(-1);
 const focusable = (panel: HTMLElement) =>
   Array.from(
     panel.querySelectorAll<HTMLElement>(
-      'button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), iframe, [tabindex]:not([tabindex="-1"])',
+      'button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), summary, iframe, [tabindex]:not([tabindex="-1"])',
     ),
   ).filter((element) => element.getClientRects().length > 0 && !element.closest('[inert]'));
 

@@ -376,6 +376,9 @@ test('flight confirmation requires an explicit choice, supports multiple matches
   await confirmation.getByRole('button', { name: 'Reject', exact: true }).click();
   await expect(confirmation).toHaveCount(0);
   await expect(lookup).toBeFocused();
+  await editor.locator('.seat-options > summary').focus();
+  await page.keyboard.press('Shift+Tab');
+  await expect(editor.getByRole('button', { name: 'Enter manually', exact: true })).toBeFocused();
   await expect(editor.getByLabel('Flight number', { exact: true })).toHaveValue('BA286');
   await expect(editor.locator('.flight-selection-summary')).toHaveCount(0);
   await editor.getByRole('button', { name: 'Create my plan', exact: true }).click();
