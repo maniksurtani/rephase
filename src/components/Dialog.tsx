@@ -47,7 +47,8 @@ function handleKey(event: KeyboardEvent) {
       layer.panel.focus();
     } else if (
       event.shiftKey &&
-      (document.activeElement === first || !layer.panel.contains(document.activeElement))
+      (document.activeElement === first ||
+        !elements.includes(document.activeElement as HTMLElement))
     ) {
       event.preventDefault();
       last?.focus();
@@ -69,12 +70,16 @@ function handleFocus(event: FocusEvent) {
 export function Dialog({
   title,
   onClose,
+  dismissible = true,
+  returnFocusTo,
   backdropClassName = 'modal-backdrop',
   className = 'modal',
   children,
 }: {
   title: string;
   onClose: () => void;
+  dismissible?: boolean;
+  returnFocusTo?: HTMLElement | null;
   backdropClassName?: string;
   className?: string;
   children: ReactNode;
@@ -82,12 +87,17 @@ export function Dialog({
   const backdrop = useRef<HTMLDivElement>(null);
   const panel = useRef<HTMLDivElement>(null);
   const close = useRef(onClose);
-  close.current = onClose;
+  const returnFocus = useRef(returnFocusTo);
+  returnFocus.current = returnFocusTo;
+  close.current = () => {
+    if (dismissible) onClose();
+  };
 
   useEffect(() => {
     if (!backdrop.current || !panel.current) return;
     const previousFocus =
-      document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      returnFocus.current ??
+      (document.activeElement instanceof HTMLElement ? document.activeElement : null);
     const layer: DialogLayer = {
       backdrop: backdrop.current,
       panel: panel.current,

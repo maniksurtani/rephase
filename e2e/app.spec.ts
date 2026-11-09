@@ -59,6 +59,7 @@ test('editing the example preserves keyboard focus and creates a personal itiner
   await name.press('End');
   await name.pressSequentially('!');
   await expect(name).toBeFocused();
+  await page.locator('.seat-options > summary').first().click();
   await page.getByLabel('Travel class').first().selectOption('business');
   await page.getByLabel('Lie-flat bed available?').first().selectOption('no');
   await page.getByRole('button', { name: 'Save & regenerate plan' }).click();

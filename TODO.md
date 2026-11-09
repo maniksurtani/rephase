@@ -2,6 +2,13 @@
 
 Updated 2026-11-09. Active work is kept here; the previous complete checklist is preserved in [the task archive](docs/archive/TODO-2026-10-16.md). Release evidence is in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md).
 
+## Explicit flight confirmation
+
+- [x] Show lookup matches in an accept/reject dialog on web, iOS and Android; block accidental backdrop, Escape and Back dismissal.
+- [x] Keep rejection separate from accepting a schedule, support multiple candidates, and clear pending confirmations when account/editor context changes.
+- [x] Trace cabin/bed usage and move both inputs into optional, collapsed Seat & cabin details. Cabin affects lounge eligibility; lie-flat affects sleep versus seated-rest guidance, not timing.
+- [ ] Verify the revised flows and mobile layouts, then publish the checked release.
+
 ## Lounge ordering and review ratings
 
 - [x] Default the operating airline to the marketing airline on web and native, preserving explicit overrides.

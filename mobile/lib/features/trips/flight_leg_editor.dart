@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../app_controller.dart';
 import 'flight_fields.dart';
+import 'flight_lookup_dialog.dart';
 
 class FlightLegEditor extends StatefulWidget {
   const FlightLegEditor({
@@ -41,6 +42,8 @@ class _FlightLegEditorState extends State<FlightLegEditor>
   int _request = 0;
   String? _error;
   Map<String, dynamic>? _result;
+  DialogRoute<Map<String, dynamic>>? _confirmationRoute;
+  late (String?, bool) _lookupOwner;
   final Map<String, Map<String, dynamic>> _localTimes = {};
   final Map<String, int> _localRequests = {};
 
@@ -52,6 +55,8 @@ class _FlightLegEditorState extends State<FlightLegEditor>
   @override
   void initState() {
     super.initState();
+    _lookupOwner = (widget.controller.account?.id, widget.controller.signedIn);
+    widget.controller.addListener(_accountChanged);
     _number = TextEditingController(text: _text('flightNumber'));
     _resolved =
         _text('departureAirport').isNotEmpty &&
@@ -64,8 +69,44 @@ class _FlightLegEditorState extends State<FlightLegEditor>
   @override
   void dispose() {
     _request++;
+    widget.controller.removeListener(_accountChanged);
+    _dismissConfirmation();
     _number.dispose();
     super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant FlightLegEditor oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != widget.controller) {
+      oldWidget.controller.removeListener(_accountChanged);
+      widget.controller.addListener(_accountChanged);
+      _accountChanged();
+    }
+  }
+
+  void _dismissConfirmation() {
+    final route = _confirmationRoute;
+    _confirmationRoute = null;
+    if (route == null) return;
+    // Account changes can remove the editor during a build. Remove only its
+    // own dialog once that frame completes, never the route underneath it.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (route.isActive) route.navigator?.removeRoute(route);
+    });
+  }
+
+  void _accountChanged() {
+    final owner = (widget.controller.account?.id, widget.controller.signedIn);
+    if (owner == _lookupOwner) return;
+    _lookupOwner = owner;
+    _request++;
+    _dismissConfirmation();
+    setState(() {
+      _busy = false;
+      _result = null;
+      _error = null;
+    });
   }
 
   void _patch(Map<String, dynamic> patch, {bool schedule = false}) {
@@ -99,6 +140,7 @@ class _FlightLegEditorState extends State<FlightLegEditor>
 
   void _queryChanged({String? number, String? date}) {
     _request++;
+    _dismissConfirmation();
     setState(() {
       _result = null;
       _error = null;
@@ -141,7 +183,27 @@ class _FlightLegEditorState extends State<FlightLegEditor>
         number,
         departure.substring(0, 10),
       );
-      if (mounted && request == _request) setState(() => _result = result);
+      if (!mounted || request != _request) return;
+      if ((result['candidates'] as List? ?? []).isEmpty) {
+        setState(() => _result = result);
+        return;
+      }
+      setState(() => _busy = false);
+      FocusScope.of(context).unfocus();
+      final route = DialogRoute<Map<String, dynamic>>(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => FlightLookupDialog(result: result),
+      );
+      _confirmationRoute = route;
+      final candidate = await Navigator.of(
+        context,
+        rootNavigator: true,
+      ).push(route);
+      if (_confirmationRoute == route) _confirmationRoute = null;
+      if (mounted && request == _request && candidate != null) {
+        _apply(candidate, result['fetchedAt']);
+      }
     } catch (error) {
       if (mounted && request == _request) {
         setState(() => _error = error.toString());
@@ -151,7 +213,7 @@ class _FlightLegEditorState extends State<FlightLegEditor>
     }
   }
 
-  void _apply(Map<String, dynamic> candidate) {
+  void _apply(Map<String, dynamic> candidate, dynamic fetchedAt) {
     final updated = {...widget.leg};
     for (final key in [
       'departureDisambiguation',
@@ -182,7 +244,7 @@ class _FlightLegEditorState extends State<FlightLegEditor>
     }
     updated.addAll({
       'flightSource': 'aerodatabox',
-      'flightFetchedAt': _result!['fetchedAt'],
+      'flightFetchedAt': fetchedAt,
       'providerRecordConfirmed': true,
     });
     _number.text = updated['flightNumber'].toString();
@@ -299,7 +361,6 @@ class _FlightLegEditorState extends State<FlightLegEditor>
   Widget build(BuildContext context) {
     super.build(context);
     final theme = Theme.of(context);
-    final candidates = (_result?['candidates'] as List? ?? []).cast<Map>();
     final hasSchedule =
         _resolved &&
         _text('departureAirport').isNotEmpty &&
@@ -408,14 +469,9 @@ class _FlightLegEditorState extends State<FlightLegEditor>
               ),
             if (_result != null) ...[
               const SizedBox(height: 12),
-              if (_result!['stale'] == true)
-                const Text('Cached schedule · updates unavailable'),
-              if (candidates.isEmpty)
-                const Text(
-                  'No matching flight. Try the operating flight number or enter manually.',
-                ),
-              for (final candidate in candidates)
-                _candidate(Map<String, dynamic>.from(candidate)),
+              const Text(
+                'No matching flight. Try the operating flight number or enter manually.',
+              ),
             ],
             if (hasSchedule && !_manual) ...[
               const SizedBox(height: 12),
@@ -480,28 +536,47 @@ class _FlightLegEditorState extends State<FlightLegEditor>
               _fold('arrival'),
               const SizedBox(height: 16),
             ],
-            DropdownButtonFormField<String>(
-              initialValue: _text('travelClass').isEmpty
-                  ? 'economy'
-                  : _text('travelClass'),
-              decoration: const InputDecoration(labelText: 'Travel class'),
-              isExpanded: true,
-              items: const [
-                DropdownMenuItem(value: 'economy', child: Text('Economy')),
-                DropdownMenuItem(
-                  value: 'premium-economy',
-                  child: Text('Premium economy'),
+            ExpansionTile(
+              title: const Text('Seat & cabin'),
+              subtitle: const Text('Optional'),
+              tilePadding: EdgeInsets.zero,
+              children: [
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: EdgeInsets.only(bottom: 12),
+                    child: Text(
+                      'For lounge access and in-flight rest guidance.',
+                    ),
+                  ),
                 ),
-                DropdownMenuItem(value: 'business', child: Text('Business')),
-                DropdownMenuItem(value: 'first', child: Text('First')),
+                DropdownButtonFormField<String>(
+                  initialValue: _text('travelClass').isEmpty
+                      ? 'economy'
+                      : _text('travelClass'),
+                  decoration: const InputDecoration(labelText: 'Travel class'),
+                  isExpanded: true,
+                  items: const [
+                    DropdownMenuItem(value: 'economy', child: Text('Economy')),
+                    DropdownMenuItem(
+                      value: 'premium-economy',
+                      child: Text('Premium economy'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'business',
+                      child: Text('Business'),
+                    ),
+                    DropdownMenuItem(value: 'first', child: Text('First')),
+                  ],
+                  onChanged: (value) => _patch({'travelClass': value}),
+                ),
+                SwitchListTile.adaptive(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('Lie-flat bed available'),
+                  value: widget.leg['lieFlat'] == true,
+                  onChanged: (value) => _patch({'lieFlat': value}),
+                ),
               ],
-              onChanged: (value) => _patch({'travelClass': value}),
-            ),
-            SwitchListTile.adaptive(
-              contentPadding: EdgeInsets.zero,
-              title: const Text('Lie-flat bed available'),
-              value: widget.leg['lieFlat'] == true,
-              onChanged: (value) => _patch({'lieFlat': value}),
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
@@ -551,39 +626,4 @@ class _FlightLegEditorState extends State<FlightLegEditor>
       ),
     );
   }
-
-  Widget _candidate(Map<String, dynamic> candidate) => Padding(
-    padding: const EdgeInsets.only(top: 12),
-    child: Card(
-      color: Theme.of(context).colorScheme.surfaceContainerHighest,
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              '${candidate['flightNumber']} · ${candidate['airline']}',
-              style: Theme.of(context).textTheme.titleSmall,
-            ),
-            Text(
-              '${candidate['departureAirport']} → ${candidate['arrivalAirport']}',
-            ),
-            Text(
-              'Departs ${scheduleLabel(candidate['departureDateTime'])} (${candidate['departureTimeZone']})',
-            ),
-            Text(
-              'Arrives ${scheduleLabel(candidate['arrivalDateTime'])} (${candidate['arrivalTimeZone']})',
-            ),
-            if ((candidate['aircraft'] as Map?)?['model'] != null)
-              Text('Aircraft · ${(candidate['aircraft'] as Map)['model']}'),
-            const SizedBox(height: 8),
-            FilledButton(
-              onPressed: () => _apply(candidate),
-              child: const Text('Use this flight'),
-            ),
-          ],
-        ),
-      ),
-    ),
-  );
 }

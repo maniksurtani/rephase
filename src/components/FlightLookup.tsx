@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { LoaderCircle, Search } from 'lucide-react';
 import type { FlightCandidate, FlightLeg, FlightLookupResult } from '../lib/types';
 import { lookupFlight } from '../lib/api';
-import { aircraftLabel } from '../lib/aircraft';
+import { FlightLookupDialog } from './FlightLookupDialog';
 
 export interface FlightQuery {
   flightNumber: string;
@@ -27,6 +27,7 @@ export function FlightLookup({
   const [busy, setBusy] = useState(false);
   const controller = useRef<AbortController | null>(null);
   const request = useRef(0);
+  const lookupButton = useRef<HTMLButtonElement>(null);
   useEffect(
     () => () => {
       request.current++;
@@ -127,6 +128,7 @@ export function FlightLookup({
       </div>
       <div className="flight-lookup-actions">
         <button
+          ref={lookupButton}
           type="button"
           className="button primary"
           disabled={!available || !accountId || busy || !input.date || !input.flightNumber.trim()}
@@ -165,54 +167,19 @@ export function FlightLookup({
           {error}
         </p>
       )}
-      {result && (
-        <div className="flight-results">
-          <p>{result.stale ? 'Cached schedule · updates unavailable' : 'Choose your flight'}</p>
-          {!result.candidates.length ? (
-            <p>
-              No matching flight found. Try the operating flight number or enter your flight
-              manually.
-            </p>
-          ) : (
-            <>
-              {result.candidates.map((candidate) => (
-                <article className="flight-result" key={candidate.id}>
-                  <strong>
-                    {candidate.flightNumber} · {candidate.airline}
-                  </strong>
-                  <span>
-                    {candidate.departureAirport} → {candidate.arrivalAirport} ·{' '}
-                    {Math.floor(candidate.durationMinutes / 60)}h {candidate.durationMinutes % 60}m
-                  </span>
-                  <span className="flight-aircraft">
-                    {aircraftLabel(candidate.aircraft)
-                      ? `Aircraft · ${aircraftLabel(candidate.aircraft)}`
-                      : 'Aircraft type not provided'}
-                  </span>
-                  <span>
-                    Departs {candidate.departureDateTime.slice(0, 16).replace('T', ' ')} (
-                    {candidate.departureTimeZone})
-                  </span>
-                  <span>
-                    Arrives {candidate.arrivalDateTime.slice(0, 16).replace('T', ' ')} (
-                    {candidate.arrivalTimeZone})
-                  </span>
-                  {candidate.operatingFlightNumber && (
-                    <span>Operated as {candidate.operatingFlightNumber}</span>
-                  )}
-                  <button
-                    type="button"
-                    className="button secondary"
-                    onClick={() => apply(candidate)}
-                  >
-                    Use this flight
-                  </button>
-                </article>
-              ))}
-            </>
-          )}
-        </div>
-      )}
+      {result &&
+        (result.candidates.length ? (
+          <FlightLookupDialog
+            result={result}
+            onAccept={apply}
+            onReject={() => setResult(null)}
+            returnFocusTo={lookupButton.current}
+          />
+        ) : (
+          <p role="status" className="flight-lookup-note">
+            No matching flight found. Try the operating flight number or enter your flight manually.
+          </p>
+        ))}
     </div>
   );
 }

@@ -4979,6 +4979,28 @@ small {
 .cabin-editor {
   margin-top: 17px;
 }
+.seat-options {
+  margin: 12px 0;
+}
+.seat-options > summary {
+  cursor: pointer;
+  color: var(--text);
+  padding: 8px 0;
+}
+.seat-options > summary span {
+  color: var(--muted);
+  font-size: 12px;
+  margin-left: 8px;
+}
+.flight-confirmation {
+  max-width: 560px;
+}
+.flight-confirmation .modal-footer {
+  position: sticky;
+  bottom: -26px;
+  background: #171a28;
+  padding-bottom: 12px;
+}
 @media (max-width: 540px) {
   .flight-search-fields {
     grid-template-columns: 1fr;

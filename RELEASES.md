@@ -1,5 +1,13 @@
 # Release evidence
 
+## 9 November 2026 — explicit flight confirmation
+
+Flight lookup results now open in a modal on web, iOS and Android. Each match has a **Use this flight** action; **Reject** returns to the draft without applying a result. Outside taps, Escape and native Back cannot dismiss a pending choice. Multiple matches scroll, cached results remain labeled, and empty results keep manual entry available. Pending confirmations are invalidated when the account changes or the editor is removed. The web dialog shares the existing modal stack, traps focus and restores it to the lookup button.
+
+Travel class and lie-flat availability now sit under collapsed, optional **Seat & cabin** details. Travel class supplies lounge access eligibility; lie-flat changes seated-rest versus sleep guidance and timeline styling. Neither currently changes sleep timing or the modeled darkness inputs. Saved values and aircraft metadata remain intact. No planner, schema, provider or native host changes are needed.
+
+Local types, lint, formatting, production build and Flutter analysis pass. Five focused Flutter widget tests cover confirmation, Back/outside-tap handling, multiple matches at 390px with larger text, rejection, account/editor removal and preservation of saved fields. Relevant browser journeys cover acceptance, draft preservation, manual fallback, cabin edits, account changes and keyboard focus; the mobile confirmation screenshot was reviewed. Full release checks and deployment evidence follow after the pushed source is verified. UI-only changes use fast Flutter checks without repeating the native runtime builds.
+
 ## 9 November 2026 — lounge defaults, suitability and quality
 
 Operating airline now defaults to marketing airline on web, iOS and Android, follows marketing changes until explicitly overridden, and resets when the airport changes. Codeshares and an explicit unknown operator remain editable. Lounge results first respect access and usable opening time, then the selected amenity priority, then a sourced Rephase quality rating. Unrelated amenities, longer visits and descriptive bestFor tags no longer outweigh quality for a specific priority.

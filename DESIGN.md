@@ -52,6 +52,10 @@ The default example route includes London, a Dubai connection, Singapore, and a 
 
 Color and icons reinforce written labels: violet sleep, amber light, muted blue light avoidance, mint caffeine, and rose melatonin. Use readable text at low brightness, 44px touch targets, keyboard focus, proper form labels, reduced motion, and layout without horizontal scrolling at 360px.
 
+Flight lookup matches open in a separate confirmation dialog on all platforms. Selecting **Use this flight** applies exactly that candidate; **Reject** returns to the draft without applying a result. Backdrop clicks, Escape and native Back do not dismiss a pending choice. Multiple matches are scrollable, cached schedules remain labeled, and empty/error responses keep manual entry available. Account changes or a removed editor invalidate pending lookups and close their dialog. The web dialog uses the existing focus/scroll-lock stack in a portal; native uses Flutter's dialog route and PopScope.
+
+**Seat & cabin** is optional and collapsed in the trip editor. Travel class supplies cabin eligibility to Lounge Explorer; it does not alter the circadian schedule. Confirmed lie-flat availability distinguishes in-flight sleep/Bedtime from seated Rest or nap guidance and timeline styling; both currently use the same rest-window timing and darkness model. Neither field is inferred from aircraft type, and existing values are preserved when accepting or rejecting flight lookup results.
+
 ## Lounge Explorer and offline research
 
 Lounge discovery runs entirely in the browser. No lounge API, secret, D1 table or scheduled job is required. Curated airport JSON is bundled and included in the offline shell; changes use the existing verified release workflow. The dataset contains 42 selected lounges across CNS, HNL, LAX, LHR, MUC, SFO, SIN, SLC and SYD. Official airline/operator/airport/program pages and review dates are stored per lounge; the five latest airport guides were researched on 8 November 2026. Coverage is deliberately incomplete and is shown as such, including unsupported airports and memberships.

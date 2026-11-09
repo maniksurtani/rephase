@@ -95,14 +95,20 @@ async function createTrip(page: Page) {
 
 async function findFlight(editor: Locator) {
   await editor.getByRole('button', { name: 'Look up flight', exact: true }).click();
-  const result = editor.locator('.flight-result');
+  const result = editor
+    .page()
+    .getByRole('dialog', { name: 'Confirm your flight', exact: true })
+    .locator('.flight-result');
   await expect(result).toBeVisible();
   return result;
 }
 
 async function useFlight(editor: Locator) {
   await expect(editor.getByRole('checkbox')).toHaveCount(0);
-  const use = editor.getByRole('button', { name: 'Use this flight', exact: true });
+  const use = editor
+    .page()
+    .getByRole('dialog', { name: 'Confirm your flight', exact: true })
+    .getByRole('button', { name: 'Use this flight', exact: true });
   await expect(use).toBeEnabled();
   await use.click();
 }
@@ -152,6 +158,7 @@ test('manual identity changes discard stale aircraft while timing and cabin edit
   await editor.getByLabel('Local departure date & time').fill('2026-12-01T20:15');
   await editor.getByLabel('Local arrival date & time').fill('2026-12-02T14:15');
   await editor.getByLabel('Departure time zone').fill('UTC');
+  await editor.locator('.seat-options > summary').click();
   await editor.getByLabel('Travel class').selectOption('business');
   await editor.getByLabel('Flight number', { exact: true }).fill('ba 286');
   await editor.getByLabel('Airport code').first().fill('sfo');

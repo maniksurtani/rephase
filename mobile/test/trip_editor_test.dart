@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rephase/app_controller.dart';
@@ -88,6 +89,14 @@ class _Controller extends AppController {
   Trip? written;
   int lookups = 0;
   bool loggedIn = true;
+  List<Map<String, dynamic>> candidates = [
+    {..._leg(), 'id': 'candidate', 'airline': 'Qantas', 'durationMinutes': 570},
+  ];
+  void expireAccount() {
+    loggedIn = false;
+    notifyListeners();
+  }
+
   @override
   bool get signedIn => loggedIn;
   @override
@@ -103,17 +112,7 @@ class _Controller extends AppController {
     String? departureAirport,
   }) async {
     lookups++;
-    return {
-      'fetchedAt': '2026-10-18T00:00:00Z',
-      'candidates': [
-        {
-          ..._leg(),
-          'id': 'candidate',
-          'airline': 'Qantas',
-          'durationMinutes': 570,
-        },
-      ],
-    };
+    return {'fetchedAt': '2026-10-18T00:00:00Z', 'candidates': candidates};
   }
 
   @override
@@ -121,6 +120,33 @@ class _Controller extends AppController {
     written = trip;
   }
 }
+
+Widget _lookupEditor(
+  _Controller controller,
+  ValueChanged<Map<String, dynamic>> onChanged,
+  ValueChanged<bool> onResolved,
+) => MaterialApp(
+  theme: ThemeData.dark(useMaterial3: true),
+  builder: (context, child) => MediaQuery(
+    data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(1.3)),
+    child: child!,
+  ),
+  home: Scaffold(
+    body: SingleChildScrollView(
+      child: FlightLegEditor(
+        controller: controller,
+        leg: _leg(),
+        index: 0,
+        count: 1,
+        airports: _airports,
+        onChanged: onChanged,
+        onResolved: onResolved,
+        onMove: (_) {},
+        onDelete: () {},
+      ),
+    ),
+  ),
+);
 
 void main() {
   testWidgets(
@@ -153,6 +179,7 @@ void main() {
         ),
       );
       expect(find.byType(AirportField), findsNothing);
+      expect(find.text('Travel class'), findsNothing);
       await tester.tap(find.text('Look up flight'));
       await tester.pumpAndSettle();
       expect(controller.lookups, 1);
@@ -164,6 +191,16 @@ void main() {
       expect(leg['aircraft'], {'model': 'Airbus A330-300'});
       expect(leg['providerRecordConfirmed'], true);
       expect(leg['futureLegField'], {'keep': true});
+      expect(leg['travelClass'], 'business');
+      expect(leg['lieFlat'], true);
+      await tester.ensureVisible(find.text('Seat & cabin'));
+      await tester.tap(find.text('Seat & cabin'));
+      await tester.pumpAndSettle();
+      expect(find.text('Travel class'), findsOneWidget);
+      expect(
+        tester.widget<SwitchListTile>(find.byType(SwitchListTile)).value,
+        true,
+      );
       await tester.ensureVisible(find.byType(TextFormField).first);
       await tester.enterText(find.byType(TextFormField).first, 'QF104');
       await tester.pump();
@@ -171,6 +208,93 @@ void main() {
       expect(leg.containsKey('aircraft'), false);
       expect(leg.containsKey('providerRecordConfirmed'), false);
       expect(leg['flightSource'], 'manual');
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'confirmation blocks outside taps and Back; rejection preserves the draft and multiple matches require selection',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(390, 844));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final controller = _Controller();
+      addTearDown(controller.dispose);
+      controller.candidates.add({
+        ...controller.candidates.first,
+        'id': 'later',
+        'departureDateTime': '2026-10-17T21:30',
+      });
+      var leg = _leg();
+      bool? resolved;
+      await tester.pumpWidget(
+        _lookupEditor(
+          controller,
+          (value) => leg = value,
+          (value) => resolved = value,
+        ),
+      );
+      await tester.tap(find.text('Look up flight'));
+      await tester.pumpAndSettle();
+      expect(find.text('Choose your flight'), findsOneWidget);
+      await tester.tapAt(const Offset(2, 2));
+      await tester.binding.handlePopRoute();
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      await tester.pumpAndSettle();
+      expect(find.byType(AlertDialog), findsOneWidget);
+      expect(leg, _leg());
+      expect(resolved, isNull);
+      await tester.tap(find.text('Reject'));
+      await tester.pumpAndSettle();
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(leg, _leg());
+      expect(resolved, isNull);
+      await tester.tap(find.text('Look up flight'));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Use this flight').last);
+      await tester.tap(find.text('Use this flight').last);
+      await tester.pumpAndSettle();
+      expect(leg['departureDateTime'], '2026-10-17T21:30');
+      expect(resolved, true);
+      expect(find.byType(AlertDialog), findsNothing);
+      controller.candidates = [];
+      await tester.ensureVisible(find.text('Look up flight'));
+      await tester.tap(find.text('Look up flight'));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('No matching flight.'), findsOneWidget);
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'an account change or removed editor clears its confirmation without applying it',
+    (tester) async {
+      final controller = _Controller();
+      addTearDown(controller.dispose);
+      var applied = false;
+      await tester.pumpWidget(
+        _lookupEditor(controller, (_) => applied = true, (_) {}),
+      );
+      await tester.tap(find.text('Look up flight'));
+      await tester.pumpAndSettle();
+      controller.expireAccount();
+      await tester.pumpAndSettle();
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(applied, false);
+      controller.loggedIn = true;
+      await tester.pumpWidget(
+        _lookupEditor(controller, (_) => applied = true, (_) {}),
+      );
+      await tester.tap(find.text('Look up flight'));
+      await tester.pumpAndSettle();
+      expect(find.byType(AlertDialog), findsOneWidget);
+      await tester.pumpWidget(
+        const MaterialApp(home: Scaffold(body: Text('Closed editor'))),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(find.text('Closed editor'), findsOneWidget);
+      expect(applied, false);
       expect(tester.takeException(), isNull);
     },
   );

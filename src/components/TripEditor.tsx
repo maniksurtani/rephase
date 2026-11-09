@@ -466,39 +466,42 @@ export function TripEditor({
                   </details>
                 </div>
               )}
-              <div className="cabin-editor field-grid">
-                <label className="field">
-                  <span>Travel class</span>
-                  <select
-                    value={leg.travelClass ?? 'economy'}
-                    onChange={(event) =>
-                      updateLeg(leg.id, {
-                        travelClass: event.target.value as FlightLeg['travelClass'],
-                      })
-                    }
-                  >
-                    <option value="economy">Economy</option>
-                    <option value="premium-economy">Premium economy</option>
-                    <option value="business">Business</option>
-                    <option value="first">First</option>
-                  </select>
-                </label>
-                <label className="field">
-                  <span>Lie-flat bed available?</span>
-                  <select
-                    value={leg.lieFlat ? 'yes' : 'no'}
-                    onChange={(event) =>
-                      updateLeg(leg.id, { lieFlat: event.target.value === 'yes' })
-                    }
-                  >
-                    <option value="no">No / unsure — seated rest</option>
-                    <option value="yes">Yes — confirmed lie-flat bed</option>
-                  </select>
-                  <small>
-                    Confirm your actual seat. Business class can have an upright or reclining seat.
-                  </small>
-                </label>
-              </div>
+              <details className="seat-options">
+                <summary>
+                  Seat &amp; cabin <span>Optional</span>
+                </summary>
+                <p className="flight-lookup-note">For lounge access and in-flight rest guidance.</p>
+                <div className="cabin-editor field-grid">
+                  <label className="field">
+                    <span>Travel class</span>
+                    <select
+                      value={leg.travelClass ?? 'economy'}
+                      onChange={(event) =>
+                        updateLeg(leg.id, {
+                          travelClass: event.target.value as FlightLeg['travelClass'],
+                        })
+                      }
+                    >
+                      <option value="economy">Economy</option>
+                      <option value="premium-economy">Premium economy</option>
+                      <option value="business">Business</option>
+                      <option value="first">First</option>
+                    </select>
+                  </label>
+                  <label className="field">
+                    <span>Lie-flat bed available?</span>
+                    <select
+                      value={leg.lieFlat ? 'yes' : 'no'}
+                      onChange={(event) =>
+                        updateLeg(leg.id, { lieFlat: event.target.value === 'yes' })
+                      }
+                    >
+                      <option value="no">No / unsure — seated rest</option>
+                      <option value="yes">Yes — confirmed lie-flat bed</option>
+                    </select>
+                  </label>
+                </div>
+              </details>
               <div className="flight-rest-note">
                 <Moon size={15} />
                 <p>

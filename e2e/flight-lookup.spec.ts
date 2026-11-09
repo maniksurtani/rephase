@@ -54,7 +54,10 @@ async function newTrip(page: Page, signedIn = false) {
 }
 
 async function selectCandidate(editor: Locator) {
-  const use = editor.getByRole('button', { name: 'Use this flight', exact: true });
+  const confirmation = editor
+    .page()
+    .getByRole('dialog', { name: 'Confirm your flight', exact: true });
+  const use = confirmation.getByRole('button', { name: 'Use this flight', exact: true });
   await expect(editor.getByRole('checkbox')).toHaveCount(0);
   await expect(use).toBeEnabled();
   await use.click();
@@ -173,10 +176,14 @@ test('a confirmed lookup preserves its aircraft, schedule and chosen cabin throu
   await editor.getByLabel('Departure date at the departure airport').fill('2026-12-01');
   await expect(editor.getByLabel('Travel class')).toHaveValue('economy');
   await expect(editor.getByLabel('Lie-flat bed available?')).toHaveValue('no');
+  await expect(editor.getByLabel('Travel class')).toBeHidden();
+  await editor.locator('.seat-options > summary').click();
   await editor.getByLabel('Travel class').selectOption('business');
   await editor.getByLabel('Lie-flat bed available?').selectOption('yes');
   await editor.getByRole('button', { name: 'Look up flight', exact: true }).click();
-  const result = editor.locator('.flight-result');
+  const result = page
+    .getByRole('dialog', { name: 'Confirm your flight', exact: true })
+    .locator('.flight-result');
   await expect(result.locator('.flight-aircraft')).toHaveText(`Aircraft · ${aircraftModel}`);
   expect(await result.evaluate((element) => element.scrollWidth <= element.clientWidth + 1)).toBe(
     true,
@@ -329,6 +336,66 @@ test('existing multi-leg trips reveal manual fields only for the selected flight
   await expect(cards.nth(3).getByLabel('Local departure date & time')).toBeHidden();
 });
 
+test('flight confirmation requires an explicit choice, supports multiple matches and keeps rejected results out of the draft', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const api = await installAccount(page);
+  const later = {
+    ...firstCandidate,
+    id: 'later',
+    departureDateTime: '2026-12-01T21:00',
+    arrivalDateTime: '2026-12-02T15:00',
+  };
+  let candidates = [firstCandidate, later];
+  await page.route('**/api/flights?*', (route) =>
+    route.fulfill({
+      json: { ...lookupResult(), candidates, stale: true },
+    }),
+  );
+  const editor = await newTrip(page, true);
+  await editor.getByLabel('Flight number', { exact: true }).fill('BA286');
+  await editor.getByLabel('Departure date at the departure airport').fill('2026-12-01');
+  const lookup = editor.getByRole('button', { name: 'Look up flight', exact: true });
+  await lookup.click();
+  const confirmation = page.getByRole('dialog', { name: 'Choose your flight', exact: true });
+  await expect(confirmation).toBeVisible();
+  await expect(confirmation.getByText('Cached schedule · updates unavailable')).toBeVisible();
+  await expect(confirmation.getByRole('heading')).toBeFocused();
+  await page.keyboard.press('Shift+Tab');
+  await expect(confirmation.getByRole('button', { name: 'Reject', exact: true })).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(confirmation.getByRole('button', { name: 'Use this flight' }).first()).toBeFocused();
+  await page.keyboard.press('Escape');
+  await page.mouse.click(2, 2);
+  await expect(confirmation).toBeVisible();
+  await expect(editor).toHaveAttribute('aria-modal', 'false');
+  expect(await confirmation.evaluate((panel) => panel.closest('[inert]'))).toBeNull();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await captureDesign(page, 'artifacts/flight-confirmation-mobile.png');
+  await confirmation.getByRole('button', { name: 'Reject', exact: true }).click();
+  await expect(confirmation).toHaveCount(0);
+  await expect(lookup).toBeFocused();
+  await expect(editor.getByLabel('Flight number', { exact: true })).toHaveValue('BA286');
+  await expect(editor.locator('.flight-selection-summary')).toHaveCount(0);
+  await editor.getByRole('button', { name: 'Create my plan', exact: true }).click();
+  expect(api.data.trips).toHaveLength(0);
+  await expect(editor).toBeVisible();
+  await lookup.click();
+  await confirmation.getByRole('button', { name: 'Use this flight' }).nth(1).click();
+  await expect(confirmation).toHaveCount(0);
+  await editor.getByRole('button', { name: 'Enter manually', exact: true }).click();
+  await expect(editor.getByLabel('Local departure date & time')).toHaveValue('2026-12-01T21:00');
+  // A rejected replacement keeps the previously accepted schedule intact.
+  await lookup.click();
+  await confirmation.getByRole('button', { name: 'Reject', exact: true }).click();
+  await expect(editor.getByLabel('Local departure date & time')).toHaveValue('2026-12-01T21:00');
+  candidates = [];
+  await lookup.click();
+  await expect(editor.getByRole('status')).toContainText('No matching flight found');
+  await expect(confirmation).toHaveCount(0);
+});
+
 test('an open flight draft closes when the authenticated account changes and never saves into the new account', async ({
   page,
 }) => {
@@ -392,6 +459,10 @@ test('an open flight draft closes when the authenticated account changes and nev
   const editor = page.getByRole('dialog', { name: 'Edit your journey', exact: true });
   await editor.getByLabel('Trip name').fill('Account A private draft');
   await editor.getByLabel('Flight number', { exact: true }).fill('BA117');
+  await page.route('**/api/flights?*', (route) => route.fulfill({ json: lookupResult() }));
+  await editor.getByRole('button', { name: 'Look up flight', exact: true }).click();
+  const confirmation = page.getByRole('dialog', { name: 'Confirm your flight', exact: true });
+  await expect(confirmation).toBeVisible();
   switched = true;
   await page.route('**/api/me', (route) => route.fulfill({ json: secondAccount }));
   await page.evaluate(() => window.dispatchEvent(new Event('focus')));
@@ -400,6 +471,7 @@ test('an open flight draft closes when the authenticated account changes and nev
   ).toBeVisible();
   await expect.poll(() => secondReads).toBeGreaterThan(0);
   await expect(editor).toHaveCount(0);
+  await expect(confirmation).toHaveCount(0);
   await page.getByRole('button', { name: 'Trips', exact: true }).first().click();
   await expect(page.locator('.saved-trip-card')).toHaveCount(0);
   await page.getByRole('button', { name: 'New trip', exact: true }).click();
