@@ -8,6 +8,8 @@ void main() {
     (tester) async {
       tester.view.physicalSize = const Size(390, 844);
       tester.view.devicePixelRatio = 1;
+      tester.platformDispatcher.textScaleFactorTestValue = 1.6;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
       await tester.pumpWidget(
@@ -44,6 +46,17 @@ void main() {
                       },
                     ],
                     'photos': [],
+                    'qualityRating': {
+                      'score': 4,
+                      'summary': 'Good dining with a busy main seating area.',
+                      'reviewedOn': '2026-11-09',
+                      'sources': [
+                        {
+                          'title': 'Lounge review',
+                          'url': 'https://example.org/review',
+                        },
+                      ],
+                    },
                   },
                   'access': 'conditional',
                   'opening': 'open',
@@ -60,6 +73,11 @@ void main() {
       );
       expect(find.text('Conditional access'), findsOneWidget);
       expect(find.text('Showers'), findsOneWidget);
+      expect(find.text('Rephase rating · 4.0/5'), findsOneWidget);
+      expect(
+        find.text('Good dining with a busy main seating area.'),
+        findsNothing,
+      );
       expect(find.text('Spa'), findsNothing);
       expect(find.text('Recommended'), findsNothing);
       expect(
@@ -73,6 +91,11 @@ void main() {
         findsOneWidget,
       );
       expect(find.text('Daily · 06:00–23:00'), findsOneWidget);
+      expect(
+        find.text('Good dining with a busy main seating area.'),
+        findsOneWidget,
+      );
+      expect(find.text('Lounge review'), findsOneWidget);
       expect(find.text('Qantas lounge access'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },

@@ -220,7 +220,7 @@ test('searched airline tiers and paid memberships save from Profile without dupl
   expect(await noHorizontalOverflow(page)).toBe(true);
 });
 
-test('confirmed airline and terminal unlock a sourced lounge recommendation, and a closed visit removes it', async ({
+test('airline defaults follow marketing until overridden, with sourced ratings and availability checks', async ({
   page,
 }) => {
   const api = new LoungeAccountApi();
@@ -238,15 +238,28 @@ test('confirmed airline and terminal unlock a sourced lounge recommendation, and
   await page.getByRole('combobox', { name: 'Departure terminal', exact: true }).selectOption('T1');
   const firstLounge = page.locator('.lounge-card[data-lounge-id="syd-qantas-first"]');
   await expect(firstLounge).toBeVisible();
+  const operator = page.getByRole('combobox', { name: 'Operating airline', exact: true });
+  const marketer = page.getByRole('combobox', { name: 'Marketing airline', exact: true });
+  await expect(operator).toHaveValue('QF');
+  await marketer.selectOption('BA');
+  await expect(operator).toHaveValue('BA');
+  await operator.selectOption('EK');
+  await marketer.selectOption('QF');
+  await expect(operator).toHaveValue('EK');
+  await operator.selectOption('');
   await expect(firstLounge.locator('.lounge-access')).toHaveText('Check access');
   await expect(firstLounge.locator('.lounge-recommended')).toHaveCount(0);
-  await page.getByRole('combobox', { name: 'Operating airline', exact: true }).selectOption('QF');
+  await operator.selectOption('QF');
   await expect(firstLounge.locator('.lounge-access')).toHaveText('Access matches');
   await expect(firstLounge.locator('.lounge-opening')).toHaveText('Open during your visit');
   await expect(firstLounge.locator('.lounge-recommended')).toHaveText('Recommended');
   await expect(firstLounge.locator('.lounge-amenities')).toContainText('Showers');
   await expect(firstLounge.locator('.lounge-amenities')).toContainText('Restaurant');
-  await firstLounge.locator('summary').filter({ hasText: 'Access & sources' }).click();
+  await expect(firstLounge.locator('.lounge-quality')).toContainText('Rephase rating');
+  await expect(firstLounge.locator('.lounge-rating-detail')).not.toBeVisible();
+  await firstLounge.locator('summary').filter({ hasText: 'Details & sources' }).click();
+  await expect(firstLounge.locator('.lounge-rating-detail')).toContainText('published reviews');
+  await expect(firstLounge.locator('.lounge-rating-detail a').first()).toHaveAttribute('href', /https:\/\//);
   await expect(
     firstLounge.getByRole('link', { name: 'Qantas lounge access and eligibility' }),
   ).toHaveAttribute('href', 'https://www.qantas.com/en-au/at-the-airport/lounges/access');
@@ -379,10 +392,9 @@ test('compact mobile lounge links precede departures and preserve flight context
   await expect(page.getByLabel('Until', { exact: true })).toHaveValue('22:55');
   await expect(page.getByLabel('Departure time', { exact: true })).toHaveValue('23:40');
   await expect(page.getByRole('combobox', { name: 'Cabin', exact: true })).toHaveValue('business');
-  // A flight number identifies the marketing airline only. A codeshare must
-  // never become an assumed operating carrier when entering access checks.
+  // The flight number prefills both airlines, with an editable codeshare override.
   await expect(page.getByRole('combobox', { name: 'Operating airline', exact: true })).toHaveValue(
-    '',
+    'QF',
   );
   await expect(page.getByRole('combobox', { name: 'Marketing airline', exact: true })).toHaveValue(
     'QF',

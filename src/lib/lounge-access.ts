@@ -346,7 +346,13 @@ function terminalKey(value: string): string {
 
 function amenityScore(lounge: Lounge, context: LoungeVisitContext): number {
   const amenities = lounge.amenities;
-  let score =
+  if (context.priority === 'showers' || context.priority === 'quiet') {
+    const value = context.priority === 'showers' ? amenities.showers : amenities.quietArea;
+    return value === 'yes' ? 2 : value === 'unknown' ? 1 : 0;
+  }
+  if (context.priority === 'dining')
+    return { restaurant: 4, buffet: 3, snacks: 2, unknown: 1, none: 0 }[amenities.dining];
+  return (
     (amenities.showers === 'yes' ? 10 : 0) +
     (amenities.quietArea === 'yes' ? 7 : 0) +
     (amenities.spa === 'yes' ? 3 : 0) +
@@ -357,19 +363,8 @@ function amenityScore(lounge: Lounge, context: LoungeVisitContext): number {
         ? 8
         : amenities.dining === 'snacks'
           ? 3
-          : 0);
-  if (context.priority === 'showers' && amenities.showers === 'yes') score += 40;
-  if (context.priority === 'quiet' && amenities.quietArea === 'yes') score += 40;
-  if (context.priority === 'dining')
-    score +=
-      amenities.dining === 'restaurant'
-        ? 45
-        : amenities.dining === 'buffet'
-          ? 25
-          : amenities.dining === 'snacks'
-            ? 5
-            : 0;
-  return score;
+          : 0)
+  );
 }
 
 /** Unknown restrictions remain conditional. A confirmed access route never bypasses hours or terminal checks. */
@@ -478,18 +473,6 @@ export function evaluateLounge(
     warnings.push(
       `Only ${Math.floor(visit.minutes)} minutes are available; allow at least ${minimum} minutes for a useful visit.`,
     );
-  const usable = opening === 'open' && visit !== undefined && visit.minutes >= minimum;
-  const score =
-    (access === 'eligible' ? 100 : access === 'conditional' ? 30 : -1000) +
-    amenityScore(lounge, context) +
-    (usable ? Math.min(visit.minutes, 120) / 12 : -200) +
-    (opening === 'closed' ? -500 : 0);
-  const editorialBoost =
-    access === 'eligible' &&
-    usable &&
-    lounge.recommendation?.bestFor?.includes(context.priority ?? 'balanced')
-      ? 15
-      : 0;
   return {
     lounge,
     access,
@@ -501,7 +484,7 @@ export function evaluateLounge(
     reasons: unique(reasons),
     warnings: unique(warnings),
     visit,
-    score: score + editorialBoost,
+    score: amenityScore(lounge, context),
     recommended: false,
   };
 }
@@ -511,9 +494,24 @@ export function evaluateAirportLounges(
   data: AirportLoungeData,
   context: LoungeVisitContext,
 ): LoungeRecommendations {
+  // Availability is a gate, never something a high quality rating can outweigh.
+  const availability = (result: LoungeEvaluation) => {
+    if (result.access === 'ineligible' || result.opening === 'closed') return 0;
+    const useful =
+      result.visit && result.visit.minutes >= Math.max(1, context.minimumVisitMinutes ?? 30);
+    if (result.opening === 'open' && useful) return result.access === 'eligible' ? 3 : 2;
+    return 1;
+  };
   const results = data.lounges
     .map((lounge) => evaluateLounge(lounge, context, data))
-    .sort((a, b) => b.score - a.score || a.lounge.name.localeCompare(b.lounge.name));
+    .sort(
+      (a, b) =>
+        availability(b) - availability(a) ||
+        b.score - a.score ||
+        (b.lounge.qualityRating?.score ?? 0) - (a.lounge.qualityRating?.score ?? 0) ||
+        a.lounge.name.localeCompare(b.lounge.name) ||
+        a.lounge.id.localeCompare(b.lounge.id),
+    );
   const recommended = results.find(
     (result) =>
       result.access === 'eligible' &&

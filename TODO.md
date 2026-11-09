@@ -1,6 +1,13 @@
 # Rephase build tasks
 
-Updated 2026-11-08. Active work is kept here; the previous complete checklist is preserved in [the task archive](docs/archive/TODO-2026-10-16.md). Release evidence is in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md).
+Updated 2026-11-09. Active work is kept here; the previous complete checklist is preserved in [the task archive](docs/archive/TODO-2026-10-16.md). Release evidence is in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md).
+
+## Lounge ordering and review ratings
+
+- [x] Default the operating airline to the marketing airline on web and native, preserving explicit overrides.
+- [x] Research and store quality ratings with review provenance for every lounge in the guide.
+- [x] Sort usable results by selected-priority suitability, then quality rating; show the rating and its explanation on all platforms.
+- [ ] Verify defaults, ordering, provenance and mobile layouts, then publish the checked release.
 
 ## Lounge coverage for upcoming trips
 

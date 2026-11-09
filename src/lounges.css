@@ -524,3 +524,14 @@
   outline-offset: 5px;
   border-radius: 4px;
 }
+
+.lounge-badges .lounge-quality {
+  color: #c2adeb;
+  background: #29233c;
+  border-color: #514463;
+}
+.lounge-rating-detail {
+  border-bottom: 1px solid #343044;
+  padding-bottom: 14px;
+  margin-bottom: 14px;
+}

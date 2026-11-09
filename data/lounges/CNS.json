@@ -126,7 +126,20 @@
         }
       ],
       "photos": [],
-      "note": "Domestic Terminal 2 only. The current airport directory lists this lounge; an operating international Terminal 1 lounge has not been verified."
+      "note": "Domestic Terminal 2 only. The current airport directory lists this lounge; an operating international Terminal 1 lounge has not been verified.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "A spacious regional lounge with comfortable seating and a useful buffet. The review finds it comparable to a capital-city Qantas Club, though the food range is simpler than a premium business lounge.",
+        "reviewedOn": "2026-11-09",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Point Hacks · Qantas Club review",
+            "url": "https://www.pointhacks.com.au/reviews/qantas-club-cairns/",
+            "checkedOn": "2026-11-09"
+          }
+        ]
+      }
     }
   ]
 }

@@ -224,6 +224,13 @@ describe('bundled offline mobile boundary', () => {
       departure: '2026-10-25T06:40:00Z',
       now: new Date(now).toISOString(),
     };
+    const flightContext = buildFlightLoungeContexts(october.trip as Trip).find(value => value.airport === 'LAX')!;
+    expect(invoke('loungeVisit', { flightContext })).toMatchObject({ marketingCarrier: 'QF', operatingCarrier: 'QF' });
+    const form = { airport: 'LAX', flightContext, preferences, now };
+    expect(invoke('lounges', form).context).toMatchObject({ marketingCarrier: 'QF', operatingCarrier: 'QF' });
+    expect(invoke('lounges', { ...form, marketingCarrier: 'AA' }).context).toMatchObject({ operatingCarrier: 'AA' });
+    expect(invoke('lounges', { ...form, marketingCarrier: 'AA', operatingCarrier: 'QF' }).context).toMatchObject({ operatingCarrier: 'QF' });
+    expect(invoke('lounges', { ...form, operatingCarrier: '' }).context.operatingCarrier).toBeUndefined();
     expect(invoke('lounges', { airport: 'LAX', context }).results).toEqual(
       serial(evaluateAirportLounges(loungeDataFor('LAX')!, context).results),
     );

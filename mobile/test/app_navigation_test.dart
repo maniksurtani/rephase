@@ -25,6 +25,7 @@ const _preferences = <String, dynamic>{
 
 class _Engine implements MobileEngine {
   final operations = <String>[];
+  Json? lastLoungePayload;
   @override
   Future<Json> call(String operation, [Json payload = const {}]) async {
     operations.add(operation);
@@ -49,7 +50,10 @@ class _Engine implements MobileEngine {
           'loungeAirports': [
             {'airport': 'SFO'},
           ],
-          'airlines': [],
+          'airlines': [
+            ['QF', 'Qantas'],
+            ['AA', 'American Airlines'],
+          ],
         };
       case 'loungeVisit':
         return {
@@ -60,11 +64,14 @@ class _Engine implements MobileEngine {
           'until': '12:00',
           'departureTime': '13:00',
           'cabin': 'economy',
+          'marketingCarrier': 'QF',
+          'operatingCarrier': 'QF',
           'route': 'international',
           'terminals': [],
           'airportData': {'airport': 'SFO', 'lounges': []},
         };
       case 'lounges':
+        lastLoungePayload = payload;
         return {
           'timeZone': 'America/Los_Angeles',
           'airportData': {'airport': 'SFO', 'lounges': []},
@@ -199,6 +206,41 @@ void main() {
       await navigate('Lounges');
       expect(find.text('Lounge Explorer'), findsOneWidget);
       expect(engine.operations, containsAll(['loungeVisit', 'lounges']));
+      Future<void> chooseAirline(String key, String value, String label) async {
+        final field = find.byKey(ValueKey('SFO-$key-$value'));
+        await tester.scrollUntilVisible(field, 180);
+        await tester.pumpAndSettle();
+        await Scrollable.ensureVisible(tester.element(field), alignment: 0.3);
+        await tester.pumpAndSettle();
+        await tester.tap(field);
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(label).last);
+        await tester.pumpAndSettle();
+      }
+
+      await chooseAirline('marketingCarrier', 'QF', 'American Airlines');
+      expect(
+        find.byKey(const ValueKey('SFO-operatingCarrier-AA')),
+        findsOneWidget,
+      );
+      await chooseAirline('operatingCarrier', 'AA', 'Qantas');
+      await chooseAirline('marketingCarrier', 'AA', 'Qantas');
+      await chooseAirline('marketingCarrier', 'QF', 'American Airlines');
+      expect(
+        find.byKey(const ValueKey('SFO-operatingCarrier-QF')),
+        findsOneWidget,
+      );
+      await chooseAirline('operatingCarrier', 'QF', 'Confirm airline');
+      final search = find.text('Find lounges');
+      await tester.scrollUntilVisible(search, 180);
+      await tester.pumpAndSettle();
+      await Scrollable.ensureVisible(tester.element(search), alignment: 0.3);
+      await tester.pumpAndSettle();
+      await tester.tap(search);
+      await tester.pumpAndSettle();
+      expect(engine.lastLoungePayload?['operatingCarrier'], '');
+      expect(engine.lastLoungePayload?['marketingCarrier'], 'AA');
+
       await navigate('Your plan');
       expect(find.text('Arrive in rhythm.'), findsOneWidget);
       await navigate('Trips');

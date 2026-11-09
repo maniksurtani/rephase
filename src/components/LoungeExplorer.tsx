@@ -87,12 +87,13 @@ export function LoungeExplorer({
   const [departureChoice, setDepartureChoice] = useState<'earlier' | 'later' | undefined>(() =>
     foldFor(opportunity?.departure, opportunity?.timeZone),
   );
-  const [operatingCarrier, setOperatingCarrier] = useState('');
+  const [operatingOverride, setOperatingOverride] = useState<string | null>(null);
   const prefix =
     opportunity?.flightNumber.replace(/\s/g, '').match(/^([A-Z0-9]{2})(?=\d)/)?.[1] ?? '';
   const [marketingCarrier, setMarketingCarrier] = useState<string>(
     LOUNGE_AIRLINES.some(([code]) => code === prefix) ? prefix : '',
   );
+  const operatingCarrier = operatingOverride ?? marketingCarrier;
   const [terminal, setTerminal] = useState('');
   const [cabin, setCabin] = useState<TravelClass>(opportunity?.travelClass ?? 'economy');
   const initialOriginCountry = airportCountry(opportunity?.airport ?? 'SFO'),
@@ -198,7 +199,7 @@ export function LoungeExplorer({
     if (next !== airport) {
       setContextActive(false);
       setTerminal('');
-      setOperatingCarrier('');
+      setOperatingOverride(null);
       setMarketingCarrier('');
       setCabin('economy');
       setRoute('international');
@@ -331,12 +332,12 @@ export function LoungeExplorer({
           <summary>Your departing flight</summary>
           <div className="lounge-fields flight-context-fields">
             <label className="lounge-field">
-              Operating airline
+              Marketing airline
               <select
-                value={operatingCarrier}
-                onChange={(event) => setOperatingCarrier(event.target.value)}
+                value={marketingCarrier}
+                onChange={(event) => setMarketingCarrier(event.target.value)}
               >
-                <option value="">Confirm airline</option>
+                <option value="">Not specified</option>
                 {LOUNGE_AIRLINES.map(([code, label]) => (
                   <option value={code} key={code}>
                     {label}
@@ -345,12 +346,12 @@ export function LoungeExplorer({
               </select>
             </label>
             <label className="lounge-field">
-              Marketing airline
+              Operating airline
               <select
-                value={marketingCarrier}
-                onChange={(event) => setMarketingCarrier(event.target.value)}
+                value={operatingCarrier}
+                onChange={(event) => setOperatingOverride(event.target.value)}
               >
-                <option value="">Not specified</option>
+                <option value="">Confirm airline</option>
                 {LOUNGE_AIRLINES.map(([code, label]) => (
                   <option value={code} key={code}>
                     {label}
@@ -391,8 +392,7 @@ export function LoungeExplorer({
             </label>
           </div>
           <p className="lounge-time-note">
-            For a codeshare, the operating airline flies the plane; the marketing airline is on the
-            flight number.
+            Change the operating airline if your flight is a codeshare.
           </p>
         </details>
       </div>
@@ -541,6 +541,11 @@ function LoungeCard({ result, timeZone }: { result: LoungeEvaluation; timeZone: 
           </div>
         </header>
         <div className="lounge-badges">
+          {lounge.qualityRating && (
+            <span className="lounge-quality">
+              Rephase rating · {lounge.qualityRating.score.toFixed(1)}/5
+            </span>
+          )}
           <span className={`lounge-access ${access}`}>
             {access === 'eligible' ? <Check size={13} /> : null}
             {access === 'eligible'
@@ -595,7 +600,21 @@ function LoungeCard({ result, timeZone }: { result: LoungeEvaluation; timeZone: 
           </p>
         )}
         <details className="lounge-access-details">
-          <summary>Access & sources</summary>
+          <summary>Details & sources</summary>
+          {lounge.qualityRating && (
+            <div className="lounge-rating-detail">
+              <p>{lounge.qualityRating.summary}</p>
+              <p>Our assessment of published reviews · {lounge.qualityRating.reviewedOn}</p>
+              <div className="lounge-sources">
+                {lounge.qualityRating.sources.map((source) => (
+                  <a key={source.id} href={source.url} target="_blank" rel="noreferrer">
+                    {source.title}
+                    <ExternalLink size={12} />
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
           <p>{lounge.location}</p>
           {lounge.recommendation && lounge.note && <p>{lounge.note}</p>}
           <ul>

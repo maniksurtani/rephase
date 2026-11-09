@@ -48,6 +48,18 @@ function semanticErrors(data: AirportLoungeData): string[] {
       check(source.checkedOn <= data.updatedAt, `${at}/${source.id}: source review is later than the airport review date`);
     }
     const ruleIds = new Set<string>();
+    const rating = lounge.qualityRating;
+    if (rating) {
+      check(validDate(rating.reviewedOn), `${at}: quality rating needs a real review date`);
+      const reviewIds = new Set<string>();
+      for (const source of rating.sources) {
+        check(!reviewIds.has(source.id), `${at}: duplicate quality review ID ${source.id}`);
+        reviewIds.add(source.id);
+        check(httpsUrl(source.url), `${at}: quality review needs a public HTTPS URL`);
+        check(validDate(source.checkedOn) && source.checkedOn <= rating.reviewedOn,
+          `${at}: quality source date must be valid and no later than the assessment`);
+      }
+    }
     for (const rule of lounge.accessRules) {
       check(!ruleIds.has(rule.id), `${at}: duplicate access rule ID ${rule.id}`);
       ruleIds.add(rule.id);
@@ -117,6 +129,24 @@ describe('curated lounge research data', () => {
     expect(new Set(files.map(data => data.airport)).size).toBe(files.length);
     const ids = files.flatMap(data => data.lounges.map(lounge => lounge.id));
     expect(new Set(ids).size).toBe(ids.length);
+    expect(files.flatMap(data => data.lounges).every(lounge => lounge.qualityRating)).toBe(true);
+  });
+
+  it('requires bounded half-point ratings and review provenance without refreshing access research', () => {
+    const candidate = structuredClone(sfo) as AirportLoungeData;
+    const rating = candidate.lounges[0].qualityRating!;
+    for (const score of [0, 5.5, 4.23]) {
+      rating.score = score;
+      expect(validate(candidate)).toBe(false);
+    }
+    rating.score = 4;
+    rating.reviewedOn = '2026-11-09';
+    rating.sources[0].checkedOn = '2026-11-09';
+    expect(semanticErrors(candidate)).toEqual([]);
+    rating.sources[0].checkedOn = '2026-11-10';
+    expect(semanticErrors(candidate).join(' ')).toContain('quality source date');
+    rating.sources = [];
+    expect(validate(candidate)).toBe(false);
   });
 
   it('rejects misspelled fields, unknown memberships and rules without eligibility predicates', () => {

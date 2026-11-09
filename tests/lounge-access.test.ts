@@ -220,14 +220,40 @@ describe('transparent, conservative lounge recommendations', () => {
     expect(chosen.reasons.join(' ')).not.toMatch(/complimentary|free meal|free spa/i);
   });
 
-  it('uses curated research as a modest preference boost among eligible open lounges', () => {
-    const basic = lounge({ id: 'basic', name: 'A basic lounge' });
-    const researched = lounge({ id: 'researched', name: 'Z researched lounge', recommendation: { summary: 'The shower area is beside a quieter seating section.', bestFor: ['showers'] } });
-    const result = evaluateAirportLounges(data([basic, researched]), context({ priority: 'showers' }));
-    expect(result.recommendedId).toBe('researched');
-    expect(result.results.find(value => value.recommended)?.reasons).toContain('Research note: The shower area is beside a quieter seating section.');
-    const unavailable = { ...researched, status: 'temporarily-closed' as const };
-    expect(evaluateAirportLounges(data([basic, unavailable]), context({ priority: 'showers' })).recommendedId).toBe('basic');
+  it('ranks priority fit before quality, then quality before unrelated amenities or visit length', () => {
+    const rating = (score: number): NonNullable<Lounge['qualityRating']> => ({
+      score, summary: 'Assessment of the linked review.', reviewedOn: '2026-11-09',
+      sources: [{ id: 'review', title: 'Review', url: 'https://example.org/review', checkedOn: '2026-11-09' }],
+    });
+    const basic = lounge({ id: 'basic', name: 'A basic lounge', qualityRating: rating(3),
+      recommendation: { summary: 'An editorial amenity note.', bestFor: ['showers'] },
+      amenities: { showers: 'yes', dining: 'restaurant', spa: 'yes', quietArea: 'yes', wifi: 'yes' },
+    });
+    const better = lounge({ id: 'better', name: 'Z better lounge', qualityRating: rating(4),
+      amenities: { showers: 'yes', dining: 'snacks', spa: 'no', quietArea: 'no', wifi: 'yes' },
+      accessRules: [{ id: 'pass', label: 'Priority Pass', membershipsAnyOf: ['priority-pass'], maxVisitMinutes: 60 }],
+    });
+    const luxury = lounge({ id: 'luxury', qualityRating: rating(5), amenities: { ...better.amenities, showers: 'no' } });
+    const result = evaluateAirportLounges(data([basic, luxury, better]), context({ priority: 'showers' }));
+    expect(result.results.map(value => value.lounge.id)).toEqual(['better', 'basic', 'luxury']);
+    expect(result.recommendedId).toBe('better');
+    // Balanced considers the range of known amenities, rather than a single preference.
+    expect(evaluateAirportLounges(data([better, basic]), context({ priority: 'balanced' })).recommendedId).toBe('basic');
+    for (const unavailable of [
+      { ...better, status: 'temporarily-closed' as const },
+      { ...better, hours: { type: 'unknown' as const } },
+      { ...better, terminal: 'Other terminal' },
+      { ...better, accessRules: [{ id: 'club', label: 'Club', membershipsAnyOf: ['united-club' as const] }] },
+      { ...better, accessRules: [{ ...better.accessRules[0], maxVisitMinutes: 10 }] },
+    ]) {
+      const blocked = evaluateAirportLounges(data([unavailable, basic]), context({ priority: 'showers' }));
+      expect(blocked.results[0].lounge.id).toBe('basic');
+      expect(blocked.recommendedId).toBe('basic');
+    }
+    const unrated = lounge({ id: 'unrated', name: 'A unrated', amenities: better.amenities });
+    expect(evaluateAirportLounges(data([unrated, better]), context({ priority: 'showers' })).recommendedId).toBe('better');
+    const tied = { ...better, id: 'tied', name: 'A tied' };
+    expect(evaluateAirportLounges(data([better, tied]), context()).results.map(value => value.lounge.id)).toEqual(['tied', 'better']);
   });
 
   it('reports only the selected route for fees even if other routes also match', () => {

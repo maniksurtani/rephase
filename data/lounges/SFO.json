@@ -30,7 +30,20 @@
       ],
       "photos": [],
       "recommendation": { "summary": "A Terminal 1 option for a shower and a quiet break. Showers cost US$25; Priority Pass visits are limited to 2.5 hours before departure.", "bestFor": ["showers", "quiet"] },
-      "note": "Showers are paid and booked on arrival, subject to availability. The operator also accepts LoungeKey and sells Club Pass visits; those access routes are not evaluated in this initial dataset."
+      "note": "Showers are paid and booked on arrival, subject to availability. The operator also accepts LoungeKey and sells Club Pass visits; those access routes are not evaluated in this initial dataset.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "Distinctive interiors, varied food and drinks, and helpful staff earn strong praise. The review also reports queues and crowding, which temper an otherwise impressive independent lounge experience.",
+        "reviewedOn": "2026-11-09",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "The Points Guy · The Club SFO review",
+            "url": "https://thepointsguy.com/reviews/the-club-sfo-best-priority-pass/",
+            "checkedOn": "2026-11-09"
+          }
+        ]
+      }
     },
     {
       "id": "sfo-alaska",
@@ -109,7 +122,20 @@
         { "id": "aa-partners", "title": "American: partner lounge access", "url": "https://www.aa.com/web/i18n/travel-info/clubs/admirals-club-locations.html", "checkedOn": "2026-10-15" }
       ],
       "photos": [],
-      "note": "Paid or award First on Hawaii–mainland flights can qualify; a short domestic First segment alone does not. Restaurant, shower and spa availability are not verified."
+      "note": "Paid or award First on Hawaii–mainland flights can qualify; a short domestic First segment alone does not. Restaurant, shower and spa availability are not verified.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "The Terminal 1 review highlights generous daylight, comfortable private seating and a welcoming living-room feel. A strong setting for a domestic lounge, with space and comfort its clearest strengths.",
+        "reviewedOn": "2026-11-09",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "LoungeReview · Alaska Lounge review",
+            "url": "https://loungereview.com/lounges/alaska-lounge-sfo-terminal-1/",
+            "checkedOn": "2026-11-09"
+          }
+        ]
+      }
     },
     {
       "id": "sfo-admirals",
@@ -182,7 +208,20 @@
         { "id": "alaska-partners", "title": "Alaska: Lounge+ partner locations and access", "url": "https://www.alaskaair.com/content/airport-lounge/location-and-hours", "checkedOn": "2026-10-15" }
       ],
       "photos": [],
-      "note": "Showers are listed by American. General lounge access is separate from premium Flagship products. Paid day passes and further reciprocal routes are outside this initial rule coverage."
+      "note": "Showers are listed by American. General lounge access is separate from premium Flagship products. Paid day passes and further reciprocal routes are outside this initial rule coverage.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "A practical lounge for working between flights, with adequate food and drinks. The reviewer appreciated the quiet environment but found the design less impressive than the newest Admirals Clubs.",
+        "reviewedOn": "2026-11-09",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Live and Let’s Fly · American Airlines Admirals Club review",
+            "url": "https://liveandletsfly.com/review-american-airlines-admirals-club-san-francisco-sfo/",
+            "checkedOn": "2026-11-09"
+          }
+        ]
+      }
     },
     {
       "id": "sfo-ba",
@@ -244,7 +283,20 @@
         { "id": "ba-sfo", "title": "British Airways: San Francisco lounge facilities", "url": "https://mediacentre.britishairways.com/news/10072019/lounging-in-san-francisco", "checkedOn": "2026-10-15" }
       ],
       "photos": [],
-      "note": "The private restaurant is for eligible ticketed First passengers; general lounge access does not include it. Shower and spa availability are not verified."
+      "note": "The private restaurant is for eligible ticketed First passengers; general lounge access does not include it. Shower and spa availability are not verified.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "Modern decor, daylight and a decent buffet make this a pleasant lounge, though it can feel crowded. This rating covers the general lounge; the more exclusive first-class dining area is not assumed for every visitor.",
+        "reviewedOn": "2026-11-09",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "One Mile at a Time · British Airways Lounge review",
+            "url": "https://onemileatatime.com/reviews/british-airways-lounge-san-francisco/",
+            "checkedOn": "2026-11-09"
+          }
+        ]
+      }
     }
   ]
 }

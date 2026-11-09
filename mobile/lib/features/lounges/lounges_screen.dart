@@ -28,6 +28,7 @@ class _LoungesScreenState extends State<LoungesScreen> {
   bool _showClockChoices = false;
   int _request = 0;
   String _membershipSignature = '';
+  bool _operatingCarrierEdited = false;
 
   @override
   void didChangeDependencies() {
@@ -95,6 +96,7 @@ class _LoungesScreenState extends State<LoungesScreen> {
       setState(() {
         _airport = code;
         _visit = response;
+        _operatingCarrierEdited = false;
         _loading = false;
       });
       if (response['airportData'] != null &&
@@ -140,7 +142,7 @@ class _LoungesScreenState extends State<LoungesScreen> {
           'terminal',
           'destinationCountry',
         ])
-          if (_visit[key] != null && _visit[key] != '') key: _visit[key],
+          if (_visit[key] != null) key: _visit[key],
         'now': controller.now.millisecondsSinceEpoch,
       });
       if (!mounted || request != _request) return;
@@ -161,6 +163,10 @@ class _LoungesScreenState extends State<LoungesScreen> {
   }
 
   void _change(String key, String? value) => setState(() {
+    if (key == 'operatingCarrier') _operatingCarrierEdited = true;
+    if (key == 'marketingCarrier' && !_operatingCarrierEdited) {
+      _visit['operatingCarrier'] = value;
+    }
     _visit[key] = value;
     _result = null;
     _error = null;
@@ -353,16 +359,16 @@ class _LoungesScreenState extends State<LoungesScreen> {
             title: const Text('Your departing flight'),
             initiallyExpanded: true,
             children: [
-              _choice('operatingCarrier', 'Operating airline', {
-                ...airlineOptions,
-                '': 'Confirm airline',
-              }),
-              const SizedBox(height: 12),
               _choice(
                 'marketingCarrier',
                 'Airline on your flight number',
                 airlineOptions,
               ),
+              const SizedBox(height: 12),
+              _choice('operatingCarrier', 'Operating airline', {
+                ...airlineOptions,
+                '': 'Confirm airline',
+              }),
               const SizedBox(height: 12),
               _choice('cabin', 'Travel class', const {
                 'economy': 'Economy',
@@ -513,6 +519,7 @@ class LoungeResultCard extends StatelessWidget {
         .whereType<String>();
     final sources = jsonObjects(lounge['sources']);
     final photos = jsonObjects(lounge['photos']);
+    final rating = lounge['qualityRating'] as Map?;
     final access = switch (result['access']) {
       'eligible' => 'Access matches',
       'conditional' => 'Conditional access',
@@ -568,6 +575,11 @@ class LoungeResultCard extends StatelessWidget {
               spacing: 8,
               runSpacing: 8,
               children: [
+                if (rating != null)
+                  _chip(
+                    Icons.star_outline,
+                    'Rephase rating · ${(rating['score'] as num).toStringAsFixed(1)}/5',
+                  ),
                 _chip(Icons.verified_outlined, access),
                 _chip(Icons.schedule, opening),
                 if (amenities['showers'] == 'yes')
@@ -598,6 +610,20 @@ class LoungeResultCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      if (rating != null) ...[
+                        Text('${rating['summary']}'),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Our assessment of published reviews · ${rating['reviewedOn']}',
+                        ),
+                        for (final source in jsonObjects(rating['sources']))
+                          TextButton.icon(
+                            onPressed: () => _open(context, '${source['url']}'),
+                            icon: const Icon(Icons.open_in_new, size: 16),
+                            label: Text('${source['title']}'),
+                          ),
+                        const Divider(),
+                      ],
                       Text('${lounge['location']}'),
                       const SizedBox(height: 12),
                       for (final message in [...reasons, ...warnings])

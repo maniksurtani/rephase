@@ -171,7 +171,20 @@
         }
       ],
       "photos": [],
-      "note": "Ordinary domestic First and Priority Pass alone do not provide entry. Connections can have an exception to the three-hour entry limit; verify with Delta."
+      "note": "Ordinary domestic First and Priority Pass alone do not provide entry. Connections can have an exception to the three-hour entry limit; verify with Delta.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "The review praises the large, clean space, range of amenities and well-stocked buffet. A strong domestic club for a comfortable wait, even without an elaborate restaurant experience.",
+        "reviewedOn": "2026-11-09",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Upgraded Points · Delta Sky Club — Concourse A review",
+            "url": "https://upgradedpoints.com/travel/airports/delta-sky-club-salt-lake-city-slc-review/",
+            "checkedOn": "2026-11-09"
+          }
+        ]
+      }
     },
     {
       "id": "slc-delta-sky-club-b",
@@ -339,7 +352,20 @@
         }
       ],
       "photos": [],
-      "note": "Ordinary domestic First and Priority Pass alone do not provide entry. Connections can have an exception to the three-hour entry limit; verify with Delta."
+      "note": "Ordinary domestic First and Priority Pass alone do not provide entry. Connections can have an exception to the three-hour entry limit; verify with Delta.",
+      "qualityRating": {
+        "score": 4.5,
+        "summary": "The 2025 opening visit finds a spacious yet welcoming lounge, good hot food and plentiful private work booths. The lack of showers is a notable tradeoff; the review predates routine peak-time operations.",
+        "reviewedOn": "2026-11-09",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "NerdWallet · Delta Sky Club — Concourse B review",
+            "url": "https://www.nerdwallet.com/travel/news/delta-sky-club-slc-concourse-b",
+            "checkedOn": "2026-11-09"
+          }
+        ]
+      }
     },
     {
       "id": "slc-centurion",
@@ -448,6 +474,19 @@
         "bestFor": [
           "showers",
           "quiet"
+        ]
+      },
+      "qualityRating": {
+        "score": 4.5,
+        "summary": "The review praises the fresh food, bright interiors and varied rooms that make it easier to find a quieter corner. A strong domestic lounge, with the long walk from security its main practical drawback.",
+        "reviewedOn": "2026-11-09",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "LoungeJournal · The Centurion Lounge review",
+            "url": "https://loungejournal.com/slc-amex-lounge/",
+            "checkedOn": "2026-11-09"
+          }
         ]
       }
     }

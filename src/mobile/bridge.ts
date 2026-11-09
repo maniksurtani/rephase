@@ -218,6 +218,8 @@ function loungeVisit(payload: Payload) {
   const departure = context ? localParts(context.departure, zone) : undefined;
   const originCountry = airportCountry(airport),
     destinationCountry = airportCountry(context?.destinationAirport ?? '');
+  const marketingCarrier =
+    context?.flightNumber.replace(/\s/g, '').match(/^([A-Z0-9]{2})(?=\d)/)?.[1] ?? '';
   return {
     airport,
     timeZone: zone,
@@ -232,8 +234,8 @@ function loungeVisit(payload: Payload) {
     terminals: [...new Set(data?.lounges.map((item) => item.terminal) ?? [])],
     route: originCountry && originCountry === destinationCountry ? 'domestic' : 'international',
     destinationCountry,
-    marketingCarrier:
-      context?.flightNumber.replace(/\s/g, '').match(/^([A-Z0-9]{2})(?=\d)/)?.[1] ?? '',
+    marketingCarrier,
+    operatingCarrier: marketingCarrier,
     cabin: context?.travelClass ?? 'economy',
   };
 }
@@ -290,7 +292,10 @@ function lounges(payload: Payload) {
         priority: preferences.loungePriority ?? 'balanced',
         cabin: (payload.cabin ?? initial.cabin) as LoungeVisitContext['cabin'],
         marketingCarrier: String(payload.marketingCarrier ?? initial.marketingCarrier) || undefined,
-        operatingCarrier: String(payload.operatingCarrier ?? '') || undefined,
+        operatingCarrier:
+          String(
+            payload.operatingCarrier ?? payload.marketingCarrier ?? initial.marketingCarrier,
+          ) || undefined,
         terminal: String(payload.terminal ?? '') || undefined,
         route: (payload.route ?? initial.route) as LoungeVisitContext['route'],
         destinationCountry:

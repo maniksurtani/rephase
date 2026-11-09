@@ -93,7 +93,20 @@
         }
       ],
       "photos": [],
-      "note": "Lounge dining, refreshments and a bar are confirmed; dining service format and showers are unverified. The lounge closes around midday, so it will not suit many afternoon departures."
+      "note": "Lounge dining, refreshments and a bar are confirmed; dining service format and showers are unverified. The lounge closes around midday, so it will not suit many afternoon departures.",
+      "qualityRating": {
+        "score": 3,
+        "summary": "A modest garden-side lounge with a worthwhile food and drink selection. The visitor report describes a comfortable stay but tight seating and work areas; recent reader reports also mention crowding before Qantas departures.",
+        "reviewedOn": "2026-11-09",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Tokyo Airlines · Qantas International Business Lounge review",
+            "url": "https://tokyo-airlines.com/airport-lounge/honolulu-qantas-lounge.html",
+            "checkedOn": "2026-11-09"
+          }
+        ]
+      }
     },
     {
       "id": "hnl-iass-hawaii",
@@ -137,7 +150,20 @@
         }
       ],
       "photos": [],
-      "note": "A soft-drink and Wi-Fi stop; no snacks or meals. Some additional card programs are accepted, but issuer-specific eligibility is outside the seed rules."
+      "note": "A soft-drink and Wi-Fi stop; no snacks or meals. Some additional card programs are accepted, but issuer-specific eligibility is outside the seed rules.",
+      "qualityRating": {
+        "score": 1.5,
+        "summary": "Garden views are the main attraction. The review describes cramped seating and very limited facilities, with drinks but no food; it is a short refreshment stop rather than a lounge worth arriving early for.",
+        "reviewedOn": "2026-11-09",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "LoungeReview · I.A.S.S. Hawaii Lounge review",
+            "url": "https://loungereview.com/lounges/iass-hawaii-lounge-hnl/",
+            "checkedOn": "2026-11-09"
+          }
+        ]
+      }
     },
     {
       "id": "hnl-premier-club",
@@ -187,7 +213,20 @@
         }
       ],
       "photos": [],
-      "note": "Hot drinks are listed. Other amenities need review. Hawaiian Premier Clubs are excluded from reciprocal oneworld status access; Priority Pass is a separate access route."
+      "note": "Hot drinks are listed. Other amenities need review. Hawaiian Premier Clubs are excluded from reciprocal oneworld status access; Priority Pass is a separate access route.",
+      "qualityRating": {
+        "score": 2,
+        "summary": "Useful for a drink, a small snack and getting some work done. The review finds the food and beverage choice limited and the lounge popular, with little to justify a long visit.",
+        "reviewedOn": "2026-11-09",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Point Hacks · Premier Club review",
+            "url": "https://www.pointhacks.com.au/reviews/hawaiian-airlines-premier-club-honolulu/",
+            "checkedOn": "2026-11-09"
+          }
+        ]
+      }
     }
   ]
 }

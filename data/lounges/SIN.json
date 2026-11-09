@@ -130,6 +130,19 @@
           "dining",
           "showers"
         ]
+      },
+      "qualityRating": {
+        "score": 5,
+        "summary": "Restaurant-quality dining, excellent staff and a modern, comfortable space are the key strengths in the review. Best enjoyed with enough time for a meal rather than a rushed transit visit.",
+        "reviewedOn": "2026-11-09",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Point Hacks · Qantas First Lounge review",
+            "url": "https://www.pointhacks.com.au/reviews/qantas-international-first-lounge-singapore/",
+            "checkedOn": "2026-11-09"
+          }
+        ]
       }
     },
     {
@@ -287,7 +300,20 @@
         }
       ],
       "photos": [],
-      "note": "Opening times vary by weekday, including a mid-day closure on Tuesday, Friday and Sunday."
+      "note": "Opening times vary by weekday, including a mid-day closure on Tuesday, Friday and Sunday.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "The review praises warm service and the food offering, with enough appeal to draw some travelers who also have first-lounge access. A strong all-round business lounge rather than a private dining retreat.",
+        "reviewedOn": "2026-11-09",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Point Hacks · Qantas International Business Lounge review",
+            "url": "https://www.pointhacks.com.au/reviews/qantas-international-business-lounge-singapore/",
+            "checkedOn": "2026-11-09"
+          }
+        ]
+      }
     },
     {
       "id": "sin-krisflyer-gold-t2",
@@ -354,7 +380,20 @@
         }
       ],
       "photos": [],
-      "note": "For departing Singapore Airlines or Star Alliance flights. Scoot is not a Star Alliance airline."
+      "note": "For departing Singapore Airlines or Star Alliance flights. Scoot is not a Star Alliance airline.",
+      "qualityRating": {
+        "score": 2,
+        "summary": "The reviewed Terminal 2 facility has basic food, dated seating and few convenient power points. This assessment predates the ongoing redevelopment and should be revisited when the replacement lounge opens.",
+        "reviewedOn": "2026-11-09",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "The MileLion · KrisFlyer Gold Lounge — Terminal 2 review",
+            "url": "https://milelion.com/2022/12/19/review-krisflyer-gold-lounge-changi-terminal-2/",
+            "checkedOn": "2026-11-09"
+          }
+        ]
+      }
     },
     {
       "id": "sin-silverkris-business-t2",
@@ -417,7 +456,20 @@
         }
       ],
       "photos": [],
-      "note": "Star Alliance Gold alone uses KrisFlyer Gold at Changi. PPS and Solitaire PPS members can check their additional access benefits with Singapore Airlines. Terminal 2 lounge redevelopment is ongoing; follow airport signage."
+      "note": "Star Alliance Gold alone uses KrisFlyer Gold at Changi. PPS and Solitaire PPS members can check their additional access benefits with Singapore Airlines. Terminal 2 lounge redevelopment is ongoing; follow airport signage.",
+      "qualityRating": {
+        "score": 2.5,
+        "summary": "The reviewed lounge offers a quieter alternative to T3 but dated facilities, limited work spaces and a simpler food setup. This assessment predates the ongoing redevelopment, not the promised replacement lounge.",
+        "reviewedOn": "2026-11-09",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "The MileLion · SilverKris Business Lounge — Terminal 2 review",
+            "url": "https://milelion.com/2022/12/21/review-silverkris-business-class-lounge-changi-terminal-2/",
+            "checkedOn": "2026-11-09"
+          }
+        ]
+      }
     },
     {
       "id": "sin-krisflyer-gold-t3",
@@ -484,7 +536,20 @@
         }
       ],
       "photos": [],
-      "note": "For departing Singapore Airlines or Star Alliance flights. Scoot is not a Star Alliance airline."
+      "note": "For departing Singapore Airlines or Star Alliance flights. Scoot is not a Star Alliance airline.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "The refurbished lounge adds brighter interiors, separate work and dining areas, and in-lounge showers. The review sees a substantial improvement, while still a simpler experience than SilverKris.",
+        "reviewedOn": "2026-11-09",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "The MileLion · KrisFlyer Gold Lounge — Terminal 3 review",
+            "url": "https://milelion.com/2022/05/30/review-krisflyer-gold-lounge-singapore-changi-terminal-3/",
+            "checkedOn": "2026-11-09"
+          }
+        ]
+      }
     },
     {
       "id": "sin-silverkris-business-t3",
@@ -547,7 +612,20 @@
         }
       ],
       "photos": [],
-      "note": "Star Alliance Gold alone uses KrisFlyer Gold at Changi. PPS and Solitaire PPS members can check their additional access benefits with Singapore Airlines."
+      "note": "Star Alliance Gold alone uses KrisFlyer Gold at Changi. PPS and Solitaire PPS members can check their additional access benefits with Singapore Airlines.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "Live cooking, private showers and dedicated rest areas are major strengths. The review finds the design comfortable and practical, with peak-time crowding keeping it short of a standout luxury lounge.",
+        "reviewedOn": "2026-11-09",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "The MileLion · SilverKris Business Lounge — Terminal 3 review",
+            "url": "https://milelion.com/2023/10/28/review-singapore-airlines-new-silverkris-lounge-at-changi-airport-terminal-3/",
+            "checkedOn": "2026-11-09"
+          }
+        ]
+      }
     },
     {
       "id": "sin-plaza-premium-t1",
@@ -616,7 +694,20 @@
         }
       ],
       "photos": [],
-      "note": "Priority Pass visits are limited to two hours. Showers cost extra; check separate charges for private rest facilities."
+      "note": "Priority Pass visits are limited to two hours. Showers cost extra; check separate charges for private rest facilities.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "The reviewed visit found a pleasant independent lounge with good views, seating and food. The underlying visit was in 2019, so the quality assessment has less recent evidence than newer reviews in this guide.",
+        "reviewedOn": "2026-11-09",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Mainly Miles · Plaza Premium Lounge review",
+            "url": "https://mainlymiles.com/2019/04/04/review-plaza-premium-lounge-singapore-changi-t1/",
+            "checkedOn": "2026-11-09"
+          }
+        ]
+      }
     },
     {
       "id": "sin-blossom-t4",
@@ -679,7 +770,20 @@
         }
       ],
       "photos": [],
-      "note": "Showers cost extra and depend on availability. Allow time for the separate Terminal 4 transfer and security process."
+      "note": "Showers cost extra and depend on availability. Allow time for the separate Terminal 4 transfer and security process.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "Space, seating variety and freshly prepared noodle dishes are highlights. The review notes a limited breakfast buffet and some connectivity issues, making this a useful but uneven independent lounge.",
+        "reviewedOn": "2026-11-09",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Point Hacks · Blossom — SATS & Plaza Premium Lounge review",
+            "url": "https://www.pointhacks.com.au/reviews/blossom-lounge-changi-airport/",
+            "checkedOn": "2026-11-09"
+          }
+        ]
+      }
     }
   ]
 }

@@ -77,7 +77,20 @@
       ],
       "photos": [],
       "recommendation": { "summary": "Showers and lounge dining before departure. Qantas directs eligible First Lounge visitors here while the adjacent First Lounge is closed.", "bestFor": ["showers", "dining"] },
-      "note": "Operated by Qantas and officially listed as The Los Angeles Business Lounge. It also welcomes eligible First Lounge visitors during that lounge’s temporary closure. Confirm terminal access and transfer time before a domestic departure."
+      "note": "Operated by Qantas and officially listed as The Los Angeles Business Lounge. It also welcomes eligible First Lounge visitors during that lounge’s temporary closure. Confirm terminal access and transfer time before a domestic departure.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "A strong business-lounge option with substantial food, a staffed bar and showers. The review is positive about the overall experience; the largely enclosed setting is less appealing than lounges with outdoor space.",
+        "reviewedOn": "2026-11-09",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Live and Let’s Fly · Qantas / oneworld Business Lounge review",
+            "url": "https://liveandletsfly.com/oneworld-business-class-lounge-lax-review/",
+            "checkedOn": "2026-11-09"
+          }
+        ]
+      }
     },
     {
       "id": "lax-qantas-first",
@@ -130,7 +143,20 @@
         { "id": "oneworld-access", "title": "oneworld: First lounge access and exclusions", "url": "https://www.oneworld.com/airport-lounges", "checkedOn": "2026-10-16" }
       ],
       "photos": [],
-      "note": "Temporarily closed: use the adjacent Qantas / oneworld Business Lounge if eligible. Restaurant and shower descriptions refer to the usual facilities, not services currently available during the closure."
+      "note": "Temporarily closed: use the adjacent Qantas / oneworld Business Lounge if eligible. Restaurant and shower descriptions refer to the usual facilities, not services currently available during the closure.",
+      "qualityRating": {
+        "score": 4.5,
+        "summary": "Historical assessment: polished service and restaurant dining make this one of the stronger US lounges in the review. The lounge is currently marked closed in this guide; its past quality does not make it available.",
+        "reviewedOn": "2026-11-09",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "One Mile at a Time · Qantas First Lounge review",
+            "url": "https://onemileatatime.com/reviews/qantas-first-lounge-lax/",
+            "checkedOn": "2026-11-09"
+          }
+        ]
+      }
     },
     {
       "id": "lax-alaska",
@@ -193,7 +219,20 @@
         { "id": "aa-partners", "title": "American: partner lounge access", "url": "https://www.aa.com/web/i18n/travel-info/clubs/admirals-club-locations.html", "checkedOn": "2026-10-15" }
       ],
       "photos": [],
-      "note": "Priority Pass access at SFO does not establish access here. Current LAX Priority Pass coverage is represented separately by the Virgin Atlantic Clubhouse. Shower, spa and restaurant availability are not verified."
+      "note": "Priority Pass access at SFO does not establish access here. Current LAX Priority Pass coverage is represented separately by the Virgin Atlantic Clubhouse. Shower, spa and restaurant availability are not verified.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "The review praises friendly staff, runway views, barista coffee and comfortable refreshed interiors. Food is solid for a domestic lounge, rather than an international dining experience.",
+        "reviewedOn": "2026-11-09",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "One Mile at a Time · Alaska Lounge review",
+            "url": "https://onemileatatime.com/reviews/alaska-lounge-lax/",
+            "checkedOn": "2026-11-09"
+          }
+        ]
+      }
     },
     {
       "id": "lax-virgin-clubhouse",
@@ -220,7 +259,20 @@
         { "id": "lax-virgin-pp", "title": "Priority Pass: Virgin Atlantic Clubhouse LAX and supplement", "url": "https://www.prioritypass.com/en-GB/lounges/united-states-of-america/los-angeles-international/lax23-virgin-atlantic-clubhouse-additional-fee-applies", "checkedOn": "2026-10-15" }
       ],
       "photos": [],
-      "note": "The Priority Pass listing confirms an à-la-carte menu, complimentary showers and an in-lounge cinema. Airline premium-ticket and status access are outside this initial rule coverage."
+      "note": "The Priority Pass listing confirms an à-la-carte menu, complimentary showers and an in-lounge cinema. Airline premium-ticket and status access are outside this initial rule coverage.",
+      "qualityRating": {
+        "score": 4.5,
+        "summary": "The 2025 TBIT Clubhouse review praises the design, attentive team and thoughtful work spaces. It is an appealing but compact lounge; this assessment excludes the older Terminal 2 review appended to the same article.",
+        "reviewedOn": "2026-11-09",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Live and Let’s Fly · Virgin Atlantic Clubhouse review",
+            "url": "https://liveandletsfly.com/virgin-atlantic-clubhouse-lax-review/",
+            "checkedOn": "2026-11-09"
+          }
+        ]
+      }
     },
     {
       "id": "lax-star-alliance",
@@ -274,7 +326,20 @@
         { "id": "airnz-lax", "title": "Air New Zealand: Star Alliance Los Angeles lounge", "url": "https://www.airnewzealandnewsroom.com/press-release-2025-star-alliance-los-angeles-lounge-wins-north-americas-leading-airport-lounge-for-sixth-consecutive-year", "checkedOn": "2026-10-15" }
       ],
       "photos": [],
-      "note": "The main alliance lounge is separate from any restricted First dining area. Hours are unverified, so this lounge should remain a conditional option rather than a confirmed recommendation."
+      "note": "The main alliance lounge is separate from any restricted First dining area. Hours are unverified, so this lounge should remain a conditional option rather than a confirmed recommendation.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "The outdoor terrace, range of seating, food and showers make this a strong place to spend a connection. The review rates the overall experience highly, especially compared with a basic domestic club.",
+        "reviewedOn": "2026-11-09",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Live and Let’s Fly · Star Alliance Lounge review",
+            "url": "https://liveandletsfly.com/review-star-alliance-lounge-lax/",
+            "checkedOn": "2026-11-09"
+          }
+        ]
+      }
     }
   ]
 }

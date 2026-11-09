@@ -108,8 +108,10 @@ export interface Lounge {
   accessRules: LoungeAccessRule[];
   sources: LoungeSource[];
   photos: LoungePhoto[];
-  /** Editorial findings from offline research, with no invented numeric review score. */
+  /** Editorial findings from offline research. */
   recommendation?: { summary: string; bestFor?: LoungePriority[] };
+  /** Rephase editorial assessment (1–5 in half-points), not an aggregate customer score. */
+  qualityRating?: { score: number; summary: string; reviewedOn: string; sources: LoungeSource[] };
   note?: string;
 }
 export interface AirportLoungeData {
@@ -123,7 +125,7 @@ export interface AirportLoungeData {
 export interface LoungeVisitContext {
   memberships: LoungeMembership[];
   cabin?: TravelClass;
-  /** Supply an operating carrier only after confirmation; flight-number prefixes can be codeshares. */
+  /** Forms default to the marketing carrier; users can override codeshares. The matcher does not infer it. */
   operatingCarrier?: string;
   marketingCarrier?: string;
   operatingAlliance?: LoungeAlliance;
@@ -152,6 +154,7 @@ export interface LoungeEvaluation {
   warnings: string[];
   /** Longest continuous usable opening, clipped to the requested visit. */
   visit?: { start: string; end: string; minutes: number };
+  /** Suitability for the selected priority; access and quality are sorted separately. */
   score: number;
   recommended: boolean;
   recommendationReason?: string;

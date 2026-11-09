@@ -8,13 +8,14 @@ Edit one JSON file per airport, named with its three-letter IATA code (for examp
 2. Record each source's exact URL and the date you opened it in `sources`. Use a short stable source ID and cite it from the relevant `accessRules[].sourceIds`. `updatedAt` is the airport file's review date, not the lounge's opening date.
 3. Update location, operating status, opening hours and amenities. Missing information is `unknown`; an omitted shower or spa in a facilities list does not prove it is unavailable. Use `no` only with explicit evidence. `dining: "none"` means no food; a drinks-only lounge should not earn a meal recommendation.
 4. Add or revise access rules. Rules are alternatives (OR); all populated fields within a rule must hold (AND). Membership, operating carrier, marketing carrier, route, cabin and entry-window constraints are separate facts. Keep any unencoded restriction in `conditions`: it makes that rule conditional. `note` explains facts such as fees; it does not enforce a restriction.
-5. Add photos only when you have permission or a suitable license, then run the repository's type, data and lounge tests. Check the app with at least one eligible case, a conditional case, a closed visit and an unsupported program.
+5. Research `qualityRating` using the [rating rubric](RATINGS.md), with a short assessment and separate review sources. Do not refresh access/hours dates merely because a quality review was consulted.
+6. Add photos only when you have permission or a suitable license, then run the repository's type, data and lounge tests. Check the app with at least one eligible case, a conditional case, a closed visit and an unsupported program.
 
 Keep a lounge's `id` stable when its name, hours or location change. Use a new ID for a genuinely different lounge. A temporary closure belongs in `status`; do not delete the historical record merely to hide it.
 
 ## Access conditions and incomplete coverage
 
-An eligible cabin does not automatically grant access to every lounge. The actual operating airline, marketing airline, route, fare and membership issuer can matter. A flight-number prefix is a marketing hint, not proof of the operating carrier. US domestic First and international Business must not be treated as equivalent.
+An eligible cabin does not automatically grant access to every lounge. The actual operating airline, marketing airline, route, fare and membership issuer can matter. The form defaults the operating carrier to the marketing carrier and follows marketing changes until the user explicitly overrides it. Codeshares remain editable, and changing airports resets the override. The matcher itself does not infer a missing carrier. US domestic First and international Business must not be treated as equivalent.
 
 Use explicit airline/status rules where they are verified. Generic oneworld Sapphire/Emerald records remain conditional when the issuing program is unknown: Atmos and AAdvantage have North America exceptions. Paid Qantas Club, Admirals Club and Alaska memberships are separate from alliance status. Do not convert a Qantas Club membership into oneworld Sapphire.
 
@@ -44,7 +45,7 @@ Use `flight-dependent` when the operator publishes a rule based on its daily fli
 
 Distinguish a full-service restaurant from a buffet, snacks or no food. A confirmed shower can still cost extra or require a booking: put that detail beside the access rule and in the lounge note. A spa's existence does not establish that every eligible visitor may use it.
 
-The app's recommendation compares access, usable opening time and the traveler's selected amenity priority. Do not fabricate star ratings, popularity or a “best lounge” rank. Offline research can improve the verified facts and add an optional editorial `recommendation`:
+The app first groups lounges by access and usable opening time, then sorts by the selected amenity priority and finally `qualityRating.score`. Ratings are our sourced editorial assessments, not customer averages; use the [rubric and evidence rules](RATINGS.md). Never fabricate visitor ratings or review counts. Offline research can also add an optional practical `recommendation`:
 
 ```json
 {
@@ -55,7 +56,7 @@ The app's recommendation compares access, usable opening time and the traveler's
 }
 ```
 
-This example fits Sydney Qantas First because the official facilities page confirms showers and restaurant dining. `summary` is a short research-based explanation; optional `bestFor` values are `balanced`, `showers`, `dining` and `quiet`. Support each selection with the lounge's verified amenities and sources. An unverified quiet area should not earn a quiet recommendation. The editorial preference is a gentle ranking tie-breaker after access and opening checks; it cannot make an ineligible or closed lounge accessible. Use `note` for other practical details, such as upgrade fees or incomplete coverage. Research that introduces a new access condition or scoring input should extend the types/schema and tests before relying on that field.
+This example fits Sydney Qantas First because the official facilities page confirms showers and restaurant dining. `summary` is a short research-based explanation; optional `bestFor` values are `balanced`, `showers`, `dining` and `quiet`. Support each selection with the lounge's verified amenities and sources. An unverified quiet area should not earn a quiet recommendation. `bestFor` tags are descriptive and do not change the ranking. Priority suitability comes from structured amenities; the separate quality rating breaks suitability ties. Neither can make an ineligible or closed lounge accessible. Use `note` for other practical details, such as upgrade fees or incomplete coverage. Research that introduces a new access condition or scoring input should extend the types/schema and tests before relying on that field.
 
 ## Photos
 

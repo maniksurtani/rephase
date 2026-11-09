@@ -113,6 +113,19 @@
           "dining",
           "quiet"
         ]
+      },
+      "qualityRating": {
+        "score": 4,
+        "summary": "The June 2026 review of the new Terminal 1 pier lounge praises the views, food choice and plentiful seating. The upstairs area was especially peaceful during that visit.",
+        "reviewedOn": "2026-11-09",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Window Seat Preferred · Airport Lounge World review",
+            "url": "https://windowseatpreferred.com/2026/06/airport-lounge-world-munich-airport-review/",
+            "checkedOn": "2026-11-09"
+          }
+        ]
       }
     },
     {
@@ -214,7 +227,20 @@
         }
       ],
       "photos": [],
-      "note": "Schengen departures only. The airport warns of occasional temporary closures due to capacity."
+      "note": "Schengen departures only. The airport warns of occasional temporary closures due to capacity.",
+      "qualityRating": {
+        "score": 2.5,
+        "summary": "The 2025 review finds the breakfast buffet reasonable, but the small room crowded and the shared washroom arrangement inconvenient. Better suited to a short stop than a long connection.",
+        "reviewedOn": "2026-11-09",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "You Have Been Upgraded · Airport Lounge Europe review",
+            "url": "https://youhavebeenupgraded.boardingarea.com/2025/02/review-airport-lounge-europe-muenchen/",
+            "checkedOn": "2026-11-09"
+          }
+        ]
+      }
     },
     {
       "id": "muc-lufthansa-business-g28",
@@ -413,7 +439,20 @@
         }
       ],
       "photos": [],
-      "note": "Amex Platinum lounge access through the Global Lounge Collection ended on 1 October 2026; airline/status eligibility still applies."
+      "note": "Amex Platinum lounge access through the Global Lounge Collection ended on 1 October 2026; airline/status eligibility still applies.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "The review describes a spacious, practical lounge with a good food and drink selection and showers. Its size helps it remain more comfortable than some nearby lounges during busy periods.",
+        "reviewedOn": "2026-11-09",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "LoungeReview · Lufthansa Business Lounge — G28 review",
+            "url": "https://loungereview.com/lounges/lufthansa-business-lounge-muc-schengen-g28/",
+            "checkedOn": "2026-11-09"
+          }
+        ]
+      }
     },
     {
       "id": "muc-lufthansa-senator-g28",
@@ -568,7 +607,20 @@
         }
       ],
       "photos": [],
-      "note": "Amex Platinum lounge access through the Global Lounge Collection ended on 1 October 2026; airline/status eligibility still applies."
+      "note": "Amex Platinum lounge access through the Global Lounge Collection ended on 1 October 2026; airline/status eligibility still applies.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "Meals, showers and a rest area give this lounge a useful range of facilities. The review flags frequent crowding and difficulty finding a seat, which reduce its appeal for a quiet break.",
+        "reviewedOn": "2026-11-09",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "LoungeReview · Lufthansa Senator Lounge — G28 review",
+            "url": "https://loungereview.com/lounges/lufthansa-senator-lounge-muc-schengen-g28/",
+            "checkedOn": "2026-11-09"
+          }
+        ]
+      }
     },
     {
       "id": "muc-lufthansa-business-h24",
@@ -770,7 +822,20 @@
         }
       ],
       "photos": [],
-      "note": "Amex Platinum lounge access through the Global Lounge Collection ended on 1 October 2026; airline/status eligibility still applies."
+      "note": "Amex Platinum lounge access through the Global Lounge Collection ended on 1 October 2026; airline/status eligibility still applies.",
+      "qualityRating": {
+        "score": 3,
+        "summary": "Food, drinks and showers cover the essentials well. The review finds the layout and lack of views underwhelming, with crowding at peak times; the Schengen business lounge is described as more pleasant.",
+        "reviewedOn": "2026-11-09",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "LoungeReview · Lufthansa Business Lounge — H24 review",
+            "url": "https://loungereview.com/lounges/lufthansa-business-lounge-muc-non-schengen-h24/",
+            "checkedOn": "2026-11-09"
+          }
+        ]
+      }
     },
     {
       "id": "muc-lufthansa-senator-h24",
@@ -927,7 +992,20 @@
         }
       ],
       "photos": [],
-      "note": "Amex Platinum lounge access through the Global Lounge Collection ended on 1 October 2026; airline/status eligibility still applies."
+      "note": "Amex Platinum lounge access through the Global Lounge Collection ended on 1 October 2026; airline/status eligibility still applies.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "The review finds solid food and service, but a relatively small space with limited natural light and too many guests during the visit. Comfortable enough for a stop, without a standout atmosphere.",
+        "reviewedOn": "2026-11-09",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "TravelGuys · Lufthansa Senator Lounge — H24 review",
+            "url": "https://www.travelguys.fr/en/2024/05/16/lufthansa-senator-lounge-munich-t2-gates-h-very-decent-but-small-and-lacking-a-little-natural-light/",
+            "checkedOn": "2026-11-09"
+          }
+        ]
+      }
     }
   ]
 }

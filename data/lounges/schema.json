@@ -129,9 +129,20 @@
         "accessRules": { "type": "array", "minItems": 1, "maxItems": 50, "items": { "$ref": "#/definitions/accessRule" } },
         "sources": { "type": "array", "minItems": 1, "maxItems": 30, "items": { "$ref": "#/definitions/source" } },
         "photos": { "type": "array", "maxItems": 20, "items": { "$ref": "#/definitions/photo" } },
+        "qualityRating": {
+          "type": "object", "additionalProperties": false,
+          "required": ["score", "summary", "reviewedOn", "sources"],
+          "description": "Rephase editorial quality assessment, not a customer average. See RATINGS.md for the rubric.",
+          "properties": {
+            "score": { "type": "number", "minimum": 1, "maximum": 5, "multipleOf": 0.5 },
+            "summary": { "type": "string", "pattern": "\\S", "maxLength": 500 },
+            "reviewedOn": { "$ref": "#/definitions/date" },
+            "sources": { "type": "array", "minItems": 1, "maxItems": 10, "items": { "$ref": "#/definitions/source" } }
+          }
+        },
         "recommendation": {
           "type": "object", "additionalProperties": false, "required": ["summary"],
-          "description": "A concise practical summary from cited research, with optional amenity priorities. Do not invent ratings or claim a personal visit.",
+          "description": "A concise practical summary from cited research, with optional amenity priorities. Do not claim a personal visit. Quality assessments belong in qualityRating.",
           "properties": {
             "summary": { "type": "string", "pattern": "\\S", "maxLength": 500 },
             "bestFor": { "type": "array", "minItems": 1, "maxItems": 4, "uniqueItems": true, "items": { "enum": ["balanced", "showers", "dining", "quiet"] } }

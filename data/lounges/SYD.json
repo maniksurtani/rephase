@@ -89,7 +89,20 @@
         "summary": "A useful choice for a shower and restaurant meal before an international flight, when your ticket or status gives access.",
         "bestFor": ["showers", "dining"]
       },
-      "note": "Restaurant dining and showers make this a useful choice before a long flight. Spa availability and reciprocal access need a separate check. Codeshares and Emirates arrangements are not fully covered by these seed rules."
+      "note": "Restaurant dining and showers make this a useful choice before a long flight. Spa availability and reciprocal access need a separate check. Codeshares and Emirates arrangements are not fully covered by these seed rules.",
+      "qualityRating": {
+        "score": 5,
+        "summary": "Excellent restaurant dining, attentive service, expansive views and a refined setting make this a standout in the review. The reviewer specifically considers it worth allowing extra airport time.",
+        "reviewedOn": "2026-11-09",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Point Hacks · Qantas First Lounge review",
+            "url": "https://www.pointhacks.com.au/reviews/qantas-international-first-lounge-sydney/",
+            "checkedOn": "2026-11-09"
+          }
+        ]
+      }
     },
     {
       "id": "syd-qantas-business",
@@ -185,7 +198,20 @@
         }
       ],
       "photos": [],
-      "note": "Operating from a temporary space during refurbishment. Lounge dining is confirmed, but its service format and shower availability need review; historical facilities should not be assumed. International Jetstar access changed in July 2026; codeshares, Emirates and other exceptions are outside these seed rules."
+      "note": "Operating from a temporary space during refurbishment. Lounge dining is confirmed, but its service format and shower availability need review; historical facilities should not be assumed. International Jetstar access changed in July 2026; codeshares, Emirates and other exceptions are outside these seed rules.",
+      "qualityRating": {
+        "score": 2.5,
+        "summary": "This assesses the temporary Gate 24 lounge. The review finds ordinary catering, crowding and noisy acoustics, offset by decent coffee and airfield views; it does not rate the future renovated lounge.",
+        "reviewedOn": "2026-11-09",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Executive Traveller · Qantas International Business Lounge review",
+            "url": "https://www.executivetraveller.com/review-qantas-temporary-sydney-international-business-class-lounge",
+            "checkedOn": "2026-11-09"
+          }
+        ]
+      }
     },
     {
       "id": "syd-the-house",
@@ -225,7 +251,20 @@
         }
       ],
       "photos": [],
-      "note": "Self-service food is available with standard entry. The restaurant and shower facilities are paid upgrades for Priority Pass visitors."
+      "note": "Self-service food is available with standard entry. The restaurant and shower facilities are paid upgrades for Priority Pass visitors.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "The review praises comfortable seating, a well-run bar and a small but good-quality buffet. It also reports Wi-Fi trouble; this older assessment does not assume every former dining service is still offered.",
+        "reviewedOn": "2026-11-09",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Point Hacks · The House review",
+            "url": "https://www.pointhacks.com.au/reviews/the-house-lounge-sydney/",
+            "checkedOn": "2026-11-09"
+          }
+        ]
+      }
     },
     {
       "id": "syd-plaza-premium-departures",
@@ -271,7 +310,20 @@
         }
       ],
       "photos": [],
-      "note": "Food, charging and paid shower facilities are confirmed. Direct paid entry can be booked with the operator; a paid booking is not assumed by these access rules."
+      "note": "Food, charging and paid shower facilities are confirmed. Direct paid entry can be booked with the operator; a paid booking is not assumed by these access rules.",
+      "qualityRating": {
+        "score": 2.5,
+        "summary": "The 2026 review finds a very small lounge with ordinary food and extra charges for premium drinks. Coffee is a relative strength, but the reviewer prefers other Sydney options when available.",
+        "reviewedOn": "2026-11-09",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "The Alviator · Plaza Premium Lounge — International Departures review",
+            "url": "https://thealviator.com/2026/04/plaza-premium-lounge-sydney/",
+            "checkedOn": "2026-11-09"
+          }
+        ]
+      }
     }
   ]
 }
