@@ -7,7 +7,7 @@ Updated 2026-11-09. Active work is kept here; the previous complete checklist is
 - [x] Default the operating airline to the marketing airline on web and native, preserving explicit overrides.
 - [x] Research and store quality ratings with review provenance for every lounge in the guide.
 - [x] Sort usable results by selected-priority suitability, then quality rating; show the rating and its explanation on all platforms.
-- [ ] Verify defaults, ordering, provenance and mobile layouts, then publish the checked release.
+- [x] Verify defaults, ordering, provenance and mobile layouts, then publish the checked release. Checks 42567256589, Mobile checks 42567256505, both native runtimes in 42567256507 and Cloudflare deployment 42567683384 passed; evidence is in RELEASES.md.
 
 ## Lounge coverage for upcoming trips
 

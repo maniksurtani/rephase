@@ -1,5 +1,15 @@
 # Release evidence
 
+## 9 November 2026 — lounge defaults, suitability and quality
+
+Operating airline now defaults to marketing airline on web, iOS and Android, follows marketing changes until explicitly overridden, and resets when the airport changes. Codeshares and an explicit unknown operator remain editable. Lounge results first respect access and usable opening time, then the selected amenity priority, then a sourced Rephase quality rating. Unrelated amenities, longer visits and descriptive bestFor tags no longer outweigh quality for a specific priority.
+
+All 42 lounges have a checked-in editorial rating out of five, a concise rationale and linked review provenance, with explanations collapsed in both clients. [RATINGS.md](data/lounges/RATINGS.md) records the rubric, evidence limitations and how to update assessments without refreshing operational source dates. No new API, backend storage or migration is required. Installed native apps need rebuilding for the new form, cards and bundled research.
+
+Source [`3028908`](https://github.com/maniksurtani/rephase/commit/30289087af92168f257b3fc8d657b92948eae7eb). Focused local checks passed 66 shared/data tests, six lounge browser journeys and the native form/card checks at 390px with larger text, plus formatting, lint, types and production build. [Checks 42567256589](https://github.com/maniksurtani/rephase/actions/runs/42567256589) passed all 622 tests and 48 browser scenarios. [Mobile checks 42567256505](https://github.com/maniksurtani/rephase/actions/runs/42567256505) passed formatting, analysis and all 43 Flutter tests.
+
+[Cloudflare deployment 42567683384](https://github.com/maniksurtani/rephase/actions/runs/42567683384) reused verified artifact `13651644149` and published Cloudflare version `7b68d5b9-bfd2-4df2-bb41-3e9880c962bb`, offline shell `52a2eb431dddd824`. Automatic deployment remains disabled; the verified workflow was dispatched manually. [Native runtime checks 42567256507](https://github.com/maniksurtani/rephase/actions/runs/42567256507): Android passed after a 2m26s build and 29s runtime check. iOS passed after a 13m07s build and 2m29s runtime check. Both hosts loaded and exercised the updated shared offline bundle.
+
 ## 8 November 2026 — lounge guides for upcoming airports
 
 Added 26 researched lounge records at SLC (3), SIN (8), CNS (1), LHR (8) and MUC (6), bringing the shared offline guide to 42 lounges across nine airports. Each record includes primary sources and review dates, local opening rules, terminal context, access eligibility and verified amenities. Unverified facilities and SLC Sky Club hours remain unknown. Munich's Schengen/non-Schengen areas, Singapore's KrisFlyer Gold versus SilverKris eligibility, weekday Qantas hours and Delta's cabin/card restrictions are covered by targeted regressions. Profile now supports Delta Sky Club membership, Amex Platinum and Delta SkyMiles Reserve on web and Flutter.
