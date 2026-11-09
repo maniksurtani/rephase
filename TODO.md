@@ -7,7 +7,7 @@ Updated 2026-11-09. Active work is kept here; the previous complete checklist is
 - [x] Show lookup matches in an accept/reject dialog on web, iOS and Android; block accidental backdrop, Escape and Back dismissal.
 - [x] Keep rejection separate from accepting a schedule, support multiple candidates, and clear pending confirmations when account/editor context changes.
 - [x] Trace cabin/bed usage and move both inputs into optional, collapsed Seat & cabin details. Cabin affects lounge eligibility; lie-flat affects sleep versus seated-rest guidance, not timing.
-- [ ] Verify the revised flows and mobile layouts, then publish the checked release.
+- [x] Verify the revised flows and mobile layouts, then publish the checked release. Checks 42707206874, Mobile checks 42706844803 and Cloudflare deployment 42707711936 passed; evidence is in RELEASES.md.
 
 ## Lounge ordering and review ratings
 
