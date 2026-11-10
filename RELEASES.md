@@ -1,5 +1,13 @@
 # Release evidence
 
+## 9 November 2026 — flight lookup recovery
+
+Empty lookup results now open a **Flight not found** modal on web, iOS and Android. **Try again** returns focus to the flight number without clearing the query or making another API request. **Enter manually** reveals the manual fields, keeping the number, date and existing edits; choosing it again leaves those fields open. Invalid lookup input (HTTP 400) uses the same actions with the validation message. Service, quota and authentication failures retain their existing handling. Recovery dialogs use the same explicit-choice, account-invalidation and dismissal protections as successful flight confirmation.
+
+Source [`3c410ff`](https://github.com/maniksurtani/rephase/commit/3c410ff3fcc817fa8cd9ac75f63a166187b65622). Local types, lint, formatting, production build and Flutter analysis passed, alongside eight lookup browser journeys and six trip-editor widget tests. The mobile web modal was visually reviewed at 390px; Flutter tests exercise the recovery actions with larger text at the same width. [Checks 42738509882](https://github.com/maniksurtani/rephase/actions/runs/42738509882) passed all 622 unit/runtime tests and all 50 browser scenarios. [Mobile checks 42738509879](https://github.com/maniksurtani/rephase/actions/runs/42738509879) passed all 46 Flutter tests. These UI changes require no planner, schema or native-host changes, so the lengthy native runtime builds were not repeated.
+
+[Cloudflare deployment 42738978305](https://github.com/maniksurtani/rephase/actions/runs/42738978305) reused verified artifact `13728485963`, publishing version `cfdb7d45-a8bd-44d1-a5cb-8a625cbdc83c` and offline shell `a6121f43b4e11fca` to rephase.surtani.org. Automatic deployment remains disabled; the verified workflow was dispatched manually. Installed native apps need rebuilding to receive the updated Flutter widgets.
+
 ## 9 November 2026 — explicit flight confirmation
 
 Flight lookup results now open in a modal on web, iOS and Android. Each match has a **Use this flight** action; **Reject** returns to the draft without applying a result. Outside taps, Escape and native Back cannot dismiss a pending choice. Multiple matches scroll, cached results remain labeled, and empty results keep manual entry available. Pending confirmations are invalidated when the account changes or the editor is removed. The web dialog shares the existing modal stack, traps focus and restores it to the lookup button.

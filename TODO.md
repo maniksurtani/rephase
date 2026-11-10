@@ -6,7 +6,7 @@ Updated 2026-11-09. Active work is kept here; the previous complete checklist is
 
 - [x] Show an explicit recovery modal for no matches and invalid lookup input on web, iOS and Android.
 - [x] Make Try again focus the flight number, and Enter manually reveal the editor while preserving input and existing edits.
-- [ ] Verify recovery, confirmation and error handling, then publish the checked release.
+- [x] Verify recovery, confirmation and error handling, then publish the checked release. Checks 42738509882, Mobile checks 42738509879 and Cloudflare deployment 42738978305 passed; evidence is in RELEASES.md.
 
 ## Explicit flight confirmation
 
