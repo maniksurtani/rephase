@@ -7,14 +7,26 @@ export function FlightLookupDialog({
   result,
   onAccept,
   onReject,
+  onEnterManually,
+  problem,
   returnFocusTo,
 }: {
-  result: FlightLookupResult;
+  result: FlightLookupResult | null;
   onAccept: (candidate: FlightCandidate) => void;
   onReject: () => void;
-  returnFocusTo: HTMLButtonElement | null;
+  onEnterManually: () => void;
+  problem: string | null;
+  returnFocusTo: HTMLElement | null;
 }) {
-  const title = result.candidates.length === 1 ? 'Confirm your flight' : 'Choose your flight';
+  const candidates = result?.candidates ?? [];
+  const noMatches = candidates.length === 0;
+  const title = problem
+    ? 'Check your flight details'
+    : noMatches
+      ? 'Flight not found'
+      : candidates.length === 1
+        ? 'Confirm your flight'
+        : 'Choose your flight';
   // The editor is already a dialog. A portal keeps this layer outside its inert backdrop.
   return createPortal(
     <Dialog
@@ -29,9 +41,17 @@ export function FlightLookupDialog({
           {title}
         </h2>
       </header>
-      {result.stale && <p className="flight-lookup-note">Cached schedule · updates unavailable</p>}
+      {noMatches && (
+        <p className="modal-intro">
+          {problem ??
+            'No flight matched that number and departure date. Check the details and try again, or enter your flight manually.'}
+        </p>
+      )}
+      {!noMatches && result?.stale && (
+        <p className="flight-lookup-note">Cached schedule · updates unavailable</p>
+      )}
       <div className="flight-results">
-        {result.candidates.map((candidate) => (
+        {candidates.map((candidate) => (
           <article className="flight-result" key={candidate.id}>
             <strong>
               {candidate.flightNumber} · {candidate.airline}
@@ -63,9 +83,20 @@ export function FlightLookupDialog({
         ))}
       </div>
       <footer className="modal-footer">
-        <button type="button" className="button secondary" onClick={onReject}>
-          Reject
-        </button>
+        {noMatches ? (
+          <>
+            <button type="button" className="button secondary" onClick={onEnterManually}>
+              Enter manually
+            </button>
+            <button type="button" className="button primary" onClick={onReject}>
+              Try again
+            </button>
+          </>
+        ) : (
+          <button type="button" className="button secondary" onClick={onReject}>
+            Reject
+          </button>
+        )}
       </footer>
     </Dialog>,
     document.body,

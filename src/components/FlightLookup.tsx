@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { LoaderCircle, Search } from 'lucide-react';
 import type { FlightCandidate, FlightLeg, FlightLookupResult } from '../lib/types';
-import { lookupFlight } from '../lib/api';
+import { ApiError, lookupFlight } from '../lib/api';
 import { FlightLookupDialog } from './FlightLookupDialog';
 
 export interface FlightQuery {
@@ -15,19 +15,23 @@ export function FlightLookup({
   accountId,
   available,
   onApply,
+  onEnterManually,
 }: {
   query: FlightQuery;
   onQueryChange: (query: FlightQuery) => void;
   accountId: string | null;
   available: boolean;
   onApply: (patch: Partial<FlightLeg>, candidate: FlightCandidate) => void;
+  onEnterManually: () => void;
 }) {
   const [result, setResult] = useState<FlightLookupResult | null>(null);
   const [error, setError] = useState('');
+  const [problem, setProblem] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const controller = useRef<AbortController | null>(null);
   const request = useRef(0);
   const lookupButton = useRef<HTMLButtonElement>(null);
+  const numberInput = useRef<HTMLInputElement>(null);
   useEffect(
     () => () => {
       request.current++;
@@ -39,6 +43,7 @@ export function FlightLookup({
     request.current++;
     controller.current?.abort();
     setResult(null);
+    setProblem(null);
     setError('');
     setBusy(false);
   }, [input.flightNumber, input.date, accountId, available]);
@@ -50,6 +55,7 @@ export function FlightLookup({
     setBusy(true);
     setError('');
     setResult(null);
+    setProblem(null);
     try {
       // A previous leg's origin must never narrow a newly entered flight number.
       const data = await lookupFlight(
@@ -61,7 +67,10 @@ export function FlightLookup({
       );
       if (request.current === version) setResult(data);
     } catch (cause) {
-      if (request.current === version)
+      if (request.current !== version) return;
+      if (cause instanceof ApiError && cause.status === 400 && !cause.serviceUnavailable)
+        setProblem(cause.message);
+      else
         setError(
           cause instanceof Error
             ? cause.message
@@ -109,6 +118,7 @@ export function FlightLookup({
         <label className="field flight-number-field">
           <span>Flight number</span>
           <input
+            ref={numberInput}
             value={input.flightNumber}
             onChange={(event) => onQueryChange({ ...input, flightNumber: event.target.value })}
             placeholder="e.g. QF 103"
@@ -167,19 +177,23 @@ export function FlightLookup({
           {error}
         </p>
       )}
-      {result &&
-        (result.candidates.length ? (
-          <FlightLookupDialog
-            result={result}
-            onAccept={apply}
-            onReject={() => setResult(null)}
-            returnFocusTo={lookupButton.current}
-          />
-        ) : (
-          <p role="status" className="flight-lookup-note">
-            No matching flight found. Try the operating flight number or enter your flight manually.
-          </p>
-        ))}
+      {(result || problem) && (
+        <FlightLookupDialog
+          result={result}
+          problem={problem}
+          onAccept={apply}
+          onReject={() => {
+            setResult(null);
+            setProblem(null);
+          }}
+          onEnterManually={() => {
+            setResult(null);
+            setProblem(null);
+            onEnterManually();
+          }}
+          returnFocusTo={result?.candidates.length ? lookupButton.current : numberInput.current}
+        />
+      )}
     </div>
   );
 }

@@ -73,9 +73,9 @@ export function TripEditor({
     }
     if (Object.keys(patch).length) updateLeg(leg.id, patch);
   }
-  function toggleManual(leg: FlightLeg) {
-    if (!manualOpen[leg.id]) changeQuery(leg, queryFor(leg), true);
-    setManualOpen((value) => ({ ...value, [leg.id]: !value[leg.id] }));
+  function setManual(leg: FlightLeg, open: boolean) {
+    if (open) changeQuery(leg, queryFor(leg), true);
+    setManualOpen((value) => ({ ...value, [leg.id]: open }));
   }
   function updateDeparture(leg: FlightLeg, value: string) {
     const edit = departureTimeEdit(leg, value, arrivalDefaults.current.get(leg.id));
@@ -269,6 +269,15 @@ export function TripEditor({
                 onQueryChange={(query) => changeQuery(leg, query)}
                 accountId={accountId}
                 available={flightLookupAvailable}
+                onEnterManually={() => {
+                  setManual(leg, true);
+                  requestAnimationFrame(() =>
+                    document
+                      .getElementById(`manual-flight-${leg.id}`)
+                      ?.querySelector('input')
+                      ?.focus(),
+                  );
+                }}
                 onApply={(patch, candidate) => {
                   arrivalDefaults.current.set(leg.id, { mode: 'manual' });
                   setQueries((value) => ({
@@ -307,7 +316,7 @@ export function TripEditor({
                   className="text-button"
                   aria-expanded={Boolean(manualOpen[leg.id])}
                   aria-controls={`manual-flight-${leg.id}`}
-                  onClick={() => toggleManual(leg)}
+                  onClick={() => setManual(leg, !manualOpen[leg.id])}
                 >
                   {manualOpen[leg.id] ? 'Hide manual details' : 'Enter manually'}
                 </button>

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../app_controller.dart';
+import '../../data/mobile_api.dart';
 import 'flight_fields.dart';
 import 'flight_lookup_dialog.dart';
 
@@ -35,14 +36,15 @@ class FlightLegEditor extends StatefulWidget {
 class _FlightLegEditorState extends State<FlightLegEditor>
     with AutomaticKeepAliveClientMixin {
   late final TextEditingController _number;
+  final _numberFocus = FocusNode();
+  final _manualFields = GlobalKey();
   bool _manual = false;
   bool _busy = false;
   bool _arrivalEdited = false;
   late bool _resolved;
   int _request = 0;
   String? _error;
-  Map<String, dynamic>? _result;
-  DialogRoute<Map<String, dynamic>>? _confirmationRoute;
+  DialogRoute<FlightLookupChoice>? _confirmationRoute;
   late (String?, bool) _lookupOwner;
   final Map<String, Map<String, dynamic>> _localTimes = {};
   final Map<String, int> _localRequests = {};
@@ -72,6 +74,7 @@ class _FlightLegEditorState extends State<FlightLegEditor>
     widget.controller.removeListener(_accountChanged);
     _dismissConfirmation();
     _number.dispose();
+    _numberFocus.dispose();
     super.dispose();
   }
 
@@ -104,7 +107,6 @@ class _FlightLegEditorState extends State<FlightLegEditor>
     _dismissConfirmation();
     setState(() {
       _busy = false;
-      _result = null;
       _error = null;
     });
   }
@@ -142,7 +144,6 @@ class _FlightLegEditorState extends State<FlightLegEditor>
     _request++;
     _dismissConfirmation();
     setState(() {
-      _result = null;
       _error = null;
       _busy = false;
       _resolved = _manual;
@@ -173,43 +174,63 @@ class _FlightLegEditorState extends State<FlightLegEditor>
     final departure = _text('departureDateTime');
     if (number.isEmpty || departure.length < 10) return;
     final request = ++_request;
+    Map<String, dynamic>? result;
+    String? problem;
     setState(() {
       _busy = true;
-      _result = null;
       _error = null;
     });
     try {
-      final result = await widget.controller.lookupFlight(
+      result = await widget.controller.lookupFlight(
         number,
         departure.substring(0, 10),
       );
-      if (!mounted || request != _request) return;
-      if ((result['candidates'] as List? ?? []).isEmpty) {
-        setState(() => _result = result);
-        return;
-      }
-      setState(() => _busy = false);
-      FocusScope.of(context).unfocus();
-      final route = DialogRoute<Map<String, dynamic>>(
-        context: context,
-        barrierDismissible: false,
-        builder: (_) => FlightLookupDialog(result: result),
-      );
-      _confirmationRoute = route;
-      final candidate = await Navigator.of(
-        context,
-        rootNavigator: true,
-      ).push(route);
-      if (_confirmationRoute == route) _confirmationRoute = null;
-      if (mounted && request == _request && candidate != null) {
-        _apply(candidate, result['fetchedAt']);
-      }
     } catch (error) {
       if (mounted && request == _request) {
-        setState(() => _error = error.toString());
+        if (error is ApiException && error.status == 400) {
+          problem = error.message;
+        } else {
+          setState(() => _error = error.toString());
+        }
       }
     } finally {
       if (mounted && request == _request) setState(() => _busy = false);
+    }
+    if (!mounted ||
+        request != _request ||
+        (result == null && problem == null)) {
+      return;
+    }
+    FocusScope.of(context).unfocus();
+    final route = DialogRoute<FlightLookupChoice>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => FlightLookupDialog(result: result, problem: problem),
+    );
+    _confirmationRoute = route;
+    final choice = await Navigator.of(context, rootNavigator: true).push(route);
+    if (_confirmationRoute == route) _confirmationRoute = null;
+    if (!mounted || request != _request || choice == null) return;
+    if (choice.enterManually) {
+      _setManual(true);
+    } else if (choice.candidate != null) {
+      _apply(choice.candidate!, result?['fetchedAt']);
+    } else {
+      _numberFocus.requestFocus();
+    }
+  }
+
+  void _setManual(bool open) {
+    setState(() => _manual = open);
+    if (open) {
+      _resolved = true;
+      widget.onResolved(true);
+      _validateLocal('departure', widget.leg);
+      _validateLocal('arrival', widget.leg);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final fields = _manualFields.currentContext;
+        if (mounted && fields != null) Scrollable.ensureVisible(fields);
+      });
     }
   }
 
@@ -254,7 +275,6 @@ class _FlightLegEditorState extends State<FlightLegEditor>
       _localRequests[side] = (_localRequests[side] ?? 0) + 1;
     }
     setState(() {
-      _result = null;
       _manual = false;
       _resolved = true;
     });
@@ -405,6 +425,7 @@ class _FlightLegEditorState extends State<FlightLegEditor>
             const SizedBox(height: 16),
             TextFormField(
               controller: _number,
+              focusNode: _numberFocus,
               decoration: const InputDecoration(
                 labelText: 'Flight number',
                 hintText: 'e.g. QF 103',
@@ -467,12 +488,6 @@ class _FlightLegEditorState extends State<FlightLegEditor>
                   style: TextStyle(color: theme.colorScheme.error),
                 ),
               ),
-            if (_result != null) ...[
-              const SizedBox(height: 12),
-              const Text(
-                'No matching flight. Try the operating flight number or enter manually.',
-              ),
-            ],
             if (hasSchedule && !_manual) ...[
               const SizedBox(height: 12),
               Text(
@@ -488,20 +503,13 @@ class _FlightLegEditorState extends State<FlightLegEditor>
             Align(
               alignment: Alignment.centerLeft,
               child: TextButton(
-                onPressed: () {
-                  setState(() => _manual = !_manual);
-                  if (_manual) {
-                    _resolved = true;
-                    widget.onResolved(true);
-                    _validateLocal('departure', widget.leg);
-                    _validateLocal('arrival', widget.leg);
-                  }
-                },
+                onPressed: () => _setManual(!_manual),
                 child: Text(_manual ? 'Hide manual fields' : 'Enter manually'),
               ),
             ),
             if (_manual) ...[
               AirportField(
+                key: _manualFields,
                 label: 'Departure airport',
                 code: _text('departureAirport'),
                 airports: widget.airports,

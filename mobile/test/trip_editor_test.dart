@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rephase/app_controller.dart';
 import 'package:rephase/data/models.dart';
+import 'package:rephase/data/mobile_api.dart';
 import 'package:rephase/engine/mobile_engine.dart';
 import 'package:rephase/features/trips/flight_fields.dart';
 import 'package:rephase/features/trips/flight_leg_editor.dart';
@@ -89,6 +90,7 @@ class _Controller extends AppController {
   Trip? written;
   int lookups = 0;
   bool loggedIn = true;
+  ApiException? lookupError;
   List<Map<String, dynamic>> candidates = [
     {..._leg(), 'id': 'candidate', 'airline': 'Qantas', 'durationMinutes': 570},
   ];
@@ -112,6 +114,7 @@ class _Controller extends AppController {
     String? departureAirport,
   }) async {
     lookups++;
+    if (lookupError != null) throw lookupError!;
     return {'fetchedAt': '2026-10-18T00:00:00Z', 'candidates': candidates};
   }
 
@@ -256,12 +259,94 @@ void main() {
       expect(leg['departureDateTime'], '2026-10-17T21:30');
       expect(resolved, true);
       expect(find.byType(AlertDialog), findsNothing);
-      controller.candidates = [];
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'missing and invalid flights offer retry or manual entry without replacing the draft',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(390, 844));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final controller = _Controller()..candidates = [];
+      addTearDown(controller.dispose);
+      var leg = _leg();
+      bool? resolved;
+      await tester.pumpWidget(
+        _lookupEditor(
+          controller,
+          (value) => leg = value,
+          (value) => resolved = value,
+        ),
+      );
+      await tester.tap(find.text('Look up flight'));
+      await tester.pumpAndSettle();
+      expect(find.text('Flight not found'), findsOneWidget);
+      expect(find.text('Use this flight'), findsNothing);
+      await tester.tapAt(const Offset(2, 2));
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      expect(find.byType(AlertDialog), findsOneWidget);
+      await tester.tap(find.text('Try again'));
+      await tester.pumpAndSettle();
+      expect(find.byType(AlertDialog), findsNothing);
+      final number = tester.widget<TextField>(find.byType(TextField).first);
+      expect(number.focusNode!.hasFocus, true);
+      expect(number.controller!.text, 'QF103');
+      expect(controller.lookups, 1);
+      expect(leg, _leg());
+      expect(resolved, isNull);
+      await tester.tap(find.text('Look up flight'));
+      await tester.pumpAndSettle();
+      await tester.tap(
+        find.descendant(
+          of: find.byType(AlertDialog),
+          matching: find.text('Enter manually'),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(find.byType(AirportField), findsNWidgets(2));
+      expect(leg, _leg());
+      expect(resolved, true);
       await tester.ensureVisible(find.text('Look up flight'));
       await tester.tap(find.text('Look up flight'));
       await tester.pumpAndSettle();
-      expect(find.textContaining('No matching flight.'), findsOneWidget);
+      await tester.tap(
+        find.descendant(
+          of: find.byType(AlertDialog),
+          matching: find.text('Enter manually'),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byType(AirportField), findsNWidgets(2));
+      controller.lookupError = const ApiException(
+        'Use a valid flight number and departure date.',
+        400,
+      );
+      await tester.ensureVisible(find.text('Look up flight'));
+      await tester.tap(find.text('Look up flight'));
+      await tester.pumpAndSettle();
+      expect(find.text('Check your flight details'), findsOneWidget);
+      expect(
+        find.text('Use a valid flight number and departure date.'),
+        findsOneWidget,
+      );
+      await tester.tap(find.text('Try again'));
+      await tester.pumpAndSettle();
+      expect(number.focusNode!.hasFocus, true);
+      controller.lookupError = const ApiException(
+        'Flight provider is temporarily unavailable.',
+        503,
+      );
+      await tester.ensureVisible(find.text('Look up flight'));
+      await tester.tap(find.text('Look up flight'));
+      await tester.pumpAndSettle();
       expect(find.byType(AlertDialog), findsNothing);
+      expect(
+        find.text('Flight provider is temporarily unavailable.'),
+        findsOneWidget,
+      );
       expect(tester.takeException(), isNull);
     },
   );

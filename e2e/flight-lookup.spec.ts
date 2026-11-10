@@ -347,7 +347,7 @@ test('flight confirmation requires an explicit choice, supports multiple matches
     departureDateTime: '2026-12-01T21:00',
     arrivalDateTime: '2026-12-02T15:00',
   };
-  let candidates = [firstCandidate, later];
+  const candidates = [firstCandidate, later];
   await page.route('**/api/flights?*', (route) =>
     route.fulfill({
       json: { ...lookupResult(), candidates, stale: true },
@@ -393,10 +393,79 @@ test('flight confirmation requires an explicit choice, supports multiple matches
   await lookup.click();
   await confirmation.getByRole('button', { name: 'Reject', exact: true }).click();
   await expect(editor.getByLabel('Local departure date & time')).toHaveValue('2026-12-01T21:00');
-  candidates = [];
+});
+
+test('a missing or invalid flight opens recovery choices that preserve the query and reveal manual entry', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await installAccount(page);
+  let calls = 0;
+  let status = 200;
+  await page.route('**/api/flights?*', (route) => {
+    calls++;
+    return route.fulfill({
+      status,
+      json:
+        status === 200
+          ? { ...lookupResult(), candidates: [] }
+          : {
+              error:
+                status === 400
+                  ? 'Use an IATA or ICAO flight number and a valid local departure date within the next year.'
+                  : 'Flight provider is temporarily unavailable.',
+            },
+    });
+  });
+  const editor = await newTrip(page, true);
+  const number = editor.getByLabel('Flight number', { exact: true });
+  const date = editor.getByLabel('Departure date at the departure airport');
+  const lookup = editor.getByRole('button', { name: 'Look up flight', exact: true });
+  await number.fill('ZZ9999');
+  await date.fill('2026-12-01');
   await lookup.click();
-  await expect(editor.getByRole('status')).toContainText('No matching flight found');
-  await expect(confirmation).toHaveCount(0);
+  const missing = page.getByRole('dialog', { name: 'Flight not found', exact: true });
+  await expect(missing).toBeVisible();
+  await expect(missing.getByRole('button', { name: 'Use this flight' })).toHaveCount(0);
+  await page.keyboard.press('Escape');
+  await page.mouse.click(2, 2);
+  await expect(missing).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await captureDesign(page, 'artifacts/flight-not-found-mobile.png');
+  await missing.getByRole('button', { name: 'Try again', exact: true }).click();
+  await expect(missing).toHaveCount(0);
+  await expect(number).toBeFocused();
+  await expect(number).toHaveValue('ZZ9999');
+  await expect(date).toHaveValue('2026-12-01');
+  expect(calls).toBe(1);
+  await expect(editor.getByLabel('Airport code').first()).toBeHidden();
+  await lookup.click();
+  await missing.getByRole('button', { name: 'Enter manually', exact: true }).click();
+  const airport = editor.getByLabel('Airport code').first();
+  await expect(airport).toBeVisible();
+  await expect(airport).toBeFocused();
+  await expect(number).toHaveValue('ZZ9999');
+  await expect(editor.getByLabel('Local departure date & time')).toHaveValue(/^2026-12-01T/);
+  await editor.getByLabel('Local departure date & time').fill('2026-12-01T20:15');
+  // This is an open action, not a toggle: existing manual edits remain visible.
+  await lookup.click();
+  await missing.getByRole('button', { name: 'Enter manually', exact: true }).click();
+  await expect(editor.getByLabel('Local departure date & time')).toHaveValue('2026-12-01T20:15');
+  await expect(airport).toBeVisible();
+  status = 400;
+  await number.fill('invalid');
+  await lookup.click();
+  const invalid = page.getByRole('dialog', { name: 'Check your flight details', exact: true });
+  await expect(invalid).toContainText('Use an IATA or ICAO flight number');
+  await invalid.getByRole('button', { name: 'Try again', exact: true }).click();
+  await expect(number).toBeFocused();
+  status = 503;
+  await lookup.click();
+  await expect(editor.getByRole('alert')).toContainText(
+    'Flight provider is temporarily unavailable.',
+  );
+  await expect(missing).toHaveCount(0);
+  await expect(invalid).toHaveCount(0);
 });
 
 test('an open flight draft closes when the authenticated account changes and never saves into the new account', async ({

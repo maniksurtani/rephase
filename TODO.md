@@ -2,6 +2,12 @@
 
 Updated 2026-11-09. Active work is kept here; the previous complete checklist is preserved in [the task archive](docs/archive/TODO-2026-10-16.md). Release evidence is in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md).
 
+## Flight lookup recovery
+
+- [x] Show an explicit recovery modal for no matches and invalid lookup input on web, iOS and Android.
+- [x] Make Try again focus the flight number, and Enter manually reveal the editor while preserving input and existing edits.
+- [ ] Verify recovery, confirmation and error handling, then publish the checked release.
+
 ## Explicit flight confirmation
 
 - [x] Show lookup matches in an accept/reject dialog on web, iOS and Android; block accidental backdrop, Escape and Back dismissal.
