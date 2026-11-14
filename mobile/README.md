@@ -127,6 +127,8 @@ Opaque app-session credentials live in Keychain/Keystore. Guest and each account
 
 ## Verification and distribution
 
+For signed Android betas sent to friends and family, follow [Android beta distribution](DISTRIBUTION.md). It covers Firebase, GitHub OIDC, signing, release Google login and the manual **Publish Android beta** workflow. The debug APK and native verification workflows below remain separate. iOS TestFlight distribution comes later.
+
 **Mobile checks** runs Flutter formatting, analysis and all widget/data tests for relevant changes. Ordinary feature-widget changes use this fast workflow without compiling Android/iOS apps or starting devices. Markdown-only changes skip mobile CI, and mobile-only changes skip the web Checks workflow.
 
 **Native runtime checks** verifies the bundled planner in Chromium, compiles the integration app and tests it inside Android WebView and iOS WKWebView. It runs automatically for shared engine/data, WebView loader, native platform, dependency, integration-host and CI setup changes, and nightly on the default branch. Run it manually before a mobile release or whenever a change needs device-level verification; publishing a GitHub release also runs it, but does not create a prerelease approval gate. Android uses a headless API 36 emulator with KVM; iOS uses an unsigned Simulator build on macOS.

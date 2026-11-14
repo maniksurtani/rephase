@@ -1,0 +1,102 @@
+name: Publish Android beta
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_notes:
+        description: What should friends and family try in this build?
+        required: true
+        default: Please try trip planning, Google sign-in, lounge access and reminders.
+        type: string
+
+permissions:
+  contents: read
+
+# Never interrupt a distribution or allow two builds to publish out of order.
+concurrency:
+  group: android-beta
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: android-beta
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Validate configuration and prepare private signing files
+        run: node scripts/prepare-android-beta.mjs
+        env:
+          FIREBASE_APP_ID: ${{ vars.FIREBASE_APP_ID }}
+          FIREBASE_PROJECT_ID: ${{ vars.FIREBASE_PROJECT_ID }}
+          FIREBASE_WORKLOAD_IDENTITY_PROVIDER: ${{ vars.FIREBASE_WORKLOAD_IDENTITY_PROVIDER }}
+          FIREBASE_SERVICE_ACCOUNT: ${{ vars.FIREBASE_SERVICE_ACCOUNT }}
+          FIREBASE_TESTER_GROUP: ${{ vars.FIREBASE_TESTER_GROUP }}
+          GOOGLE_SERVER_CLIENT_ID: ${{ vars.GOOGLE_SERVER_CLIENT_ID }}
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          RELEASE_NOTES: ${{ inputs.release_notes }}
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Verify and bundle the offline planner
+        run: node scripts/check-mobile-engine.mjs
+      - uses: ./.github/actions/setup-flutter
+        with:
+          profile: android
+      - run: flutter pub get --enforce-lockfile
+        working-directory: mobile
+      - name: Check Flutter code
+        working-directory: mobile
+        run: |
+          dart format --output=none --set-exit-if-changed lib test
+          flutter analyze --no-pub
+          flutter test --no-pub
+      - name: Build the signed release APK
+        working-directory: mobile
+        run: flutter build apk --release --no-pub --build-number="$BETA_BUILD_NUMBER" --dart-define-from-file=config.json
+      - name: Verify the APK signature and record its checksum
+        shell: bash
+        run: |
+          build_tools=$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)
+          "$build_tools/apksigner" verify --verbose --print-certs mobile/build/app/outputs/flutter-apk/app-release.apk
+          sha256sum mobile/build/app/outputs/flutter-apk/app-release.apk >> "$GITHUB_STEP_SUMMARY"
+      - name: Install pinned Firebase CLI
+        run: npm install --global firebase-tools@15.36.0
+      - name: Authenticate to Firebase with GitHub OIDC
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          workload_identity_provider: ${{ vars.FIREBASE_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.FIREBASE_SERVICE_ACCOUNT }}
+      - name: Publish to the tester group
+        env:
+          FIREBASE_APP_ID: ${{ vars.FIREBASE_APP_ID }}
+          FIREBASE_PROJECT_ID: ${{ vars.FIREBASE_PROJECT_ID }}
+        run: |
+          firebase appdistribution:distribute mobile/build/app/outputs/flutter-apk/app-release.apk \
+            --app "$FIREBASE_APP_ID" --project "$FIREBASE_PROJECT_ID" \
+            --groups "$BETA_TESTER_GROUP" \
+            --release-notes-file "$RUNNER_TEMP/rephase-android-beta/release-notes.txt" \
+            --non-interactive
+      - name: Remove signing files
+        if: always()
+        run: |
+          rm -f mobile/android/key.properties mobile/config.json
+          rm -rf "$RUNNER_TEMP/rephase-android-beta"
+
+# APKs are delivered through Firebase, not public GitHub artifacts. This builds
+# lib/main.dart: the separate native integration-test host is never distributed.

@@ -1,6 +1,13 @@
 # Rephase build tasks
 
-Updated 2026-11-09. Active work is kept here; the previous complete checklist is preserved in [the task archive](docs/archive/TODO-2026-10-16.md). Release evidence is in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md).
+Updated 2026-11-14. Active work is kept here; the previous complete checklist is preserved in [the task archive](docs/archive/TODO-2026-10-16.md). Release evidence is in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md).
+
+## Android beta distribution
+
+- [x] Add a manual signed-release workflow for Firebase App Distribution, short-lived Google credentials, tester groups and release notes.
+- [x] Document Firebase, signing-key, GitHub environment and release OAuth setup for friends and family.
+- [ ] Validate the release preparation, workflow and signed Android build.
+- [ ] Configure the Firebase project, signing secrets and release OAuth client; publish and test the first beta on a device. Requires account-owner setup.
 
 ## Flight lookup recovery
 
