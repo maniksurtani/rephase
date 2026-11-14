@@ -6,7 +6,7 @@ Updated 2026-11-14. Active work is kept here; the previous complete checklist is
 
 - [x] Add a manual signed-release workflow for Firebase App Distribution, short-lived Google credentials, tester groups and release notes.
 - [x] Document Firebase, signing-key, GitHub environment and release OAuth setup for friends and family.
-- [ ] Validate the release preparation, workflow and signed Android build.
+- [x] Validate release preparation and workflow syntax; build a signed release APK with a disposable key and verify its signature and bundled planner. See RELEASES.md.
 - [ ] Configure the Firebase project, signing secrets and release OAuth client; publish and test the first beta on a device. Requires account-owner setup.
 
 ## Flight lookup recovery

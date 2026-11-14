@@ -1,5 +1,15 @@
 # Release evidence
 
+## 14 November 2026 — Android beta distribution preparation
+
+Added the manual Publish Android beta workflow, Firebase OIDC bootstrap script and [account-owner setup guide](mobile/DISTRIBUTION.md). The workflow uses the existing package and Cloudflare backend, a persistent PKCS12 signing key, serialized increasing build numbers, a Firebase tester group and release notes. Google trust is restricted to the repository's immutable IDs, main branch, workflow and android-beta environment. Signing secrets are used only in temporary files; no Google service-account key or public GitHub APK artifact is created. The real app is built, rather than the integration-test host.
+
+Four focused configuration tests pass, including missing/mismatched settings, password escaping, increasing rerun versions and separation of private signing data from public app configuration. Actionlint, Bash syntax validation and diff checks pass. [Checks 43547530113](https://github.com/maniksurtani/rephase/actions/runs/43547530113) passed for the preparation code in `7b2e616`; the subsequent workflow correction retains Flutter's pub phase during release compilation. This is required to regenerate the native registrant without the development-only integration_test plugin. The workflow first resolves the locked dependencies and checks that the lockfile remains unchanged after building.
+
+Local release verification built a 62.6 MB APK in 137 seconds after dependency caches were populated, using a disposable RSA-3072 signing key. Android apksigner verified the APK signature, and the packaged offline planner exactly matched the generated source bundle. Verification APK SHA-256: `93e2a00d900df6cb3e4eaf09e0426a6ed37cb9c83c62619206e85256a8699bfc`. Temporary signing material was removed; this APK was not distributed. The Cloud workspace needed Java's proxy/CA configuration for Google Maven; those local settings are not included in the GitHub workflow.
+
+Firebase project/IAM configuration, the user's permanent signing key, the release OAuth client and first tester upload/device acceptance remain pending account-owner setup. No Firebase invitations, beta publication or Cloudflare configuration deployment has been performed. iOS distribution remains a separate future task.
+
 ## 9 November 2026 — flight lookup recovery
 
 Empty lookup results now open a **Flight not found** modal on web, iOS and Android. **Try again** returns focus to the flight number without clearing the query or making another API request. **Enter manually** reveals the manual fields, keeping the number, date and existing edits; choosing it again leaves those fields open. Invalid lookup input (HTTP 400) uses the same actions with the validation message. Service, quota and authentication failures retain their existing handling. Recovery dialogs use the same explicit-choice, account-invalidation and dismissal protections as successful flight confirmation.

@@ -75,7 +75,11 @@ jobs:
           flutter test --no-pub
       - name: Build the signed release APK
         working-directory: mobile
-        run: flutter build apk --release --no-pub --build-number="$BETA_BUILD_NUMBER" --dart-define-from-file=config.json
+        # Pub also regenerates platform registrants for release, excluding the
+        # integration_test dev plugin. --no-pub retains its debug registration.
+        run: |
+          flutter build apk --release --build-number="$BETA_BUILD_NUMBER" --dart-define-from-file=config.json
+          git diff --exit-code -- pubspec.lock
       - name: Verify the APK signature and record its checksum
         shell: bash
         run: |

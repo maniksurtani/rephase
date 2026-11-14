@@ -5,7 +5,7 @@ Android betas use Firebase App Distribution and the manual **Publish Android bet
 ## 1. Enable Firebase
 
 1. Open [Firebase Console](https://console.firebase.google.com/). Add Firebase to the **existing Google Cloud project** containing Rephase's web Google OAuth client. Select that existing project instead of creating another Google Cloud project. Analytics is optional and unnecessary here. App Distribution is a no-cost Firebase product.
-2. In Project settings → General → Your apps, add an **Android** app: package **`org.surtani.rephase`**, nickname **Rephase Android**. Use the existing app if already registered.
+2. In Project settings → General → Your apps, add an **Android** app: package **`org.surtani.rephase`**, nickname **Rephase Android**. Use the existing app if already registered. Leave the optional SHA-1 field blank for now; step 4 registers the release certificate.
 3. Skip SDK integration and downloading `google-services.json`. Note the **Firebase App ID** (`1:123456789:android:abcdef...`) and the **Project ID** (a name, not the project number).
 4. Open **App Distribution**, complete its setup if prompted, and create a tester group with alias **`friends-family`**. Add your email and your friends/family. The workflow will upload the first release; you need not upload a debug build to get started.
 
