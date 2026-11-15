@@ -18,7 +18,7 @@ if (releaseRequested && !signingPropertiesFile.exists()) {
 }
 
 android {
-    namespace = "org.surtani.rephase"
+    namespace = "app.rephase.Rephase"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -29,7 +29,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "org.surtani.rephase"
+        applicationId = "app.rephase.Rephase"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         // Uses the version code from pubspec.yaml. When using split APKs, 1000 * ABI_VERSION

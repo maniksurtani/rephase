@@ -93,13 +93,17 @@ Android uses battery-aware, inexact alarms, with reboot/package-update restorati
 
 For device acceptance, enable reminders on a saved trip with upcoming guidance, send a test, and check a scheduled reminder with the app closed and in airplane mode. Tap it to verify the trip/day, change the device's time zone, and verify that its absolute schedule stays fixed. Check Android reboot restoration, switching accounts, editing/deleting the trip and disabling reminders. Automated tests cover planning/queue/tap behavior and native plugin initialization; permission-dialog and actual OS delivery checks still require a device.
 
+## App identity
+
+Android application ID and iOS bundle ID are **`app.rephase.Rephase`**; the installed name is **Rephase**. The website/backend URL remains `https://rephase.surtani.org` and can change independently through `API_ORIGIN`. Register this exact package/bundle in Google OAuth, Firebase and Apple. Old `org.surtani.rephase` installations are separate apps; save account edits before switching and sign in again to restore account data. Local guest data and notification permissions do not automatically move.
+
 ## Configure Google sign-in
 
 Use the **same Google Cloud project** as the existing web OAuth client. Neither Firebase nor a new backend service is required. The native ID token targets the existing web client; the Worker separately verifies the native presenting client.
 
 1. Copy `mobile/config.example.json` to **`mobile/config.json`**. Keep `API_ORIGIN` as `https://rephase.surtani.org`. `GOOGLE_SERVER_CLIENT_ID` can remain empty: the app reads the existing web client ID from `/api/config`.
-2. In Google Cloud Console → APIs & Services → Credentials, create an **Android OAuth client** for package **`org.surtani.rephase`**. Register the SHA-1 of the certificate signing the installed build. For local debug builds, run `./gradlew signingReport` from `mobile/android` after installing the JDK/Android SDK. A CI-generated debug APK has its own debug certificate; use its fingerprint or a deliberately shared development signing key when testing Google login on that APK. Production signing needs a separate registered fingerprint.
-3. Create an **iOS OAuth client** with bundle identifier **`org.surtani.rephase`**. Put its public client ID into `GOOGLE_IOS_CLIENT_ID` in `mobile/config.json`. The launcher generates the reversed callback scheme in the ignored `ios/Flutter/Google.xcconfig`; no client secret or Firebase configuration is needed. Use the launcher after changing this value, rather than launching Flutter directly with stale native callback settings.
+2. In Google Cloud Console → APIs & Services → Credentials, create an **Android OAuth client** for package **`app.rephase.Rephase`**. Register the SHA-1 of the certificate signing the installed build. For local debug builds, run `./gradlew signingReport` from `mobile/android` after installing the JDK/Android SDK. A CI-generated debug APK has its own debug certificate; use its fingerprint or a deliberately shared development signing key when testing Google login on that APK. Production signing needs a separate registered fingerprint.
+3. Create an **iOS OAuth client** with bundle identifier **`app.rephase.Rephase`**. Put its public client ID into `GOOGLE_IOS_CLIENT_ID` in `mobile/config.json`. The launcher generates the reversed callback scheme in the ignored `ios/Flutter/Google.xcconfig`; no client secret or Firebase configuration is needed. Use the launcher after changing this value, rather than launching Flutter directly with stale native callback settings.
 4. Add the two native OAuth client IDs, separated by commas, to the GitHub **production environment variable** `GOOGLE_MOBILE_CLIENT_IDS`. Keep the existing `GOOGLE_CLIENT_ID` set to the web client. Redeploy the Worker through the existing verified-release workflow. Missing/invalid native configuration leaves native exchange disabled; browser sign-in remains unchanged.
 5. Rebuild the app and use Profile → Continue with Google. Verify the account, shared trip/preferences, automatic saves, sign-out and account switching on real devices. Google consent-screen test-user restrictions still apply if your OAuth project is in testing.
 
@@ -127,7 +131,7 @@ Opaque app-session credentials live in Keychain/Keystore. Guest and each account
 
 ## Verification and distribution
 
-For signed Android betas sent to friends and family, follow [Android beta distribution](DISTRIBUTION.md). It covers Firebase, GitHub OIDC, signing, release Google login and the manual **Publish Android beta** workflow. The debug APK and native verification workflows below remain separate. iOS TestFlight distribution comes later.
+For signed Android betas sent to friends and family, follow [Android beta distribution](DISTRIBUTION.md). It covers Firebase, GitHub OIDC, signing, release Google login and the manual **Publish Android beta** workflow. The debug APK and native verification workflows below remain separate. For signed iOS betas, follow [TestFlight setup](IOS_DISTRIBUTION.md). Both publishing workflows are manual on main.
 
 **Mobile checks** runs Flutter formatting, analysis and all widget/data tests for relevant changes. Ordinary feature-widget changes use this fast workflow without compiling Android/iOS apps or starting devices. Markdown-only changes skip mobile CI, and mobile-only changes skip the web Checks workflow.
 

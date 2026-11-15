@@ -14,6 +14,10 @@ on:
       - 'scripts/build-mobile-engine.mjs'
       - 'scripts/check-mobile-engine.mjs'
       - 'scripts/run-ios-runtime-test.mjs'
+      - 'scripts/prepare-ios-beta.py'
+      - 'scripts/verify-ios-beta.py'
+      - 'tests/ios_beta_test.py'
+      - '.github/workflows/ios-beta.yml'
       - 'tests/ios-runtime-runner.test.ts'
       - 'package.json'
       - 'package-lock.json'
@@ -35,6 +39,10 @@ on:
       - 'scripts/build-mobile-engine.mjs'
       - 'scripts/check-mobile-engine.mjs'
       - 'scripts/run-ios-runtime-test.mjs'
+      - 'scripts/prepare-ios-beta.py'
+      - 'scripts/verify-ios-beta.py'
+      - 'tests/ios_beta_test.py'
+      - '.github/workflows/ios-beta.yml'
       - 'tests/ios-runtime-runner.test.ts'
       - 'package.json'
       - 'package-lock.json'
@@ -63,6 +71,8 @@ jobs:
         with:
           node-version: '24'
           cache: npm
+      - name: Check iOS distribution preparation
+        run: python3 -m unittest discover -s tests -p ios_beta_test.py
       - run: npm ci
       - run: node scripts/build-mobile-engine.mjs
       - uses: ./.github/actions/setup-flutter

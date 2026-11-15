@@ -43,6 +43,7 @@ jobs:
           FIREBASE_SERVICE_ACCOUNT: ${{ vars.FIREBASE_SERVICE_ACCOUNT }}
           FIREBASE_TESTER_GROUP: ${{ vars.FIREBASE_TESTER_GROUP }}
           GOOGLE_SERVER_CLIENT_ID: ${{ vars.GOOGLE_SERVER_CLIENT_ID }}
+          API_ORIGIN: ${{ vars.API_ORIGIN }}
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           RELEASE_NOTES: ${{ inputs.release_notes }}
@@ -85,6 +86,7 @@ jobs:
         run: |
           build_tools=$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)
           "$build_tools/apksigner" verify --verbose --print-certs mobile/build/app/outputs/flutter-apk/app-release.apk
+          "$build_tools/aapt" dump badging mobile/build/app/outputs/flutter-apk/app-release.apk | grep -F "package: name='app.rephase.Rephase'"
           sha256sum mobile/build/app/outputs/flutter-apk/app-release.apk >> "$GITHUB_STEP_SUMMARY"
       - name: Install pinned Firebase CLI
         run: npm install --global firebase-tools@15.36.0

@@ -1,4 +1,4 @@
-package org.surtani.rephase
+package app.rephase.Rephase
 
 import io.flutter.embedding.android.FlutterActivity
 

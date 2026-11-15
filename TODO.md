@@ -1,6 +1,6 @@
 # Rephase build tasks
 
-Updated 2026-11-14. Active work is kept here; the previous complete checklist is preserved in [the task archive](docs/archive/TODO-2026-10-16.md). Release evidence is in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md).
+Updated 2026-11-15. Active work is kept here; the previous complete checklist is preserved in [the task archive](docs/archive/TODO-2026-10-16.md). Release evidence is in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md).
 
 ## Android beta distribution
 
@@ -145,7 +145,8 @@ Updated 2026-11-14. Active work is kept here; the previous complete checklist is
 - [x] Implement Today, Plan, Trips, Lounges and Profile with native controls and existing UX refinements.
 - [x] Verify the integrated app, offline native engine, Android APK and unsigned iOS compilation; 25 Flutter tests, two iOS runtime tests, 567 unit/runtime tests and 46 browser scenarios passed. See RELEASES.md.
 - [ ] Register native Google OAuth clients/signing fingerprints, configure the Worker allowlist, and verify real-device account/provider flows.
-- [ ] Choose distribution/signing for device testing and review store submission requirements, including Apple login policy before public iOS distribution.
+- [x] Choose Firebase App Distribution for Android and TestFlight for iOS with manual GitHub publishing workflows.
+- [ ] Complete signing/provider setup and review Apple login policy before external iOS testing/public distribution.
 
 ## Retain stay days after replanning
 
@@ -206,3 +207,12 @@ Updated 2026-11-14. Active work is kept here; the previous complete checklist is
 
 - [ ] Decide whether to migrate old rules-mode preferences and retire that planner; preserve existing behavior until then.
 - [ ] Broader notification, accessibility/localization and store distribution should follow device testing and actual usage.
+
+## Native identity and TestFlight distribution — 15 November 2026
+
+- [x] Rename native app identifiers to `app.rephase.Rephase`, including Android activity and iOS test bundles/callback fallback.
+- [x] Make the release API origin configurable independently from the package identity.
+- [x] Add a manual main-only TestFlight workflow using pinned Apple-Actions, temporary signing configuration and exported IPA checks.
+- [x] Document Firebase and Apple signing/OAuth/tester setup for the new identity and Google Cloud project `rephase-514702`.
+- [ ] Verify focused release tooling tests and native builds for the renamed identity.
+- [ ] Owner: register the new OAuth/Firebase/Apple apps, configure signing secrets, publish first betas and verify login/reminders on physical devices.

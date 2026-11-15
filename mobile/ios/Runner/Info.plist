@@ -35,6 +35,9 @@
 			</array>
 		</dict>
 	</array>
+	<!-- HTTPS and OS-provided secure storage only; no non-exempt encryption. -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>LSApplicationQueriesSchemes</key>

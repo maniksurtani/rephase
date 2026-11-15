@@ -1,6 +1,7 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { mobileApiOrigin } from './mobile-release-config.mjs';
 
 // Java Properties.load uses ISO-8859-1, not UTF-8. Escape secrets as values so
 // punctuation, newlines and non-ASCII passwords cannot become new properties.
@@ -72,7 +73,10 @@ export function betaConfiguration(env, now = Date.now()) {
     keystore,
     password,
     buildNumber,
-    publicConfig: { API_ORIGIN: 'https://rephase.surtani.org', GOOGLE_SERVER_CLIENT_ID: client },
+    publicConfig: {
+      API_ORIGIN: mobileApiOrigin(env.API_ORIGIN || undefined),
+      GOOGLE_SERVER_CLIENT_ID: client,
+    },
   };
 }
 

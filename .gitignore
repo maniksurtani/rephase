@@ -19,3 +19,6 @@ gha-creds-*.json
 mobile/assets/engine/*.js
 mobile/assets/engine/*.json
 mobile/assets/engine/*.txt
+*.p8
+*.mobileprovision
+__pycache__/

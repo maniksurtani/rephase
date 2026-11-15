@@ -84,7 +84,7 @@ if (config.API_ORIGIN) {
 }
 const reverse = config.GOOGLE_IOS_CLIENT_ID
   ? config.GOOGLE_IOS_CLIENT_ID.split('.').reverse().join('.')
-  : 'org.surtani.rephase.auth';
+  : 'app.rephase.Rephase.auth';
 await writeFile(
   resolve(mobile, 'ios/Flutter/Google.xcconfig'),
   `// Generated from ignored mobile/config.json; public OAuth IDs only.\nREPHASE_GOOGLE_REVERSED_CLIENT_ID = ${reverse}\n`,

@@ -40,6 +40,21 @@ describe('Android beta preparation', () => {
     );
   });
 
+  it('supports a future backend domain without changing the app identity', () => {
+    expect(
+      betaConfiguration({ ...environment, API_ORIGIN: 'https://api.example.com' }).publicConfig
+        .API_ORIGIN,
+    ).toBe('https://api.example.com');
+    for (const origin of [
+      'http://example.com',
+      'https://example.com/',
+      'https://user:secret@example.com',
+      'https://example.com?key=x',
+    ]) {
+      expect(() => betaConfiguration({ ...environment, API_ORIGIN: origin })).toThrow();
+    }
+  });
+
   it('gives a later rerun a newer Android build number independent of the workflow run number', () => {
     const first = betaConfiguration(environment, Date.UTC(2026, 10, 14));
     const later = betaConfiguration(environment, Date.UTC(2026, 10, 14) + 60_000);

@@ -1,5 +1,13 @@
 # Release evidence
 
+## 15 November 2026 — native identity and manual TestFlight publishing
+
+Android application/namespace/activity identifiers and iOS app/test bundle identifiers now use `app.rephase.Rephase`. Rephase remains the display name. Release `API_ORIGIN` is configurable independently in both mobile publishing environments; the existing website remains the default backend. Existing installations are separate apps; account data is restored through Google sign-in rather than moving local guest data.
+
+Added a main-only, manually triggered **Publish iOS beta** workflow. It validates the exact team/bundle and App Store distribution profile, imports an Apple Distribution certificate into a temporary keychain, builds/exports with Flutter, checks the IPA identity/build and uploads through pinned Apple-Actions. The workflow attaches test notes and optionally assigns tester groups/submits external beta review. Temporary signing files are removed. It does not upload public IPA artifacts or deploy Cloudflare. Detailed owner setup is in [Android distribution](mobile/DISTRIBUTION.md) and [TestFlight distribution](mobile/IOS_DISTRIBUTION.md).
+
+Five Android release-configuration tests and four iOS preparation/export tests pass, along with actionlint and diff checks. Native build/runtime verification is being recorded below after CI. Actual Apple signing, TestFlight/Firebase uploads, external beta approval and real-device OAuth acceptance remain pending the owner's provider registration and credentials.
+
 ## 14 November 2026 — Android beta distribution preparation
 
 Added the manual Publish Android beta workflow, Firebase OIDC bootstrap script and [account-owner setup guide](mobile/DISTRIBUTION.md). The workflow uses the existing package and Cloudflare backend, a persistent PKCS12 signing key, serialized increasing build numbers, a Firebase tester group and release notes. Google trust is restricted to the repository's immutable IDs, main branch, workflow and android-beta environment. Signing secrets are used only in temporary files; no Google service-account key or public GitHub APK artifact is created. The real app is built, rather than the integration-test host.

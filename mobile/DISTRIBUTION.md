@@ -1,11 +1,11 @@
 # Android beta distribution
 
-Android betas use Firebase App Distribution and the manual **Publish Android beta** workflow. The package stays `org.surtani.rephase`, using the existing Cloudflare backend and live account data. Firebase hosts the APK and manages invitations; this flow needs no Firebase SDK, Firebase Authentication, Analytics or Google Play account. iOS/TestFlight comes later.
+Android betas use Firebase App Distribution and the manual **Publish Android beta** workflow. The package is `app.rephase.Rephase`, using the existing Cloudflare backend and live account data. Firebase hosts the APK and manages invitations; this flow needs no Firebase SDK, Firebase Authentication, Analytics or Google Play account. For iOS, follow [TestFlight setup](IOS_DISTRIBUTION.md). Both publishing workflows run manually on main; pushes do not distribute apps.
 
 ## 1. Enable Firebase
 
-1. Open [Firebase Console](https://console.firebase.google.com/). Add Firebase to the **existing Google Cloud project** containing Rephase's web Google OAuth client. Select that existing project instead of creating another Google Cloud project. Analytics is optional and unnecessary here. App Distribution is a no-cost Firebase product.
-2. In Project settings → General → Your apps, add an **Android** app: package **`org.surtani.rephase`**, nickname **Rephase Android**. Use the existing app if already registered. Leave the optional SHA-1 field blank for now; step 4 registers the release certificate.
+1. Open [Firebase Console](https://console.firebase.google.com/). Add Firebase to the **existing Google Cloud project** containing Rephase's new web Google OAuth client: **`rephase-514702`**. Select that existing project instead of creating another Google Cloud project. Analytics is optional and unnecessary here. App Distribution is a no-cost Firebase product.
+2. In Project settings → General → Your apps, add an **Android** app: package **`app.rephase.Rephase`**, nickname **Rephase Android**. Use an existing app only if its package is exactly `app.rephase.Rephase`; Firebase cannot rename a registered package. An old `org.surtani.rephase` registration needs a new app record in the same project. Leave the optional SHA-1 field blank for now; step 4 registers the release certificate.
 3. Skip SDK integration and downloading `google-services.json`. Note the **Firebase App ID** (`1:123456789:android:abcdef...`) and the **Project ID** (a name, not the project number).
 4. Open **App Distribution**, complete its setup if prompted, and create a tester group with alias **`friends-family`**. Add your email and your friends/family. The workflow will upload the first release; you need not upload a debug build to get started.
 
@@ -19,11 +19,11 @@ Android betas use Firebase App Distribution and the manual **Publish Android bet
    gcloud auth login
    ```
 
-3. From the repository root, pull the workflow and run the setup script, replacing `YOUR_PROJECT_ID`:
+3. From the repository root, pull the workflow and run the setup script, using the new project ID:
 
    ```bash
    git pull --ff-only
-   bash scripts/configure-android-beta.sh YOUR_PROJECT_ID
+   bash scripts/configure-android-beta.sh rephase-514702
    ```
 
    Your Google account needs permission to enable APIs and manage IAM, service accounts and Workload Identity Federation. Project owners normally have this; an organization may require an administrator to run this step.
@@ -36,6 +36,8 @@ Android betas use Firebase App Distribution and the manual **Publish Android bet
    | --- | --- |
    | `FIREBASE_APP_ID` | Firebase Android app ID from step 1 |
    | `GOOGLE_SERVER_CLIENT_ID` | Existing **web** OAuth client ID; copy `GOOGLE_CLIENT_ID` from the GitHub **production** environment |
+
+   Optional variable **`API_ORIGIN`** changes the compiled backend URL; its default is `https://rephase.surtani.org`. Use an exact HTTPS origin without a trailing slash. A domain change needs new mobile builds, not a package rename. Keep the old endpoint available for installed builds until users update.
 
    These are public IDs. Do not put an OAuth client secret or flight-provider key in the app configuration.
 
@@ -72,7 +74,7 @@ The second command prompts for the password without putting it in shell history.
    keytool -list -v -keystore "$HOME/.rephase-signing/rephase-release.p12" -alias rephase
    ```
 
-2. In Google Cloud → APIs & Services → Credentials, create an **Android OAuth client** for package **`org.surtani.rephase`** and the **SHA-1** above. Name it **Rephase Android beta**. Use an existing client if that exact package/certificate pair is already registered. The debug certificate is different.
+2. In Google Cloud → APIs & Services → Credentials, create an **Android OAuth client** for package **`app.rephase.Rephase`** and the **SHA-1** above. Name it **Rephase Android beta**. Use an existing client if that exact package/certificate pair is already registered. The debug certificate is different.
 3. Append the new Android client ID to the comma-separated **`GOOGLE_MOBILE_CLIENT_IDS`** variable in GitHub's **production** environment. Preserve existing Android/iOS client IDs. `GOOGLE_CLIENT_ID` stays the web client ID.
 4. Run **Deploy to Cloudflare** on main to activate the allowlist. This uses the existing verified-release workflow and updates the backend configuration; it does not publish the APK.
 5. Check Google OAuth's audience settings if friends get an access-denied message. Firebase group membership and Google OAuth test-user restrictions are separate. A consent screen in Testing with scopes subject to test-user restrictions needs those testers added there too.
@@ -83,7 +85,8 @@ The second command prompts for the password without putting it in shell history.
 2. The workflow validates settings before compiling, checks the bundled offline planner and Flutter code/tests, builds the actual release app, verifies its signature, then uploads it to `friends-family`. It does not repeat the full web-browser suite or iOS builds. Ordinary pushes do not distribute apps.
 3. Testers accept Firebase's email invitation with the invited Google account and install on Android. Android may require permission for that browser/tester app to install unknown apps. Updates are distributed through Firebase, not Google Play automatic updates. Firebase builds are available for 150 days.
 4. If a locally built debug app is already installed, its different signing key prevents an in-place update. Ensure account changes are saved, then uninstall the debug app and install the beta. Uninstalling removes device-only/guest data. Subsequent beta updates retain data because the key and package stay the same.
-5. Check first launch, Google login, an existing trip, flight lookup, offline planning and notification permissions/reminders. This beta uses the same live account data as the website.
+5. The package rename creates a separate app from `org.surtani.rephase`. Sign in to the same Google account to restore server-side trips/settings. Guest data does not transfer automatically. Save any old account edits, then disable reminders in the old app or uninstall it to avoid duplicates.
+6. Check first launch, Google login, an existing trip, flight lookup, offline planning and notification permissions/reminders. This beta uses the same live account data as the website.
 
 The workflow records the commit, increasing build number, APK checksum and notes. Builds use seconds since 2020, including reruns, and publishing is serialized. Correct configuration and rerun if necessary. The native integration-test APK is never distributed; signed APKs are delivered through Firebase rather than public GitHub artifacts.
 

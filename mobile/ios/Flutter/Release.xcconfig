@@ -2,3 +2,4 @@
 #include "Generated.xcconfig"
 #include "GoogleDefaults.xcconfig"
 #include? "Google.xcconfig"
+#include? "BetaSigning.xcconfig"
