@@ -98,7 +98,7 @@ The app version comes from `mobile/pubspec.yaml`. iOS build numbers use `GITHUB_
 
 ## Backend domain changes
 
-`app.rephase.Rephase` stays the same when the website moves. Update the Cloudflare custom domain and web OAuth origins, then set `API_ORIGIN` in **both** mobile publishing environments and rebuild. Keep the old backend endpoint operating for installed builds until users update; the app's API origin is compiled into each release.
+`app.rephase.Rephase` stays the same when the website moves. Update the Cloudflare custom domain and web OAuth origins, then set `API_ORIGIN` in **both** mobile publishing environments and rebuild. Update the informational website links as part of that domain move too. Keep the old backend endpoint operating for installed builds until users update; the app's API origin is compiled into each release.
 
 ## Verification status
 

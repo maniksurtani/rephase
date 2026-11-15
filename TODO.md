@@ -214,5 +214,5 @@ Updated 2026-11-15. Active work is kept here; the previous complete checklist is
 - [x] Make the release API origin configurable independently from the package identity.
 - [x] Add a manual main-only TestFlight workflow using pinned Apple-Actions, temporary signing configuration and exported IPA checks.
 - [x] Document Firebase and Apple signing/OAuth/tester setup for the new identity and Google Cloud project `rephase-514702`.
-- [ ] Verify focused release tooling tests and native builds for the renamed identity.
+- [x] Verify focused release tooling tests, a locally signed Android release, Flutter/web checks, and Android/iOS native build/runtime checks for the renamed identity. See RELEASES.md.
 - [ ] Owner: register the new OAuth/Firebase/Apple apps, configure signing secrets, publish first betas and verify login/reminders on physical devices.

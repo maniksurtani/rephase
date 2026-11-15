@@ -43,7 +43,7 @@ Android betas use Firebase App Distribution and the manual **Publish Android bet
 
 ## 3. Generate the signing key once
 
-Create it outside the repository on your Mac. Keep an encrypted backup of the file and password; the same key is needed for future beta updates.
+If you already created the permanent key in the earlier setup, reuse it; the package rename does not require a new signing key. Otherwise create it outside the repository on your Mac. Keep an encrypted backup of the file and password; the same key is needed for future beta updates.
 
 ```bash
 mkdir -p "$HOME/.rephase-signing"
