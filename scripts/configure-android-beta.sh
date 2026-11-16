@@ -22,7 +22,9 @@ fi
 account="rephase-distribution@$project.iam.gserviceaccount.com"
 pool=github-rephase
 provider=android-beta
-condition="assertion.repository_id == '1419941709' && assertion.repository_owner_id == '47146' && assertion.ref == 'refs/heads/main' && assertion.workflow_ref == '$repo/.github/workflows/android-beta.yml@refs/heads/main' && assertion.sub == 'repo:$repo:environment:android-beta'"
+# GitHub's immutable subject format adds @IDs to repository/owner names.
+# Check the individual claims so both subject formats retain the same scope.
+condition="assertion.repository_id == '1419941709' && assertion.repository_owner_id == '47146' && assertion.ref == 'refs/heads/main' && assertion.workflow_ref == '$repo/.github/workflows/android-beta.yml@refs/heads/main' && assertion.environment == 'android-beta'"
 
 gcloud services enable firebaseappdistribution.googleapis.com iam.googleapis.com iamcredentials.googleapis.com sts.googleapis.com --project="$project"
 if ! gcloud iam service-accounts describe "$account" --project="$project" >/dev/null 2>&1; then

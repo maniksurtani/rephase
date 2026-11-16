@@ -1,5 +1,13 @@
 # Release evidence
 
+## 16 November 2026 — Google login migration and first Firebase build attempt
+
+[Cloudflare deployment 43843779468](https://github.com/maniksurtani/rephase/actions/runs/43843779468) successfully reused the verified `718aff9` release and published Worker version `85f0cba9-97b7-4dfd-b14f-349350842b6e`. The public configuration now exposes the new project `rephase-514702` web client. Deployment logs confirm the configured native client allowlist, and a credential-free native auth probe returned the expected HTTP 400 missing-credential response rather than disabled configuration. This is a configuration/readiness check, not a real-user Google login test.
+
+The first Android run was cancelled before upload to remove Firebase CLI's one-hour bearer download link from this public repository's logs. Filtering preserves Firebase's failure status and keeps the authenticated console/tester links. Actionlint and focused stream/failure-propagation checks passed.
+
+[Android publishing run 43844564503](https://github.com/maniksurtani/rephase/actions/runs/43844564503) passed configuration/signing checks, offline planner verification, Flutter checks, signed APK compilation and package/signature verification, but failed Google federation before any Firebase upload. GitHub reports immutable subject prefix `repo:maniksurtani@47146/rephase@1419941709`; the bootstrap had required the legacy subject string. The corrected provider condition checks the same immutable repository/owner IDs, main ref, exact workflow and environment claims directly. It needs an owner-authenticated bootstrap rerun because this workspace cannot administer Google Cloud. The workflow now checks federation/impersonation before compilation and authenticates afresh before upload. No beta has been distributed yet.
+
 ## 16 November 2026 — Firebase registration import
 
 Validated the owner's Firebase registration for `rephase-514702` and `app.rephase.Rephase`. The existing Android bootstrap now accepts a downloaded google-services JSON as its optional second argument, checks the project number against Google Cloud and the exact Android package, and imports only the Firebase App ID and unique web OAuth client ID into GitHub environment variables. It does not copy the Firebase API key or JSON into the app/repository, and checks GitHub variable access before mutating cloud IAM. Generated Firebase configuration filenames are gitignored.

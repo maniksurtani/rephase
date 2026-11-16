@@ -7,7 +7,8 @@ Updated 2026-11-16. Active work is kept here; the previous complete checklist is
 - [x] Add a manual signed-release workflow for Firebase App Distribution, short-lived Google credentials, tester groups and release notes.
 - [x] Document Firebase, signing-key, GitHub environment and release OAuth setup for friends and family.
 - [x] Validate release preparation and workflow syntax; build a signed release APK with a disposable key and verify its signature and bundled planner. See RELEASES.md.
-- [ ] Configure the Firebase project, signing secrets and release OAuth client; publish and test the first beta on a device. Requires account-owner setup.
+- [x] Configure the Firebase project, signing secrets and release OAuth client; deploy the new Google web/native client configuration to Cloudflare.
+- [ ] Apply the corrected Firebase trust condition for GitHub immutable OIDC subjects, then publish and test the first beta on a device. The signed release build succeeds; the initial upload attempt stopped at federation authentication.
 
 ## Flight lookup recovery
 

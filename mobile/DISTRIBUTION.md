@@ -97,3 +97,9 @@ The workflow records the commit, increasing build number, APK checksum and notes
 Firebase uploading, installation and release-certificate Google login require the setup above and must be checked with your actual account/device. For a later Google Play release, explicitly plan Play App Signing and certificate continuity; retain the signing-key backup.
 
 References: [Firebase CLI distribution](https://firebase.google.com/docs/app-distribution/android/distribute-cli), [service-account authentication](https://firebase.google.com/docs/app-distribution/authenticate-service-account?platform=android), [GitHub OIDC authentication](https://github.com/google-github-actions/auth).
+
+## GitHub immutable OIDC subjects
+
+If authentication reports `The given credential is rejected by the attribute condition`, update your checkout and rerun the bootstrap command above. Older setup versions matched the legacy `repo:owner/repository:environment:android-beta` subject literally. This repository now uses GitHub's immutable subject format with owner/repository IDs. The current bootstrap checks the individual repository ID, owner ID, main ref, exact workflow ref and `environment == android-beta` claims instead; it supports both subject formats without widening access. Do not disable immutable subjects or remove the repository/workflow/environment restrictions.
+
+The publishing workflow checks federation and service-account impersonation before compiling, without exporting credentials to build steps, then authenticates again immediately before upload.
