@@ -3,14 +3,22 @@ set -euo pipefail
 
 # Run after enabling Firebase on the existing Google Cloud project and creating
 # the android-beta environment in GitHub. Uses your gcloud and gh login sessions.
-project=${1:?Usage: bash scripts/configure-android-beta.sh GOOGLE_CLOUD_PROJECT_ID}
+project=${1:?Usage: bash scripts/configure-android-beta.sh GOOGLE_CLOUD_PROJECT_ID [GOOGLE_SERVICES_JSON]}
+firebase_file=${2:-}
+script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 [[ "$project" =~ ^[a-z][a-z0-9-]{4,28}[a-z0-9]$ ]] || { echo 'Invalid project ID.' >&2; exit 1; }
 command -v gcloud >/dev/null
 command -v gh >/dev/null
 repo=maniksurtani/rephase
 gh api "repos/$repo/environments/android-beta" >/dev/null
+gh api "repos/$repo/environments/android-beta/variables" >/dev/null
 project_number=$(gcloud projects describe "$project" --format='value(projectNumber)')
 [[ "$project_number" =~ ^[0-9]+$ ]]
+if [[ -n "$firebase_file" ]]; then
+  # Validate before changing cloud IAM. Read only IDs; never source/eval the file.
+  firebase_config=$(node "$script_dir/firebase-app-config.mjs" "$firebase_file" "$project" "$project_number")
+  read -r firebase_app_id google_server_client_id <<< "$firebase_config"
+fi
 account="rephase-distribution@$project.iam.gserviceaccount.com"
 pool=github-rephase
 provider=android-beta
@@ -45,4 +53,12 @@ gh variable set FIREBASE_WORKLOAD_IDENTITY_PROVIDER --repo "$repo" --env android
   --body "projects/$project_number/locations/global/workloadIdentityPools/$pool/providers/$provider"
 gh variable set FIREBASE_TESTER_GROUP --repo "$repo" --env android-beta --body friends-family
 echo 'Firebase trust configured for this repository, main branch, beta workflow and GitHub environment only.'
-echo 'Next: add FIREBASE_APP_ID, GOOGLE_SERVER_CLIENT_ID and the signing secrets described in mobile/DISTRIBUTION.md.'
+if [[ -n "$firebase_file" ]]; then
+  gh variable set FIREBASE_APP_ID --repo "$repo" --env android-beta --body "$firebase_app_id"
+  gh variable set GOOGLE_SERVER_CLIENT_ID --repo "$repo" --env android-beta --body "$google_server_client_id"
+  echo 'Firebase App ID and web OAuth client ID imported. The JSON and API key were not copied.'
+  echo 'Next: add signing secrets, register the Android OAuth client, and configure tester access. See mobile/DISTRIBUTION.md.'
+  echo 'Before publishing, production GOOGLE_CLIENT_ID must match the imported web client; configure its website origin and redeploy the Worker.'
+else
+  echo 'Next: add FIREBASE_APP_ID, GOOGLE_SERVER_CLIENT_ID and the signing secrets described in mobile/DISTRIBUTION.md.'
+fi

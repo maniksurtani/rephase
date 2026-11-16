@@ -23,14 +23,16 @@ Android betas use Firebase App Distribution and the manual **Publish Android bet
 
    ```bash
    git pull --ff-only
-   bash scripts/configure-android-beta.sh rephase-514702
+   bash scripts/configure-android-beta.sh rephase-514702 "$HOME/Downloads/google-services-2.json"
    ```
+
+   Adjust the JSON path to the Firebase configuration you downloaded. The optional second argument imports only the Firebase App ID and web OAuth client ID, verifies the exact package/project, and never copies the JSON or Firebase API key into the repository or app. It refuses ambiguous/mismatched clients before changing cloud IAM. Without this argument, enter those two variables yourself as described below.
 
    Your Google account needs permission to enable APIs and manage IAM, service accounts and Workload Identity Federation. Project owners normally have this; an organization may require an administrator to run this step.
 
    The script creates a dedicated service account with Firebase App Distribution Admin permissions, and OIDC trust restricted to this repository's immutable IDs, main branch, beta workflow and environment. It creates no downloadable Google service-account key. It sets four public GitHub environment variables: `FIREBASE_PROJECT_ID`, `FIREBASE_SERVICE_ACCOUNT`, `FIREBASE_WORKLOAD_IDENTITY_PROVIDER`, and `FIREBASE_TESTER_GROUP`. It can be rerun to update this dedicated setup. IAM changes can take several minutes to propagate.
 
-4. Add two more **variables** to the **android-beta** environment:
+4. If you supplied the JSON file, the script sets these two **android-beta variables** automatically. Otherwise add them manually:
 
    | Variable | Value |
    | --- | --- |
@@ -38,6 +40,8 @@ Android betas use Firebase App Distribution and the manual **Publish Android bet
    | `GOOGLE_SERVER_CLIENT_ID` | Existing **web** OAuth client ID; copy `GOOGLE_CLIENT_ID` from the GitHub **production** environment |
 
    Optional variable **`API_ORIGIN`** changes the compiled backend URL; its default is `https://rephase.surtani.org`. Use an exact HTTPS origin without a trailing slash. A domain change needs new mobile builds, not a package rename. Keep the old endpoint available for installed builds until users update.
+
+   When migrating Google projects, verify that the imported web client allows JavaScript origin `https://rephase.surtani.org`, update production `GOOGLE_CLIENT_ID` to match, register the new Android client/fingerprint, update production `GOOGLE_MOBILE_CLIENT_IDS`, and redeploy Cloudflare before publishing. The bootstrap script does not silently change live login configuration.
 
    These are public IDs. Do not put an OAuth client secret or flight-provider key in the app configuration.
 

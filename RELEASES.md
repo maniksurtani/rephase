@@ -1,5 +1,11 @@
 # Release evidence
 
+## 16 November 2026 — Firebase registration import
+
+Validated the owner's Firebase registration for `rephase-514702` and `app.rephase.Rephase`. The existing Android bootstrap now accepts a downloaded google-services JSON as its optional second argument, checks the project number against Google Cloud and the exact Android package, and imports only the Firebase App ID and unique web OAuth client ID into GitHub environment variables. It does not copy the Firebase API key or JSON into the app/repository, and checks GitHub variable access before mutating cloud IAM. Generated Firebase configuration filenames are gitignored.
+
+Eight focused importer/release-configuration tests pass, along with Bash syntax and diff checks. The supplied file parsed successfully without printing its API key. Cloud setup was not executed: this workspace has no Google Cloud admin identity and its GitHub credential returns HTTP 403 for environment changes, variables and secrets. The live web configuration still targets the old Google OAuth project. Signing, native OAuth registration, live-login migration and tester setup remain owner tasks described in mobile/DISTRIBUTION.md. No apps were distributed and no live auth configuration changed.
+
 ## 15 November 2026 — native identity and manual TestFlight publishing
 
 Android application/namespace/activity identifiers and iOS app/test bundle identifiers now use `app.rephase.Rephase`. Rephase remains the display name. Release `API_ORIGIN` is configurable independently in both mobile publishing environments; the existing website remains the default backend. Existing installations are separate apps; account data is restored through Google sign-in rather than moving local guest data.

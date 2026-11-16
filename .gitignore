@@ -21,4 +21,5 @@ mobile/assets/engine/*.json
 mobile/assets/engine/*.txt
 *.p8
 *.mobileprovision
+google-services*.json
 __pycache__/

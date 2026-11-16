@@ -1,6 +1,6 @@
 # Rephase build tasks
 
-Updated 2026-11-15. Active work is kept here; the previous complete checklist is preserved in [the task archive](docs/archive/TODO-2026-10-16.md). Release evidence is in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md).
+Updated 2026-11-16. Active work is kept here; the previous complete checklist is preserved in [the task archive](docs/archive/TODO-2026-10-16.md). Release evidence is in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md).
 
 ## Android beta distribution
 
@@ -216,3 +216,9 @@ Updated 2026-11-15. Active work is kept here; the previous complete checklist is
 - [x] Document Firebase and Apple signing/OAuth/tester setup for the new identity and Google Cloud project `rephase-514702`.
 - [x] Verify focused release tooling tests, a locally signed Android release, Flutter/web checks, and Android/iOS native build/runtime checks for the renamed identity. See RELEASES.md.
 - [ ] Owner: register the new OAuth/Firebase/Apple apps, configure signing secrets, publish first betas and verify login/reminders on physical devices.
+
+## Firebase registration handoff — 16 November 2026
+
+- [x] Validate uploaded Firebase metadata for `rephase-514702` / `app.rephase.Rephase`; extract only the public App ID and web OAuth ID.
+- [x] Extend the existing bootstrap to import those IDs directly from the owner's downloaded JSON after validating project/package identity.
+- [ ] Owner: run the bootstrap with Google Cloud/GitHub credentials, add permanent signing secrets, register the Android OAuth client, migrate live login configuration, and create the tester group. Workspace GitHub credentials return HTTP 403 for environment changes/variables/secrets, and no Google Cloud admin identity is available.
