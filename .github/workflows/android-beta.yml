@@ -100,11 +100,15 @@ jobs:
           FIREBASE_APP_ID: ${{ vars.FIREBASE_APP_ID }}
           FIREBASE_PROJECT_ID: ${{ vars.FIREBASE_PROJECT_ID }}
         run: |
+          # Firebase prints a one-hour bearer download URL. Keep it out of this
+          # public repository's logs; the console/tester links require sign-in.
+          # Preserve Firebase's failure status even though output is filtered.
+          set -o pipefail
           firebase appdistribution:distribute mobile/build/app/outputs/flutter-apk/app-release.apk \
             --app "$FIREBASE_APP_ID" --project "$FIREBASE_PROJECT_ID" \
             --groups "$BETA_TESTER_GROUP" \
             --release-notes-file "$RUNNER_TEMP/rephase-android-beta/release-notes.txt" \
-            --non-interactive
+            --non-interactive 2>&1 | sed '/Download the release binary (link expires in 1 hour):/d'
       - name: Remove signing files
         if: always()
         run: |
