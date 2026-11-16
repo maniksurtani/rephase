@@ -8,7 +8,9 @@ Updated 2026-11-16. Active work is kept here; the previous complete checklist is
 - [x] Document Firebase, signing-key, GitHub environment and release OAuth setup for friends and family.
 - [x] Validate release preparation and workflow syntax; build a signed release APK with a disposable key and verify its signature and bundled planner. See RELEASES.md.
 - [x] Configure the Firebase project, signing secrets and release OAuth client; deploy the new Google web/native client configuration to Cloudflare.
-- [ ] Apply the corrected Firebase trust condition for GitHub immutable OIDC subjects, then publish and test the first beta on a device. The signed release build succeeds; the initial upload attempt stopped at federation authentication.
+- [x] Apply the corrected Firebase trust condition and publish Android beta 0.1.0 (216991353) to the existing friends-and-family group; distribution succeeded for 2 testers.
+- [ ] Owner: update android-beta FIREBASE_TESTER_GROUP to friends-and-family so later builds use the verified alias by default. The successful distribution used the workflow override.
+- [ ] Verify fresh Google sign-in, existing trips and reminders on the installed Android beta.
 
 ## Flight lookup recovery
 
@@ -222,4 +224,4 @@ Updated 2026-11-16. Active work is kept here; the previous complete checklist is
 
 - [x] Validate uploaded Firebase metadata for `rephase-514702` / `app.rephase.Rephase`; extract only the public App ID and web OAuth ID.
 - [x] Extend the existing bootstrap to import those IDs directly from the owner's downloaded JSON after validating project/package identity.
-- [ ] Owner: run the bootstrap with Google Cloud/GitHub credentials, add permanent signing secrets, register the Android OAuth client, migrate live login configuration, and create the tester group. Workspace GitHub credentials return HTTP 403 for environment changes/variables/secrets, and no Google Cloud admin identity is available.
+- [x] Owner completed the bootstrap, signing secrets, Android OAuth client and tester setup; the new Google login configuration is deployed. Workspace GitHub credentials still cannot edit environment variables, so the final tester-group default correction remains an owner task above.

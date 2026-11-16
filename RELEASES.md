@@ -1,5 +1,13 @@
 # Release evidence
 
+## 16 November 2026 — first Android beta distributed
+
+The corrected GitHub federation condition passed authentication and service-account impersonation. [Android build/upload 43857151369](https://github.com/maniksurtani/rephase/actions/runs/43857151369) built and verified the signed `app.rephase.Rephase` APK from `3305a33` and uploaded **0.1.0 (216991353)** to Firebase release **`59u2l6iap1qc0`**. Release notes were saved. Assignment to the configured `friends-family` alias failed because the actual group is **`friends-and-family`**, with 2 testers.
+
+Added a group preflight and an existing-release distribution path to the manual workflow. Four focused tests and actionlint pass, covering pagination, missing/empty groups, exact release/group selection, API errors and exclusion of bearer download URLs from output. [Distribution run 43859098707](https://github.com/maniksurtani/rephase/actions/runs/43859098707) successfully assigned the existing uploaded APK to **friends-and-family** without recompiling, downloading or re-uploading it. [Install using an invited Google account](https://appdistribution.firebase.google.com/testerapps/1:237790511259:android:81a10faabca1883dcc463e/releases/59u2l6iap1qc0).
+
+The successful run used the `tester_group` override; the owner still needs to change the android-beta `FIREBASE_TESTER_GROUP` variable to `friends-and-family`, since this workspace cannot write environment variables. The bootstrap now preserves a configured group alias on reruns. Real-device Google sign-in, saved-trip loading and reminders remain owner acceptance checks. Cloudflare remains on the successfully deployed new Google login configuration recorded below; no further web deployment was needed.
+
 ## 16 November 2026 — Google login migration and first Firebase build attempt
 
 [Cloudflare deployment 43843779468](https://github.com/maniksurtani/rephase/actions/runs/43843779468) successfully reused the verified `718aff9` release and published Worker version `85f0cba9-97b7-4dfd-b14f-349350842b6e`. The public configuration now exposes the new project `rephase-514702` web client. Deployment logs confirm the configured native client allowlist, and a credential-free native auth probe returned the expected HTTP 400 missing-credential response rather than disabled configuration. This is a configuration/readiness check, not a real-user Google login test.

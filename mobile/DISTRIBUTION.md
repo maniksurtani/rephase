@@ -7,7 +7,7 @@ Android betas use Firebase App Distribution and the manual **Publish Android bet
 1. Open [Firebase Console](https://console.firebase.google.com/). Add Firebase to the **existing Google Cloud project** containing Rephase's new web Google OAuth client: **`rephase-514702`**. Select that existing project instead of creating another Google Cloud project. Analytics is optional and unnecessary here. App Distribution is a no-cost Firebase product.
 2. In Project settings → General → Your apps, add an **Android** app: package **`app.rephase.Rephase`**, nickname **Rephase Android**. Use an existing app only if its package is exactly `app.rephase.Rephase`; Firebase cannot rename a registered package. An old `org.surtani.rephase` registration needs a new app record in the same project. Leave the optional SHA-1 field blank for now; step 4 registers the release certificate.
 3. Skip SDK integration and downloading `google-services.json`. Note the **Firebase App ID** (`1:123456789:android:abcdef...`) and the **Project ID** (a name, not the project number).
-4. Open **App Distribution**, complete its setup if prompted, and create a tester group with alias **`friends-family`**. Add your email and your friends/family. The workflow will upload the first release; you need not upload a debug build to get started.
+4. Open **App Distribution** and use this project's existing group **`friends-and-family`**, or create your own group for a new setup. Add your email and your friends/family. Set GitHub's `android-beta` variable **`FIREBASE_TESTER_GROUP`** to the exact alias shown in Firebase, including `and` when present; a display name is not interchangeable with its alias. The bootstrap preserves an existing variable and defaults to `friends-family` only when unset. You need not upload a debug build to get started.
 
 ## 2. Connect GitHub to Firebase
 
@@ -86,7 +86,7 @@ The second command prompts for the password without putting it in shell history.
 ## 5. Publish and install
 
 1. Open [GitHub Actions](https://github.com/maniksurtani/rephase/actions) → **Publish Android beta** → **Run workflow**, select **main**, and enter brief notes about what to test.
-2. The workflow validates settings before compiling, checks the bundled offline planner and Flutter code/tests, builds the actual release app, verifies its signature, then uploads it to `friends-family`. It does not repeat the full web-browser suite or iOS builds. Ordinary pushes do not distribute apps.
+2. The workflow validates settings before compiling, checks the bundled offline planner and Flutter code/tests, builds the actual release app, verifies its signature, then uploads it to the configured tester group. It does not repeat the full web-browser suite or iOS builds. Ordinary pushes do not distribute apps.
 3. Testers accept Firebase's email invitation with the invited Google account and install on Android. Android may require permission for that browser/tester app to install unknown apps. Updates are distributed through Firebase, not Google Play automatic updates. Firebase builds are available for 150 days.
 4. If a locally built debug app is already installed, its different signing key prevents an in-place update. Ensure account changes are saved, then uninstall the debug app and install the beta. Uninstalling removes device-only/guest data. Subsequent beta updates retain data because the key and package stay the same.
 5. The package rename creates a separate app from `org.surtani.rephase`. Sign in to the same Google account to restore server-side trips/settings. Guest data does not transfer automatically. Save any old account edits, then disable reminders in the old app or uninstall it to avoid duplicates.
@@ -103,3 +103,16 @@ References: [Firebase CLI distribution](https://firebase.google.com/docs/app-dis
 If authentication reports `The given credential is rejected by the attribute condition`, update your checkout and rerun the bootstrap command above. Older setup versions matched the legacy `repo:owner/repository:environment:android-beta` subject literally. This repository now uses GitHub's immutable subject format with owner/repository IDs. The current bootstrap checks the individual repository ID, owner ID, main ref, exact workflow ref and `environment == android-beta` claims instead; it supports both subject formats without widening access. Do not disable immutable subjects or remove the repository/workflow/environment restrictions.
 
 The publishing workflow checks federation and service-account impersonation before compiling, without exporting credentials to build steps, then authenticates again immediately before upload.
+
+## Retry distribution without rebuilding
+
+If the APK uploaded successfully but assigning testers failed, open **Publish Android beta → Run workflow** and enter the release ID from its Firebase console URL into **existing_release**. For example, the first beta is `59u2l6iap1qc0`. Set **tester_group** to the correct alias if needed (`friends-and-family` for this project). This path authenticates, checks the group, and distributes that existing release without Flutter, an APK download, recompilation or another upload. Existing release notes remain unchanged. Leave **existing_release** blank for a new build.
+
+The tester-group override applies only to that run. Save the correct default for subsequent builds with:
+
+```bash
+gh variable set FIREBASE_TESTER_GROUP --repo maniksurtani/rephase \
+  --env android-beta --body friends-and-family
+```
+
+Group existence and membership are now checked before compilation. The check lists group aliases/names/counts when misconfigured, without exposing tester email addresses or private download links.

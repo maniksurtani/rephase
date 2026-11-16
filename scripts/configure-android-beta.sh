@@ -11,7 +11,10 @@ command -v gcloud >/dev/null
 command -v gh >/dev/null
 repo=maniksurtani/rephase
 gh api "repos/$repo/environments/android-beta" >/dev/null
-gh api "repos/$repo/environments/android-beta/variables" >/dev/null
+# Preserve a tester-group alias the owner has already configured.
+tester_group=$(gh api "repos/$repo/environments/android-beta/variables" --jq '.variables[] | select(.name == "FIREBASE_TESTER_GROUP") | .value')
+tester_group=${tester_group:-friends-family}
+[[ "$tester_group" =~ ^[a-z0-9-]+$ ]] || { echo 'FIREBASE_TESTER_GROUP must be one group alias.' >&2; exit 1; }
 project_number=$(gcloud projects describe "$project" --format='value(projectNumber)')
 [[ "$project_number" =~ ^[0-9]+$ ]]
 if [[ -n "$firebase_file" ]]; then
@@ -53,7 +56,7 @@ gh variable set FIREBASE_PROJECT_ID --repo "$repo" --env android-beta --body "$p
 gh variable set FIREBASE_SERVICE_ACCOUNT --repo "$repo" --env android-beta --body "$account"
 gh variable set FIREBASE_WORKLOAD_IDENTITY_PROVIDER --repo "$repo" --env android-beta \
   --body "projects/$project_number/locations/global/workloadIdentityPools/$pool/providers/$provider"
-gh variable set FIREBASE_TESTER_GROUP --repo "$repo" --env android-beta --body friends-family
+gh variable set FIREBASE_TESTER_GROUP --repo "$repo" --env android-beta --body "$tester_group"
 echo 'Firebase trust configured for this repository, main branch, beta workflow and GitHub environment only.'
 if [[ -n "$firebase_file" ]]; then
   gh variable set FIREBASE_APP_ID --repo "$repo" --env android-beta --body "$firebase_app_id"
