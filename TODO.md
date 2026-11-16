@@ -232,5 +232,5 @@ Updated 2026-11-16. Active work is kept here; the previous complete checklist is
 - [x] Add manual validate/build/upload modes, shared Apple secret names, matching certificate/profile preflight and exported signature/version/icon checks.
 - [x] Preserve Rephase's offline planner verification, cached Flutter, public-repository artifact policy and release plugin registration fix.
 - [x] Document reusable Apple credentials, the Rephase-specific profile/OAuth client, manual tester assignment and owner setup.
-- [ ] Verify the unsigned release archive on GitHub's macOS runner.
+- [x] Verify the unsigned release archive on GitHub's macOS runner: run `43862210377` passed with Xcode 26.3, including identity/version/icons; see RELEASES.md.
 - [ ] Owner: configure `ios-beta` Apple secrets/Google variables, register Rephase in App Store Connect, add its iOS OAuth client to the Worker and publish the first TestFlight beta.

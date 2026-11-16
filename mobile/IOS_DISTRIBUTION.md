@@ -2,6 +2,8 @@
 
 [Publish iOS beta](https://github.com/maniksurtani/rephase/actions/workflows/ios-beta.yml) follows the working [Zerocal TestFlight workflow](https://github.com/maniksurtani/zerocal/blob/main/.github/workflows/ios-testflight.yml): an unsigned Flutter archive, manual signing at export, and Apple's `altool` for validation/upload. It runs **manually on main**, never on a push. The bundle ID is **`app.rephase.Rephase`**, including the capital `R`; the installed name is **Rephase**.
 
+[Unsigned release validation passed](https://github.com/maniksurtani/rephase/actions/runs/43862210377) on macOS 15 / Xcode 26.3 for version 0.1.0 (1.1). Signing and upload remain pending owner credentials.
+
 There are three modes:
 
 | Mode | What it does | Required configuration |
@@ -16,7 +18,7 @@ Rephase is a public repository: unlike private Zerocal, this workflow does not a
 
 1. In Apple Developer, register **`app.rephase.Rephase`** and create its **App Store Connect distribution profile** using the same Apple Distribution certificate as Zerocal. In App Store Connect, create the Rephase app record for this bundle ID.
 2. Create an **iOS OAuth client** for this bundle ID in Google Cloud project **`rephase-514702`**. Add its client ID to the production Worker's `GOOGLE_MOBILE_CLIENT_IDS`, preserving the working Android client, and redeploy the Worker. Reuse Rephase's existing web OAuth client as `GOOGLE_SERVER_CLIENT_ID`.
-3. Create the GitHub **`ios-beta`** environment and add the six Apple secrets and two Google variables listed below. Five Apple values can be reused from Zerocal if both apps are on the same Apple team; **the provisioning profile must be new and specific to Rephase**.
+3. Open the GitHub **`ios-beta`** environment and add the six Apple secrets and two Google variables listed below. Five Apple values can be reused from Zerocal if both apps are on the same Apple team; **the provisioning profile must be new and specific to Rephase**.
 4. Run **Publish iOS beta → upload**, version **0.1.0**. After processing, add What to Test and assign testers in App Store Connect → Rephase → TestFlight.
 
 GitHub does not let anyone retrieve stored secret values, including repository administrators. Copy the original saved `.p12`, password and `.p8` credentials into Rephase's environment; this workspace cannot extract them from Zerocal. If using organisation secrets, grant Rephase access instead. Do not regenerate or revoke Zerocal's working certificate just to add Rephase.
@@ -60,7 +62,7 @@ This authorizes upload; the distribution `.p12` separately signs the app. No App
 
 ## 5. GitHub environment
 
-Create **`ios-beta`** in [Rephase's environments](https://github.com/maniksurtani/rephase/settings/environments). Restrict deployment branches to **main**; optionally require your review before accessing credentials. The workflow independently requires main.
+Open **`ios-beta`** in [Rephase's environments](https://github.com/maniksurtani/rephase/settings/environments). The first validation run created this environment. Restrict deployment branches to **main**; optionally require your review before accessing credentials. The workflow independently requires main.
 
 Add these **secrets**, with exactly the same names as Zerocal:
 
