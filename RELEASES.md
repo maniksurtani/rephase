@@ -1,5 +1,11 @@
 # Release evidence
 
+## 16 November 2026 — TestFlight workflow follows Zerocal
+
+Inspected Zerocal's successful [TestFlight upload 43778367479](https://github.com/maniksurtani/zerocal/actions/runs/43778367479). Rephase now follows the same manual validate/build/upload modes, macOS 15/latest-stable Xcode, unsigned Flutter archive, separate signed export and Apple CLI validation/upload. Its six Apple secret names match Zerocal; the Rephase provisioning profile and Google iOS client remain app-specific. Credential preflight checks that the valid imported certificate matches the profile. The exported IPA is checked for identity, version, icons and signature. Rephase keeps run-number/attempt build versions, the offline planner check, cached SDK, release pub/plugin regeneration and no public IPA artifacts. Notes/tester groups are now assigned in App Store Connect after processing.
+
+Eight focused release-tooling tests, Bash syntax, actionlint and diff checks pass locally. Unsigned macOS archive verification is pending. Actual signing/upload require owner configuration of the `ios-beta` environment; credentials cannot be read back from Zerocal's GitHub secrets. No TestFlight upload or Cloudflare change has been performed by this change. See [setup steps](mobile/IOS_DISTRIBUTION.md).
+
 ## 16 November 2026 — first Android beta distributed
 
 The corrected GitHub federation condition passed authentication and service-account impersonation. [Android build/upload 43857151369](https://github.com/maniksurtani/rephase/actions/runs/43857151369) built and verified the signed `app.rephase.Rephase` APK from `3305a33` and uploaded **0.1.0 (216991353)** to Firebase release **`59u2l6iap1qc0`**. Release notes were saved. Assignment to the configured `friends-family` alias failed because the actual group is **`friends-and-family`**, with 2 testers.

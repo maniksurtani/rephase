@@ -225,3 +225,12 @@ Updated 2026-11-16. Active work is kept here; the previous complete checklist is
 - [x] Validate uploaded Firebase metadata for `rephase-514702` / `app.rephase.Rephase`; extract only the public App ID and web OAuth ID.
 - [x] Extend the existing bootstrap to import those IDs directly from the owner's downloaded JSON after validating project/package identity.
 - [x] Owner completed the bootstrap, signing secrets, Android OAuth client and tester setup; the new Google login configuration is deployed. Workspace GitHub credentials still cannot edit environment variables, so the final tester-group default correction remains an owner task above.
+
+## TestFlight workflow aligned with Zerocal — 16 November 2026
+
+- [x] Inspect Zerocal's successful TestFlight upload and reuse its separate archive/export and Apple CLI upload pattern.
+- [x] Add manual validate/build/upload modes, shared Apple secret names, matching certificate/profile preflight and exported signature/version/icon checks.
+- [x] Preserve Rephase's offline planner verification, cached Flutter, public-repository artifact policy and release plugin registration fix.
+- [x] Document reusable Apple credentials, the Rephase-specific profile/OAuth client, manual tester assignment and owner setup.
+- [ ] Verify the unsigned release archive on GitHub's macOS runner.
+- [ ] Owner: configure `ios-beta` Apple secrets/Google variables, register Rephase in App Store Connect, add its iOS OAuth client to the Worker and publish the first TestFlight beta.

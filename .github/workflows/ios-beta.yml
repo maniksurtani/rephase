@@ -3,10 +3,16 @@ name: Publish iOS beta
 on:
   workflow_dispatch:
     inputs:
-      release_notes:
-        description: What should testers try? Published as TestFlight What to Test.
+      mode:
+        description: 'validate: unsigned archive; build: signed IPA check; upload: publish to TestFlight'
         required: true
-        default: Please try trip planning, Google sign-in, lounge access and reminders.
+        default: build
+        type: choice
+        options: [build, upload, validate]
+      version:
+        description: Marketing version (major.minor.patch)
+        required: true
+        default: '0.1.0'
         type: string
 
 permissions:
@@ -19,35 +25,43 @@ concurrency:
 jobs:
   publish:
     if: github.ref == 'refs/heads/main'
-    runs-on: macos-latest
+    runs-on: macos-15
     timeout-minutes: 60
     environment: ios-beta
+    env:
+      CI: 'true'
+      FLUTTER_SUPPRESS_ANALYTICS: 'true'
+      IOS_MODE: ${{ inputs.mode }}
+      IOS_VERSION: ${{ inputs.version }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           persist-credentials: false
-      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
-        with:
-          node-version: '24'
-          cache: npm
-      - name: Validate configuration and install the provisioning profile
+      - name: Validate settings and prepare temporary files
         run: python3 scripts/prepare-ios-beta.py
         env:
-          APPLE_TEAM_ID: ${{ vars.APPLE_TEAM_ID }}
-          APPSTORE_API_KEY_ID: ${{ vars.APPSTORE_API_KEY_ID }}
-          APPSTORE_ISSUER_ID: ${{ vars.APPSTORE_ISSUER_ID }}
-          APPSTORE_API_PRIVATE_KEY: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
-          IOS_DISTRIBUTION_CERTIFICATE_BASE64: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_BASE64 }}
-          IOS_DISTRIBUTION_CERTIFICATE_PASSWORD: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_PASSWORD }}
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+          IOS_DISTRIBUTION_P12_BASE64: ${{ secrets.IOS_DISTRIBUTION_P12_BASE64 }}
+          IOS_DISTRIBUTION_P12_PASSWORD: ${{ secrets.IOS_DISTRIBUTION_P12_PASSWORD }}
           IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
           GOOGLE_SERVER_CLIENT_ID: ${{ vars.GOOGLE_SERVER_CLIENT_ID }}
           GOOGLE_IOS_CLIENT_ID: ${{ vars.GOOGLE_IOS_CLIENT_ID }}
           API_ORIGIN: ${{ vars.API_ORIGIN }}
-      - name: Import the distribution certificate into a temporary keychain
-        uses: apple-actions/import-codesign-certs@63fff01cd422d4b7b855d40ca1e9d34d2de9427d # v3
+      - name: Select latest stable Xcode on the runner
+        uses: maxim-lobanov/setup-xcode@1242409711ff5721add51979e9e11e23ebb7e5a4 # v1
         with:
-          p12-file-base64: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_BASE64 }}
-          p12-password: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_PASSWORD }}
+          xcode-version: latest-stable
+      - name: Install and validate the signing identity and profile
+        if: inputs.mode != 'validate'
+        run: bash scripts/install-ios-signing.sh
+        env:
+          IOS_DISTRIBUTION_P12_PASSWORD: ${{ secrets.IOS_DISTRIBUTION_P12_PASSWORD }}
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+          cache: npm
       - run: npm ci
       - run: npx playwright install chromium
       - name: Verify and bundle the offline planner
@@ -55,45 +69,57 @@ jobs:
       - uses: ./.github/actions/setup-flutter
         with:
           profile: ios
-      - name: Record the Xcode version
-        run: xcodebuild -version
-      - run: flutter pub get --enforce-lockfile
+      - name: Prepare iOS dependencies
         working-directory: mobile
-      - name: Check Flutter code
+        run: |
+          xcodebuild -version
+          xcrun --sdk iphoneos --show-sdk-version
+          if ! command -v pod > /dev/null; then brew install cocoapods; fi
+          flutter config --no-enable-swift-package-manager
+          flutter pub get --enforce-lockfile
+      - name: Check Flutter and release tooling
         working-directory: mobile
         run: |
           dart format --output=none --set-exit-if-changed lib test
           flutter analyze --no-pub
-          flutter test --no-pub
-      - name: Archive and export the signed app
+          flutter test --no-pub --concurrency=4
+          python3 -m unittest discover -s ../tests -p ios_beta_test.py
+      - name: Build the unsigned iOS archive
         working-directory: mobile
-        # Pub regenerates the release plugin registrations; do not use --no-pub.
+        # Pub regenerates release-only plugin registrations; do not use --no-pub.
+        # Flutter installs Pods after doing that, excluding dev-only integration_test.
         run: |
-          flutter build ipa --release --build-number="$BETA_BUILD_NUMBER" \
-            --dart-define-from-file=config.json \
-            --export-options-plist="$RUNNER_TEMP/rephase-ios-beta/ExportOptions.plist"
+          flutter build ipa --release --no-codesign \
+            --build-name="$IOS_VERSION" --build-number="$BETA_BUILD_NUMBER" \
+            --dart-define-from-file=config.json
           git diff --exit-code -- pubspec.lock
-      - name: Verify the exported identity and record the IPA checksum
+      - name: Verify archive identity, version and icons
+        run: python3 scripts/verify-ios-beta.py --archive
+      - name: Sign and export the App Store IPA
+        if: inputs.mode != 'validate'
+        working-directory: mobile
+        run: |
+          xcodebuild -exportArchive \
+            -archivePath build/ios/archive/Runner.xcarchive \
+            -exportPath build/ios/ipa \
+            -exportOptionsPlist "$RUNNER_TEMP/rephase-ios-beta/ExportOptions.plist"
+      - name: Verify the exported app and signature
+        if: inputs.mode != 'validate'
         id: ipa
-        run: |
-          codesign --verify --deep --strict mobile/build/ios/archive/Runner.xcarchive/Products/Applications/Runner.app
-          python3 scripts/verify-ios-beta.py
-      - name: Upload to TestFlight and attach release notes
+        run: python3 scripts/verify-ios-beta.py
+      - name: Validate and upload to App Store Connect
+        if: inputs.mode == 'upload'
         timeout-minutes: 25
-        uses: apple-actions/upload-testflight-build@665328adbecbc3ad929d3da710696d928b8a7ba9 # v5
-        with:
-          app-path: ${{ steps.ipa.outputs.path }}
-          issuer-id: ${{ vars.APPSTORE_ISSUER_ID }}
-          api-key-id: ${{ vars.APPSTORE_API_KEY_ID }}
-          api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
-          release-notes: ${{ inputs.release_notes }}
-          wait-for-processing: 'true'
-          groups: ${{ vars.TESTFLIGHT_GROUPS }}
-      - name: Remove signing files and the temporary keychain
+        run: bash scripts/upload-testflight.sh
+        env:
+          IPA_PATH: ${{ steps.ipa.outputs.path }}
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+      - name: Remove signing files and restore the keychain search list
         if: always()
-        run: |
-          python3 scripts/prepare-ios-beta.py --cleanup
-          security delete-keychain signing_temp.keychain || true
+        run: python3 scripts/prepare-ios-beta.py --cleanup
 
-# No push trigger and no public IPA artifacts. External groups require Apple's
-# beta review; uploading does not publish the app on the public App Store.
+# Follows maniksurtani/zerocal's manual unsigned-archive -> signed-export ->
+# altool upload flow. Rephase is public: no IPA/archive artifacts are uploaded.
+# Apple processing, What to Test and tester groups are managed in App Store Connect.

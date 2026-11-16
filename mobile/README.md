@@ -131,7 +131,7 @@ Opaque app-session credentials live in Keychain/Keystore. Guest and each account
 
 ## Verification and distribution
 
-For signed Android betas sent to friends and family, follow [Android beta distribution](DISTRIBUTION.md). It covers Firebase, GitHub OIDC, signing, release Google login and the manual **Publish Android beta** workflow. The debug APK and native verification workflows below remain separate. For signed iOS betas, follow [TestFlight setup](IOS_DISTRIBUTION.md). Both publishing workflows are manual on main.
+For signed Android betas sent to friends and family, follow [Android beta distribution](DISTRIBUTION.md). It covers Firebase, GitHub OIDC, signing, release Google login and the manual **Publish Android beta** workflow. The debug APK and native verification workflows below remain separate. For signed iOS betas, follow [TestFlight setup](IOS_DISTRIBUTION.md). Both publishing workflows are manual on main. iOS follows the working Zerocal flow with `validate` (unsigned archive), `build` (signing check), and `upload` (TestFlight) modes; the default does not publish.
 
 **Mobile checks** runs Flutter formatting, analysis and all widget/data tests for relevant changes. Ordinary feature-widget changes use this fast workflow without compiling Android/iOS apps or starting devices. Markdown-only changes skip mobile CI, and mobile-only changes skip the web Checks workflow.
 
