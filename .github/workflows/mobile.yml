@@ -78,7 +78,8 @@ jobs:
       - name: Check iOS distribution preparation
         run: |
           python3 -m unittest discover -s tests -p ios_beta_test.py
-          bash -n scripts/install-ios-signing.sh scripts/upload-testflight.sh
+          bash -n scripts/install-ios-signing.sh
+          bash -n scripts/upload-testflight.sh
       - run: npm ci
       - run: node scripts/build-mobile-engine.mjs
       - uses: ./.github/actions/setup-flutter
