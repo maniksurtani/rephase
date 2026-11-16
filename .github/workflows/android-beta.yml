@@ -8,6 +8,14 @@ on:
         required: true
         default: Please try trip planning, Google sign-in, lounge access and reminders.
         type: string
+      existing_release:
+        description: Optional Firebase release ID to distribute without rebuilding (leave blank for a new build).
+        required: false
+        type: string
+      tester_group:
+        description: Optional group alias override (otherwise use FIREBASE_TESTER_GROUP).
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -19,7 +27,7 @@ concurrency:
 
 jobs:
   publish:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && inputs.existing_release == ''
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment: android-beta
@@ -41,13 +49,14 @@ jobs:
           FIREBASE_PROJECT_ID: ${{ vars.FIREBASE_PROJECT_ID }}
           FIREBASE_WORKLOAD_IDENTITY_PROVIDER: ${{ vars.FIREBASE_WORKLOAD_IDENTITY_PROVIDER }}
           FIREBASE_SERVICE_ACCOUNT: ${{ vars.FIREBASE_SERVICE_ACCOUNT }}
-          FIREBASE_TESTER_GROUP: ${{ vars.FIREBASE_TESTER_GROUP }}
+          FIREBASE_TESTER_GROUP: ${{ inputs.tester_group || vars.FIREBASE_TESTER_GROUP }}
           GOOGLE_SERVER_CLIENT_ID: ${{ vars.GOOGLE_SERVER_CLIENT_ID }}
           API_ORIGIN: ${{ vars.API_ORIGIN }}
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           RELEASE_NOTES: ${{ inputs.release_notes }}
       - name: Check Firebase federation before compiling
+        id: preflight_auth
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
         with:
           workload_identity_provider: ${{ vars.FIREBASE_WORKLOAD_IDENTITY_PROVIDER }}
@@ -59,6 +68,12 @@ jobs:
         # Validate federation and service-account impersonation early without
         # installing credentials in the build environment. Authenticate afresh
         # immediately before upload, after the short preflight token expires.
+      - name: Check the tester group before compiling
+        run: node scripts/firebase-distribution.mjs
+        env:
+          FIREBASE_ACCESS_TOKEN: ${{ steps.preflight_auth.outputs.access_token }}
+          FIREBASE_APP_ID: ${{ vars.FIREBASE_APP_ID }}
+          FIREBASE_TESTER_GROUP: ${{ inputs.tester_group || vars.FIREBASE_TESTER_GROUP }}
       - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
           distribution: temurin
@@ -126,6 +141,39 @@ jobs:
         run: |
           rm -f mobile/android/key.properties mobile/config.json
           rm -rf "$RUNNER_TEMP/rephase-android-beta"
+
+  distribute_existing:
+    if: github.ref == 'refs/heads/main' && inputs.existing_release != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: android-beta
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+      - name: Authenticate to Firebase
+        id: auth
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          workload_identity_provider: ${{ vars.FIREBASE_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.FIREBASE_SERVICE_ACCOUNT }}
+          token_format: access_token
+          access_token_lifetime: 300s
+          create_credentials_file: false
+          export_environment_variables: false
+      - name: Distribute the uploaded release
+        run: node scripts/firebase-distribution.mjs
+        env:
+          FIREBASE_ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
+          FIREBASE_APP_ID: ${{ vars.FIREBASE_APP_ID }}
+          FIREBASE_TESTER_GROUP: ${{ inputs.tester_group || vars.FIREBASE_TESTER_GROUP }}
+          FIREBASE_RELEASE_ID: ${{ inputs.existing_release }}
 
 # APKs are delivered through Firebase, not public GitHub artifacts. This builds
 # lib/main.dart: the separate native integration-test host is never distributed.
