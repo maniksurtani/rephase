@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "airport": "SFO",
   "timeZone": "America/Los_Angeles",
-  "updatedAt": "2026-10-15",
+  "updatedAt": "2026-11-17",
   "lounges": [
     {
       "id": "sfo-club",
@@ -296,6 +296,106 @@
             "checkedOn": "2026-11-09"
           }
         ]
+      }
+    },
+    {
+      "id": "sfo-united-polaris",
+      "name": "United Polaris Lounge",
+      "terminal": "International Terminal G",
+      "location": "Post-security, near Gate G1 on Level 2.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "restaurant",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "polaris-fare",
+          "label": "Eligible United Polaris fare",
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "UA"
+          ],
+          "route": "international",
+          "conditions": [
+            "Confirm your ticket includes Polaris lounge access; basic Business fares and ordinary United First do not establish eligibility."
+          ],
+          "sourceIds": [
+            "airport-access"
+          ]
+        },
+        {
+          "id": "partner-longhaul",
+          "label": "Eligible Star Alliance long-haul First or Business",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingAlliance": "star",
+          "route": "international",
+          "conditions": [
+            "Confirm your operating airline and fare have Polaris access for the long-haul flight departing SFO; partner access restrictions require airline confirmation."
+          ],
+          "sourceIds": [
+            "airport-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "airport-access",
+          "title": "SFO · United Polaris location, hours and access",
+          "url": "https://www.flysfo.com/passengers/flight-info/airlines-sfo/united-international-flights",
+          "checkedOn": "2026-11-17"
+        },
+        {
+          "id": "sftravel-facilities",
+          "title": "San Francisco Travel / United · Polaris facilities",
+          "url": "https://www.sftravel.com/article/relax-travel-to-san-francisco-united-polaris-lounge-sfo",
+          "checkedOn": "2026-11-17"
+        }
+      ],
+      "photos": [],
+      "qualityRating": {
+        "score": 4.5,
+        "summary": "The May 2026 review praises restaurant dining, showers and daybeds, but reports heavy upstairs crowding and long restaurant waits. Allow extra time if dining is the priority.",
+        "reviewedOn": "2026-11-17",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Live and Let’s Fly · SFO Polaris (May 2026 update)",
+            "url": "https://liveandletsfly.com/united-polaris-lounge-sfo-review/",
+            "checkedOn": "2026-11-17"
+          }
+        ]
+      },
+      "note": "Polaris eligibility is narrower than United Club access. The airport overview is broad and current reports describe fare/partner exclusions, so ticket eligibility stays conditional. Restaurant and daybed waits can be substantial.",
+      "recommendation": {
+        "summary": "A strong dining, shower and rest option once your exact fare is confirmed eligible."
       }
     }
   ]

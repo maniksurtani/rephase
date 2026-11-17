@@ -249,3 +249,10 @@ Updated 2026-11-16. Active work is kept here; the previous complete checklist is
 - [x] Keep native cards accessible at larger text sizes and update horizontal auto-scroll spacing for the narrower cards.
 - [x] Verify the existing Flutter planner interactions (including enlarged text), browser timeline navigation, analysis/build and mobile/desktop layout.
 - [x] Publish the compact layout to Cloudflare, Firebase (Android 0.1.0 build 7) and TestFlight (iOS 0.1.0 build 4 uploaded; Apple processing pending); record successful runs in RELEASES.md.
+
+## Lounge guide expansion — 17 November 2026
+
+- [x] Improve existing guides with eight missing lounges across SYD, HNL, SIN, LHR and SFO; retain sourced access exceptions, partial-review dates and refurbishment limitations.
+- [x] Check schema/provenance and lounge matching, including domestic Business exclusions and Polaris fare restrictions.
+- [ ] Write a global airport expansion plan in batches, with research acceptance criteria and maintenance priorities.
+- [ ] Research and implement the first global batch, then validate shared web/mobile data and push.

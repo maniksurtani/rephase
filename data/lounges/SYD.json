@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "airport": "SYD",
   "timeZone": "Australia/Sydney",
-  "updatedAt": "2026-10-15",
+  "updatedAt": "2026-11-17",
   "lounges": [
     {
       "id": "syd-qantas-first",
@@ -323,6 +323,360 @@
             "checkedOn": "2026-11-09"
           }
         ]
+      }
+    },
+    {
+      "id": "syd-qantas-club",
+      "name": "Qantas Club (Domestic)",
+      "terminal": "T3",
+      "location": "Departures level, opposite Gates 4 and 5; upstairs in the Qantas lounge precinct.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "flight-dependent",
+        "note": "Opens one hour before Qantas-operated services until the last Qantas departure. Confirm the schedule for your visit."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "snacks",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "qantas-status",
+          "label": "Qantas Gold, Platinum or Platinum One",
+          "membershipsAnyOf": [
+            "qantas-gold",
+            "qantas-platinum",
+            "qantas-platinum-one"
+          ],
+          "operatingCarriersAnyOf": [
+            "QF",
+            "JQ"
+          ],
+          "marketingCarriersAnyOf": [
+            "QF",
+            "JQ"
+          ],
+          "route": "domestic",
+          "sourceIds": [
+            "qantas-access"
+          ]
+        },
+        {
+          "id": "qantas-club",
+          "label": "Qantas Club on Qantas or Jetstar",
+          "membershipsAnyOf": [
+            "qantas-club"
+          ],
+          "operatingCarriersAnyOf": [
+            "QF",
+            "JQ"
+          ],
+          "marketingCarriersAnyOf": [
+            "QF",
+            "JQ"
+          ],
+          "route": "domestic",
+          "conditions": [
+            "Check that your Qantas Club membership type covers this departure; Flexible memberships have additional restrictions."
+          ],
+          "sourceIds": [
+            "qantas-access"
+          ]
+        },
+        {
+          "id": "qantas-business",
+          "label": "Qantas domestic Business",
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "QF"
+          ],
+          "marketingCarriersAnyOf": [
+            "QF"
+          ],
+          "route": "domestic",
+          "sourceIds": [
+            "qantas-access"
+          ]
+        },
+        {
+          "id": "oneworld-status",
+          "label": "oneworld Sapphire or Emerald",
+          "membershipsAnyOf": [
+            "oneworld-sapphire",
+            "oneworld-emerald"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "domestic",
+          "sourceIds": [
+            "oneworld-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "qantas-access",
+          "title": "Qantas lounge eligibility",
+          "url": "https://www.qantas.com/en-au/at-the-airport/lounges/access",
+          "checkedOn": "2026-11-17"
+        },
+        {
+          "id": "oneworld-access",
+          "title": "oneworld lounge access and exceptions",
+          "url": "https://www.oneworld.com/airport-lounges",
+          "checkedOn": "2026-11-17"
+        },
+        {
+          "id": "qantas-location",
+          "title": "Sydney Qantas Club facilities and opening rule",
+          "url": "https://www.qantas.com/en-au/at-the-airport/lounges/locations/sydney-qantas-club",
+          "checkedOn": "2026-11-17"
+        }
+      ],
+      "photos": [],
+      "qualityRating": {
+        "score": 3,
+        "summary": "A useful domestic stop with coffee, seating and basic food. The 2022 review praises the essentials but finds the decor dated; this is historical evidence, not a recent visit.",
+        "reviewedOn": "2026-11-17",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Point Hacks · Sydney Qantas Club (2022 visit)",
+            "url": "https://www.pointhacks.com.au/reviews/qantas-club-sydney/",
+            "checkedOn": "2026-11-17"
+          }
+        ]
+      },
+      "note": "T3 only; Jetstar normally uses T2, requiring a terminal transfer and security screening. This is separate from the Domestic Business Lounge.",
+      "recommendation": {
+        "summary": "A practical pre-flight stop for refreshments and a shower when departing T3."
+      }
+    },
+    {
+      "id": "syd-qantas-domestic-business",
+      "name": "Qantas Domestic Business Lounge",
+      "terminal": "T3",
+      "location": "Departures level, opposite Gates 4 and 5; upstairs in the Qantas lounge precinct.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "flight-dependent",
+        "note": "Opens one hour before Qantas-operated services until the last Qantas departure. Confirm the schedule for your visit."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "snacks",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "qantas-premium-status",
+          "label": "Qantas Platinum or Platinum One",
+          "membershipsAnyOf": [
+            "qantas-platinum",
+            "qantas-platinum-one"
+          ],
+          "operatingCarriersAnyOf": [
+            "QF",
+            "JQ"
+          ],
+          "marketingCarriersAnyOf": [
+            "QF",
+            "JQ"
+          ],
+          "route": "domestic",
+          "sourceIds": [
+            "qantas-access"
+          ]
+        },
+        {
+          "id": "qantas-business",
+          "label": "Qantas domestic Business",
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "QF"
+          ],
+          "marketingCarriersAnyOf": [
+            "QF"
+          ],
+          "route": "domestic",
+          "sourceIds": [
+            "qantas-access"
+          ]
+        },
+        {
+          "id": "oneworld-emerald",
+          "label": "oneworld Emerald",
+          "membershipsAnyOf": [
+            "oneworld-emerald"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "domestic",
+          "sourceIds": [
+            "oneworld-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "qantas-access",
+          "title": "Qantas lounge eligibility",
+          "url": "https://www.qantas.com/en-au/at-the-airport/lounges/access",
+          "checkedOn": "2026-11-17"
+        },
+        {
+          "id": "oneworld-access",
+          "title": "oneworld lounge access and exceptions",
+          "url": "https://www.oneworld.com/airport-lounges",
+          "checkedOn": "2026-11-17"
+        },
+        {
+          "id": "qantas-location",
+          "title": "Sydney Domestic Business Lounge facilities and opening rule",
+          "url": "https://www.qantas.com/en-au/at-the-airport/lounges/locations/sydney-domestic-business",
+          "checkedOn": "2026-11-17"
+        }
+      ],
+      "photos": [],
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "The 2022 review describes good apron views and useful seating, but dated interiors and busy peaks. A reasonable domestic stop; the assessment predates any future refurbishment.",
+        "reviewedOn": "2026-11-17",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Point Hacks · Sydney Domestic Business Lounge (2022 visit)",
+            "url": "https://www.pointhacks.com.au/reviews/qantas-domestic-business-lounge-sydney/",
+            "checkedOn": "2026-11-17"
+          }
+        ]
+      },
+      "note": "Qantas Gold, oneworld Sapphire and Qantas Club alone do not grant Domestic Business Lounge access. Allow a terminal transfer if departing T2.",
+      "recommendation": {
+        "summary": "An alternative to the Qantas Club for eligible Business and top-tier travellers in T3."
+      }
+    },
+    {
+      "id": "syd-air-new-zealand",
+      "name": "Air New Zealand International Koru Lounge",
+      "terminal": "T1",
+      "location": "T1 international departures, Level 3 after Customs near Gate 59.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "06:00",
+            "close": "21:00"
+          }
+        ],
+        "note": "Sydney Airport lists 06:00–21:00 daily; hours can vary with flight schedules."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "snacks",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "star-gold",
+          "label": "Star Alliance Gold on an international Star Alliance flight",
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingAlliance": "star",
+          "route": "international",
+          "sourceIds": [
+            "ana-access"
+          ]
+        },
+        {
+          "id": "star-business",
+          "label": "Star Alliance international Business",
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingAlliance": "star",
+          "route": "international",
+          "sourceIds": [
+            "ana-access"
+          ]
+        },
+        {
+          "id": "ana-premium-economy",
+          "label": "ANA Premium Economy",
+          "cabinsAnyOf": [
+            "premium-economy"
+          ],
+          "operatingCarriersAnyOf": [
+            "NH"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "ana-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "nz-facilities",
+          "title": "Air New Zealand International Koru Lounges · Sydney",
+          "url": "https://www.airnewzealand.com/koru/tier-benefits/koru-lounges/international-lounges",
+          "checkedOn": "2026-11-17"
+        },
+        {
+          "id": "ana-access",
+          "title": "ANA · Sydney lounge eligibility",
+          "url": "https://www.ana.co.jp/en/jp/guide/lounge/international/syd/",
+          "checkedOn": "2026-11-17"
+        },
+        {
+          "id": "airport-location",
+          "title": "Sydney Airport international airline lounges",
+          "url": "https://www.sydneyairport.com.au/info-sheet/airline-lounges-t1",
+          "checkedOn": "2026-11-17"
+        }
+      ],
+      "photos": [],
+      "qualityRating": {
+        "score": 4,
+        "summary": "A hosted 2023 visit describes welcoming service, attractive seating, good food and easy shower access. Promising for a longer stop, although that visit does not establish current crowding.",
+        "reviewedOn": "2026-11-17",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Point Hacks · Air New Zealand Sydney (2023 hosted visit)",
+            "url": "https://www.pointhacks.com.au/reviews/air-new-zealand-international-lounge-sydney/",
+            "checkedOn": "2026-11-17"
+          }
+        ]
+      },
+      "note": "Partner-airline invitations, paid Koru Club and other contracted access are not yet encoded; confirm these with the operating airline.",
+      "recommendation": {
+        "summary": "A shower and refreshments option for eligible Star Alliance travellers near Gate 59."
       }
     }
   ]

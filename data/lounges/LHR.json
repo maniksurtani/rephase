@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "airport": "LHR",
   "timeZone": "Europe/London",
-  "updatedAt": "2026-11-08",
+  "updatedAt": "2026-11-17",
   "lounges": [
     {
       "id": "lhr-qantas",
@@ -785,6 +785,112 @@
             "checkedOn": "2026-11-09"
           }
         ]
+      }
+    },
+    {
+      "id": "lhr-united-club",
+      "name": "United Club",
+      "terminal": "T2",
+      "location": "Terminal 2B departures airline lounge area; allow time for the walk to or from the A gates.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:00",
+            "close": "22:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "star-gold",
+          "label": "Star Alliance Gold on an international Star Alliance departure",
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingAlliance": "star",
+          "route": "international",
+          "sourceIds": [
+            "ana-access"
+          ]
+        },
+        {
+          "id": "star-premium",
+          "label": "Star Alliance international First or Business",
+          "cabinsAnyOf": [
+            "first",
+            "business"
+          ],
+          "operatingAlliance": "star",
+          "route": "international",
+          "sourceIds": [
+            "ana-access"
+          ]
+        },
+        {
+          "id": "ana-premium-economy",
+          "label": "ANA Premium Economy",
+          "cabinsAnyOf": [
+            "premium-economy"
+          ],
+          "operatingCarriersAnyOf": [
+            "NH"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "ana-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "ana-access",
+          "title": "ANA · Heathrow lounge access",
+          "url": "https://www.ana.co.jp/en/gb/travel-information/lounges/london/",
+          "checkedOn": "2026-11-17"
+        },
+        {
+          "id": "heathrow-hours",
+          "title": "Heathrow · Terminal 2 airline lounge directory",
+          "url": "https://www.heathrow.com/content/experience-fragments/heathrow/en/lounge/t2/other-lounges/master/jcr:content/root/responsivegrid/loungecards.html",
+          "checkedOn": "2026-11-17"
+        }
+      ],
+      "photos": [],
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "A February 2026 visit found bright surroundings and strong workspaces, but modest catering, limited seating variety and crowding at peak times. Better suited to working than a long rest.",
+        "reviewedOn": "2026-11-17",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "The Alviator · United Club Heathrow (February 2026 visit)",
+            "url": "https://thealviator.com/2026/03/united-club-heathrow-review/",
+            "checkedOn": "2026-11-17"
+          }
+        ]
+      },
+      "note": "This is the departures United Club, not the separate arrivals lounge. Paid membership/pass terms and individual facilities need further current operator verification.",
+      "recommendation": {
+        "summary": "Another T2 option for eligible Star Alliance passengers, particularly when departing the B gates."
       }
     }
   ]

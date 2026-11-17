@@ -14,7 +14,7 @@ const visit = (overrides: Partial<LoungeVisitContext> = {}): LoungeVisitContext 
   visitStart: '2026-11-10T08:00:00Z',
   visitEnd: '2026-11-10T09:30:00Z',
   departure: '2026-11-10T10:00:00Z',
-  now: '2026-11-08',
+  now: '2026-11-17',
   ...overrides,
 });
 
@@ -28,6 +28,27 @@ function check(airport: string, id: string, context = visit()) {
 }
 
 describe('new airport lounge policies', () => {
+  it('distinguishes Sydney domestic Club, Business and international Star Alliance access', () => {
+    const domestic = visit({ terminal: 'T3', route: 'domestic', memberships: ['qantas-gold'] });
+    expect(check('SYD', 'syd-qantas-club', domestic)).toMatchObject({ access: 'conditional', opening: 'unknown' });
+    expect(check('SYD', 'syd-qantas-domestic-business', domestic).access).toBe('ineligible');
+    expect(check('SYD', 'syd-qantas-domestic-business', { ...domestic, memberships: ['qantas-platinum'] }).matchedRuleIds).toContain('qantas-premium-status');
+    const star = visit({ memberships: ['united-premier-1k'], operatingCarrier: 'NZ', marketingCarrier: 'NZ' });
+    expect(check('SYD', 'syd-air-new-zealand', star).access).toBe('eligible');
+    expect(check('SYD', 'syd-air-new-zealand', { ...star, memberships: ['priority-pass'] }).access).toBe('ineligible');
+  });
+
+  it('keeps Polaris fare confirmation and Marhaba refurbishment restrictions visible', () => {
+    const united = visit({ memberships: ['united-premier-1k'], terminal: 'International Terminal G', operatingCarrier: 'UA', marketingCarrier: 'UA' });
+    expect(check('SFO', 'sfo-united-polaris', united).access).toBe('ineligible');
+    expect(check('SFO', 'sfo-united-polaris', { ...united, cabin: 'business' }).access).toBe('conditional');
+    expect(check('SFO', 'sfo-united-polaris', { ...united, cabin: 'first', route: 'domestic' }).access).toBe('ineligible');
+    const marhaba = check('SIN', 'sin-marhaba-t3', visit({ terminal: 'T3', memberships: ['priority-pass'], visitEnd: '2026-11-10T12:00:00Z' }));
+    expect(marhaba.access).toBe('conditional');
+    expect(marhaba.lounge.amenities.showers).toBe('no');
+    expect(marhaba.visit?.minutes).toBeLessThanOrEqual(180);
+  });
+
   it('separates Singapore First, paid Qantas Club and non-oneworld departures', () => {
     expect(check('SIN', 'sin-qantas-first').access).toBe('eligible');
     const member = visit({ memberships: ['qantas-club'] });

@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "airport": "SIN",
   "timeZone": "Asia/Singapore",
-  "updatedAt": "2026-11-08",
+  "updatedAt": "2026-11-17",
   "lounges": [
     {
       "id": "sin-qantas-first",
@@ -783,6 +783,153 @@
             "checkedOn": "2026-11-09"
           }
         ]
+      }
+    },
+    {
+      "id": "sin-sats-premier-t1",
+      "name": "SATS Premier Lounge",
+      "terminal": "T1",
+      "location": "After departure immigration, turn left and take the first escalator to the airline lounges.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "maxVisitMinutes": 180,
+          "sourceIds": [
+            "priority-pass"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · SATS Premier Lounge T1 (including embedded facilities)",
+          "url": "https://www.prioritypass.com/en-GB/lounges/singapore/singapore-changi-airport/sin12-sats-premier-lounge",
+          "checkedOn": "2026-11-17"
+        }
+      ],
+      "photos": [],
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "A 2025 review praises the spacious layout, food and refreshed shower rooms, but reports slow table clearing. Useful facilities for a contract lounge, with service varying by workload.",
+        "reviewedOn": "2026-11-17",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Wah So Shiok · SATS Premier T1 review",
+            "url": "https://www.wahsoshiok.com/sats-premier-lounge-changi-airport-terminal-1-review/",
+            "checkedOn": "2026-11-17"
+          }
+        ]
+      },
+      "note": "Three-hour Priority Pass stay. Showers are listed without an extra charge. Membership visit charges and capacity restrictions may apply. Current official dining detail is incomplete.",
+      "recommendation": {
+        "summary": "A 24-hour T1 option with confirmed showers for Priority Pass members."
+      }
+    },
+    {
+      "id": "sin-marhaba-t3",
+      "name": "Marhaba Lounge",
+      "terminal": "T3",
+      "location": "Level 3 departures, after passport control, opposite Singapore Food Street.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "no",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "maxVisitMinutes": 180,
+          "conditions": [
+            "Confirm opening and facilities during refurbishment; hours may vary with flights."
+          ],
+          "sourceIds": [
+            "priority-pass"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · Marhaba T3 refurbishment notice",
+          "url": "https://www.prioritypass.com/en-GB/lounges/singapore/singapore-changi-airport/sin9-marhaba-lounge",
+          "checkedOn": "2026-11-17"
+        }
+      ],
+      "photos": [],
+      "qualityRating": {
+        "score": 2.5,
+        "summary": "A January 2024 visit describes bright surroundings but rigid seating and limited variety. That visit predates the current refurbishment; its showers are presently unavailable.",
+        "reviewedOn": "2026-11-17",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "JakartaPotato · Marhaba T3 (January 2024 visit)",
+            "url": "https://www.jakartapotato.com/2025/07/03/review-marhaba-lounge-terminal-3-sin/",
+            "checkedOn": "2026-11-17"
+          }
+        ]
+      },
+      "note": "Operating at reduced capacity during refurbishment. Internal toilets and showers are unavailable. Drinks only from 02:00 to 05:00; meal availability is not treated as an all-day amenity.",
+      "recommendation": {
+        "summary": "A conditional T3 fallback during refurbishment; choose another lounge if you need a shower."
       }
     }
   ]

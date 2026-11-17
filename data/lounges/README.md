@@ -2,6 +2,24 @@
 
 Edit one JSON file per airport, named with its three-letter IATA code (for example `SIN.json`). The app reads these files at build time; browsing and matching do not need a lounge API or server. `schema.json` is the editor/CI contract, and `src/lib/lounge-types.ts` defines the matching types.
 
+## Existing-guide improvements: 17 November 2026
+
+The first gap-filling pass adds eight records, bringing selected coverage to **50 lounges at nine airports**:
+
+| Airport | Added | Material boundaries |
+| --- | --- | --- |
+| SYD | Domestic Qantas Club; Domestic Business; Air New Zealand International Koru | Gold/Sapphire/Club do not grant Domestic Business access. T3 requires a transfer from T2. Qantas hours depend on flights. The airport publishes 06:00–21:00 for Air New Zealand, subject to flight variations. |
+| HNL | JAL Sakura Lounge Hale | Separate from the central Sakura/Admirals Club. JAL opening depends on its flights; Admirals Club membership is not treated as Hale access. |
+| SIN | SATS Premier T1; Marhaba T3 | Three-hour Priority Pass visits. SATS showers confirmed in the operator-program page data. Marhaba remains open during refurbishment but showers/toilets are unavailable; drinks only 02:00–05:00. |
+| LHR | United Club T2 | Departure lounge, separate from arrivals. Star Alliance premium/status and ANA Premium Economy rules are sourced from ANA; paid Club/pass policies and facilities remain follow-ups. |
+| SFO | United Polaris | Restaurant, showers and rest facilities; ordinary Club/status access is insufficient. Exact fares and partner eligibility stay conditional because the airport's broad overview and newer reports of exclusions do not establish every ticket's entitlement. |
+
+Sources and independent quality assessments are stored with each new record. Older or hosted reviews are labelled; missing operational facts remain unknown. Airport `updatedAt` reflects the latest partial edit, while each existing source retains its own original `checkedOn` date. This pass does not claim that all older records were reverified. Photos are unchanged.
+
+Remaining gaps in the existing guides include SYD Virgin/Emirates/SilverKris and contracted invitations; HNL ANA and central Sakura/Admirals; SFO United Club/Maple Leaf/Centurion; SIN other SATS/Marhaba locations and PPS access; LHR other BA/airline lounges; MUC K/L satellite lounges; SLC verified Sky Club hours. CNS international availability and LAX First's temporary closure need continued operator review. A listed airport is not a complete inventory.
+
+Both clients consume the same curated data. Web receives changes on deployment; installed mobile apps need a new bundle/build. No live lounge API is introduced.
+
 ## Research and editing workflow
 
 1. Start from the airline, lounge operator, airport or membership program's official page. Check both the lounge location page and the access-policy page. Search results and older reviews are leads, not confirmation.

@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "airport": "HNL",
   "timeZone": "Pacific/Honolulu",
-  "updatedAt": "2026-10-15",
+  "updatedAt": "2026-11-17",
   "lounges": [
     {
       "id": "hnl-qantas-business",
@@ -226,6 +226,106 @@
             "checkedOn": "2026-11-09"
           }
         ]
+      }
+    },
+    {
+      "id": "hnl-jal-sakura-hale",
+      "name": "JAL Sakura Lounge Hale",
+      "terminal": "T2",
+      "location": "Third level above Gate C1, reached by elevator; separate from the central Sakura Lounge / Admirals Club.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "flight-dependent",
+        "note": "JAL publishes opening three hours before its first scheduled departure (2.5 hours for extra/special flights), closing 30 minutes before its last departure."
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "jal-premium",
+          "label": "JAL First or Business",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingCarriersAnyOf": [
+            "JL"
+          ],
+          "marketingCarriersAnyOf": [
+            "JL"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "jal-location"
+          ]
+        },
+        {
+          "id": "oneworld-status",
+          "label": "oneworld Sapphire or Emerald",
+          "membershipsAnyOf": [
+            "oneworld-sapphire",
+            "oneworld-emerald"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "conditions": [
+            "Confirm your status issuer and itinerary qualify; AAdvantage and Atmos have North America lounge exceptions."
+          ],
+          "sourceIds": [
+            "jal-status",
+            "oneworld-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "jal-location",
+          "title": "JAL Sakura Lounge Hale · facilities and eligibility",
+          "url": "https://www.jal.co.jp/jp/en/inter/service/lounge/hnl/sakura/",
+          "checkedOn": "2026-11-17"
+        },
+        {
+          "id": "jal-status",
+          "title": "JAL · lounge access and oneworld status",
+          "url": "https://www.jal.co.jp/jp/en/jalmile/jgc/lounge.html",
+          "checkedOn": "2026-11-17"
+        },
+        {
+          "id": "airport-location",
+          "title": "Honolulu Airport · lounge locations",
+          "url": "https://airports.hawaii.gov/hnl/flights/airport-lounges/",
+          "checkedOn": "2026-11-17"
+        },
+        {
+          "id": "oneworld-access",
+          "title": "oneworld lounge access and exceptions",
+          "url": "https://www.oneworld.com/airport-lounges",
+          "checkedOn": "2026-11-17"
+        }
+      ],
+      "photos": [],
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "Older Japanese reports describe a calmer alternative to the central Sakura Lounge, with Japanese food and a longer walk to other concourses. Limited historical evidence; quietness is not guaranteed.",
+        "reviewedOn": "2026-11-17",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Tokyo Airlines · Sakura Lounge Hale overview and visitor reports",
+            "url": "https://tokyo-airlines.com/airport-lounge/honolulu-jal-sakura-lounge-hale.html",
+            "checkedOn": "2026-11-17"
+          }
+        ]
+      },
+      "note": "Admirals Club membership alone is not encoded as access to Hale. Allow time to reach distant gates; published fixed opening hours elsewhere may be outdated.",
+      "recommendation": {
+        "summary": "An additional JAL/oneworld option near the C gates when its flight-dependent opening matches your visit."
       }
     }
   ]
