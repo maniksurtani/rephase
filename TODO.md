@@ -233,4 +233,11 @@ Updated 2026-11-16. Active work is kept here; the previous complete checklist is
 - [x] Preserve Rephase's offline planner verification, cached Flutter, public-repository artifact policy and release plugin registration fix.
 - [x] Document reusable Apple credentials, the Rephase-specific profile/OAuth client, manual tester assignment and owner setup.
 - [x] Verify the unsigned release archive on GitHub's macOS runner: run `43862210377` passed with Xcode 26.3, including identity/version/icons; see RELEASES.md.
-- [ ] Owner: configure `ios-beta` Apple secrets/Google variables, register Rephase in App Store Connect, add its iOS OAuth client to the Worker and publish the first TestFlight beta.
+- [x] Owner configured Apple/Google settings and confirmed the first TestFlight beta works; upload `43866920093` published 0.1.0 (2.1).
+
+## Consistent mobile build numbering — 17 November 2026
+
+- [x] Use each publishing workflow's integer run number on Android and iOS, matching Zerocal; reruns retain their number.
+- [x] Document new-run publishing and the owner-approved one-time Android reinstall, including local data/reminder effects.
+- [x] Verify boundary/rerun behavior in the existing release-tooling tests and check the exported APK version code before upload.
+- [ ] Publish the updated Android beta to Firebase and iOS beta to TestFlight; record build numbers and results.

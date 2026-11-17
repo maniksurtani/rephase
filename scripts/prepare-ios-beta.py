@@ -34,8 +34,8 @@ def configuration(env):
 
     mode = required("IOS_MODE", r"validate|build|upload")
     version = required("IOS_VERSION", r"[0-9]+\.[0-9]+\.[0-9]+")
+    # Match Android/Zerocal. A rerun keeps its number; publish new builds in new runs.
     run = required("GITHUB_RUN_NUMBER", r"[1-9][0-9]{0,3}")
-    attempt = required("GITHUB_RUN_ATTEMPT", r"[1-9][0-9]?")
     signing = {}
     if mode != "validate":
         required("IOS_DISTRIBUTION_P12_PASSWORD")
@@ -64,7 +64,7 @@ def configuration(env):
             or url.path or url.query or url.fragment or "\n" in origin or "\r" in origin):
         raise ValueError("API_ORIGIN must be an exact HTTPS origin without a trailing slash.")
     public["API_ORIGIN"] = origin
-    return signing, public, version, f"{run}.{attempt}"
+    return signing, public, version, run
 
 
 def validate_profile(profile, now=None):

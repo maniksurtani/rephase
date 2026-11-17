@@ -1,5 +1,13 @@
 # Release evidence
 
+## 17 November 2026 — consistent mobile build numbering
+
+Android and iOS now use their respective GitHub workflow run number as a plain integer, matching Zerocal. Android no longer derives version codes from time; iOS no longer appends the run attempt. Reruns retain their number, and new releases require new workflow runs. Existing tests cover valid limits, malformed values, increasing new runs and unchanged reruns. Android's publishing workflow verifies the compiled APK version code before upload, alongside the existing package/signature check; iOS already checks both archive and IPA metadata.
+
+The owner approved the one-time reinstall needed for Android testers on timestamp-numbered betas such as `216991353`. The distribution docs explain saving account edits, loss of local guest/unsaved data and resetting reminders. iOS moves forward normally from `2.1` to `3`. Five Android and eight iOS release-tooling tests pass locally, along with actionlint, formatting and diff checks. Firebase/TestFlight publishing for the new numbering is pending.
+
+[First TestFlight upload 43866920093](https://github.com/maniksurtani/rephase/actions/runs/43866920093) previously signed, validated and uploaded **0.1.0 (2.1)** without errors; the owner confirmed the beta works. Its credentials and app identity are retained.
+
 ## 16 November 2026 — TestFlight workflow follows Zerocal
 
 Inspected Zerocal's successful [TestFlight upload 43778367479](https://github.com/maniksurtani/zerocal/actions/runs/43778367479). Rephase now follows the same manual validate/build/upload modes, macOS 15/latest-stable Xcode, unsigned Flutter archive, separate signed export and Apple CLI validation/upload. Its six Apple secret names match Zerocal; the Rephase provisioning profile and Google iOS client remain app-specific. Credential preflight checks that the valid imported certificate matches the profile. The exported IPA is checked for identity, version, icons and signature. Rephase keeps run-number/attempt build versions, the offline planner check, cached SDK, release pub/plugin regeneration and no public IPA artifacts. Notes/tester groups are now assigned in App Store Connect after processing.

@@ -13,6 +13,7 @@ const environment = {
   GOOGLE_SERVER_CLIENT_ID: '123-example.apps.googleusercontent.com',
   ANDROID_KEYSTORE_BASE64: Buffer.alloc(2000, 42).toString('base64'),
   ANDROID_KEYSTORE_PASSWORD: ' leading\\secret\npassword=é🔑',
+  GITHUB_RUN_NUMBER: '12',
 };
 
 describe('Android beta preparation', () => {
@@ -55,13 +56,20 @@ describe('Android beta preparation', () => {
     }
   });
 
-  it('gives a later rerun a newer Android build number independent of the workflow run number', () => {
-    const first = betaConfiguration(environment, Date.UTC(2026, 10, 14));
-    const later = betaConfiguration(environment, Date.UTC(2026, 10, 14) + 60_000);
-    expect(first.buildNumber).toBeGreaterThan(1);
-    expect(later.buildNumber).toBe(first.buildNumber + 60);
-    expect(later.buildNumber).toBeLessThan(2_100_000_000);
-    expect(() => betaConfiguration(environment, Date.UTC(2100, 0, 1))).toThrow(/limit/);
+  it('uses the workflow run number, preserves it on reruns and rejects invalid version codes', () => {
+    expect(betaConfiguration(environment).buildNumber).toBe(12);
+    expect(betaConfiguration({ ...environment, GITHUB_RUN_ATTEMPT: '2' }).buildNumber).toBe(12);
+    expect(betaConfiguration({ ...environment, GITHUB_RUN_NUMBER: '13' }).buildNumber).toBe(13);
+    for (const run of ['1', '2100000000']) {
+      expect(betaConfiguration({ ...environment, GITHUB_RUN_NUMBER: run }).buildNumber).toBe(
+        Number(run),
+      );
+    }
+    for (const run of ['0', '-1', '01', '12.1', '12\n', '1e2', '2100000001']) {
+      expect(() => betaConfiguration({ ...environment, GITHUB_RUN_NUMBER: run })).toThrow(
+        /GITHUB_RUN_NUMBER/,
+      );
+    }
   });
 
   it('writes only public OAuth configuration into the app and keeps signing files private', async () => {
@@ -87,6 +95,8 @@ describe('Android beta preparation', () => {
       }
       const notes = await readFile(join(root, 'rephase-android-beta/release-notes.txt'), 'utf8');
       expect(notes).toContain('$(literal) and `literal`');
+      expect(notes).toContain('Build: 12\n');
+      expect(await readFile(env.GITHUB_ENV, 'utf8')).toContain('BETA_BUILD_NUMBER=12\n');
       await expect(prepareBeta(env, root)).rejects.toThrow(/exist/i);
     } finally {
       await rm(root, { recursive: true, force: true });

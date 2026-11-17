@@ -92,7 +92,15 @@ The second command prompts for the password without putting it in shell history.
 5. The package rename creates a separate app from `org.surtani.rephase`. Sign in to the same Google account to restore server-side trips/settings. Guest data does not transfer automatically. Save any old account edits, then disable reminders in the old app or uninstall it to avoid duplicates.
 6. Check first launch, Google login, an existing trip, flight lookup, offline planning and notification permissions/reminders. This beta uses the same live account data as the website.
 
-The workflow records the commit, increasing build number, APK checksum and notes. Builds use seconds since 2020, including reruns, and publishing is serialized. Correct configuration and rerun if necessary. The native integration-test APK is never distributed; signed APKs are delivered through Firebase rather than public GitHub artifacts.
+The workflow records the commit, build number, APK checksum and notes. Android and iOS both use their own **GitHub workflow run number** as a plain integer, matching Zerocal (for example `6`, then `7`). Their counters are independent and may differ; failed runs and distribution-only runs can leave gaps. The APK's version code is checked against that run number before upload. Publishing is serialized. The native integration-test APK is never distributed; signed APKs are delivered through Firebase rather than public GitHub artifacts.
+
+Use **Run workflow** on the latest main for each new build. **Re-run jobs** retains the original build number; it does not create a new release number. If an upload already succeeded, use the existing-release distribution path below to fix tester assignment, or start a new workflow run for a new build. Do not recreate/reset the workflow counter or publish old runs after a newer release.
+
+### One-time transition from timestamp build numbers
+
+On 17 November 2026, the owner approved switching the early betas from timestamp numbers such as `216991353` to small run numbers. Android will not install a lower version code over an existing higher one, even with the same package and signing key. **Testers with an old timestamp-numbered beta must uninstall Rephase once, then install the new build from Firebase.**
+
+Before uninstalling, sign in and ensure account edits have saved. Server-side trips/settings remain available after signing back in. Uninstalling removes local guest data and unsaved edits and resets notification permissions/scheduled reminders; enable reminders again after reinstalling. Later builds using increasing run numbers update normally. Do not rerun the old timestamp-based publishing workflows, since those could reintroduce a higher version code and require another reinstall.
 
 Firebase uploading, installation and release-certificate Google login require the setup above and must be checked with your actual account/device. For a later Google Play release, explicitly plan Play App Signing and certificate continuity; retain the signing-key backup.
 

@@ -35,7 +35,6 @@ class IOSBetaTests(unittest.TestCase):
             'GOOGLE_SERVER_CLIENT_ID': '123-web.apps.googleusercontent.com',
             'GOOGLE_IOS_CLIENT_ID': '123-ios.apps.googleusercontent.com',
             'GITHUB_RUN_NUMBER': '12',
-            'GITHUB_RUN_ATTEMPT': '1',
         }
         self.profile = {
             'TeamIdentifier': ['ABC1234567'],
@@ -56,12 +55,16 @@ class IOSBetaTests(unittest.TestCase):
                 prepare.configuration({**self.env, name: ''})
         _, public, version, build = prepare.configuration(self.env)
         self.assertEqual(version, "0.1.0")
-        self.assertEqual(build, '12.1')
+        self.assertEqual(build, '12')
         self.assertEqual(set(public), {'API_ORIGIN', 'GOOGLE_SERVER_CLIENT_ID', 'GOOGLE_IOS_CLIENT_ID'})
         self.assertEqual(public['API_ORIGIN'], 'https://rephase.surtani.org')
-        self.assertEqual(prepare.configuration({**self.env, 'GITHUB_RUN_ATTEMPT': '2'})[3], '12.2')
-        with self.assertRaises(ValueError):
-            prepare.configuration({**self.env, 'GITHUB_RUN_NUMBER': '10000'})
+        self.assertEqual(prepare.configuration({**self.env, 'GITHUB_RUN_ATTEMPT': '2'})[3], '12')
+        self.assertEqual(prepare.configuration({**self.env, 'GITHUB_RUN_NUMBER': '13'})[3], '13')
+        for run in ('1', '9999'):
+            self.assertEqual(prepare.configuration({**self.env, 'GITHUB_RUN_NUMBER': run})[3], run)
+        for run in ('0', '-1', '01', '12.1', '12\n', '1e2', '10000'):
+            with self.subTest(run=run), self.assertRaises(ValueError):
+                prepare.configuration({**self.env, 'GITHUB_RUN_NUMBER': run})
         for origin in ('http://example.com', 'https://example.com/', 'https://user:secret@example.com', 'https://example.com?token=x'):
             with self.subTest(origin=origin), self.assertRaises(ValueError):
                 prepare.configuration({**self.env, 'API_ORIGIN': origin})
@@ -96,7 +99,7 @@ class IOSBetaTests(unittest.TestCase):
         self.assertEqual(signing, {})
         self.assertEqual(public, {'API_ORIGIN': 'https://rephase.surtani.org'})
         for changes in ({'IOS_MODE': 'publish'}, {'IOS_VERSION': '0.1.0; echo bad'},
-                        {'IOS_VERSION': '1.0'}, {'GITHUB_RUN_ATTEMPT': '100'}):
+                        {'IOS_VERSION': '1.0'}, {'GITHUB_RUN_NUMBER': '10000'}):
             with self.subTest(changes=changes), self.assertRaises(ValueError):
                 prepare.configuration({**env, **changes})
 
@@ -121,17 +124,17 @@ class IOSBetaTests(unittest.TestCase):
             archive = Path(directory)
             app = archive / 'Products/Applications/Runner.app'
             app.mkdir(parents=True)
-            info = {'CFBundleIdentifier': 'app.rephase.Rephase', 'CFBundleVersion': '12.1',
+            info = {'CFBundleIdentifier': 'app.rephase.Rephase', 'CFBundleVersion': '12',
                     'CFBundleShortVersionString': '0.1.0',
                     'CFBundleIcons': {'CFBundlePrimaryIcon': {'CFBundleIconName': 'AppIcon'}}}
             (app / 'Info.plist').write_bytes(plistlib.dumps(info))
             (app / 'Assets.car').write_bytes(b'icons')
-            verify.verify_archive(archive, '12.1', '0.1.0')
+            verify.verify_archive(archive, '12', '0.1.0')
             with self.assertRaises(ValueError):
-                verify.verify_archive(archive, '12.1', '0.2.0')
+                verify.verify_archive(archive, '12', '0.2.0')
             (app / 'Assets.car').unlink()
             with self.assertRaises(ValueError):
-                verify.verify_archive(archive, '12.1', '0.1.0')
+                verify.verify_archive(archive, '12', '0.1.0')
 
     def test_cleanup_restores_keychains_and_removes_credentials_after_failure(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -164,10 +167,10 @@ class IOSBetaTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / 'app.ipa'
             for bundle, build, profile, valid in [
-                ('app.rephase.Rephase', '12.1', True, True),
-                ('app.rephase.Other', '12.1', True, False),
-                ('app.rephase.Rephase', '11.1', True, False),
-                ('app.rephase.Rephase', '12.1', False, False),
+                ('app.rephase.Rephase', '12', True, True),
+                ('app.rephase.Other', '12', True, False),
+                ('app.rephase.Rephase', '11', True, False),
+                ('app.rephase.Rephase', '12', False, False),
             ]:
                 with zipfile.ZipFile(path, 'w') as archive:
                     archive.writestr('Payload/Runner.app/Info.plist', plistlib.dumps({
@@ -179,10 +182,10 @@ class IOSBetaTests(unittest.TestCase):
                     if profile:
                         archive.writestr('Payload/Runner.app/embedded.mobileprovision', b'profile')
                 if valid:
-                    self.assertEqual(len(verify.verify_ipa(path, '12.1', '0.1.0')), 64)
+                    self.assertEqual(len(verify.verify_ipa(path, '12', '0.1.0')), 64)
                 else:
                     with self.assertRaises(ValueError):
-                        verify.verify_ipa(path, '12.1', '0.1.0')
+                        verify.verify_ipa(path, '12', '0.1.0')
 
 
 if __name__ == '__main__':

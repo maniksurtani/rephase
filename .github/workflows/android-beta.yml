@@ -108,12 +108,12 @@ jobs:
         run: |
           flutter build apk --release --build-number="$BETA_BUILD_NUMBER" --dart-define-from-file=config.json
           git diff --exit-code -- pubspec.lock
-      - name: Verify the APK signature and record its checksum
+      - name: Verify the APK identity, build number and signature
         shell: bash
         run: |
           build_tools=$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)
           "$build_tools/apksigner" verify --verbose --print-certs mobile/build/app/outputs/flutter-apk/app-release.apk
-          "$build_tools/aapt" dump badging mobile/build/app/outputs/flutter-apk/app-release.apk | grep -F "package: name='app.rephase.Rephase'"
+          "$build_tools/aapt" dump badging mobile/build/app/outputs/flutter-apk/app-release.apk | grep -F "package: name='app.rephase.Rephase' versionCode='$BETA_BUILD_NUMBER'"
           sha256sum mobile/build/app/outputs/flutter-apk/app-release.apk >> "$GITHUB_STEP_SUMMARY"
       - name: Install pinned Firebase CLI
         run: npm install --global firebase-tools@15.36.0

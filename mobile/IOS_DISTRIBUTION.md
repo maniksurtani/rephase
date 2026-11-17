@@ -2,7 +2,7 @@
 
 [Publish iOS beta](https://github.com/maniksurtani/rephase/actions/workflows/ios-beta.yml) follows the working [Zerocal TestFlight workflow](https://github.com/maniksurtani/zerocal/blob/main/.github/workflows/ios-testflight.yml): an unsigned Flutter archive, manual signing at export, and Apple's `altool` for validation/upload. It runs **manually on main**, never on a push. The bundle ID is **`app.rephase.Rephase`**, including the capital `R`; the installed name is **Rephase**.
 
-[Unsigned release validation passed](https://github.com/maniksurtani/rephase/actions/runs/43862210377) on macOS 15 / Xcode 26.3 for version 0.1.0 (1.1). Signing and upload remain pending owner credentials.
+[Unsigned release validation passed](https://github.com/maniksurtani/rephase/actions/runs/43862210377) on macOS 15 / Xcode 26.3 for version 0.1.0 (1.1). [The first signed upload](https://github.com/maniksurtani/rephase/actions/runs/43866920093) published 0.1.0 (2.1), and the owner confirmed it works. Subsequent releases use plain integer workflow run numbers as described below.
 
 There are three modes:
 
@@ -114,7 +114,9 @@ Use `-f mode=validate` for unsigned compilation or `-f mode=build` for a signing
 
 The workflow uses the same macOS 15 / latest-stable Xcode selection as Zerocal, Rephase's cached pinned Flutter SDK and locked Dart packages, and CocoaPods. It checks the offline planner and Flutter code, then builds one unsigned device archive and signs at export. The Flutter release build retains its pub phase to remove the development-only integration-test plugin from native registrants. It does not repeat the full web browser or native simulator suites. Temporary credentials/keychain/profile files are cleaned up even on failure.
 
-The marketing version comes from the `version` input. Rephase preserves its existing **`workflow run number.attempt`** build numbering (for example `4.1`, then `4.2` on retry), rather than Zerocal's run-number-only scheme. New runs increase the number; reruns also get a fresh number. The archive and IPA must match both values and the bundle ID and contain compiled icons; the exported app's signature is verified before Apple's validation/upload. Don't rename/recreate the workflow or upload arbitrary local build numbers that leap ahead of its counter.
+The marketing version comes from the `version` input. Android and iOS both use their own **GitHub workflow run number** as a plain integer, matching Zerocal (for example `3`, then `4`). Their counters are independent and may differ; validation-only, signing-only and failed runs can leave gaps. **Re-run jobs** retains the same number. Use **Run workflow** on the latest main for each new published build, especially if Apple has already received the previous upload. The archive and IPA must match the requested version/build and bundle ID and contain compiled icons; the exported app's signature is verified before Apple's validation/upload. Don't rename/recreate the workflow, publish old runs after a newer release, or upload arbitrary local build numbers that leap ahead of its counter. The iOS helper accepts run numbers 1–9999 to fit Apple's first build-number component; plan a numbering migration before that limit.
+
+The first uploaded beta was `2.1` under the previous run/attempt scheme. Build `3` is newer and updates normally through TestFlight; no iOS reinstall is needed. Existing Android timestamp builds need a [one-time reinstall](DISTRIBUTION.md#one-time-transition-from-timestamp-build-numbers).
 
 After Apple accepts the upload:
 

@@ -23,7 +23,7 @@ export function propertyValue(value) {
     .join('');
 }
 
-export function betaConfiguration(env, now = Date.now()) {
+export function betaConfiguration(env) {
   const required = (name) => {
     if (!env[name]?.trim()) throw new Error(`Set ${name} in the android-beta GitHub environment.`);
     return env[name];
@@ -59,11 +59,17 @@ export function betaConfiguration(env, now = Date.now()) {
   )
     throw new Error('ANDROID_KEYSTORE_BASE64 must be the base64-encoded PKCS12 signing file.');
   const password = required('ANDROID_KEYSTORE_PASSWORD');
-  // Serial publishing plus seconds since 2020 makes reruns newer than earlier
-  // builds, while staying below Android's 2,100,000,000 versionCode limit.
-  const buildNumber = Math.floor((now - Date.UTC(2020, 0, 1)) / 1000);
-  if (!Number.isSafeInteger(buildNumber) || buildNumber < 2 || buildNumber > 2_100_000_000)
-    throw new Error('The beta build number is outside Android limits.');
+  // Match iOS/Zerocal: each workflow uses its own increasing run number.
+  // Reruns retain that number; start a new run for a new published build.
+  const run = required('GITHUB_RUN_NUMBER');
+  const buildNumber = Number(run);
+  if (
+    !Number.isSafeInteger(buildNumber) ||
+    buildNumber < 1 ||
+    buildNumber > 2_100_000_000 ||
+    String(buildNumber) !== run
+  )
+    throw new Error('GITHUB_RUN_NUMBER must be an integer from 1 to 2100000000.');
   return {
     app,
     project,
