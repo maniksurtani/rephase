@@ -20,6 +20,18 @@ Remaining gaps in the existing guides include SYD Virgin/Emirates/SilverKris and
 
 Both clients consume the same curated data. Web receives changes on deployment; installed mobile apps need a new bundle/build. No live lounge API is introduced.
 
+## First global batch: 17 November 2026
+
+The first pass at DXB, ICN, AMS, IST and CDG adds **nine records**, bringing coverage to **59 selected lounges at 14 airports**. The [global expansion plan](EXPANSION.md) records the next batches and the remaining major airline/terminal gaps in this one.
+
+- DXB separates Emirates Business B from Plaza Premium in A. Business Special does not establish complimentary access; Emirates opening hours remain unverified. Priority Pass at Plaza Premium is limited to two hours, and showers cost extra.
+- ICN starts with regular Matina T2, not Matina Gold or a T1 location. The operator confirms 06:00–22:00 and food ending at 21:30. No T1 shower facilities are copied into T2.
+- AMS has separate Schengen and non-Schengen Aspire records, with destination-country rules and a three-hour pre-departure entry window. M-gate exclusions require confirmation. Lounge 41 closes at 21:00 in Priority Pass's current listing and stops admitting new visitors at 20:30; the last-entry restriction remains conditional rather than being presented as a different closing time. Its showers cost extra.
+- IST separates Star Gold in Economy (Miles&Smiles) from premium cabins (Business). Both have official 24-hour opening and showers/buffets. Private sleep suites have additional ticket/connection restrictions. iGA's operator and structured Priority Pass record indicate two-hour travel-program visits, but Priority Pass's visible conditions still say three; use two hours conservatively and flag confirmation.
+- CDG covers the new airside Star Alliance lounge for T1 non-Schengen Gates 10–38. It is distinct from the old pre-security Level 10 lounge. Aegean's directory confirms 06:00–22:30. No Priority Pass or automatic paid-club entitlement is asserted.
+
+Each new lounge has an editorial quality assessment with a linked review and an evidence-age caveat where appropriate. Turkish's assessments predate its latest expansion. Unverified dining styles, showers and other amenities remain unknown; photos remain empty. Source dates are the dates consulted, not claims that the reviewer visited recently. Country mapping now includes AMS, ICN and IST; Turkish Airlines and Korean Air are available in both clients' airline selectors.
+
 ## Research and editing workflow
 
 1. Start from the airline, lounge operator, airport or membership program's official page. Check both the lounge location page and the access-policy page. Search results and older reviews are leads, not confirmation.

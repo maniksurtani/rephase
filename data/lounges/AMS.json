@@ -1,0 +1,233 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "AMS",
+  "timeZone": "Europe/Amsterdam",
+  "updatedAt": "2026-11-17",
+  "lounges": [
+    {
+      "id": "ams-aspire-26",
+      "name": "Aspire Lounge 26 (Schengen)",
+      "terminal": "Schengen departures",
+      "location": "Departure Hall 1 airside, third floor; follow Airline Lounges 26 signs. Not accessible from the M gates.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "06:00",
+            "close": "21:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass · Schengen departures",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "destinationCountriesAnyOf": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Your departure must not use the M gates."
+          ],
+          "sourceIds": [
+            "priority-pass"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · Aspire 26 Schengen access",
+          "url": "https://www.prioritypass.com/en-GB/lounges/netherlands/amsterdam-schiphol/ams2-aspire-lounge-no-26",
+          "checkedOn": "2026-11-17"
+        },
+        {
+          "id": "operator",
+          "title": "Aspire · Lounge 26 facilities and food",
+          "url": "https://www.aspirelounges.com/airport-lounges/amsterdam-schiphol-airport-aspire-lounge-26-schengen/",
+          "checkedOn": "2026-11-17"
+        }
+      ],
+      "photos": [],
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "A review updated in March 2026 found comfortable work booths, a varied breakfast and an uncrowded morning visit. Other reported peaks are busier; a useful meal/work stop rather than a destination lounge.",
+        "reviewedOn": "2026-11-17",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Upgraded Points · Aspire 26 (March 2026 update)",
+            "url": "https://upgradedpoints.com/travel/airports/aspire-lounge-26-amsterdam-ams-review/",
+            "checkedOn": "2026-11-17"
+          }
+        ]
+      },
+      "note": "Priority Pass entry starts three hours before departure. Check your boarding pass: M-gate departures cannot reach this lounge. Showers are unconfirmed.",
+      "recommendation": {
+        "summary": "A buffet and workspace option for a Schengen connection, once the departure area is confirmed."
+      }
+    },
+    {
+      "id": "ams-aspire-41",
+      "name": "Aspire Lounge 41 (Non-Schengen)",
+      "terminal": "Non-Schengen departures",
+      "location": "Departure Hall 2, third floor Panorama Deck; follow Airline Lounges 40–41 after passport control. Not accessible from the M gates.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "06:00",
+            "close": "21:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass · non-Schengen departures",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "excludedDestinationCountries": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Enter before 20:30; your departure must not use the M gates."
+          ],
+          "sourceIds": [
+            "priority-pass"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · Aspire 41 hours and entry restrictions",
+          "url": "https://www.prioritypass.com/en-GB/lounges/netherlands/amsterdam-schiphol/ams-aspire-lounge-no-41",
+          "checkedOn": "2026-11-17"
+        },
+        {
+          "id": "operator",
+          "title": "Aspire · Lounge 41 facilities and shower charges",
+          "url": "https://www.aspirelounges.com/airport-lounges/amsterdam-schiphol-airport-aspire-lounge-41-non-schengen/",
+          "checkedOn": "2026-11-17"
+        }
+      ],
+      "photos": [],
+      "qualityRating": {
+        "score": 3,
+        "summary": "The October 2025 account praises daylight and apron views but finds the buffet modest and seating awkward for eating. Frequent crowding and entry queues reduce its appeal on a short connection.",
+        "reviewedOn": "2026-11-17",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "AmsterdamTips · Aspire 41 (October 2025)",
+            "url": "https://www.amsterdamtips.com/aspire-lounge-41",
+            "checkedOn": "2026-11-17"
+          }
+        ]
+      },
+      "note": "Showers cost extra. Published opening is 06:00–21:00, with no new entry after 20:30; hours may vary with flights. Priority Pass entry starts three hours before departure.",
+      "recommendation": {
+        "summary": "A non-Schengen option with paid showers; confirm entry time and leave room for queues and the gate walk."
+      }
+    }
+  ]
+}

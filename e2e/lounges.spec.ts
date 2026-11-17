@@ -227,7 +227,8 @@ test('airline defaults follow marketing until overridden, with sourced ratings a
   api.data.preferences.loungeMemberships = ['qantas-platinum'];
   api.data.preferences.loungePriority = 'showers';
   await api.install(page);
-  await page.clock.setFixedTime(new Date('2026-10-15T12:00:00Z'));
+  // Access assertions use a clock at/after the latest research, not the older trip date.
+  await page.clock.setFixedTime(new Date('2026-11-17T12:00:00Z'));
   await openLounges(page);
   await page.getByRole('combobox', { name: 'Airport', exact: true }).fill('SYD');
   await page.getByLabel('Visit date', { exact: true }).fill('2026-10-17');
@@ -259,7 +260,10 @@ test('airline defaults follow marketing until overridden, with sourced ratings a
   await expect(firstLounge.locator('.lounge-rating-detail')).not.toBeVisible();
   await firstLounge.locator('summary').filter({ hasText: 'Details & sources' }).click();
   await expect(firstLounge.locator('.lounge-rating-detail')).toContainText('published reviews');
-  await expect(firstLounge.locator('.lounge-rating-detail a').first()).toHaveAttribute('href', /https:\/\//);
+  await expect(firstLounge.locator('.lounge-rating-detail a').first()).toHaveAttribute(
+    'href',
+    /https:\/\//,
+  );
   await expect(
     firstLounge.getByRole('link', { name: 'Qantas lounge access and eligibility' }),
   ).toHaveAttribute('href', 'https://www.qantas.com/en-au/at-the-airport/lounges/access');
@@ -288,7 +292,7 @@ test('new airport guides work on a narrow screen with saved card and airline mem
     'united-premier-1k',
   ];
   await api.install(page);
-  await page.clock.setFixedTime(new Date('2026-11-08T12:00:00Z'));
+  await page.clock.setFixedTime(new Date('2026-11-17T12:00:00Z'));
   await page.setViewportSize({ width: 390, height: 844 });
   await openLounges(page);
   await page.getByLabel('Visit date', { exact: true }).fill('2026-11-10');
@@ -300,6 +304,11 @@ test('new airport guides work on a narrow screen with saved card and airline mem
     ['SIN', 'sin-qantas-first'],
     ['LHR', 'lhr-qantas'],
     ['MUC', 'muc-lufthansa-senator-h24'],
+    ['DXB', 'dxb-plaza-premium-a'],
+    ['ICN', 'icn-matina-t2'],
+    ['AMS', 'ams-aspire-26'],
+    ['IST', 'ist-turkish-miles-smiles'],
+    ['CDG', 'cdg-star-alliance-non-schengen'],
     ['SLC', 'slc-centurion'],
   ]) {
     await page.getByRole('combobox', { name: 'Airport', exact: true }).fill(airport);

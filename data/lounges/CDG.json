@@ -1,0 +1,223 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "CDG",
+  "timeZone": "Europe/Paris",
+  "updatedAt": "2026-11-17",
+  "lounges": [
+    {
+      "id": "cdg-star-alliance-non-schengen",
+      "name": "Star Alliance Lounge (Non-Schengen)",
+      "terminal": "T1",
+      "location": "After security and passport control, third floor in the new satellite serving Gates 10–38. Separate from the older Level 10 lounge.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "06:00",
+            "close": "22:30"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "snacks",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "star-gold",
+          "label": "Star Alliance Gold · non-Schengen departure",
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingAlliance": "star",
+          "route": "international",
+          "excludedDestinationCountries": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ],
+          "conditions": [
+            "Confirm departure from the satellite serving Gates 10–38."
+          ],
+          "sourceIds": [
+            "star-access"
+          ]
+        },
+        {
+          "id": "star-premium",
+          "label": "Star Alliance First or Business · non-Schengen departure",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingAlliance": "star",
+          "route": "international",
+          "excludedDestinationCountries": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ],
+          "conditions": [
+            "Confirm departure from the satellite serving Gates 10–38."
+          ],
+          "sourceIds": [
+            "star-access"
+          ]
+        },
+        {
+          "id": "ana-premium-economy",
+          "label": "ANA Premium Economy",
+          "cabinsAnyOf": [
+            "premium-economy"
+          ],
+          "operatingCarriersAnyOf": [
+            "NH"
+          ],
+          "route": "international",
+          "excludedDestinationCountries": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ],
+          "conditions": [
+            "Confirm departure from the satellite serving Gates 10–38."
+          ],
+          "sourceIds": [
+            "ana-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "star-access",
+          "title": "Star Alliance / ANA · new CDG non-Schengen lounge and access",
+          "url": "https://www.anahd.co.jp/group/en/pr/202310/20231018-2.html",
+          "checkedOn": "2026-11-17"
+        },
+        {
+          "id": "aegean-directory",
+          "title": "Aegean · CDG Star Alliance non-Schengen hours and facilities",
+          "url": "https://en.aegeanair.com/travel-info/travelling-with-aegean/at-the-airport/lounge-finder/?AirlineCode=A3&AirportCode=CDG&CabinClass=B&ShowMore=false",
+          "checkedOn": "2026-11-17"
+        },
+        {
+          "id": "ana-access",
+          "title": "ANA · Paris lounge eligibility",
+          "url": "https://www.ana.co.jp/en/jp/guide/lounge/international/cdg/",
+          "checkedOn": "2026-11-17"
+        }
+      ],
+      "photos": [],
+      "qualityRating": {
+        "score": 4,
+        "summary": "The April 2025 review praises daylight, views, work booths and a varied breakfast in the new lounge. A comfortable longer-stop option; this is not a review of the older pre-security lounge.",
+        "reviewedOn": "2026-11-17",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Live and Let’s Fly · CDG non-Schengen Star Alliance (2025)",
+            "url": "https://liveandletsfly.com/star-alliance-lounge-paris-review/",
+            "checkedOn": "2026-11-17"
+          }
+        ]
+      },
+      "note": "Snacks and other food are available; full-service dining is unconfirmed. United Club and Maple Leaf Club holders should check their exact membership benefit. This is separate from the older lounge used by some lounge-access programs.",
+      "recommendation": {
+        "summary": "A shower and quiet-work option for eligible Star Alliance travellers in T1’s non-Schengen satellite."
+      }
+    }
+  ]
+}

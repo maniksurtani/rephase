@@ -12,7 +12,7 @@ import { groupPlanDays } from '../src/lib/plan-calendar';
 import { buildFlightLoungeContexts } from '../src/lib/lounge-windows';
 import { generatePlan } from './support/planning';
 import { evaluateAirportLounges } from '../src/lib/lounge-access';
-import { loungeDataFor } from '../src/lib/lounge-data';
+import { LOUNGE_DATA, loungeDataFor } from '../src/lib/lounge-data';
 import type { LoungeVisitContext } from '../src/lib/lounge-types';
 import type { AppData, Plan, Trip } from '../src/lib/types';
 import october from './fixtures/itineraries/oct2026.json';
@@ -184,8 +184,11 @@ describe('bundled offline mobile boundary', () => {
   it('uses the shared catalogs, validation, merge, lounge rules and calendar exporter', () => {
     const catalog = invoke('bootstrap');
     expect(catalog.loungeAirports.map((airport: Result) => airport.airport)).toEqual(
-      expect.arrayContaining(['SLC', 'SIN', 'CNS', 'LHR', 'MUC']),
+      LOUNGE_DATA.map((data) => data.airport),
     );
+    for (const data of LOUNGE_DATA) {
+      expect(invoke('loungeVisit', { airport: data.airport }).airportData).toEqual(serial(data));
+    }
     expect(catalog.memberships.map((membership: Result) => membership.id)).toEqual(
       expect.arrayContaining(['delta-sky-club', 'amex-platinum', 'delta-skymiles-reserve']),
     );
@@ -224,13 +227,27 @@ describe('bundled offline mobile boundary', () => {
       departure: '2026-10-25T06:40:00Z',
       now: new Date(now).toISOString(),
     };
-    const flightContext = buildFlightLoungeContexts(october.trip as Trip).find(value => value.airport === 'LAX')!;
-    expect(invoke('loungeVisit', { flightContext })).toMatchObject({ marketingCarrier: 'QF', operatingCarrier: 'QF' });
+    const flightContext = buildFlightLoungeContexts(october.trip as Trip).find(
+      (value) => value.airport === 'LAX',
+    )!;
+    expect(invoke('loungeVisit', { flightContext })).toMatchObject({
+      marketingCarrier: 'QF',
+      operatingCarrier: 'QF',
+    });
     const form = { airport: 'LAX', flightContext, preferences, now };
-    expect(invoke('lounges', form).context).toMatchObject({ marketingCarrier: 'QF', operatingCarrier: 'QF' });
-    expect(invoke('lounges', { ...form, marketingCarrier: 'AA' }).context).toMatchObject({ operatingCarrier: 'AA' });
-    expect(invoke('lounges', { ...form, marketingCarrier: 'AA', operatingCarrier: 'QF' }).context).toMatchObject({ operatingCarrier: 'QF' });
-    expect(invoke('lounges', { ...form, operatingCarrier: '' }).context.operatingCarrier).toBeUndefined();
+    expect(invoke('lounges', form).context).toMatchObject({
+      marketingCarrier: 'QF',
+      operatingCarrier: 'QF',
+    });
+    expect(invoke('lounges', { ...form, marketingCarrier: 'AA' }).context).toMatchObject({
+      operatingCarrier: 'AA',
+    });
+    expect(
+      invoke('lounges', { ...form, marketingCarrier: 'AA', operatingCarrier: 'QF' }).context,
+    ).toMatchObject({ operatingCarrier: 'QF' });
+    expect(
+      invoke('lounges', { ...form, operatingCarrier: '' }).context.operatingCarrier,
+    ).toBeUndefined();
     expect(invoke('lounges', { airport: 'LAX', context }).results).toEqual(
       serial(evaluateAirportLounges(loungeDataFor('LAX')!, context).results),
     );

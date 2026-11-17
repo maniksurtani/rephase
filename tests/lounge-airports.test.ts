@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { evaluateAirportLounges, evaluateLounge } from '../src/lib/lounge-access';
 import { loungeDataFor } from '../src/lib/lounge-data';
 import type { LoungeVisitContext } from '../src/lib/lounge-types';
+import { airportCountry } from '../src/lib/lounge-windows';
 
 const visit = (overrides: Partial<LoungeVisitContext> = {}): LoungeVisitContext => ({
   memberships: ['qantas-platinum'],
@@ -28,22 +29,157 @@ function check(airport: string, id: string, context = visit()) {
 }
 
 describe('new airport lounge policies', () => {
+  it('keeps Amsterdam border areas separate, including flights to another covered Schengen hub', () => {
+    const schengen = visit({
+      memberships: ['priority-pass'],
+      terminal: 'Schengen departures',
+      destinationCountry: airportCountry('MUC'),
+    });
+    expect(check('AMS', 'ams-aspire-26', schengen).access).toBe('conditional'); // M-gate check
+    expect(check('AMS', 'ams-aspire-41', schengen).access).toBe('ineligible');
+    const london = {
+      ...schengen,
+      terminal: 'Non-Schengen departures',
+      destinationCountry: airportCountry('LHR'),
+    };
+    expect(check('AMS', 'ams-aspire-26', london).access).toBe('ineligible');
+    expect(check('AMS', 'ams-aspire-41', london).access).toBe('conditional');
+    // CDG -> AMS is also Schengen; T1 alone must not enable the non-Schengen lounge.
+    expect(
+      check(
+        'CDG',
+        'cdg-star-alliance-non-schengen',
+        visit({
+          memberships: ['star-gold'],
+          operatingCarrier: 'UA',
+          destinationCountry: airportCountry('AMS'),
+        }),
+      ).access,
+    ).toBe('ineligible');
+    const early = check('AMS', 'ams-aspire-26', {
+      ...schengen,
+      visitStart: '2026-11-10T05:00:00Z',
+      visitEnd: '2026-11-10T06:30:00Z',
+    });
+    expect(early.visit).toBeUndefined(); // too early for the 10:00Z departure
+  });
+
+  it('routes Star Gold in Economy to Istanbul Miles&Smiles rather than Business', () => {
+    const gold = visit({
+      terminal: 'International departures',
+      memberships: ['united-premier-1k'],
+      operatingCarrier: 'TK',
+      marketingCarrier: 'TK',
+    });
+    expect(check('IST', 'ist-turkish-miles-smiles', gold).access).toBe('eligible');
+    expect(check('IST', 'ist-turkish-business', gold).access).toBe('ineligible');
+    const premium = { ...gold, memberships: [], cabin: 'business' as const };
+    expect(check('IST', 'ist-turkish-business', premium).access).toBe('eligible');
+    expect(check('IST', 'ist-turkish-miles-smiles', premium).access).toBe('ineligible');
+    expect(
+      check('IST', 'ist-turkish-miles-smiles', {
+        ...gold,
+        route: 'domestic',
+        destinationCountry: airportCountry('IST'),
+      }).access,
+    ).toBe('ineligible');
+  });
+
+  it('limits Dubai and Istanbul membership stays and does not grant Emirates Business Special automatically', () => {
+    const pp = visit({ memberships: ['priority-pass'], visitEnd: '2026-11-10T12:00:00Z' });
+    expect(
+      check('DXB', 'dxb-plaza-premium-a', { ...pp, terminal: 'T3 Concourse A' }).visit?.minutes,
+    ).toBe(120);
+    const iga = check('IST', 'ist-iga-international', {
+      ...pp,
+      terminal: 'International departures',
+    });
+    expect(iga.access).toBe('conditional');
+    expect(iga.visit?.minutes).toBe(120);
+    const ek = visit({
+      memberships: [],
+      cabin: 'business',
+      operatingCarrier: 'EK',
+      marketingCarrier: 'EK',
+      terminal: 'T3 Concourse B',
+    });
+    const business = check('DXB', 'dxb-emirates-business-b', ek);
+    expect(business.access).toBe('conditional');
+    expect(business.warnings.join(' ')).toContain('Business Special');
+    expect(
+      check('DXB', 'dxb-emirates-business-b', {
+        ...ek,
+        cabin: 'economy',
+        memberships: ['emirates-blue'],
+      }).access,
+    ).toBe('ineligible');
+  });
+
+  it('uses Seoul local closing time and separates Matina from premium-cabin lounge access', () => {
+    const context = visit({
+      memberships: ['priority-pass'],
+      terminal: 'T2',
+      operatingCarrier: 'KE',
+      marketingCarrier: 'KE',
+      destinationCountry: 'US',
+    });
+    expect(check('ICN', 'icn-matina-t2', context).access).toBe('eligible');
+    expect(
+      check('ICN', 'icn-matina-t2', { ...context, memberships: [], cabin: 'business' }).access,
+    ).toBe('ineligible');
+    expect(
+      check('ICN', 'icn-matina-t2', {
+        ...context,
+        visitStart: '2026-11-10T13:00:00Z',
+        visitEnd: '2026-11-10T14:00:00Z',
+        departure: '2026-11-10T15:00:00Z',
+      }).opening,
+    ).toBe('closed');
+  });
+
   it('distinguishes Sydney domestic Club, Business and international Star Alliance access', () => {
     const domestic = visit({ terminal: 'T3', route: 'domestic', memberships: ['qantas-gold'] });
-    expect(check('SYD', 'syd-qantas-club', domestic)).toMatchObject({ access: 'conditional', opening: 'unknown' });
+    expect(check('SYD', 'syd-qantas-club', domestic)).toMatchObject({
+      access: 'conditional',
+      opening: 'unknown',
+    });
     expect(check('SYD', 'syd-qantas-domestic-business', domestic).access).toBe('ineligible');
-    expect(check('SYD', 'syd-qantas-domestic-business', { ...domestic, memberships: ['qantas-platinum'] }).matchedRuleIds).toContain('qantas-premium-status');
-    const star = visit({ memberships: ['united-premier-1k'], operatingCarrier: 'NZ', marketingCarrier: 'NZ' });
+    expect(
+      check('SYD', 'syd-qantas-domestic-business', {
+        ...domestic,
+        memberships: ['qantas-platinum'],
+      }).matchedRuleIds,
+    ).toContain('qantas-premium-status');
+    const star = visit({
+      memberships: ['united-premier-1k'],
+      operatingCarrier: 'NZ',
+      marketingCarrier: 'NZ',
+    });
     expect(check('SYD', 'syd-air-new-zealand', star).access).toBe('eligible');
-    expect(check('SYD', 'syd-air-new-zealand', { ...star, memberships: ['priority-pass'] }).access).toBe('ineligible');
+    expect(
+      check('SYD', 'syd-air-new-zealand', { ...star, memberships: ['priority-pass'] }).access,
+    ).toBe('ineligible');
   });
 
   it('keeps Polaris fare confirmation and Marhaba refurbishment restrictions visible', () => {
-    const united = visit({ memberships: ['united-premier-1k'], terminal: 'International Terminal G', operatingCarrier: 'UA', marketingCarrier: 'UA' });
+    const united = visit({
+      memberships: ['united-premier-1k'],
+      terminal: 'International Terminal G',
+      operatingCarrier: 'UA',
+      marketingCarrier: 'UA',
+    });
     expect(check('SFO', 'sfo-united-polaris', united).access).toBe('ineligible');
-    expect(check('SFO', 'sfo-united-polaris', { ...united, cabin: 'business' }).access).toBe('conditional');
-    expect(check('SFO', 'sfo-united-polaris', { ...united, cabin: 'first', route: 'domestic' }).access).toBe('ineligible');
-    const marhaba = check('SIN', 'sin-marhaba-t3', visit({ terminal: 'T3', memberships: ['priority-pass'], visitEnd: '2026-11-10T12:00:00Z' }));
+    expect(check('SFO', 'sfo-united-polaris', { ...united, cabin: 'business' }).access).toBe(
+      'conditional',
+    );
+    expect(
+      check('SFO', 'sfo-united-polaris', { ...united, cabin: 'first', route: 'domestic' }).access,
+    ).toBe('ineligible');
+    const marhaba = check(
+      'SIN',
+      'sin-marhaba-t3',
+      visit({ terminal: 'T3', memberships: ['priority-pass'], visitEnd: '2026-11-10T12:00:00Z' }),
+    );
     expect(marhaba.access).toBe('conditional');
     expect(marhaba.lounge.amenities.showers).toBe('no');
     expect(marhaba.visit?.minutes).toBeLessThanOrEqual(180);

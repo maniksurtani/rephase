@@ -1,0 +1,251 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "IST",
+  "timeZone": "Europe/Istanbul",
+  "updatedAt": "2026-11-17",
+  "lounges": [
+    {
+      "id": "ist-turkish-business",
+      "name": "Turkish Airlines Lounge Business (International)",
+      "terminal": "International departures",
+      "location": "Opposite Gate E1; an additional dedicated entrance is available from the International Fast Track / Luxury Square area.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "star-premium",
+          "label": "Star Alliance international First or Business",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingAlliance": "star",
+          "route": "international",
+          "sourceIds": [
+            "turkish-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "turkish-access",
+          "title": "Turkish Airlines · Istanbul international lounge eligibility and locations",
+          "url": "https://www.turkishairlines.com/en-sg/istanbul-airport/faq/",
+          "checkedOn": "2026-11-17"
+        },
+        {
+          "id": "turkish-facilities",
+          "title": "Turkish Airlines · Istanbul international lounge hours, facilities and suite conditions",
+          "url": "https://www.turkishairlines.com/en-int/flights/fly-different/domestic-lounge/",
+          "checkedOn": "2026-11-17"
+        }
+      ],
+      "photos": [],
+      "qualityRating": {
+        "score": 4.5,
+        "summary": "The April 2024 update praises extensive Turkish food and showers, despite crowding and strict sleep-suite eligibility. Historical evidence predating later layout changes; do not expect the old open daybeds.",
+        "reviewedOn": "2026-11-17",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Live and Let’s Fly · Turkish Business (April 2024 update)",
+            "url": "https://liveandletsfly.com/turkish-airlines-business-lounge-istanbul-review/",
+            "checkedOn": "2026-11-17"
+          }
+        ]
+      },
+      "note": "Star Alliance Gold in Economy uses Miles&Smiles instead. Sleep suites have separate eligibility: a paid Turkish Business ticket or Elite Plus, a Turkish flight of at least eight hours, a four-to-nine-hour connection, and both international flights on Turkish on the same ticket. Ordinary lounge access does not guarantee a suite.",
+      "recommendation": {
+        "summary": "A strong food and shower option for eligible premium-cabin travellers, including overnight connections."
+      }
+    },
+    {
+      "id": "ist-turkish-miles-smiles",
+      "name": "Turkish Airlines Lounge Miles&Smiles (International)",
+      "terminal": "International departures",
+      "location": "Opposite Gate C1, above international departures; separate from the Business lounge.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "star-gold",
+          "label": "Star Alliance Gold on an international Star Alliance flight",
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingAlliance": "star",
+          "route": "international",
+          "sourceIds": [
+            "turkish-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "turkish-access",
+          "title": "Turkish Airlines · Istanbul international lounge eligibility and locations",
+          "url": "https://www.turkishairlines.com/en-sg/istanbul-airport/faq/",
+          "checkedOn": "2026-11-17"
+        },
+        {
+          "id": "turkish-facilities",
+          "title": "Turkish Airlines · Istanbul international lounge hours, facilities and suite conditions",
+          "url": "https://www.turkishairlines.com/en-int/flights/fly-different/domestic-lounge/",
+          "checkedOn": "2026-11-17"
+        }
+      ],
+      "photos": [],
+      "qualityRating": {
+        "score": 4,
+        "summary": "The April 2024 update describes substantial food choice, showers and plenty of seating, with crowding at busy times. A strong status lounge; its layout assessment predates subsequent expansion work.",
+        "reviewedOn": "2026-11-17",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Live and Let’s Fly · Miles&Smiles (April 2024 update)",
+            "url": "https://liveandletsfly.com/turkish-miles-smiles-lounge-istanbul-review/",
+            "checkedOn": "2026-11-17"
+          }
+        ]
+      },
+      "note": "Sleep suites have separate eligibility: a paid Turkish Business ticket or Elite Plus, a Turkish flight of at least eight hours, a four-to-nine-hour connection, and both international flights on Turkish on the same ticket. Ordinary lounge access does not guarantee a suite. Paid club and corporate invitations are not yet encoded.",
+      "recommendation": {
+        "summary": "The international status lounge for Star Alliance Gold travellers, with a buffet and showers around the clock."
+      }
+    },
+    {
+      "id": "ist-iga-international",
+      "name": "iGA Lounge (International)",
+      "terminal": "International departures",
+      "location": "After passport control, turn left and take the escalator to the mezzanine; separate from iGA Domestic and Pop-Up lounges.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "route": "international",
+          "maxVisitMinutes": 120,
+          "conditions": [
+            "Confirm your Priority Pass stay limit; current published allowances differ between two and three hours."
+          ],
+          "sourceIds": [
+            "priority-pass",
+            "operator"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · iGA international (including structured stay limit)",
+          "url": "https://www.prioritypass.com/en-GB/lounges/turkey/istanbul/ist9-iga-lounge-international",
+          "checkedOn": "2026-11-17"
+        },
+        {
+          "id": "operator",
+          "title": "iGA Pass · international facilities and program-specific stay limits",
+          "url": "https://www.igapass.com/en/iga-lounge-p-6000",
+          "checkedOn": "2026-11-17"
+        }
+      ],
+      "photos": [],
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "The 2026 review describes extensive food and useful secluded work areas, but a near-full main lounge during its visit. Seek the quieter rear section; allow time for the large terminal.",
+        "reviewedOn": "2026-11-17",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Forward of the Wing · iGA Lounge (2026)",
+            "url": "https://www.forwardofthewing.com/lounge-review-iga-lounge-istanbul-2026-review/",
+            "checkedOn": "2026-11-17"
+          }
+        ]
+      },
+      "note": "Plan on two hours with Priority Pass and confirm your allowance at reception. Nearby paid spa treatments and cabins are separate from lounge admission.",
+      "recommendation": {
+        "summary": "An independent international lounge with a buffet and showers; confirm the membership allowance before planning a long stay."
+      }
+    }
+  ]
+}

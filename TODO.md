@@ -255,4 +255,6 @@ Updated 2026-11-16. Active work is kept here; the previous complete checklist is
 - [x] Improve existing guides with eight missing lounges across SYD, HNL, SIN, LHR and SFO; retain sourced access exceptions, partial-review dates and refurbishment limitations.
 - [x] Check schema/provenance and lounge matching, including domestic Business exclusions and Polaris fare restrictions.
 - [x] Write a global airport expansion plan in [data/lounges/EXPANSION.md](data/lounges/EXPANSION.md), with research acceptance criteria and maintenance priorities.
-- [ ] Research and implement the first global batch, then validate shared web/mobile data and push.
+- [x] Start the first global batch with nine sourced lounges at DXB, ICN, AMS, IST and CDG; document incomplete airline/terminal coverage and source conflicts.
+- [x] Validate and push the first pass: 123 lounge checks, bundled-mobile catalog/data parity, type checks and production build passed. All six lounge browser scenarios passed (the historical-clock scenario passed on its corrected rerun).
+- [ ] Complete batch 1's principal airline/terminal gaps (Korean Air, KLM Crown, Air France and remaining zones) before moving on; details in data/lounges/EXPANSION.md.

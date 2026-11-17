@@ -1,0 +1,182 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "DXB",
+  "timeZone": "Asia/Dubai",
+  "updatedAt": "2026-11-17",
+  "lounges": [
+    {
+      "id": "dxb-emirates-business-b",
+      "name": "Emirates Business Class Lounge (Concourse B)",
+      "terminal": "T3 Concourse B",
+      "location": "Concourse B, lounge level above departures; follow Emirates Business Class Lounge signs.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "unknown",
+        "note": "The current Emirates pages confirm the facilities but do not publish a fixed daily opening schedule. Confirm opening for your flight."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "yes",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "skywards-status",
+          "label": "Emirates Skywards Silver, Gold or Platinum",
+          "membershipsAnyOf": [
+            "emirates-silver",
+            "emirates-gold",
+            "emirates-platinum"
+          ],
+          "operatingCarriersAnyOf": [
+            "EK"
+          ],
+          "marketingCarriersAnyOf": [
+            "EK"
+          ],
+          "route": "international",
+          "maxMinutesBeforeDeparture": 240,
+          "sourceIds": [
+            "emirates-access"
+          ]
+        },
+        {
+          "id": "business-fare",
+          "label": "Emirates Business Saver, Flex or Flex Plus",
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "EK"
+          ],
+          "marketingCarriersAnyOf": [
+            "EK"
+          ],
+          "route": "international",
+          "maxMinutesBeforeDeparture": 240,
+          "conditions": [
+            "Confirm your fare includes lounge access; Business Special does not qualify by cabin alone."
+          ],
+          "sourceIds": [
+            "emirates-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "emirates-access",
+          "title": "Emirates · Dubai lounge eligibility by fare and status",
+          "url": "https://www.emirates.com/english/experience/our-lounges/paid-lounge-access/",
+          "checkedOn": "2026-11-17"
+        },
+        {
+          "id": "emirates-facilities",
+          "title": "Emirates · Business Class lounge facilities",
+          "url": "https://www.emirates.com/english/experience/our-lounges/business-class/",
+          "checkedOn": "2026-11-17"
+        }
+      ],
+      "photos": [],
+      "qualityRating": {
+        "score": 4,
+        "summary": "A November 2024 visit praised the food variety and separate relaxation areas, but found the evening peak very crowded. A strong all-round option, with quieter seats away from the central food stations.",
+        "reviewedOn": "2026-11-17",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Points Miles and Bling · Concourse B (November 2024 visit)",
+            "url": "https://pointsmilesandbling.com/review-emirates-business-class-lounge-in-concourse-b/",
+            "checkedOn": "2026-11-17"
+          }
+        ]
+      },
+      "note": "Spa treatments cost extra. Gourmet food is available; a full-service restaurant is unconfirmed. Allow time if your flight leaves from another concourse.",
+      "recommendation": {
+        "summary": "Showers, quiet seating and optional spa treatments for eligible Emirates travellers in Concourse B; confirm opening before relying on it."
+      }
+    },
+    {
+      "id": "dxb-plaza-premium-a",
+      "name": "Plaza Premium Lounge (Concourse A)",
+      "terminal": "T3 Concourse A",
+      "location": "West wing, Level 4. Take the lift from duty free between Gates A2 and A3.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "route": "international",
+          "maxVisitMinutes": 120,
+          "sourceIds": [
+            "priority-pass"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · Plaza Premium T3 Concourse A",
+          "url": "https://www.prioritypass.com/en-GB/lounges/united-arab-emirates/dubai-international/dxb11-plaza-premium-lounge",
+          "checkedOn": "2026-11-17"
+        },
+        {
+          "id": "operator",
+          "title": "Plaza Premium · Dubai T3 facilities and optional services",
+          "url": "https://www.plazapremiumlounge.com/en-uk/find/india-middle-east-south-africa/united-arab-emirates/dubai/dubai-international-airport/international-departures-terminal-three",
+          "checkedOn": "2026-11-17"
+        }
+      ],
+      "photos": [],
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "LoungePair’s January 2025 account describes useful private cubicles, good showers and enjoyable food, with some worn furnishings. It is a lounge-pass seller; its package inclusions differ from Priority Pass.",
+        "reviewedOn": "2026-11-17",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "LoungePair · Dubai Plaza Premium firsthand review (2025)",
+            "url": "https://www.loungepair.com/guides/lounge-guide-review-plaza-premium-lounge-dubai-international-airport-dxb/",
+            "checkedOn": "2026-11-17"
+          }
+        ]
+      },
+      "note": "Priority Pass permits two hours. Showers, private suites and some drinks cost extra. Hot meals are available; full-service dining is unconfirmed. Allow time for any concourse transfer.",
+      "recommendation": {
+        "summary": "A 24-hour Priority Pass option in Concourse A, with showers available for an additional charge."
+      }
+    }
+  ]
+}

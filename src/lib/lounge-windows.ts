@@ -75,6 +75,9 @@ const COUNTRY_AIRPORTS: Record<string, readonly string[]> = {
   QA: ['DOH'],
   FR: ['CDG', 'ORY'],
   DE: ['FRA', 'MUC'],
+  NL: ['AMS'],
+  KR: ['ICN'],
+  TR: ['IST'],
 };
 const countries = new Map(
   Object.entries(COUNTRY_AIRPORTS).flatMap(([country, airports]) =>

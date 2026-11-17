@@ -15,7 +15,7 @@ When useful aggregate usage becomes available, reorder after each batch using di
 | Batch | Airports | Purpose | Status |
 | --- | --- | --- | --- |
 | Existing guides | SYD, HNL, SIN, LHR, SFO | Eight missing options, including domestic/status distinctions and current refurbishment restrictions | Implemented in `563aca9`; remaining gaps below |
-| 1 | DXB, ICN, AMS, IST, CDG | Largest uncovered international gateways; include airline and independent options and distinct airside zones | Research in progress |
+| 1 | DXB, ICN, AMS, IST, CDG | Largest uncovered international gateways; include airline and independent options and distinct airside zones | Started: nine sourced records; main-airline gaps remain below |
 | 2 | HKG, FRA, DOH, JFK, ORD | Additional alliance hubs and North American gateways | Queued |
 | 3 | BKK, KUL, TPE, HND, NRT | Broader Asian connectivity; separate Tokyo airports | Queued |
 | 4 | DFW, EWR, ATL, YYZ, YVR | North American connecting traffic and Canada | Queued |
@@ -43,6 +43,20 @@ This is an initial queue, not a commitment to wait through every preceding batch
 3. Expand SIN SATS/Marhaba locations, premium SilverKris sections and PPS selections.
 4. Add remaining LHR airline lounges and MUC K/L satellite lounges; retain terminal/border restrictions.
 5. Recheck SLC Sky Club hours, CNS international availability and LAX First reopening before claiming certainty.
+
+## Batch 1: initial implementation and remaining work
+
+The first pass adds nine lounges and brings the dataset to **59 selected lounges at 14 airports**. This starts the batch; it does not yet meet the full useful-guide target at every airport.
+
+| Airport | Implemented | Next research within this batch |
+| --- | --- | --- |
+| DXB | Emirates Business B; Plaza Premium T3 A | Verify Emirates fixed hours and dining style; add T1 independent options and other Emirates concourses/First. Review Qantas/flydubai reciprocity separately. |
+| ICN | Matina T2 | Add current Korean Air lounges following the 2025–26 renovations, plus T1 coverage. Avoid applying old West Lounge reviews to the replacement. |
+| AMS | Aspire 26 Schengen and 41 non-Schengen | Add KLM Crown 25/52 and oneworld; verify current Business Light exclusions. The KLM pages were inaccessible during this pass, so eligibility was not inferred from search snippets. |
+| IST | Turkish international Business and Miles&Smiles; iGA international | Domestic options, paid club/corporate invitations and reviews of the recent Turkish expansion. Resolve Priority Pass's conflicting textual/structured visit limits against current member entitlement. |
+| CDG | New T1 non-Schengen Star Alliance lounge | Air France 2F/2E, separate Schengen options and independent lounges. Air France pages were inaccessible during this pass; no SkyTeam/paid/PP access is invented for the Star Alliance lounge. |
+
+Complete these principal airline and terminal gaps before treating batch 1 as complete. Keep private sleep-suite eligibility separate from ordinary lounge access. Last-entry and gate restrictions the matcher cannot resolve remain explicit conditions; no gate-entry fields were added to trips.
 
 ## Maintenance and success measures
 

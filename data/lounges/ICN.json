@@ -1,0 +1,88 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "ICN",
+  "timeZone": "Asia/Seoul",
+  "updatedAt": "2026-11-17",
+  "lounges": [
+    {
+      "id": "icn-matina-t2",
+      "name": "Matina Lounge (Terminal 2)",
+      "terminal": "T2",
+      "location": "Fourth floor: take the escalator near Gate 252 and cross the bridge. International departures and transit passengers only.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "06:00",
+            "close": "22:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "route": "international",
+          "maxVisitMinutes": 180,
+          "sourceIds": [
+            "priority-pass"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · Matina T2",
+          "url": "https://www.prioritypass.com/en-GB/lounges/south-korea/incheon-international/icn13-matina",
+          "checkedOn": "2026-11-17"
+        },
+        {
+          "id": "operator",
+          "title": "Walkerhill · Matina menus, hours and locations",
+          "url": "https://app.walkerhill.com/transithotel/en/lounge/Matina.jsp",
+          "checkedOn": "2026-11-17"
+        }
+      ],
+      "photos": [],
+      "qualityRating": {
+        "score": 3,
+        "summary": "An April 2024 visit found a good range of Korean food but a busy, restaurant-like layout and entrance queues. More useful for a meal than quiet rest; this review predates the current published opening time.",
+        "reviewedOn": "2026-11-17",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Bun World Traveler · Matina T2 (April 2024 visit)",
+            "url": "https://bunworldtraveler.com/2025/01/06/lounge-review-matina-lounge-seoul-incheon-icn-terminal-2/",
+            "checkedOn": "2026-11-17"
+          }
+        ]
+      },
+      "note": "Food service ends at 21:30. Show a confirmed same-day boarding pass. This is regular Matina, not Matina Gold. T1 East shower facilities must not be attributed to this T2 location.",
+      "recommendation": {
+        "summary": "A convenient T2 meal stop for Priority Pass members; leave time for a possible entrance queue."
+      }
+    }
+  ]
+}
