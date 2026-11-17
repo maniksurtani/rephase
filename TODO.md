@@ -240,4 +240,5 @@ Updated 2026-11-16. Active work is kept here; the previous complete checklist is
 - [x] Use each publishing workflow's integer run number on Android and iOS, matching Zerocal; reruns retain their number.
 - [x] Document new-run publishing and the owner-approved one-time Android reinstall, including local data/reminder effects.
 - [x] Verify boundary/rerun behavior in the existing release-tooling tests and check the exported APK version code before upload.
-- [ ] Publish the updated Android beta to Firebase and iOS beta to TestFlight; record build numbers and results.
+- [x] Publish Android 0.1.0 (6) to Firebase friends-and-family and upload iOS 0.1.0 (3) to TestFlight; both workflows succeeded. See RELEASES.md.
+- [ ] Testers: perform the one-time Android reinstall, restore account data and re-enable reminders; confirm the iOS update after TestFlight processing.
