@@ -1,5 +1,11 @@
 # Release evidence
 
+## 17 November 2026 — compact plan date cards
+
+The plan's rounded date cards are now **76 × 76 pixels** at standard text size, down from 108 pixels tall in Flutter and at least 130 pixels on the web. The web strip has less surrounding spacing. Weekday, date, travel/city label, selection and full accessible city names remain available; long city labels truncate while the selected day's toolbar shows the city. Native card height grows with larger text settings, and horizontal auto-scroll uses the new shared card width/gap so the current day stays visible. The native timeline gains 32 pixels of vertical space at standard text size.
+
+Three existing Flutter planner widget tests pass, including date navigation and 150% text; Flutter analysis is clean. Both existing browser timeline scenarios pass, covering current-day visibility, date selection, scrolling, date-line flights and details. The production web build, CSS formatting and diff checks pass. Mobile (390 × 844) and desktop (1440 × 1000) screenshots were visually reviewed; measured mobile web cards are 76 × 76 with no page overflow. This presentation change needs no planner/native-host changes or additional simulator suite. Publishing is pending.
+
 ## 17 November 2026 — consistent mobile build numbering
 
 Android and iOS now use their respective GitHub workflow run number as a plain integer, matching Zerocal. Android no longer derives version codes from time; iOS no longer appends the run attempt. Reruns retain their number, and new releases require new workflow runs. Existing tests cover valid limits, malformed values, increasing new runs and unchanged reruns. Android's publishing workflow verifies the compiled APK version code before upload, alongside the existing package/signature check; iOS already checks both archive and IPA metadata.

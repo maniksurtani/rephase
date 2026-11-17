@@ -33,6 +33,8 @@ class JourneyTimeline extends StatefulWidget {
 }
 
 class _JourneyTimelineState extends State<JourneyTimeline> {
+  static const _dateWidth = 76.0;
+  static const _dateGap = 8.0;
   final _scroll = ScrollController();
   final _dates = ScrollController();
   double _position = 0;
@@ -122,7 +124,8 @@ class _JourneyTimelineState extends State<JourneyTimeline> {
         widget.journey['days'],
       ).indexWhere((day) => day['date'] == date);
       if (index < 0) return;
-      final offset = (index * 94.0 - 94).clamp(
+      const extent = _dateWidth + _dateGap;
+      final offset = ((index - 1) * extent).clamp(
         0.0,
         _dates.position.maxScrollExtent,
       );
@@ -258,12 +261,12 @@ class _JourneyTimelineState extends State<JourneyTimeline> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         SizedBox(
-          height: 108 * math.min(_scale, 1.5),
+          height: 76 * math.max(1, MediaQuery.textScalerOf(context).scale(1)),
           child: ListView.separated(
             controller: _dates,
             scrollDirection: Axis.horizontal,
             itemCount: days.length,
-            separatorBuilder: (_, _) => const SizedBox(width: 8),
+            separatorBuilder: (_, _) => const SizedBox(width: _dateGap),
             itemBuilder: (context, i) {
               final day = days[i], selected = day['date'] == clock['dateKey'];
               final date = DateTime.tryParse(labelOf(day, 'date'));
@@ -273,7 +276,7 @@ class _JourneyTimelineState extends State<JourneyTimeline> {
                   ? amber
                   : muted;
               return SizedBox(
-                width: 86,
+                width: _dateWidth,
                 child: Semantics(
                   selected: selected,
                   button: true,
@@ -281,7 +284,7 @@ class _JourneyTimelineState extends State<JourneyTimeline> {
                   child: Material(
                     color: color.withValues(alpha: .10),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(32),
+                      borderRadius: BorderRadius.circular(24),
                       side: BorderSide(color: color.withValues(alpha: .6)),
                     ),
                     clipBehavior: Clip.antiAlias,
@@ -291,7 +294,7 @@ class _JourneyTimelineState extends State<JourneyTimeline> {
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 6,
-                          vertical: 10,
+                          vertical: 6,
                         ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -300,11 +303,19 @@ class _JourneyTimelineState extends State<JourneyTimeline> {
                               date == null
                                   ? ''
                                   : DateFormat('EEE').format(date),
-                              style: TextStyle(color: color, fontSize: 11),
+                              style: TextStyle(
+                                color: color,
+                                fontSize: 11,
+                                height: 1.2,
+                              ),
                             ),
                             Text(
                               '${date?.day ?? ''}',
-                              style: TextStyle(color: color, fontSize: 25),
+                              style: TextStyle(
+                                color: color,
+                                fontSize: 22,
+                                height: 1.2,
+                              ),
                             ),
                             Flexible(
                               child: Text(
@@ -312,8 +323,13 @@ class _JourneyTimelineState extends State<JourneyTimeline> {
                                     ? '✈ Travel'
                                     : labelOf(day, 'city'),
                                 textAlign: TextAlign.center,
-                                maxLines: 2,
-                                style: TextStyle(color: color, fontSize: 10),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: color,
+                                  fontSize: 10,
+                                  height: 1.2,
+                                ),
                               ),
                             ),
                           ],

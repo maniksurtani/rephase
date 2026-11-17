@@ -242,3 +242,10 @@ Updated 2026-11-16. Active work is kept here; the previous complete checklist is
 - [x] Verify boundary/rerun behavior in the existing release-tooling tests and check the exported APK version code before upload.
 - [x] Publish Android 0.1.0 (6) to Firebase friends-and-family and upload iOS 0.1.0 (3) to TestFlight; both workflows succeeded. See RELEASES.md.
 - [ ] Testers: perform the one-time Android reinstall, restore account data and re-enable reminders; confirm the iOS update after TestFlight processing.
+
+## Compact plan date cards — 17 November 2026
+
+- [x] Reduce date cards to 76 pixels tall at standard text size on web/iOS/Android, tighten web strip spacing and preserve date/travel labels and selected states.
+- [x] Keep native cards accessible at larger text sizes and update horizontal auto-scroll spacing for the narrower cards.
+- [x] Verify the existing Flutter planner interactions (including enlarged text), browser timeline navigation, analysis/build and mobile/desktop layout.
+- [ ] Publish the compact layout to Cloudflare, Firebase and TestFlight; record release results.
