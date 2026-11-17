@@ -248,4 +248,4 @@ Updated 2026-11-16. Active work is kept here; the previous complete checklist is
 - [x] Reduce date cards to 76 pixels tall at standard text size on web/iOS/Android, tighten web strip spacing and preserve date/travel labels and selected states.
 - [x] Keep native cards accessible at larger text sizes and update horizontal auto-scroll spacing for the narrower cards.
 - [x] Verify the existing Flutter planner interactions (including enlarged text), browser timeline navigation, analysis/build and mobile/desktop layout.
-- [ ] Publish the compact layout to Cloudflare, Firebase and TestFlight; record release results.
+- [x] Publish the compact layout to Cloudflare, Firebase (Android 0.1.0 build 7) and TestFlight (iOS 0.1.0 build 4 uploaded; Apple processing pending); record successful runs in RELEASES.md.
