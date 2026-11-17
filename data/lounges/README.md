@@ -1,6 +1,6 @@
 # Lounge research data
 
-Edit one JSON file per airport, named with its three-letter IATA code (for example `SIN.json`). The app reads these files at build time; browsing and matching do not need a lounge API or server. `schema.json` is the editor/CI contract, and `src/lib/lounge-types.ts` defines the matching types.
+Edit one JSON file per airport, named with its three-letter IATA code (for example `SIN.json`). The build publishes each guide as static JSON; clients download only the airports they need, cache them locally and match access offline. No lounge API or database is needed. `schema.json` is the editor/CI contract, and `src/lib/lounge-types.ts` defines the matching types.
 
 ## Existing-guide improvements: 17 November 2026
 
@@ -18,7 +18,7 @@ Sources and independent quality assessments are stored with each new record. Old
 
 Remaining gaps in the existing guides include SYD Virgin/Emirates/SilverKris and contracted invitations; HNL ANA and central Sakura/Admirals; SFO United Club/Maple Leaf/Centurion; SIN other SATS/Marhaba locations and PPS access; LHR other BA/airline lounges; MUC K/L satellite lounges; SLC verified Sky Club hours. CNS international availability and LAX First's temporary closure need continued operator review. A listed airport is not a complete inventory.
 
-Both clients consume the same curated data. Web receives changes on deployment; installed mobile apps need a new bundle/build. No live lounge API is introduced.
+Both clients consume the same curated data. From the on-demand guide release onward, deploying the website publishes compatible data updates to both web and installed mobile apps. Apps check the small manifest at most daily while in use; no mobile rebuild is needed for content changes.
 
 ## First global batch: 17 November 2026
 
@@ -88,9 +88,39 @@ The app first groups lounges by access and usable opening time, then sorts by th
 
 This example fits Sydney Qantas First because the official facilities page confirms showers and restaurant dining. `summary` is a short research-based explanation; optional `bestFor` values are `balanced`, `showers`, `dining` and `quiet`. Support each selection with the lounge's verified amenities and sources. An unverified quiet area should not earn a quiet recommendation. `bestFor` tags are descriptive and do not change the ranking. Priority suitability comes from structured amenities; the separate quality rating breaks suitability ties. Neither can make an ineligible or closed lounge accessible. Use `note` for other practical details, such as upgrade fees or incomplete coverage. Research that introduces a new access condition or scoring input should extend the types/schema and tests before relying on that field.
 
+## Publishing and offline downloads
+
+`npm run build` validates the schema and emits:
+
+- `/lounge-data/v1/manifest.json`: schema version, airport, timezone, source review date, SHA-256 version and file path.
+- `/lounge-data/v1/airports/<IATA>.<sha256>.json`: compact, immutable guide content.
+
+Push researched JSON changes through the normal verified web deployment. Cloudflare serves these paths directly as static assets, outside `/api/*`; no Worker execution, D1, R2, credentials or new service is required. The generated `_headers` file revalidates the manifest and caches versioned airport files for a year. Keep the `v1` endpoint available for installed apps. Breaking fields, new access semantics or program identifiers need a compatible app/schema rollout; never silently change their meaning.
+
+Web uses IndexedDB; Flutter uses application-support files. Both fetch the manifest daily while in use, validate its paths and each guide's hash/schema/airport, deduplicate requests and preserve the last valid guide on failure. An old manifest pointing at a removed file triggers one refresh/retry. UI distinguishes unresearched airports from guides unavailable offline. Startup, saved-trip edits and foreground/reconnection refreshes prefetch airports for upcoming/in-progress trips, with two concurrent downloads. Trips ending in the past two days are included to cover date-line/local-date boundaries. Prefetched trip guides stay pinned; the cache otherwise retains up to 64 recently used airport guides, plus in-flight requests. Public caches are separate from private account state. An OS/browser clearing storage requires downloading again.
+
+The app bundles the access engine, compiled schema validator and small seed index, **not the guides**. The website's service worker excludes guide JSON and lounge images from precaching. Planning always works offline; lounge matching works offline after that airport's guide has downloaded. The first release of this architecture requires updating the mobile app; subsequent compatible guide edits do not.
+
+For local development, Vite serves the generated guide paths. When testing a native app against unpublished guides, point `API_ORIGIN` to the local Vite/preview host (Android emulator: `http://10.0.2.2:5173`; iOS Simulator: `http://127.0.0.1:5173`). Use the usual local HTTP platform configuration where needed. Production uses the same configured origin for public guides and account APIs.
+
 ## Photos
 
-Store optimized, owner-supplied or explicitly licensed images in `public/lounges/<lounge-id>/`. Prefer WebP or AVIF, around 1,200 px wide or smaller, with descriptive filenames. Use paths beginning `/lounges/` in the JSON:
+Prefer links to the publisher's **photo/review page**, which open in the user's browser. For example, add this alongside `photos: []`:
+
+```json
+"photoLinks": [{
+  "label": "View photos and review",
+  "url": "https://upgradedpoints.com/travel/airports/aspire-lounge-26-amsterdam-ams-review/",
+  "checkedOn": "2026-11-17"
+}]
+```
+
+Use the actual page you checked, rather than guessing a URL. `checkedOn` records the link review date. Nine lounge records from the first global batch now link to their existing independent review pages. These links don't fetch third-party images until the user leaves Rephase to visit the page. They require an internet connection and may lead to publisher sign-in or other restrictions.
+
+[LoungeReview's terms](https://loungereview.com/terms/) reserve image rights and don't grant Rephase permission to embed or copy photos. A page link is different from hotlinking an image into our UI. Do not scrape their gallery or use raw image URLs without permission. An authorized photo feed/API could be added later. The same permission check applies to other publishers.
+
+
+If we later want embedded photos, store optimized, owner-supplied or explicitly licensed images in `public/lounges/<lounge-id>/`. Prefer WebP or AVIF, around 1,200 px wide or smaller, with descriptive filenames. Use paths beginning `/lounges/` in the JSON:
 
 ```json
 {
@@ -102,7 +132,7 @@ Store optimized, owner-supplied or explicitly licensed images in `public/lounges
 }
 ```
 
-Keep the permission/license evidence with your research. If permission was granted privately, preserve it outside the public repository and use an appropriate public source/credit reference. Do not publish private correspondence, faces without suitable permission, credentials or boarding passes. Do not copy airline marketing images or hotlink them merely because an official page displays them. `photos: []` is valid and uses the app's fallback presentation.
+Keep the permission/license evidence with your research. If permission was granted privately, preserve it outside the public repository and use an appropriate public source/credit reference. Do not publish private correspondence, faces without suitable permission, credentials or boarding passes. Do not copy airline marketing images or hotlink them merely because an official page displays them. `photos: []` is valid and uses the app's fallback presentation. Licensed images load separately when shown, are excluded from offline precaching, and never form part of the native app bundle.
 
 ## Initial research: 15 October 2026
 
@@ -153,4 +183,4 @@ Material distinctions:
 - Munich World is now in the new T1 pier at the **A gates**, in the non-Schengen area. Europe is T1 D, Schengen. Destination-country rules distinguish these areas and the Lufthansa G/H lounges; an unknown country stays conditional. The German Federal Foreign Office's [Schengen state list](https://www.auswaertiges-amt.de/en/visa-service/buergerservice/faq/17-schengenstaaten-606722), checked 8 November 2026, lists the 29 encoded states. UK/Ireland/Cyprus are not treated as Schengen destinations.
 - Amex's Lufthansa lounge benefit ended on **1 October 2026**, as stated on its [Munich Senator G24 listing](https://www.americanexpress.com/en-us/travel/lounges/the-platinum-card/MUC/lufthansa-senator-lounge-gate-g24-schengen-terminal-2-dyxPYMRZ4m/), checked 8 November 2026. No Amex-only rule grants Lufthansa access.
 
-This is curated coverage, not a complete airport inventory. Follow-ups include SIN's SATS/Marhaba lounges and PPS membership support, Heathrow's other BA/United/airline lounges, Munich's K/L satellite lounges, Centurion Card selections and verified fixed SLC Sky Club hours. The existing offline-data workflow applies equally to web and native apps; installed native apps need rebuilding to receive these bundled records.
+This is curated coverage, not a complete airport inventory. Follow-ups include SIN's SATS/Marhaba lounges and PPS membership support, Heathrow's other BA/United/airline lounges, Munich's K/L satellite lounges, Centurion Card selections and verified fixed SLC Sky Club hours. The original release bundled these records. The on-demand guide release replaces that delivery model; see below.

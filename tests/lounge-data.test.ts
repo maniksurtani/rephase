@@ -5,7 +5,7 @@ import Ajv from 'ajv';
 import { Temporal } from '@js-temporal/polyfill';
 import { describe, expect, it } from 'vitest';
 import schema from '../data/lounges/schema.json';
-import { LOUNGE_DATA } from '../src/lib/lounge-data';
+import { LOUNGE_DATA } from './support/lounge-data';
 import sfo from '../data/lounges/SFO.json';
 import { LOUNGE_MEMBERSHIPS, type AirportLoungeData } from '../src/lib/lounge-types';
 
@@ -46,6 +46,10 @@ function semanticErrors(data: AirportLoungeData): string[] {
       check(httpsUrl(source.url), `${at}/${source.id}: source needs a public HTTPS URL without credentials`);
       check(validDate(source.checkedOn), `${at}/${source.id}: checkedOn must be a real ISO date`);
       check(source.checkedOn <= data.updatedAt, `${at}/${source.id}: source review is later than the airport review date`);
+    }
+    for (const link of lounge.photoLinks ?? []) {
+      check(httpsUrl(link.url), `${at}: photo link must be public HTTPS`);
+      check(validDate(link.checkedOn) && link.checkedOn <= data.updatedAt, `${at}: photo link review must be valid and no later than the airport review`);
     }
     const ruleIds = new Set<string>();
     const rating = lounge.qualityRating;

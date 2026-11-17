@@ -108,6 +108,8 @@ export interface Lounge {
   accessRules: LoungeAccessRule[];
   sources: LoungeSource[];
   photos: LoungePhoto[];
+  /** External pages containing photos; no image embedding or copying implied. */
+  photoLinks?: { label: string; url: string; checkedOn: string }[];
   /** Editorial findings from offline research. */
   recommendation?: { summary: string; bestFor?: LoungePriority[] };
   /** Rephase editorial assessment (1–5 in half-points), not an aggregate customer score. */

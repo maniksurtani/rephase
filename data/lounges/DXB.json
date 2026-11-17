@@ -97,7 +97,14 @@
       "note": "Spa treatments cost extra. Gourmet food is available; a full-service restaurant is unconfirmed. Allow time if your flight leaves from another concourse.",
       "recommendation": {
         "summary": "Showers, quiet seating and optional spa treatments for eligible Emirates travellers in Concourse B; confirm opening before relying on it."
-      }
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://pointsmilesandbling.com/review-emirates-business-class-lounge-in-concourse-b/",
+          "checkedOn": "2026-11-17"
+        }
+      ]
     },
     {
       "id": "dxb-plaza-premium-a",
@@ -176,7 +183,14 @@
       "note": "Priority Pass permits two hours. Showers, private suites and some drinks cost extra. Hot meals are available; full-service dining is unconfirmed. Allow time for any concourse transfer.",
       "recommendation": {
         "summary": "A 24-hour Priority Pass option in Concourse A, with showers available for an additional charge."
-      }
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://www.loungepair.com/guides/lounge-guide-review-plaza-premium-lounge-dubai-international-airport-dxb/",
+          "checkedOn": "2026-11-17"
+        }
+      ]
     }
   ]
 }

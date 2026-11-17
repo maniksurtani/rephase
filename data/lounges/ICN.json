@@ -82,7 +82,14 @@
       "note": "Food service ends at 21:30. Show a confirmed same-day boarding pass. This is regular Matina, not Matina Gold. T1 East shower facilities must not be attributed to this T2 location.",
       "recommendation": {
         "summary": "A convenient T2 meal stop for Priority Pass members; leave time for a possible entrance queue."
-      }
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://bunworldtraveler.com/2025/01/06/lounge-review-matina-lounge-seoul-incheon-icn-terminal-2/",
+          "checkedOn": "2026-11-17"
+        }
+      ]
     }
   ]
 }

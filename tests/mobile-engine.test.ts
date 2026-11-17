@@ -12,7 +12,7 @@ import { groupPlanDays } from '../src/lib/plan-calendar';
 import { buildFlightLoungeContexts } from '../src/lib/lounge-windows';
 import { generatePlan } from './support/planning';
 import { evaluateAirportLounges } from '../src/lib/lounge-access';
-import { LOUNGE_DATA, loungeDataFor } from '../src/lib/lounge-data';
+import { LOUNGE_DATA, loungeDataFor } from './support/lounge-data';
 import type { LoungeVisitContext } from '../src/lib/lounge-types';
 import type { AppData, Plan, Trip } from '../src/lib/types';
 import october from './fixtures/itineraries/oct2026.json';
@@ -29,8 +29,10 @@ beforeAll(async () => {
   directory = await mkdtemp(join(tmpdir(), 'rephase-mobile-engine-'));
   const outfile = join(directory, 'engine.js');
   await buildMobileEngine(outfile);
-  const context = { Intl, Date, TextEncoder, TextDecoder, structuredClone, crypto: webcrypto };
-  runInNewContext(await readFile(outfile, 'utf8'), context);
+  const context = { URL, Intl, Date, TextEncoder, TextDecoder, structuredClone, crypto: webcrypto };
+  const bundle = await readFile(outfile, 'utf8');
+  expect(bundle).not.toContain('sfo-united-polaris');
+  runInNewContext(bundle, context);
   invoke = (operation, payload = {}) => {
     const response = serial((context as Result).RephaseMobile.invoke(operation, serial(payload)));
     if (!response.ok) throw new Error(response.error);
@@ -186,8 +188,10 @@ describe('bundled offline mobile boundary', () => {
     expect(catalog.loungeAirports.map((airport: Result) => airport.airport)).toEqual(
       LOUNGE_DATA.map((data) => data.airport),
     );
+    expect(invoke('loungeVisit', { airport: 'SFO' }).airportData).toBeNull();
+    expect(invoke('validateLoungeCatalog', { catalog: catalog.loungeCatalog }).catalog).toEqual(catalog.loungeCatalog);
     for (const data of LOUNGE_DATA) {
-      expect(invoke('loungeVisit', { airport: data.airport }).airportData).toEqual(serial(data));
+      expect(invoke('loungeVisit', { airport: data.airport, airportData: data }).airportData).toEqual(serial(data));
     }
     expect(catalog.memberships.map((membership: Result) => membership.id)).toEqual(
       expect.arrayContaining(['delta-sky-club', 'amex-platinum', 'delta-skymiles-reserve']),
@@ -234,7 +238,7 @@ describe('bundled offline mobile boundary', () => {
       marketingCarrier: 'QF',
       operatingCarrier: 'QF',
     });
-    const form = { airport: 'LAX', flightContext, preferences, now };
+    const form = { airport: 'LAX', airportData: loungeDataFor('LAX'), flightContext, preferences, now };
     expect(invoke('lounges', form).context).toMatchObject({
       marketingCarrier: 'QF',
       operatingCarrier: 'QF',
@@ -248,11 +252,11 @@ describe('bundled offline mobile boundary', () => {
     expect(
       invoke('lounges', { ...form, operatingCarrier: '' }).context.operatingCarrier,
     ).toBeUndefined();
-    expect(invoke('lounges', { airport: 'LAX', context }).results).toEqual(
+    expect(invoke('lounges', { airport: 'LAX', airportData: loungeDataFor('LAX'), context }).results).toEqual(
       serial(evaluateAirportLounges(loungeDataFor('LAX')!, context).results),
     );
     expect(
-      invoke('lounges', { airport: 'LAX', context: { ...context, visitEnd: context.departure } }),
+      invoke('lounges', { airport: 'LAX', airportData: loungeDataFor('LAX'), context: { ...context, visitEnd: context.departure } }),
     ).toMatchObject({
       results: [],
       error: 'Finish your lounge visit at least 30 minutes before departure.',

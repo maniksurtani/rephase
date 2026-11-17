@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import 'models.dart';
+import 'service_origin.dart';
 
 class ApiException implements Exception {
   const ApiException(this.message, this.status);
@@ -31,28 +32,8 @@ abstract interface class MobileApi {
 
 class HttpMobileApi implements MobileApi {
   HttpMobileApi({String? origin, http.Client? client})
-    : origin = Uri.parse(
-        origin ??
-            const String.fromEnvironment(
-              'API_ORIGIN',
-              defaultValue: 'https://rephase.surtani.org',
-            ),
-      ),
-      _client = client ?? http.Client() {
-    final host = this.origin.host;
-    if (this.origin.scheme != 'https' &&
-        !(this.origin.scheme == 'http' &&
-            const {'localhost', '127.0.0.1', '10.0.2.2'}.contains(host))) {
-      throw ArgumentError(
-        'API_ORIGIN must use HTTPS (local emulator development may use HTTP).',
-      );
-    }
-    if (this.origin.userInfo.isNotEmpty ||
-        this.origin.query.isNotEmpty ||
-        this.origin.fragment.isNotEmpty) {
-      throw ArgumentError('API_ORIGIN must be a plain origin.');
-    }
-  }
+    : origin = serviceOrigin(origin),
+      _client = client ?? http.Client();
   final Uri origin;
   final http.Client _client;
 

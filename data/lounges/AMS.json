@@ -115,7 +115,14 @@
       "note": "Priority Pass entry starts three hours before departure. Check your boarding pass: M-gate departures cannot reach this lounge. Showers are unconfirmed.",
       "recommendation": {
         "summary": "A buffet and workspace option for a Schengen connection, once the departure area is confirmed."
-      }
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://upgradedpoints.com/travel/airports/aspire-lounge-26-amsterdam-ams-review/",
+          "checkedOn": "2026-11-17"
+        }
+      ]
     },
     {
       "id": "ams-aspire-41",
@@ -227,7 +234,14 @@
       "note": "Showers cost extra. Published opening is 06:00–21:00, with no new entry after 20:30; hours may vary with flights. Priority Pass entry starts three hours before departure.",
       "recommendation": {
         "summary": "A non-Schengen option with paid showers; confirm entry time and leave room for queues and the gate walk."
-      }
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://www.amsterdamtips.com/aspire-lounge-41",
+          "checkedOn": "2026-11-17"
+        }
+      ]
     }
   ]
 }

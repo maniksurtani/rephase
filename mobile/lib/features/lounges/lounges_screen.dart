@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../app_controller.dart';
 import '../../data/models.dart';
+import '../../data/service_origin.dart';
 
 class LoungesScreen extends StatefulWidget {
   const LoungesScreen({super.key, this.airport, this.legId});
@@ -148,6 +149,10 @@ class _LoungesScreenState extends State<LoungesScreen> {
       if (!mounted || request != _request) return;
       setState(() {
         _result = result;
+        if (result['airportData'] != null) {
+          _visit['airportData'] = result['airportData'];
+        }
+        _visit['guideStatus'] = result['guideStatus'];
         _error = result['error'] as String?;
         _showClockChoices =
             _showClockChoices || (_error?.contains('occurs twice') ?? false);
@@ -413,26 +418,30 @@ class _LoungesScreenState extends State<LoungesScreen> {
             label: Text(_loading ? 'Checking lounges…' : 'Find lounges'),
           ),
           const SizedBox(height: 20),
-          if (!_loading && data == null)
-            _Message(
-              text:
-                  'We haven’t researched lounges at $_airport yet. '
-                  'Current coverage: ${(controller.catalog['loungeAirports'] as List? ?? []).map((value) => value is Map ? value['airport'] : value).join(', ')}.',
-            )
-          else if (_error != null)
+          if (_error != null)
             _Message(text: _error!, error: true)
-          else if (!_loading && _result == null)
+          else if (!_loading && data == null) ...[
+            _Message(
+              text: _visit['guideStatus'] == 'unsupported'
+                  ? 'We haven’t researched lounges at $_airport yet.'
+                  : 'This guide isn’t available offline yet. Connect to download it.',
+            ),
+            if (_visit['guideStatus'] != 'unsupported')
+              TextButton(onPressed: _search, child: const Text('Try again')),
+          ] else if (!_loading && _result == null)
             const _Message(
               text: 'Set your visit times to check access and opening hours.',
             ),
-          if (_result != null && _error == null) ...[
+          if (!_loading && _visit['guideStatus'] == 'cached')
+            const _Message(text: 'Showing the downloaded guide.'),
+          if (_result != null && data != null && _error == null) ...[
             Text(
               '${airport?['city'] ?? _airport} lounges',
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 4),
             Text(
-              '${results.length} researched lounges${data?['updatedAt'] == null ? '' : ' · reviewed ${data!['updatedAt']}'}',
+              '${results.length} researched lounges${data['updatedAt'] == null ? '' : ' · reviewed ${data['updatedAt']}'}',
               style: Theme.of(context).textTheme.bodySmall,
             ),
             if (_result!['recommendedId'] == null)
@@ -600,6 +609,12 @@ class LoungeResultCard extends StatelessWidget {
               const SizedBox(height: 12),
               Text('${result['recommendationReason']}'),
             ],
+            for (final link in jsonObjects(lounge['photoLinks']))
+              TextButton.icon(
+                onPressed: () => _open(context, '${link['url']}'),
+                icon: const Icon(Icons.photo_library_outlined, size: 16),
+                label: Text('${link['label']}'),
+              ),
             ExpansionTile(
               tilePadding: EdgeInsets.zero,
               childrenPadding: const EdgeInsets.only(bottom: 8),
@@ -650,9 +665,9 @@ class LoungeResultCard extends StatelessWidget {
                             ClipRRect(
                               borderRadius: BorderRadius.circular(12),
                               child: Image.network(
-                                Uri.parse(
-                                  'https://rephase.surtani.org/',
-                                ).resolve('${photo['path']}').toString(),
+                                serviceOrigin()
+                                    .resolve('${photo['path']}')
+                                    .toString(),
                                 fit: BoxFit.cover,
                                 semanticLabel:
                                     '${photo['alt'] ?? lounge['name']}',

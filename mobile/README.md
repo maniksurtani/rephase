@@ -1,6 +1,6 @@
 # Rephase for iOS and Android
 
-A native Flutter app alongside the React web app. Today, the continuous Bands timeline, multi-flight trips, Lounge Explorer and Profile use Flutter widgets. Planning and lounge matching run offline using the same bundled TypeScript code and datasets as the web application.
+A native Flutter app alongside the React web app. Today, the continuous Bands timeline, multi-flight trips, Lounge Explorer and Profile use Flutter widgets. Planning and lounge matching use the same bundled TypeScript engine as the web application. Lounge guides download per airport and are cached for offline use; they are not bundled with the app.
 
 ## Mac setup
 
@@ -63,7 +63,7 @@ flutter devices
 npm run mobile -- run -d DEVICE_ID
 ```
 
-The app starts in guest mode; no Google, flight-provider or Cloudflare credentials are needed to enter a trip manually, explore the example, generate a plan or evaluate the bundled lounge guides. An existing signed-in account loads the same preferences and trips as the web app after native Google sign-in is configured.
+The app starts in guest mode; no Google, flight-provider or Cloudflare credentials are needed to enter a trip manually, explore the example, generate a plan or evaluate downloaded lounge guides. Lounge Explorer needs a connection the first time an airport is downloaded; airports in upcoming/in-progress saved trips prefetch automatically. An existing signed-in account loads the same preferences and trips as the web app after native Google sign-in is configured.
 
 Useful commands:
 
@@ -117,7 +117,7 @@ The API key used for flight lookup stays in the Worker. Never put `RAPIDAPI_KEY`
 - `lib/engine/`: serialized, bounded calls to a computation-only headless system WebView. Its self-contained HTML/JavaScript blocks network access, navigation and remote code. The visible application is Flutter.
 - `lib/notifications/`: plan-to-reminder projection, a serialized account-scoped scheduler, and the [`flutter_local_notifications`](https://pub.dev/packages/flutter_local_notifications) adapter. UTC scheduling uses `timezone`; device opt-ins use `shared_preferences`. No separate scientific model or polling service is introduced.
 - `src/mobile/bridge.ts`: the typed boundary to existing planning, timezone, timeline, lounge, validation, merge and calendar functions.
-- `scripts/build-mobile-engine.mjs`: bundles the engine, airport catalog, lounge guides and preserved upstream notices. Generated assets are rebuilt rather than checked into Git.
+- `scripts/build-mobile-engine.mjs`: bundles the engine, airport catalog, small lounge index, compiled guide validator and preserved upstream notices. Guide JSON is fetched separately by `lib/data/lounge_repository.dart`. Generated assets are rebuilt rather than checked into Git.
 
 The system WebView supplies the standard JavaScript/Intl timezone runtime on both platforms. This avoids maintaining a second circadian model and keeps calculations off the Flutter widget tree. Saved inputs remain schema 1, including unknown fields from newer web releases. Clock-only updates reuse the existing numerical plan.
 
@@ -166,3 +166,9 @@ flutter drive --no-dds --driver=test_driver/integration_test.dart \
 This exercises on-device planning, clock refresh, DST gap/fold handling, settings autocomplete, reminder extraction from the real plan and native notification/storage plugin initialization without permission prompts. Automated account/provider tests use controlled responses; real native Google login, account reconnection and dated flight lookup need owner acceptance. CI compilation does not establish physical-device behavior.
 
 iPhone installation needs a Mac/Xcode and an Apple development signing team, or a signed TestFlight build. App Store/Play Store publication is a separate step: choose final signing/distribution, privacy declarations and store assets, and review Apple's login requirements before public distribution. No store upload or signed release is performed by this workflow.
+
+### Lounge guide updates
+
+Guides are static JSON at `API_ORIGIN/lounge-data/v1/`. The app checks the small index daily while in use and downloads changed/requested airports. Upcoming saved trip airports prefetch on startup, edits and resume. Files are cached separately from account data; failed updates keep the last valid copy. Offline matching requires a previous successful download. Public files use no authentication headers. Photo/review links open externally; images are not included in the app download.
+
+After installing the first on-demand guide release, compatible guide edits require only a web deployment, not a mobile distribution. Changes to access semantics or schema still require an app release. See [the data guide](../data/lounges/README.md#publishing-and-offline-downloads) for authoring, compatibility and local testing.

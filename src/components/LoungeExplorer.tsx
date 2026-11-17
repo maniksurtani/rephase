@@ -17,7 +17,8 @@ import {
   type LoungeEvaluation,
   type LoungePriority,
 } from '../lib/lounge-types';
-import { LOUNGE_AIRLINES, LOUNGE_DATA, loungeDataFor } from '../lib/lounge-data';
+import { LOUNGE_AIRLINES } from '../lib/lounge-data';
+import { useLoungeGuide } from './useLoungeGuide';
 import { evaluateAirportLounges } from '../lib/lounge-access';
 import { airportCountry, type LoungeFlightContext } from '../lib/lounge-windows';
 import { findAirport } from '../lib/airports';
@@ -105,7 +106,8 @@ export function LoungeExplorer({
       ? 'domestic'
       : 'international',
   );
-  const data = loungeDataFor(airport);
+  const guide = useLoungeGuide(airport);
+  const { data } = guide;
   const zone = data?.timeZone ?? findAirport(airport)?.timeZone;
   const memberships = preferences.loungeMemberships ?? [];
   const membershipLabels = LOUNGE_MEMBERSHIPS.filter((program) =>
@@ -429,10 +431,18 @@ export function LoungeExplorer({
         <section className="empty-card lounge-empty">
           <Armchair size={30} />
           <h2>{findAirport(airport)?.city ?? (airport || 'Choose an airport')}</h2>
-          <p>
-            We haven’t researched lounges here yet. Current coverage:{' '}
-            {LOUNGE_DATA.map((value) => value.airport).join(', ')}.
+          <p role="status">
+            {guide.loading
+              ? 'Downloading lounge guide…'
+              : guide.status === 'unsupported'
+                ? `We haven’t researched lounges here yet. Guides cover ${guide.catalog.airports.length} airports so far.`
+                : 'This guide isn’t available offline yet. Connect to download it.'}
           </p>
+          {!guide.loading && guide.status !== 'unsupported' && (
+            <button className="button secondary" onClick={guide.retry}>
+              Try again
+            </button>
+          )}
         </section>
       ) : error ? (
         <p className="alert" role={!from || !until ? 'status' : 'alert'}>
@@ -442,6 +452,14 @@ export function LoungeExplorer({
         </p>
       ) : (
         <>
+          {guide.status === 'cached' && (
+            <p className="lounge-coverage-note" role="status">
+              Showing the downloaded guide.{' '}
+              <button className="text-button" onClick={guide.retry}>
+                Check for updates
+              </button>
+            </p>
+          )}
           <div className="lounge-results-heading">
             <div>
               <h2>{findAirport(airport)?.city ?? airport} lounges</h2>
@@ -598,6 +616,16 @@ function LoungeCard({ result, timeZone }: { result: LoungeEvaluation; timeZone: 
               maximumFractionDigits: 2,
             }).format(extraFee.amount)}
           </p>
+        )}
+        {!!lounge.photoLinks?.length && (
+          <div className="lounge-sources">
+            {lounge.photoLinks.map((link) => (
+              <a key={link.url} href={link.url} target="_blank" rel="noopener noreferrer">
+                {link.label}
+                <ExternalLink size={12} />
+              </a>
+            ))}
+          </div>
         )}
         <details className="lounge-access-details">
           <summary>Details & sources</summary>

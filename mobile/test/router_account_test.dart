@@ -1,3 +1,4 @@
+import 'support_lounge_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -72,6 +73,7 @@ void main() {
         revision: 1,
       );
     final controller = AppController(
+      loungeRepository: MemoryLoungeRepository(),
       engine: _LoungeEngine(),
       repository: repository,
       api: api,

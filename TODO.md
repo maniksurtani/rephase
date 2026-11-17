@@ -258,3 +258,13 @@ Updated 2026-11-16. Active work is kept here; the previous complete checklist is
 - [x] Start the first global batch with nine sourced lounges at DXB, ICN, AMS, IST and CDG; document incomplete airline/terminal coverage and source conflicts.
 - [x] Validate and push the first pass: 123 lounge checks, bundled-mobile catalog/data parity, type checks and production build passed. All six lounge browser scenarios passed (the historical-clock scenario passed on its corrected rerun).
 - [ ] Complete batch 1's principal airline/terminal gaps (Korean Air, KLM Crown, Air France and remaining zones) before moving on; details in data/lounges/EXPANSION.md.
+
+## Lounge delivery and photographs
+
+- [x] Publish versioned per-airport static JSON and a small manifest from the source guides; validate at build time.
+- [x] Download and persist guides on demand on web and Flutter, with schema/hash validation, offline fallback and request deduplication.
+- [x] Prefetch upcoming saved trips' airports; pin them and limit other cached guides to 64 airports.
+- [x] Remove guide records from the web/native code bundles and exclude guides/photos from shell precaching.
+- [x] Add external photo/review page links in both clients and nine initial lounge records; document licensing requirements for embedded images.
+- [x] Document publishing, offline behavior and compatibility across installed mobile releases.
+- [x] Validate on-demand/offline downloads, invalid-update fallback, native guide parity, Flutter widgets, browser flows and production assets; publish the changes to main.

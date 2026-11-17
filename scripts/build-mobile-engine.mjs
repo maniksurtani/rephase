@@ -1,5 +1,6 @@
 import { build } from 'esbuild';
-import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
+import { loungeAssets } from './lounge-assets.mjs';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -9,6 +10,7 @@ export const engineOutput = resolve(root, 'mobile/assets/engine/rephase-engine.j
 /** Bundle the production planner and curated data without Vite or a remote runtime. */
 export async function buildMobileEngine(outfile = engineOutput) {
   await mkdir(dirname(outfile), { recursive: true });
+  const lounge = await loungeAssets();
   const result = await build({
     absWorkingDir: root,
     entryPoints: ['src/mobile/bridge.ts'],
@@ -22,25 +24,13 @@ export async function buildMobileEngine(outfile = engineOutput) {
     legalComments: 'inline',
     plugins: [
       {
-        name: 'mobile-curated-lounges',
+        name: 'mobile-lounge-contract',
         setup(plugin) {
-          plugin.onLoad({ filter: /[/\\]lib[/\\]lounge-data\.ts$/ }, async ({ path }) => {
-            const directory = resolve(root, 'data/lounges');
-            const names = (await readdir(directory))
-              .filter((name) => /^[A-Z]{3}\.json$/.test(name))
-              .sort();
-            const records = {};
-            for (const name of names)
-              records[name] = JSON.parse(await readFile(resolve(directory, name), 'utf8'));
-            const source = await readFile(path, 'utf8');
-            const contents = source.replace(
-              /const records = import\.meta\.glob\([\s\S]*?\n\}\);/,
-              `const records = ${JSON.stringify(records)};`,
-            );
-            if (contents === source)
-              throw new Error('The lounge data loader changed; update the mobile bundler.');
-            return { contents, loader: 'ts', resolveDir: dirname(path) };
-          });
+          plugin.onResolve({ filter: /^virtual:lounge-(catalog|validator)$/ }, ({ path }) => ({ path, namespace: 'lounge' }));
+          plugin.onLoad({ filter: /.*/, namespace: 'lounge' }, ({ path }) => ({
+            contents: path.endsWith('catalog') ? `export default ${JSON.stringify(lounge.catalog)};` : lounge.validator,
+            loader: 'js', resolveDir: root,
+          }));
         },
       },
     ],

@@ -83,7 +83,14 @@
       "note": "Star Alliance Gold in Economy uses Miles&Smiles instead. Sleep suites have separate eligibility: a paid Turkish Business ticket or Elite Plus, a Turkish flight of at least eight hours, a four-to-nine-hour connection, and both international flights on Turkish on the same ticket. Ordinary lounge access does not guarantee a suite.",
       "recommendation": {
         "summary": "A strong food and shower option for eligible premium-cabin travellers, including overnight connections."
-      }
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://liveandletsfly.com/turkish-airlines-business-lounge-istanbul-review/",
+          "checkedOn": "2026-11-17"
+        }
+      ]
     },
     {
       "id": "ist-turkish-miles-smiles",
@@ -162,7 +169,14 @@
       "note": "Sleep suites have separate eligibility: a paid Turkish Business ticket or Elite Plus, a Turkish flight of at least eight hours, a four-to-nine-hour connection, and both international flights on Turkish on the same ticket. Ordinary lounge access does not guarantee a suite. Paid club and corporate invitations are not yet encoded.",
       "recommendation": {
         "summary": "The international status lounge for Star Alliance Gold travellers, with a buffet and showers around the clock."
-      }
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://liveandletsfly.com/turkish-miles-smiles-lounge-istanbul-review/",
+          "checkedOn": "2026-11-17"
+        }
+      ]
     },
     {
       "id": "ist-iga-international",
@@ -245,7 +259,14 @@
       "note": "Plan on two hours with Priority Pass and confirm your allowance at reception. Nearby paid spa treatments and cabins are separate from lounge admission.",
       "recommendation": {
         "summary": "An independent international lounge with a buffet and showers; confirm the membership allowance before planning a long stay."
-      }
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://www.forwardofthewing.com/lounge-review-iga-lounge-istanbul-2026-review/",
+          "checkedOn": "2026-11-17"
+        }
+      ]
     }
   ]
 }

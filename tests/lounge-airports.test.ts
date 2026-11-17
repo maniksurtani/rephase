@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { evaluateAirportLounges, evaluateLounge } from '../src/lib/lounge-access';
-import { loungeDataFor } from '../src/lib/lounge-data';
+import { loungeDataFor } from './support/lounge-data';
 import type { LoungeVisitContext } from '../src/lib/lounge-types';
 import { airportCountry } from '../src/lib/lounge-windows';
 

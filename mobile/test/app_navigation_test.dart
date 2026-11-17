@@ -1,3 +1,4 @@
+import 'support_lounge_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rephase/app_controller.dart';
@@ -174,6 +175,7 @@ void main() {
       final identity = _Identity();
       final api = _Api();
       final controller = AppController(
+        loungeRepository: MemoryLoungeRepository(),
         engine: engine,
         repository: _Repository(),
         api: api,

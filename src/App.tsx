@@ -1,3 +1,5 @@
+import { loungeRepository } from './lib/lounge-repository';
+import { loungeTripAirports } from './lib/lounge-catalog';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { AdherenceRecord, PlanAction, PlanTravelSegment, Trip } from './lib/types';
 import type { AppProps } from './app-types';
@@ -70,6 +72,21 @@ const commonZones = [
 
 export default function App(props: AppProps) {
   const { data, onChange, account, authConfig, saveStatus, storageError } = props;
+  useEffect(() => {
+    const prefetch = () => {
+      void loungeRepository.prefetch(loungeTripAirports(data.trips)).catch(() => {});
+    };
+    const resume = () => {
+      if (document.visibilityState === 'visible') prefetch();
+    };
+    prefetch();
+    window.addEventListener('online', prefetch);
+    document.addEventListener('visibilitychange', resume);
+    return () => {
+      window.removeEventListener('online', prefetch);
+      document.removeEventListener('visibilitychange', resume);
+    };
+  }, [data.trips]);
   const [tab, setTab] = useState<Tab>('today');
   const [loungeContext, setLoungeContext] = useState<LoungeFlightContext | undefined>();
   const [profileSection, setProfileSection] = useState<'lounges' | null>(null);

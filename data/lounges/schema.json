@@ -129,6 +129,18 @@
         "accessRules": { "type": "array", "minItems": 1, "maxItems": 50, "items": { "$ref": "#/definitions/accessRule" } },
         "sources": { "type": "array", "minItems": 1, "maxItems": 30, "items": { "$ref": "#/definitions/source" } },
         "photos": { "type": "array", "maxItems": 20, "items": { "$ref": "#/definitions/photo" } },
+        "photoLinks": {
+          "type": "array", "maxItems": 5,
+          "description": "External photo/review pages opened in a browser, not embedded image URLs.",
+          "items": {
+            "type": "object", "additionalProperties": false, "required": ["label", "url", "checkedOn"],
+            "properties": {
+              "label": { "$ref": "#/definitions/text" },
+              "url": { "$ref": "#/definitions/url" },
+              "checkedOn": { "$ref": "#/definitions/date" }
+            }
+          }
+        },
         "qualityRating": {
           "type": "object", "additionalProperties": false,
           "required": ["score", "summary", "reviewedOn", "sources"],

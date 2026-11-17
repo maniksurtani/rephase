@@ -46,6 +46,12 @@ void main() {
                       },
                     ],
                     'photos': [],
+                    'photoLinks': [
+                      {
+                        'label': 'View photos and review',
+                        'url': 'https://example.org/photos',
+                      },
+                    ],
                     'qualityRating': {
                       'score': 4,
                       'summary': 'Good dining with a busy main seating area.',
@@ -73,6 +79,8 @@ void main() {
       );
       expect(find.text('Conditional access'), findsOneWidget);
       expect(find.text('Showers'), findsOneWidget);
+      expect(find.text('View photos and review'), findsOneWidget);
+      expect(find.byType(Image), findsNothing);
       expect(find.text('Rephase rating · 4.0/5'), findsOneWidget);
       expect(
         find.text('Good dining with a busy main seating area.'),

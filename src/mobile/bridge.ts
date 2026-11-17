@@ -6,7 +6,13 @@ import { phaseChangeLabel, remainingAdjustmentLabel } from '../lib/display';
 import { buildCalendar } from '../lib/export';
 import { validateTrip } from '../lib/itinerary';
 import { evaluateAirportLounges } from '../lib/lounge-access';
-import { LOUNGE_AIRLINES, LOUNGE_DATA, loungeDataFor } from '../lib/lounge-data';
+import { LOUNGE_AIRLINES } from '../lib/lounge-data';
+import {
+  LOUNGE_CATALOG,
+  parseCatalog,
+  parseGuide,
+  loungeTripAirports,
+} from '../lib/lounge-catalog';
 import { LOYALTY_PROGRAMS } from '../lib/lounge-programs';
 import { LOUNGE_MEMBERSHIPS } from '../lib/lounge-types';
 import type { LoungeVisitContext } from '../lib/lounge-types';
@@ -201,7 +207,7 @@ function localParts(value: string, zone: string) {
 function loungeVisit(payload: Payload) {
   const context = payload.flightContext as LoungeFlightContext | undefined;
   const airport = String(payload.airport ?? context?.airport ?? 'SFO').toUpperCase();
-  const data = loungeDataFor(airport);
+  const data = payload.airportData ? parseGuide(payload.airportData, airport) : undefined;
   const zone = data?.timeZone ?? findAirport(airport)?.timeZone;
   if (!zone) throw new RangeError('Choose an airport with a known time zone.');
   const first = context
@@ -340,9 +346,16 @@ function lounges(payload: Payload) {
 /** JSON-only boundary: native UI never loads a website or executes downloaded code. */
 export function call(operation: string, payload: Payload = {}): Record<string, unknown> {
   switch (operation) {
+    case 'validateLoungeCatalog':
+      return { catalog: parseCatalog(payload.catalog) };
+    case 'validateLoungeGuide':
+      return { data: parseGuide(payload.data, String(payload.airport)) };
+    case 'loungeTripAirports':
+      return { airports: loungeTripAirports(payload.trips as Trip[], nowFrom(payload)) };
     case 'bootstrap':
       return {
         protocolVersion: 1,
+        loungeCatalog: LOUNGE_CATALOG,
         defaultPreferences: DEFAULT_PREFERENCES,
         demoTrip: createDemoTrip(),
         airports: AIRPORTS,
@@ -351,7 +364,7 @@ export function call(operation: string, payload: Payload = {}): Record<string, u
           .map((value) => ({ value, city: value.split('/').at(-1)!.replaceAll('_', ' ') })),
         loyaltyPrograms: LOYALTY_PROGRAMS,
         memberships: LOUNGE_MEMBERSHIPS,
-        loungeAirports: LOUNGE_DATA.map(({ airport, timeZone, updatedAt }) => ({
+        loungeAirports: LOUNGE_CATALOG.airports.map(({ airport, timeZone, updatedAt }) => ({
           airport,
           timeZone,
           updatedAt,

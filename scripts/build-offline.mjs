@@ -8,6 +8,7 @@ async function files(directory, prefix = '') {
   const paths = [];
   for (const entry of entries) {
     const path = `${prefix}${entry.name}`;
+    if (path === 'lounge-data' || path === 'lounges' || path === '_headers' || path === '_redirects') continue;
     if (entry.isDirectory()) paths.push(...await files(resolve(directory,entry.name),`${path}/`));
     else if (entry.name !== 'sw.js') paths.push(`/${path}`);
   }

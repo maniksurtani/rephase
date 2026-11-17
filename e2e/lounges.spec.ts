@@ -611,3 +611,33 @@ test('a lounge visit across the autumn clock change preserves the later departur
   await departureOccurrence.selectOption('later');
   await expect(page.getByRole('alert')).toHaveCount(0);
 });
+
+test('downloads an airport on demand, reopens its persisted guide offline and keeps photo links external', async ({ page, context }) => {
+  const api = new LoungeAccountApi();
+  await api.install(page);
+  await page.clock.setFixedTime(new Date('2026-11-18T12:00:00Z'));
+  const downloads: string[] = [];
+  page.on('request', request => { if (request.url().includes('/lounge-data/v1/airports/')) downloads.push(request.url()); });
+  await openLounges(page);
+  await expect(page.locator('.lounge-card').first()).toBeVisible();
+  expect(downloads.filter(url => url.includes('/SFO.'))).toHaveLength(1);
+  expect(downloads.some(url => url.includes('/AMS.'))).toBe(false);
+  await page.getByRole('combobox', { name: 'Airport', exact: true }).fill('AMS');
+  const card = page.locator('.lounge-card[data-lounge-id="ams-aspire-26"]');
+  await expect(card).toBeVisible();
+  expect(downloads.filter(url => url.includes('/AMS.'))).toHaveLength(1);
+  const link = card.getByRole('link', { name: 'View photos and review' });
+  await expect(link).toHaveAttribute('href', 'https://upgradedpoints.com/travel/airports/aspire-lounge-26-amsterdam-ams-review/');
+  await expect(link).toHaveAttribute('target', '_blank');
+  await expect(card.locator('img')).toHaveCount(0);
+  // Simulate loss of guide connectivity across a page reload. The shell/account
+  // still load, so this specifically verifies the new persisted content cache.
+  await context.route('**/lounge-data/**', route => route.abort('internetdisconnected'));
+  await openLounges(page);
+  await expect(page.locator('.lounge-card').first()).toBeVisible();
+  await page.getByRole('combobox', { name: 'Airport', exact: true }).fill('AMS');
+  await expect(card).toBeVisible();
+  await page.getByRole('combobox', { name: 'Airport', exact: true }).fill('CNS');
+  await expect(page.getByText('This guide isn’t available offline yet. Connect to download it.')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Try again', exact: true })).toBeVisible();
+});

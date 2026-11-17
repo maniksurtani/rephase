@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/widgets.dart';
 
 import 'data/local_repository.dart';
+import 'data/lounge_repository.dart';
 import 'data/mobile_api.dart';
 import 'data/models.dart';
 import 'data/session_store.dart';
@@ -19,13 +20,18 @@ class AppController extends ChangeNotifier with WidgetsBindingObserver {
     SessionStore? sessionStore,
     GoogleIdentity? identity,
     DateTime Function()? clock,
+    LoungeRepository? loungeRepository,
   }) : _repository = repository ?? FileLocalRepository(),
        _api = api ?? HttpMobileApi(),
        _sessionStore = sessionStore ?? SecureSessionStore(),
        _identity = identity ?? GoogleSignInIdentity(),
-       _clock = clock ?? DateTime.now;
+       _clock = clock ?? DateTime.now,
+       _lounges =
+           loungeRepository ??
+           LoungeRepository(validate: engine.call, clock: clock);
 
   final MobileEngine engine;
+  final LoungeRepository _lounges;
   final LocalRepository _repository;
   final MobileApi _api;
   final SessionStore _sessionStore;
@@ -121,7 +127,47 @@ class AppController extends ChangeNotifier with WidgetsBindingObserver {
       !_same(a.copy(selectedTripId: null), b.copy(selectedTripId: null));
 
   Future<Json> engineCall(String operation, [Json payload = const {}]) =>
-      engine.call(operation, payload);
+      operation == 'loungeVisit'
+      ? _loungeCall(operation, payload)
+      : engine.call(operation, payload);
+
+  Future<Json> _loungeCall(String operation, Json payload) async {
+    final context = payload['flightContext'];
+    final airport =
+        '${payload['airport'] ?? (context is Map ? context['airport'] : null) ?? 'SFO'}';
+    final guide = await _lounges.load(airport);
+    _updateLoungeCatalog();
+    final result = await engine.call(operation, {
+      ...payload,
+      if (guide.data != null) 'airportData': guide.data,
+    });
+    return {
+      ...result,
+      'guideStatus': guide.status,
+      if (guide.data == null) 'error': null,
+    };
+  }
+
+  void _updateLoungeCatalog() {
+    _catalog['loungeAirports'] = jsonObjects(_lounges.catalog['airports']);
+  }
+
+  Future<void> _prefetchLounges() async {
+    try {
+      final result = await engine.call('loungeTripAirports', {
+        'trips': trips.map((trip) => trip.toJson()).toList(),
+        'now': now.millisecondsSinceEpoch,
+      });
+      if (_disposed) return;
+      await _lounges.prefetch((result['airports'] as List).cast<String>());
+      if (!_disposed) {
+        _updateLoungeCatalog();
+        _notify();
+      }
+    } catch (_) {
+      /* Public guides must never block offline planning or saving. */
+    }
+  }
 
   Future<void> initialize() async {
     if (_initialized || _busy) return;
@@ -130,6 +176,10 @@ class AppController extends ChangeNotifier with WidgetsBindingObserver {
     final epoch = _epoch;
     try {
       _catalog = await engine.call('bootstrap');
+      if (_catalog['loungeCatalog'] is Map) {
+        _lounges.catalog = (_catalog['loungeCatalog'] as Map)
+            .cast<String, dynamic>();
+      }
       if (!_current(epoch)) return;
       final restoredSession = await _sessionStore.read();
       if (!_current(epoch)) return;
@@ -197,6 +247,7 @@ class AppController extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   Future<void> _replan({bool presentationOnly = false}) async {
+    if (!presentationOnly) unawaited(_prefetchLounges());
     final trip = selectedTrip;
     final prefs = preferences;
     final generation = ++_planGeneration;
@@ -418,7 +469,7 @@ class AppController extends ChangeNotifier with WidgetsBindingObserver {
     }
   }
 
-  Future<Json> exploreLounges(Json payload) => engine.call('lounges', {
+  Future<Json> exploreLounges(Json payload) => _loungeCall('lounges', {
     'preferences': preferences?.toJson(),
     'now': now.millisecondsSinceEpoch,
     ...payload,
@@ -795,6 +846,7 @@ class AppController extends ChangeNotifier with WidgetsBindingObserver {
     _timer?.cancel();
     if (_initialized) WidgetsBinding.instance.removeObserver(this);
     _api.close();
+    _lounges.close();
     unawaited(engine.dispose());
     super.dispose();
   }

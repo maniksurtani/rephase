@@ -217,7 +217,14 @@
       "note": "Snacks and other food are available; full-service dining is unconfirmed. United Club and Maple Leaf Club holders should check their exact membership benefit. This is separate from the older lounge used by some lounge-access programs.",
       "recommendation": {
         "summary": "A shower and quiet-work option for eligible Star Alliance travellers in T1’s non-Schengen satellite."
-      }
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://liveandletsfly.com/star-alliance-lounge-paris-review/",
+          "checkedOn": "2026-11-17"
+        }
+      ]
     }
   ]
 }
