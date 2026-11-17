@@ -254,5 +254,5 @@ Updated 2026-11-16. Active work is kept here; the previous complete checklist is
 
 - [x] Improve existing guides with eight missing lounges across SYD, HNL, SIN, LHR and SFO; retain sourced access exceptions, partial-review dates and refurbishment limitations.
 - [x] Check schema/provenance and lounge matching, including domestic Business exclusions and Polaris fare restrictions.
-- [ ] Write a global airport expansion plan in batches, with research acceptance criteria and maintenance priorities.
+- [x] Write a global airport expansion plan in [data/lounges/EXPANSION.md](data/lounges/EXPANSION.md), with research acceptance criteria and maintenance priorities.
 - [ ] Research and implement the first global batch, then validate shared web/mobile data and push.
