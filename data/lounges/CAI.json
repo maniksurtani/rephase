@@ -1,0 +1,197 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "CAI",
+  "timeZone": "Africa/Cairo",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "cai-egyptair-alioth",
+      "name": "EgyptAir Alioth Lounge",
+      "terminal": "Terminal 3 · International",
+      "location": "Departure Level 3: after immigration and duty free, head left toward the F gates; the lounge is on the right.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "snacks",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "egyptair-premium",
+          "label": "EgyptAir international First or Business",
+          "cabinsAnyOf": [
+            "first",
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "MS"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "egyptair-access"
+          ]
+        },
+        {
+          "id": "star-gold",
+          "label": "Star Alliance Gold on a Star Alliance departure",
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingAlliance": "star",
+          "route": "international",
+          "sourceIds": [
+            "egyptair-access",
+            "star-benefits"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "egyptair-alioth",
+          "title": "EgyptAir · Alioth location, hours and facilities",
+          "url": "https://www.egyptair.com/en/fly/lounges/Pages/ALIOTH_LOUNGE.aspx",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "egyptair-access",
+          "title": "EgyptAir · Lounge eligibility and Cairo directory (German)",
+          "url": "https://www.egyptair.com/de/fly/lounges/Seiten/default.aspx",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "star-benefits",
+          "title": "EVA Air · Star Alliance Gold partner-lounge access",
+          "url": "https://www.evaair.com/en-gb/infinity-mileagelands/about-infinity-mileagelands/tiers-and-privileges/benefit-when-flying-with-star-alliance-members-partners/Default.html",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "Terminal 3 departure lounge. EgyptAir flights leaving from Terminal 2 use different lounge arrangements. Showers and a dedicated quiet area are not confirmed by the current operator listing.",
+      "qualityRating": {
+        "score": 3,
+        "summary": "A 2021 visit, updated in 2023, found a clean, bright and spacious lounge but fairly basic facilities. This is a historical assessment of Alioth and should be refreshed with a more recent visit.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Live and Let’s Fly · Alioth review (2021 visit)",
+            "url": "https://liveandletsfly.com/egyptair-alioth-lounge-review/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://liveandletsfly.com/egyptair-alioth-lounge-review/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    },
+    {
+      "id": "cai-ahlein-premium-t2",
+      "name": "AHLEIN Premium Lounge",
+      "terminal": "Terminal 2 · International",
+      "location": "After security and passport control, turn right before duty free and follow AHLEIN Premium signs.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "snacks",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "route": "international",
+          "maxVisitMinutes": 180,
+          "sourceIds": [
+            "priority-pass"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · AHLEIN Premium Terminal 2",
+          "url": "https://www.prioritypass.com/en-GB/lounges/egypt/cairo-international/cai7-ahlein-premium-lounge",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "aegean-cairo",
+          "title": "Aegean · Cairo lounge directory and Ahlein Terminal 2 facilities",
+          "url": "https://en.aegeanair.com/travel-info/travelling-with-aegean/at-the-airport/lounge-finder/?AirlineCode=A3&AirportCode=CAI&CabinClass=B&ShowMore=false",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "Three-hour Priority Pass visits. Showers and private VIP rooms cost extra. This is neither AHLEIN Emerald in Terminal 2 nor AHLEIN Premium in Terminal 3.",
+      "qualityRating": {
+        "score": 3,
+        "summary": "A May 2025 review found adequate food, prompt clearing and a mostly calm lounge before the departure peak. Comfortable enough for a routine wait, but the reviewer saw little reason to arrive early specifically for it.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "TravelUpdate · AHLEIN Premium Terminal 2 review",
+            "url": "https://travelupdate.com/review-ahlein-premium-lounge/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://travelupdate.com/review-ahlein-premium-lounge/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    }
+  ]
+}

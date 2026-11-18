@@ -1,0 +1,312 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "HKG",
+  "timeZone": "Asia/Hong_Kong",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "hkg-cathay-pier-business",
+      "name": "Cathay Pacific The Pier Business",
+      "terminal": "T1",
+      "location": "Level 6, near Gate 65, after security and passport control.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:30",
+            "close": "00:30"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "oneworld-cabin",
+          "label": "oneworld Business or First Class",
+          "sourceIds": [
+            "oneworld"
+          ],
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "international",
+          "conditions": [
+            "The ticket must include lounge access; Qatar Airways Business Lite and Finnair Business Light fares are excluded."
+          ]
+        },
+        {
+          "id": "oneworld-status",
+          "label": "oneworld Sapphire or Emerald",
+          "sourceIds": [
+            "oneworld"
+          ],
+          "membershipsAnyOf": [
+            "oneworld-sapphire",
+            "oneworld-emerald"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "international"
+        }
+      ],
+      "sources": [
+        {
+          "id": "oneworld",
+          "title": "oneworld · Lounge access policy",
+          "url": "https://www.oneworld.com/airport-lounges",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "cathay-access",
+          "title": "Cathay Pacific · Lounge admittance",
+          "url": "https://www.cathaypacific.com/cx/en_US/destinations/lounges/all-lounges-admittance.html",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "operator",
+          "title": "Cathay Pacific · The Pier Business",
+          "url": "https://www.cathaypacific.com/cx/en_US/destinations/lounges/hong-kong-hkg/the-pier.html",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "A useful stop for a shower, noodles and a quieter resting area near the far end of T1."
+      },
+      "note": "The Bureau is temporarily closed. The Teahouse is temporarily closed from 4 October 2026. Allow time to return to a distant departure gate; these closures do not close the whole lounge.",
+      "qualityRating": {
+        "score": 4.5,
+        "summary": "A December 2023 visit found extensive dining choices, attractive seating and a separate resting area. The review predates the Bureau and Teahouse closures; warm shower rooms and the distant location were drawbacks.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "One Mile at a Time · The Pier Business review",
+            "url": "https://onemileatatime.com/reviews/cathay-pacific-the-pier-business-class-lounge-hong-kong/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://onemileatatime.com/reviews/cathay-pacific-the-pier-business-class-lounge-hong-kong/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    },
+    {
+      "id": "hkg-cathay-pier-first",
+      "name": "Cathay Pacific The Pier First",
+      "terminal": "T1",
+      "location": "Level 6, near Gate 63, after security and passport control.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:30",
+            "close": "00:30"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "restaurant",
+        "spa": "yes",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "oneworld-cabin",
+          "label": "oneworld First Class",
+          "sourceIds": [
+            "oneworld",
+            "cathay-access"
+          ],
+          "cabinsAnyOf": [
+            "first"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "international",
+          "conditions": [
+            "Complimentary upgrades from Business do not grant First lounge access."
+          ]
+        },
+        {
+          "id": "oneworld-status",
+          "label": "oneworld Emerald",
+          "sourceIds": [
+            "oneworld"
+          ],
+          "membershipsAnyOf": [
+            "oneworld-emerald"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "international"
+        }
+      ],
+      "sources": [
+        {
+          "id": "oneworld",
+          "title": "oneworld · Lounge access policy",
+          "url": "https://www.oneworld.com/airport-lounges",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "cathay-access",
+          "title": "Cathay Pacific · Lounge admittance",
+          "url": "https://www.cathaypacific.com/cx/en_US/destinations/lounges/all-lounges-admittance.html",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "operator",
+          "title": "Cathay Pacific · The Pier First",
+          "url": "https://www.cathaypacific.com/cx/en_GB/destinations/lounges/hong-kong-hkg/the-pier-first.html",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "A sit-down meal, shower or day suite for eligible First Class and Emerald travellers."
+      },
+      "note": "Day suites and spa appointments are subject to availability. First lounge access is distinct from Business lounge access.",
+      "qualityRating": {
+        "score": 5,
+        "summary": "An independent visit praised the restaurant, calm interiors, private day suites and substantial shower rooms. A particularly strong place to rest or dine, provided its remote location leaves enough time for your gate.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "One Mile at a Time · The Pier First review",
+            "url": "https://onemileatatime.com/reviews/cathay-pacific-the-pier-first-class-lounge-hong-kong/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://onemileatatime.com/reviews/cathay-pacific-the-pier-first-class-lounge-hong-kong/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    },
+    {
+      "id": "hkg-kyra-gate-23",
+      "name": "Kyra Lounge (Gate 23)",
+      "terminal": "T1",
+      "location": "Level 6 near Gate 23, after security and passport control.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:30",
+            "close": "23:59"
+          }
+        ],
+        "note": "Last entry and food order at 23:30."
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "route": "international",
+          "maxVisitMinutes": 180,
+          "maxMinutesBeforeDeparture": 180
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · Kyra Gate 23",
+          "url": "https://www.prioritypass.com/en-GB/lounges/hong-kong/hong-kong-international-chek-lap-kok/hkg18-kyra-lounge",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "A useful Priority Pass meal stop near Gate 23."
+      },
+      "note": "This is the Gate 23 location, not the separate Gate 40 Kyra Lounge. Smart-casual dress applies.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "A firsthand review found contemporary seating, a good food selection, attentive staff and a tended bar. A strong contract-lounge choice; the review’s older closing time is superseded by the current membership listing.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "One Mile at a Time · Kyra Gate 23 review",
+            "url": "https://onemileatatime.com/reviews/kyra-lounge-hong-kong/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://onemileatatime.com/reviews/kyra-lounge-hong-kong/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    }
+  ]
+}

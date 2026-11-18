@@ -1,0 +1,147 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "ADD",
+  "timeZone": "Africa/Addis_Ababa",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "add-cloud-nine",
+      "name": "Ethiopian Airlines Sheba Cloud Nine Lounge",
+      "terminal": "Terminal 2 · International",
+      "location": "Airside opposite Gate A13; connecting passengers go up to the departure floor after transfer security.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "snacks",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "ethiopian-business",
+          "label": "Ethiopian outbound Cloud Nine Business",
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "ET"
+          ],
+          "route": "international",
+          "maxMinutesBeforeDeparture": 300,
+          "sourceIds": [
+            "ethiopian-add"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "ethiopian-add",
+          "title": "Ethiopian Airlines · Addis Ababa lounge access and facilities",
+          "url": "https://www.ethiopianairlines.com/us/services/services-at-the-airport/lounges-at-addis-ababa",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "An incoming Business ticket does not qualify when the onward flight is Economy. Entry starts five hours before departure; confirm the estimated time if delayed. Showers require registration with at least an hour before departure and have a 15-minute limit.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "An August 2026 review found ample comfortable seating, decent food and a quieter rear section, but many bars and food stations were unstaffed. A solid stop with uneven use of its large space.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Points to Seats · Cloud Nine Terminal 2 review",
+            "url": "https://pointstoseats.com/2026/08/31/ethiopian-cloud9-lounge-addis-ababa/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://pointstoseats.com/2026/08/31/ethiopian-cloud9-lounge-addis-ababa/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    },
+    {
+      "id": "add-star-gold",
+      "name": "Ethiopian Airlines Star Alliance Gold Lounge",
+      "terminal": "Terminal 2 · International",
+      "location": "Airside opposite Gate A13; follow signs for Star Alliance Gold, not the separate ShebaMiles Platinum or Silver lounges.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "snacks",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "star-gold",
+          "label": "Star Alliance Gold on a Star Alliance departure",
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingAlliance": "star",
+          "route": "international",
+          "maxMinutesBeforeDeparture": 300,
+          "sourceIds": [
+            "ethiopian-add"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "ethiopian-add",
+          "title": "Ethiopian Airlines · Addis Ababa lounge access and facilities",
+          "url": "https://www.ethiopianairlines.com/us/services/services-at-the-airport/lounges-at-addis-ababa",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "Separate status access from Cloud Nine cabin access. Entry starts five hours before departure; confirm estimated timing if delayed. Shower registration requires at least an hour before departure, with a 15-minute session limit. No independent rating has yet been established for this specific Gold section."
+    }
+  ]
+}

@@ -1,0 +1,190 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "BKK",
+  "timeZone": "Asia/Bangkok",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "bkk-thai-royal-orchid-d4-business",
+      "name": "Thai Royal Orchid Lounge (D4 Business section)",
+      "terminal": "International Concourse D",
+      "location": "Level 3 near Gate D4, after international security and immigration.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:00",
+            "close": "02:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "star-business",
+          "label": "Star Alliance Business Class",
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingAlliance": "star",
+          "route": "international",
+          "sourceIds": [
+            "thai"
+          ]
+        },
+        {
+          "id": "star-gold",
+          "label": "Star Alliance Gold",
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingAlliance": "star",
+          "route": "international",
+          "sourceIds": [
+            "thai"
+          ]
+        },
+        {
+          "id": "united-club",
+          "label": "United Club membership",
+          "membershipsAnyOf": [
+            "united-club"
+          ],
+          "operatingAlliance": "star",
+          "route": "international",
+          "sourceIds": [
+            "thai"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "thai",
+          "title": "Thai Airways · lounge locations, facilities and eligibility",
+          "url": "https://www.thaiairways.com/en-gb/content/ground-services/lounges/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "Also reviewed as Royal Orchid Prestige. This record covers the Business section; First Class dining and massage facilities are not included. The official page does not confirm a dedicated quiet area in this section.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "A February 2026 review found comfortable modern seating, generous food choices and good barista coffee. Outlets were convenient; there were no reclining chairs. Assessment covers the Business section.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Live and Let’s Fly · Royal Orchid Prestige (February 2026)",
+            "url": "https://liveandletsfly.com/thai-airways-royal-orchid-prestige-lounge-bangkok-review/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://liveandletsfly.com/thai-airways-royal-orchid-prestige-lounge-bangkok-review/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    },
+    {
+      "id": "bkk-miracle-business-d",
+      "name": "Miracle Business Class Lounge (Concourse D)",
+      "terminal": "International Concourse D",
+      "location": "Level 3, opposite Gate D5.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "23:59"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "route": "international",
+          "maxVisitMinutes": 120,
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "conditions": [
+            "The current Priority Pass listing excludes children; confirm admission if travelling with children."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · Miracle Business Class Concourse D",
+          "url": "https://www.prioritypass.com/en-GB/lounges/thailand/suvarnabhumi/bkk9-miracle-business-class-lounge",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "Priority Pass permits a two-hour visit. Dining format and a dedicated quiet area are not confirmed in the current program listing.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "A January 2026 firsthand review praised the comfortable seating, food selection and clean showers. The main buffet side was busier than the second seating area.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Points to Seats · Miracle Business Concourse D (2026)",
+            "url": "https://pointstoseats.com/2026/01/03/lounge-review-the-miracle-business-class-lounge-at-bangkok-suvarnabhumi-bkk-international-concourse-d/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://pointstoseats.com/2026/01/03/lounge-review-the-miracle-business-class-lounge-at-bangkok-suvarnabhumi-bkk-international-concourse-d/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    }
+  ]
+}

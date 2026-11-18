@@ -1,0 +1,224 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "BOG",
+  "timeZone": "America/Bogota",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "bog-latam-international",
+      "name": "LATAM Lounge Bogotá",
+      "terminal": "T1 International",
+      "location": "International departures, third floor, opposite Gate A1.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "latam-premium",
+          "label": "LATAM Premium Business or Premium Economy",
+          "cabinsAnyOf": [
+            "business",
+            "premium-economy"
+          ],
+          "operatingCarriersAnyOf": [
+            "LA",
+            "JJ"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "latam-location"
+          ]
+        },
+        {
+          "id": "delta-one",
+          "label": "Delta One",
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "latam-location"
+          ],
+          "conditions": [
+            "Your boarding pass must be for Delta One on this departing international segment."
+          ]
+        },
+        {
+          "id": "delta-medallion-latam-delta",
+          "label": "Eligible Delta SkyMiles Medallion status on LATAM or Delta",
+          "membershipsAnyOf": [
+            "delta-gold-medallion",
+            "delta-platinum-medallion",
+            "delta-diamond-medallion"
+          ],
+          "operatingCarriersAnyOf": [
+            "LA",
+            "JJ",
+            "DL"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "latam-location"
+          ],
+          "note": "Show your valid SkyMiles tier and same-day international boarding pass."
+        },
+        {
+          "id": "iberia-aeromexico-business",
+          "label": "Iberia or Aeromexico Business",
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "IB",
+            "AM"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "latam-location"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "latam-location",
+          "title": "LATAM Bogotá: location, hours, facilities and access",
+          "url": "https://www.latamairlines.com/co/es/experiencia/aeropuerto/lounges-y-salones/lounge-bogota",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "An international airline lounge with a designated resting area and work spaces."
+      },
+      "note": "LATAM is not a oneworld member. Own-program elite and local card access are not yet modeled. The current official access list does not confirm Priority Pass; old reviews must not be used to assume it.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "A 2024 visit praised the attractive design and quiet area. The reviewer did not try the hot food, so the evidence supports the setting more strongly than dining quality.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Verylvke · LATAM Bogotá firsthand review",
+            "url": "https://www.verylvke.com/en/2024/04/06/my-review-of-latam-vip-lounge-bogota/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://www.verylvke.com/en/2024/04/06/my-review-of-latam-vip-lounge-bogota/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    },
+    {
+      "id": "bog-el-dorado-international",
+      "name": "El Dorado Lounge",
+      "terminal": "T1 International",
+      "location": "International departures, opposite Gate A8.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "yes",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "route": "international",
+          "maxVisitMinutes": 360
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass: El Dorado Lounge entry, hours and paid buffet",
+          "url": "https://www.prioritypass.com/es-LA/lounges/colombia/el-dorado-international/bog9-el-dorado-lounge-international-departures",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "A spacious Priority Pass stop with a six-hour visit limit; buffet, showers and spa cost extra."
+      },
+      "note": "The buffet, showers, massage chairs and spa require additional payment under the current Priority Pass terms. These are optional services, not a mandatory entrance surcharge; confirm prices at reception.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "The 2025 firsthand review praises the spacious, richly decorated setting and comfortable seating. Charges for hot food and other amenities reduce the value of the basic lounge visit.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "10xTravel · El Dorado Lounge firsthand review",
+            "url": "https://10xtravel.com/el-dorado-lounge-bogota-airport-review/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://10xtravel.com/el-dorado-lounge-bogota-airport-review/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    }
+  ]
+}

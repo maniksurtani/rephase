@@ -1,0 +1,316 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "TPE",
+  "timeZone": "Asia/Taipei",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "tpe-eva-infinity",
+      "name": "EVA Air The Infinity",
+      "terminal": "T2",
+      "location": "International departures lounge area, level 4, after security.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "04:30",
+            "close": "23:30"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "star-premium",
+          "label": "Star Alliance Business or First Class",
+          "sourceIds": [
+            "operator"
+          ],
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingAlliance": "star",
+          "route": "international"
+        }
+      ],
+      "sources": [
+        {
+          "id": "operator",
+          "title": "EVA Air · The Infinity",
+          "url": "https://www.evaair.com/en-global/fly-prepare/at-the-airport/lounges/taiwan-taoyuan-international-airport/the-infinity/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "Shower and eat before a Star Alliance departure. Cabin access uses The Infinity; status-only access uses The Star."
+      },
+      "note": "No boarding announcements are made for on-time flights. The Garden and The Club have separate eligibility and are not included in this listing.",
+      "qualityRating": {
+        "score": 3,
+        "summary": "The February 2026 review found crowding, limited amenities and average food, but a refreshing shower. Useful before departure, with less comfort at busy times.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "The MileLion · EVA The Infinity and The Star (February 2026)",
+            "url": "https://milelion.com/2026/02/12/review-eva-air-the-infinity-the-star-lounge-tpe/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://milelion.com/2026/02/12/review-eva-air-the-infinity-the-star-lounge-tpe/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    },
+    {
+      "id": "tpe-eva-star",
+      "name": "EVA Air The Star",
+      "terminal": "T2",
+      "location": "International departures lounge area, level 4, after security.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "04:30",
+            "close": "23:30"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "star-gold",
+          "label": "Star Alliance Gold",
+          "sourceIds": [
+            "operator"
+          ],
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingAlliance": "star",
+          "route": "international"
+        }
+      ],
+      "sources": [
+        {
+          "id": "operator",
+          "title": "EVA Air · The Star",
+          "url": "https://www.evaair.com/en-global/fly-prepare/at-the-airport/lounges/taiwan-taoyuan-international-airport/the-star/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "Shower and eat before a Star Alliance departure. Cabin access uses The Infinity; status-only access uses The Star."
+      },
+      "note": "No boarding announcements are made for on-time flights. The Garden and The Club have separate eligibility and are not included in this listing.",
+      "qualityRating": {
+        "score": 3,
+        "summary": "The February 2026 review found more seating variety than The Infinity next door, but similarly average food and drinks. Showers make it useful during a connection.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "The MileLion · EVA The Infinity and The Star (February 2026)",
+            "url": "https://milelion.com/2026/02/12/review-eva-air-the-infinity-the-star-lounge-tpe/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://milelion.com/2026/02/12/review-eva-air-the-infinity-the-star-lounge-tpe/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    },
+    {
+      "id": "tpe-oriental-club-t2",
+      "name": "Oriental Club Lounge",
+      "terminal": "T2",
+      "location": "Departure hall, level 4, after security and passport control.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ],
+        "note": "Reduced seating and food from 23:00 to 05:00; showers unavailable in that period. Buffet ends at 22:30.",
+        "exceptions": [
+          {
+            "date": "2026-11-11",
+            "periods": [
+              {
+                "open": "00:00",
+                "close": "23:00"
+              }
+            ],
+            "note": "Scheduled overnight maintenance starts at 23:00."
+          },
+          {
+            "date": "2026-11-12",
+            "periods": [
+              {
+                "open": "05:00",
+                "close": "24:00"
+              }
+            ],
+            "note": "Reopens at 05:00 after scheduled maintenance."
+          },
+          {
+            "date": "2026-11-18",
+            "periods": [
+              {
+                "open": "00:00",
+                "close": "23:00"
+              }
+            ],
+            "note": "Scheduled overnight maintenance starts at 23:00."
+          },
+          {
+            "date": "2026-11-19",
+            "periods": [
+              {
+                "open": "05:00",
+                "close": "24:00"
+              }
+            ],
+            "note": "Reopens at 05:00 after scheduled maintenance."
+          },
+          {
+            "date": "2026-11-27",
+            "periods": [
+              {
+                "open": "00:00",
+                "close": "23:00"
+              }
+            ],
+            "note": "Scheduled overnight maintenance starts at 23:00."
+          },
+          {
+            "date": "2026-11-28",
+            "periods": [
+              {
+                "open": "05:00",
+                "close": "24:00"
+              }
+            ],
+            "note": "Reopens at 05:00 after scheduled maintenance."
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "route": "international",
+          "maxVisitMinutes": 180,
+          "conditions": [
+            "Confirm the facilities you need are available during your visit: showers are unavailable 23:00–05:00, the buffet ends at 22:30, and overnight food and seating are limited."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · Oriental Club Lounge",
+          "url": "https://www.prioritypass.com/en-GB/lounges/taiwan-region/taiwan-taoyuan-international/tpe9-oriental-club-lounge",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "A Priority Pass option for a meal or shower; overnight service is reduced."
+      },
+      "note": "Showers are unavailable 23:00–05:00. Scheduled maintenance closes the lounge 23:00–05:00 on the nights beginning 11, 18 and 27 November 2026. Reserve a shower on arrival when available.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "A firsthand evening visit found comfortable seating and a good food selection for the price, with limited shower availability. Its older operating-hours description is superseded by the current Priority Pass notice.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Taiwan Obsessed · Oriental Club Lounge review",
+            "url": "https://www.taiwanobsessed.com/oriental-club-lounge-taoyuan-airport/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://www.taiwanobsessed.com/oriental-club-lounge-taoyuan-airport/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    }
+  ]
+}

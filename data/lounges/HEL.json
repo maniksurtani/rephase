@@ -1,0 +1,412 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "HEL",
+  "timeZone": "Europe/Helsinki",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "hel-finnair-business-schengen",
+      "name": "Finnair Business Lounge (Schengen)",
+      "terminal": "Schengen",
+      "location": "Near Gate 21, third floor; before passport control.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:00",
+            "close": "23:30"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "finnair-business",
+          "label": "Finnair Business Classic, Flex or Saver",
+          "sourceIds": [
+            "finnair"
+          ],
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "AY"
+          ],
+          "marketingCarriersAnyOf": [
+            "AY"
+          ],
+          "conditions": [
+            "Business Light does not include lounge access. Confirm an eligible Classic, Flex or Saver ticket."
+          ],
+          "destinationCountriesAnyOf": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ]
+        },
+        {
+          "id": "oneworld-status",
+          "label": "oneworld Sapphire or Emerald",
+          "sourceIds": [
+            "finnair"
+          ],
+          "membershipsAnyOf": [
+            "oneworld-sapphire",
+            "oneworld-emerald"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "destinationCountriesAnyOf": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "finnair",
+          "title": "Finnair · Helsinki lounges and admission",
+          "url": "https://www.finnair.com/en/smooth-travelling-at-helsinki-airport/finnair-lounges-at-helsinki-airport",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "The present Gate 21 facility opened in 2024. Business Light is excluded; the separate Platinum Corner is outside this initial guide.",
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://www.theflightclub.it/en/2025/03/finnair-helsinki-lounge-review/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "qualityRating": {
+        "score": 4,
+        "summary": "A March 2025 review of the new Gate 21 lounge praises its light, runway views, extra space and work booths. The design feels less distinctive than the former lounge, but the larger layout is more practical.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "The Flight Club · New Finnair Schengen Lounge (March 2025)",
+            "url": "https://www.theflightclub.it/en/2025/03/finnair-helsinki-lounge-review/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hel-finnair-business-non-schengen",
+      "name": "Finnair Business Lounge (non-Schengen)",
+      "terminal": "Non-Schengen",
+      "location": "Near Gate 52, after passport control.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:30",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "finnair-business",
+          "label": "Finnair Business Classic, Flex or Saver",
+          "sourceIds": [
+            "finnair"
+          ],
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "AY"
+          ],
+          "marketingCarriersAnyOf": [
+            "AY"
+          ],
+          "conditions": [
+            "Business Light does not include lounge access. Confirm an eligible Classic, Flex or Saver ticket."
+          ],
+          "excludedDestinationCountries": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ]
+        },
+        {
+          "id": "oneworld-status",
+          "label": "oneworld Sapphire or Emerald",
+          "sourceIds": [
+            "finnair"
+          ],
+          "membershipsAnyOf": [
+            "oneworld-sapphire",
+            "oneworld-emerald"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "excludedDestinationCountries": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "finnair",
+          "title": "Finnair · Helsinki lounges and admission",
+          "url": "https://www.finnair.com/en/smooth-travelling-at-helsinki-airport/finnair-lounges-at-helsinki-airport",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "Separate from the Platinum Wing. Buffet service includes hot food; Business Light does not include access.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "A May 2024 visit reports varied seating and food, a relaxing atmosphere and useful shower facilities during a long connection. The interior lacks significant natural light.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Nathan’s Insights · Finnair non-Schengen Business Lounge (May 2024)",
+            "url": "https://nathanburgessinsights.com/2024/05/05/lounge-review-finnair-non-schengen-business-class-lounge-helsinki/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://nathanburgessinsights.com/2024/05/05/lounge-review-finnair-non-schengen-business-class-lounge-helsinki/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    },
+    {
+      "id": "hel-aspire-27",
+      "name": "Aspire Lounge by Gate 27",
+      "terminal": "Schengen",
+      "location": "Stairs by Gate 27; accessible lift by Gate 26. Before passport control.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:00",
+            "close": "21:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Schengen departures can enter; non-Schengen passengers may enter only before passport control, not while in non-Schengen transit. Allow at least 15 minutes to non-Schengen gates."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · Aspire by Gate 27",
+          "url": "https://www.prioritypass.com/en-GB/lounges/finland/helsinki-vantaa/hel5-aspire-lounge-by-gate-27",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "operator",
+          "title": "Aspire · Helsinki Gate 27 facilities",
+          "url": "https://www.aspirelounges.com/airport-lounges/helsinki-airport-aspire-lounge-gate-27/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "Admission starts three hours before departure and is subject to capacity. The operator confirms hot and cold buffet service and Wi-Fi; shower availability remains unconfirmed.",
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://quietvacationer.com/2025/12/06/review-aspire-lounge-hel/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "qualityRating": {
+        "score": 3,
+        "summary": "An October 2025 visit after refurbishment found a brighter, more comfortable interior but basic food. A reasonable short stop for a seat and coffee, rather than a lounge to arrive early for.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Quiet Vacationer · Aspire Gate 27 (October 2025 visit)",
+            "url": "https://quietvacationer.com/2025/12/06/review-aspire-lounge-hel/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      }
+    }
+  ]
+}

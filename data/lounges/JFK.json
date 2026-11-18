@@ -1,0 +1,372 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "JFK",
+  "timeZone": "America/New_York",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "jfk-centurion",
+      "name": "The Centurion Lounge",
+      "terminal": "Terminal 4",
+      "location": "After security, turn left to Level 4. Other terminals require a separate security check.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "unknown",
+        "note": "Current opening hours could not be verified; check the operator before visiting."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "platinum",
+          "label": "Eligible Amex Platinum card",
+          "membershipsAnyOf": [
+            "amex-platinum"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "sourceIds": [
+            "amex-access"
+          ]
+        },
+        {
+          "id": "platinum-connection",
+          "label": "Amex Platinum on a qualifying connection",
+          "membershipsAnyOf": [
+            "amex-platinum"
+          ],
+          "maxMinutesBeforeDeparture": 300,
+          "conditions": [
+            "Confirm a same-day onward connection; a same-day round trip does not qualify."
+          ],
+          "sourceIds": [
+            "amex-access"
+          ]
+        },
+        {
+          "id": "delta-reserve-operating",
+          "label": "Delta Reserve on a Delta operating flight",
+          "membershipsAnyOf": [
+            "delta-skymiles-reserve"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "sourceIds": [
+            "amex-access"
+          ]
+        },
+        {
+          "id": "delta-reserve-marketing",
+          "label": "Delta Reserve on a Delta marketing flight",
+          "membershipsAnyOf": [
+            "delta-skymiles-reserve"
+          ],
+          "marketingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "sourceIds": [
+            "amex-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "amex-location",
+          "title": "American Express: JFK Centurion Lounge",
+          "url": "https://www.americanexpress.com/en-us/travel/lounges/the-platinum-card/JFK/The-Centurion-Lounge-Terminal-4-ErTeaB28Ky/",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "amex-access",
+          "title": "American Express: Centurion access",
+          "url": "https://www.americanexpress.com/en-us/travel/lounges/centurion-network/access/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "The 2023 morning visit found attractive spaces but limited early service; the full experience depends on the time of day.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "independent-review",
+            "title": "Independent Centurion Lounge review",
+            "url": "https://onemileatatime.com/reviews/amex-centurion-lounge-new-york-jfk/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "Photos and independent review",
+          "url": "https://onemileatatime.com/reviews/amex-centurion-lounge-new-york-jfk/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "note": "Departing passengers only; no access after the final arrival. Card-specific guest benefits are not modelled."
+    },
+    {
+      "id": "jfk-greenwich",
+      "name": "Greenwich Lounge",
+      "terminal": "Terminal 8",
+      "location": "Above Gate 12; separate from the Soho and Chelsea lounges.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "04:15",
+            "close": "01:15"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "non-us-sapphire",
+          "label": "Qantas Gold, British Airways Silver or Cathay Gold",
+          "membershipsAnyOf": [
+            "qantas-gold",
+            "british-airways-silver",
+            "cathay-gold"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "sourceIds": [
+            "aa-jfk"
+          ]
+        },
+        {
+          "id": "other-sapphire",
+          "label": "Other oneworld Sapphire",
+          "membershipsAnyOf": [
+            "oneworld-sapphire"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "conditions": [
+            "Status must not be American AAdvantage or Alaska Atmos, whose qualifying-international rules differ."
+          ],
+          "sourceIds": [
+            "aa-jfk"
+          ]
+        },
+        {
+          "id": "qualifying-business",
+          "label": "Qualifying long-haul or Flagship Business",
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "conditions": [
+            "Confirm a qualifying oneworld long-haul or AA Flagship Business ticket; ordinary domestic premium seats do not establish entry."
+          ],
+          "sourceIds": [
+            "aa-jfk"
+          ]
+        },
+        {
+          "id": "aa-as-sapphire",
+          "label": "AAdvantage Platinum or Atmos Gold on a qualifying itinerary",
+          "membershipsAnyOf": [
+            "american-platinum",
+            "atmos-gold"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "conditions": [
+            "Confirm the same-day international itinerary meets the published long-haul or Flagship criteria."
+          ],
+          "sourceIds": [
+            "aa-jfk"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "aa-jfk",
+          "title": "American Airlines: JFK joint lounges",
+          "url": "https://www.aa.com/web/i18n/travel-info/clubs/joint-premium-lounges.html",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "qualityRating": {
+        "score": 4,
+        "summary": "The February 2023 visit found comfortable seating, good views and a substantial food and drinks offering.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "independent-review",
+            "title": "One Mile at a Time: Greenwich Lounge",
+            "url": "https://onemileatatime.com/reviews/greenwich-lounge-new-york-jfk/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "Photos and independent review",
+          "url": "https://onemileatatime.com/reviews/greenwich-lounge-new-york-jfk/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "note": "Admirals Club membership alone does not grant access. Emerald travellers should check the separately listed Soho Lounge."
+    },
+    {
+      "id": "jfk-soho",
+      "name": "Soho Lounge",
+      "terminal": "Terminal 8",
+      "location": "Above Gate 14.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "04:15",
+            "close": "23:30"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "restaurant",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "non-us-emerald",
+          "label": "Qantas Platinum, British Airways Gold or Cathay Diamond",
+          "membershipsAnyOf": [
+            "qantas-platinum",
+            "qantas-platinum-one",
+            "british-airways-gold",
+            "cathay-diamond"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "sourceIds": [
+            "aa-jfk"
+          ]
+        },
+        {
+          "id": "other-emerald",
+          "label": "Other oneworld Emerald",
+          "membershipsAnyOf": [
+            "oneworld-emerald"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "conditions": [
+            "Status must not be American AAdvantage or Alaska Atmos, whose qualifying-international rules differ."
+          ],
+          "sourceIds": [
+            "aa-jfk"
+          ]
+        },
+        {
+          "id": "aa-as-emerald",
+          "label": "American or Alaska top status on a qualifying itinerary",
+          "membershipsAnyOf": [
+            "american-platinum-pro",
+            "american-executive-platinum",
+            "atmos-platinum",
+            "atmos-titanium"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "conditions": [
+            "Confirm a qualifying same-day international itinerary under the published JFK rules; a domestic Flagship flight alone does not qualify on status."
+          ],
+          "sourceIds": [
+            "aa-jfk"
+          ]
+        },
+        {
+          "id": "oneworld-longhaul-first",
+          "label": "Qualifying oneworld long-haul First",
+          "cabinsAnyOf": [
+            "first"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "conditions": [
+            "Confirm an eligible long-haul route; ordinary US domestic First does not qualify."
+          ],
+          "sourceIds": [
+            "aa-jfk"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "aa-jfk",
+          "title": "American Airlines: JFK joint lounges",
+          "url": "https://www.aa.com/web/i18n/travel-info/clubs/joint-premium-lounges.html",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "qualityRating": {
+        "score": 4.5,
+        "summary": "The February 2023 visit praised daylight, attractive interiors, made-to-order meals and a separate relaxation area.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "independent-review",
+            "title": "One Mile at a Time: Soho Lounge",
+            "url": "https://onemileatatime.com/reviews/soho-lounge-new-york-jfk/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "Photos and independent review",
+          "url": "https://onemileatatime.com/reviews/soho-lounge-new-york-jfk/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "note": "Chelsea is a separate lounge with narrower ticket eligibility."
+    }
+  ]
+}

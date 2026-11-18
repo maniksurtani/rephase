@@ -1,0 +1,343 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "ATL",
+  "timeZone": "America/New_York",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "atl-centurion",
+      "name": "The Centurion Lounge",
+      "terminal": "Concourse E",
+      "location": "Near Gate E11.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "unknown",
+        "note": "Current opening hours could not be verified; check the operator before visiting."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "platinum",
+          "label": "Eligible Amex Platinum card",
+          "membershipsAnyOf": [
+            "amex-platinum"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "sourceIds": [
+            "amex-access"
+          ]
+        },
+        {
+          "id": "platinum-connection",
+          "label": "Amex Platinum on a qualifying connection",
+          "membershipsAnyOf": [
+            "amex-platinum"
+          ],
+          "maxMinutesBeforeDeparture": 300,
+          "conditions": [
+            "Confirm a same-day onward connection; a same-day round trip does not qualify."
+          ],
+          "sourceIds": [
+            "amex-access"
+          ]
+        },
+        {
+          "id": "delta-reserve-operating",
+          "label": "Delta Reserve on a Delta operating flight",
+          "membershipsAnyOf": [
+            "delta-skymiles-reserve"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "sourceIds": [
+            "amex-access"
+          ]
+        },
+        {
+          "id": "delta-reserve-marketing",
+          "label": "Delta Reserve on a Delta marketing flight",
+          "membershipsAnyOf": [
+            "delta-skymiles-reserve"
+          ],
+          "marketingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "sourceIds": [
+            "amex-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "amex-location",
+          "title": "American Express: ATL Centurion Lounge",
+          "url": "https://www.americanexpress.com/en-us/travel/lounges/the-platinum-card/ATL/The-Centurion-Lounge-Concourse-E-KF4QDCUsaM/",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "amex-access",
+          "title": "American Express: Centurion access",
+          "url": "https://www.americanexpress.com/en-us/travel/lounges/centurion-network/access/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "qualityRating": {
+        "score": 4,
+        "summary": "The September 2024 visit found appealing terraces and extensive food and drinks, with heavy crowding despite the large footprint.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "independent-review",
+            "title": "Independent Centurion Lounge review",
+            "url": "https://onemileatatime.com/reviews/amex-centurion-lounge-atlanta/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "Photos and independent review",
+          "url": "https://onemileatatime.com/reviews/amex-centurion-lounge-atlanta/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "note": "Departing passengers only; no access after the final arrival. Card-specific guest benefits are not modelled."
+    },
+    {
+      "id": "atl-delta-sky-club-f",
+      "name": "Delta Sky Club — Concourse F",
+      "terminal": "Concourse F",
+      "location": "Mezzanine level above departures.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "unknown",
+        "note": "Current opening hours could not be verified; check the operator before visiting."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "club-member",
+          "label": "Delta Sky Club member on Delta",
+          "membershipsAnyOf": [
+            "delta-sky-club"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Your ticket must not be Delta Main Basic or an equivalent excluded fare."
+          ],
+          "sourceIds": [
+            "delta-access"
+          ]
+        },
+        {
+          "id": "delta-one",
+          "label": "Delta One",
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Confirm the ticket is Delta One; ordinary domestic First does not qualify."
+          ],
+          "sourceIds": [
+            "delta-access"
+          ]
+        },
+        {
+          "id": "delta-medallion-premium",
+          "label": "Delta Gold, Platinum or Diamond on an international premium ticket",
+          "membershipsAnyOf": [
+            "delta-gold-medallion",
+            "delta-platinum-medallion",
+            "delta-diamond-medallion"
+          ],
+          "cabinsAnyOf": [
+            "premium-economy",
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "route": "international",
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Confirm Delta Premium Select or Delta One on the qualifying international itinerary; Caribbean routes are excluded."
+          ],
+          "sourceIds": [
+            "delta-access"
+          ]
+        },
+        {
+          "id": "skyteam-status",
+          "label": "Non-Delta SkyTeam Elite Plus on an international flight",
+          "membershipsAnyOf": [
+            "skyteam-elite-plus"
+          ],
+          "operatingAlliance": "skyteam",
+          "route": "international",
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Status must be issued by a non-Delta program; Delta Medallion alone does not qualify in Economy. Caribbean routes and Basic/Light fares are excluded."
+          ],
+          "sourceIds": [
+            "delta-access"
+          ]
+        },
+        {
+          "id": "amex-platinum",
+          "label": "Eligible Amex Platinum Card on Delta",
+          "membershipsAnyOf": [
+            "amex-platinum"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Confirm your card issuer includes Sky Club access and that you have visits remaining or accept the extra visit fee. Basic/Light fares are excluded."
+          ],
+          "sourceIds": [
+            "delta-access"
+          ]
+        },
+        {
+          "id": "reserve-operated",
+          "label": "Delta SkyMiles Reserve on Delta",
+          "membershipsAnyOf": [
+            "delta-skymiles-reserve"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Confirm remaining card visits or the extra visit fee. Basic/Light fares are excluded."
+          ],
+          "sourceIds": [
+            "delta-access"
+          ]
+        },
+        {
+          "id": "reserve-marketed",
+          "label": "Delta SkyMiles Reserve on a Delta-marketed flight",
+          "membershipsAnyOf": [
+            "delta-skymiles-reserve"
+          ],
+          "marketingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Confirm remaining card visits or the extra visit fee. Basic/Light fares are excluded."
+          ],
+          "sourceIds": [
+            "delta-access"
+          ]
+        },
+        {
+          "id": "skyteam-international-premium",
+          "label": "Non-Delta SkyTeam international First or Business",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "route": "international",
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Confirm a non-Delta SkyTeam international itinerary with every journey segment in First or Business; Caribbean routes and Basic/Light fares are excluded."
+          ],
+          "sourceIds": [
+            "delta-access",
+            "skyteam-members"
+          ],
+          "operatingCarriersAnyOf": [
+            "AR",
+            "AM",
+            "UX",
+            "AF",
+            "CI",
+            "MU",
+            "GA",
+            "KQ",
+            "KL",
+            "KE",
+            "ME",
+            "SV",
+            "SK",
+            "RO",
+            "VN",
+            "VS",
+            "MF"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "delta-access",
+          "title": "Delta: network-wide Sky Club access rules",
+          "url": "https://www.delta.com/us/en/delta-sky-club/access",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "amex-location",
+          "title": "American Express: Delta Sky Club F facilities",
+          "url": "https://www.americanexpress.com/en-us/travel/lounges/delta-reserve/ATL/Delta-Sky-Club-Concourse-F-P7OlISdHvO/",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "skyteam-members",
+          "title": "SAS: current SkyTeam member airlines",
+          "url": "https://www.flysas.com/gb-en/about-us/skyteam",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "The May 2025 review found a useful large lounge with a terrace and available seats despite busy periods.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "independent-review",
+            "title": "Live and Let’s Fly: Delta Sky Club F",
+            "url": "https://liveandletsfly.com/delta-sky-club-atlanta-atl-f-review/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "Photos and independent review",
+          "url": "https://liveandletsfly.com/delta-sky-club-atlanta-atl-f-review/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "note": "Ordinary domestic First is not Delta One. Card visit allowances and fare restrictions require confirmation. Connecting guests have a wider entry window than the ordinary three-hour limit modelled here."
+    }
+  ]
+}

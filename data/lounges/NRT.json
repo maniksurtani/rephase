@@ -1,0 +1,285 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "NRT",
+  "timeZone": "Asia/Tokyo",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "nrt-ana-satellite-5",
+      "name": "ANA Lounge (Satellite 5)",
+      "terminal": "T1",
+      "location": "Satellite 5, level 4, after international security; follow signs near Gates 51 onward.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "flight-dependent",
+        "note": "07:00 until the final ANA Group international departure."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "star-premium",
+          "label": "Star Alliance Business or First Class",
+          "sourceIds": [
+            "operator"
+          ],
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingAlliance": "star",
+          "route": "international"
+        },
+        {
+          "id": "star-gold",
+          "label": "Star Alliance Gold",
+          "sourceIds": [
+            "operator"
+          ],
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingAlliance": "star",
+          "route": "international"
+        },
+        {
+          "id": "ana-premium-economy",
+          "label": "ANA Premium Economy",
+          "sourceIds": [
+            "operator"
+          ],
+          "cabinsAnyOf": [
+            "premium-economy"
+          ],
+          "operatingCarriersAnyOf": [
+            "NH"
+          ],
+          "route": "international"
+        },
+        {
+          "id": "united-club",
+          "label": "United Club membership on a Star Alliance flight",
+          "sourceIds": [
+            "operator"
+          ],
+          "membershipsAnyOf": [
+            "united-club"
+          ],
+          "operatingAlliance": "star",
+          "route": "international"
+        }
+      ],
+      "sources": [
+        {
+          "id": "operator",
+          "title": "ANA · NRT international lounges",
+          "url": "https://www.ana.co.jp/en/jp/guide/lounge/international/nrt/",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "airport",
+          "title": "Narita Airport · Airline lounges",
+          "url": "https://www.narita-airport.jp/en/service/lounge/airport/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "A noodle bar, buffet and showers before an eligible Star Alliance departure."
+      },
+      "note": "This is ANA Lounge, not the separately restricted ANA Suite Lounge. Showers may need a reservation or queue. Shower pre-booking has been postponed; use the self-service kiosk in the lounge.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "A firsthand review found a functional lounge with ample seating, hot food and showers. The repetitive seating and utilitarian interiors were less appealing than the practical facilities.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Point Hacks · ANA Lounge Satellite 5 review",
+            "url": "https://www.pointhacks.com.au/reviews/ana-lounge-business-class-tokyo-narita/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://www.pointhacks.com.au/reviews/ana-lounge-business-class-tokyo-narita/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    },
+    {
+      "id": "nrt-jal-sakura-main",
+      "name": "Japan Airlines Sakura Lounge (Main)",
+      "terminal": "T2",
+      "location": "Main building, levels 2 and 3, after international security.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "07:30",
+            "close": "22:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "oneworld-cabin",
+          "label": "oneworld Business or First Class",
+          "sourceIds": [
+            "oneworld"
+          ],
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "international",
+          "conditions": [
+            "The ticket must include lounge access; Qatar Airways Business Lite and Finnair Business Light fares are excluded."
+          ]
+        },
+        {
+          "id": "oneworld-status",
+          "label": "oneworld Sapphire or Emerald",
+          "sourceIds": [
+            "oneworld"
+          ],
+          "membershipsAnyOf": [
+            "oneworld-sapphire",
+            "oneworld-emerald"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "international"
+        }
+      ],
+      "sources": [
+        {
+          "id": "oneworld",
+          "title": "oneworld · Lounge access policy",
+          "url": "https://www.oneworld.com/airport-lounges",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "operator",
+          "title": "JAL · NRT Sakura Lounge",
+          "url": "https://www.jal.co.jp/jp/en/inter/service/lounge/nrt/sakura/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "A buffet and comfortable waiting space for eligible oneworld travellers."
+      },
+      "note": "This record covers international departures. JAL First Class Lounge has separate eligibility. Premium Economy and fare-specific Economy entry require separate verification and are not inferred here."
+    },
+    {
+      "id": "nrt-kocoo-t2",
+      "name": "KoCoo Lounge",
+      "terminal": "T2",
+      "location": "Level 4, after international security and passport control.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "07:30",
+            "close": "21:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "route": "international",
+          "maxVisitMinutes": 120
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · KoCoo Lounge",
+          "url": "https://www.prioritypass.com/en-GB/lounges/japan/narita-international/nrt13-i-a-s-s-superior-lounge-kocoo",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "A two-hour Priority Pass stop in Terminal 2."
+      },
+      "note": "This is the airside KoCoo lounge, not the landside IASS Executive Lounge. Current primary membership details do not fully enumerate facilities.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "An October 2026 firsthand report found a substantial Japanese buffet, made-to-order dishes and convenient power at seats. A useful meal stop rather than a full rest facility.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Trip and Happiness · KoCoo Lounge visit",
+            "url": "https://tripandhappiness.com/en/kocoo-lounges/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://tripandhappiness.com/en/kocoo-lounges/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    }
+  ]
+}

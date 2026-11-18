@@ -1,0 +1,187 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "KUL",
+  "timeZone": "Asia/Kuala_Lumpur",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "kul-malaysia-golden-satellite-business",
+      "name": "Malaysia Airlines Golden Lounge (Satellite Business)",
+      "terminal": "KLIA T1 Satellite",
+      "location": "West Zone, Level 2 mezzanine of the Satellite Building, international departures.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "oneworld-business",
+          "label": "oneworld Business or First Class",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "international",
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Access must be on the same local calendar day as departure; overnight stays are not permitted."
+          ],
+          "sourceIds": [
+            "malaysia"
+          ]
+        },
+        {
+          "id": "oneworld-status",
+          "label": "oneworld Sapphire or Emerald",
+          "membershipsAnyOf": [
+            "oneworld-sapphire",
+            "oneworld-emerald"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "international",
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Access must be on the same local calendar day as departure; overnight stays are not permitted."
+          ],
+          "sourceIds": [
+            "malaysia"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "malaysia",
+          "title": "Malaysia Airlines · Golden Lounge locations and access terms",
+          "url": "https://www.malaysiaairlines.com/my/en/experience/lounge/.html",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "Business section only; the separate Platinum dining room is not included. The published three-hour entry rule also applies during connections, except for specified Business Suite and Enrich Platinum transit benefits not modelled here.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "The November 2025 review praised the varied breakfast stations, coffee, spacious seating, showers and daybeds. Its older 2018 visit found late-evening crowding, so quiet conditions are not assured.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Live and Let’s Fly · Satellite Golden Business Lounge (2025 update)",
+            "url": "https://liveandletsfly.com/malaysia-airlines-business-class-lounge-kuala-lumpur-review/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://liveandletsfly.com/malaysia-airlines-business-class-lounge-kuala-lumpur-review/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    },
+    {
+      "id": "kul-travel-club-satellite",
+      "name": "Travel Club Lounge (Satellite)",
+      "terminal": "KLIA T1 Satellite",
+      "location": "International departures mezzanine, near Gates C11–C17.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "23:59"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "route": "international",
+          "maxVisitMinutes": 180,
+          "sourceIds": [
+            "priority-pass"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · Travel Club Satellite",
+          "url": "https://www.prioritypass.com/en-GB/lounges/malaysia/kuala-lumpur-international/kul28-travel-club-lounge",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "A three-hour Priority Pass option in the Satellite Building. Showers are unconfirmed. Some drinks and entertainment can cost extra.",
+      "qualityRating": {
+        "score": 3,
+        "summary": "An August 2024 visit found attractive window seating and a useful reading area, but poor food and drink choices. Better suited to a seat and quiet time than a meal; the review is older.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "The Shutterwhale · Travel Club Satellite (2024)",
+            "url": "https://theshutterwhale.com/blog/2024/8/4/lounge-review-travel-club-lounge-terminal-1-satellite-kuala-lumpur-international-airport-kul",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://theshutterwhale.com/blog/2024/8/4/lounge-review-travel-club-lounge-terminal-1-satellite-kuala-lumpur-international-airport-kul",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    }
+  ]
+}

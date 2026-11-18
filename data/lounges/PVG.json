@@ -1,0 +1,139 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "PVG",
+  "timeZone": "Asia/Shanghai",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "pvg-air-china-business",
+      "name": "Air China Business Class Lounge (No. 71)",
+      "terminal": "T2",
+      "location": "No. 71 lounge, level 4, international departures.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "unknown",
+        "note": "A current fixed opening schedule could not be verified from the airline. Confirm opening hours for your departure."
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "star-business",
+          "label": "Star Alliance Business Class",
+          "sourceIds": [
+            "ana-access"
+          ],
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingAlliance": "star",
+          "route": "international"
+        },
+        {
+          "id": "star-gold",
+          "label": "Star Alliance Gold",
+          "sourceIds": [
+            "ana-access"
+          ],
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingAlliance": "star",
+          "route": "international"
+        }
+      ],
+      "sources": [
+        {
+          "id": "airchina-directory",
+          "title": "Air China · Published lounge locations and membership privileges",
+          "url": "https://ffp.airchina.com.cn/appen/en/plan-en/VIP_exclusive_inviolable_details.html",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "ana-access",
+          "title": "ANA · PVG Air China lounge access",
+          "url": "https://www.ana.co.jp/en/jp/guide/lounge/international/pvg/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "An airline-lounge option for eligible Star Alliance departures; check hours before relying on it."
+      },
+      "note": "This is the Business lounge. Do not infer First lounge or Priority Pass access. The airline sources do not provide a complete current facilities list; unverified facilities remain unknown."
+    },
+    {
+      "id": "pvg-china-eastern-77",
+      "name": "China Eastern No. 77 Lounge",
+      "terminal": "T2",
+      "location": "International departures: after security turn right and take the lift opposite Gate 77 to level 4.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "23:59"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "route": "international",
+          "maxVisitMinutes": 120
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · China Eastern No. 77",
+          "url": "https://www.prioritypass.com/en-GB/lounges/china/shanghai-pudong-international/pvg19-china-eastern-no-77-lounge",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "partner",
+          "title": "Plaza Premium · No. 77 facilities",
+          "url": "https://www.plazapremiumlounge.com/en-uk/find/china-regions/mainland-china/shanghai/shanghai-pudong-international-airport/no-77-china-eastern-lounge",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "A two-hour Priority Pass option with showers and day beds in international Terminal 2."
+      },
+      "note": "Showers may incur a charge and are subject to availability. Food is offered, but the current official source does not specify the service format. China Eastern branding alone is not treated as automatic SkyTeam or cabin eligibility."
+    }
+  ]
+}

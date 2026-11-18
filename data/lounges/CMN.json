@@ -1,0 +1,177 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "CMN",
+  "timeZone": "Africa/Casablanca",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "cmn-royal-air-maroc-zenith-i",
+      "name": "Royal Air Maroc Le Zénith I Lounge",
+      "terminal": "Terminal 1 · International",
+      "location": "International departures in Terminal 1; follow Royal Air Maroc lounge signs after security.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "unknown",
+        "note": "A fixed opening schedule was not verified in the current operator sources. Confirm opening for your flight."
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "snacks",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "ram-business",
+          "label": "Royal Air Maroc Business",
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "AT"
+          ],
+          "route": "international",
+          "conditions": [
+            "Confirm you can reach the Terminal 1 international lounge from your departure area."
+          ],
+          "sourceIds": [
+            "ram-lounges"
+          ]
+        },
+        {
+          "id": "oneworld-status",
+          "label": "oneworld Sapphire or Emerald",
+          "membershipsAnyOf": [
+            "oneworld-sapphire",
+            "oneworld-emerald"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "international",
+          "conditions": [
+            "Confirm Le Zénith I is the lounge assigned to your flight and that your terminal permits access."
+          ],
+          "sourceIds": [
+            "ram-oneworld",
+            "ram-lounges"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "ram-lounges",
+          "title": "Royal Air Maroc · Current Terminal 1 lounge and premium access",
+          "url": "https://www.royalairmaroc.com/int-en/royal-air-maroc-lounges",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "ram-status",
+          "title": "Royal Air Maroc · Le Zénith I and lounge facilities",
+          "url": "https://www.royalairmaroc.com/ru-en/access-to-lounge-areas",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "ram-oneworld",
+          "title": "Royal Air Maroc · oneworld lounge benefits",
+          "url": "https://www.royalairmaroc.com/jo-en/oneworld/frequent-flyer-benefits",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "This is the renovated Terminal 1 lounge, not the domestic Médina lounge or a Terminal 2 Zénith record. Current daily hours and shower/spa provision were not verified for this exact location.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "A 2026 review of Zénith I found appealing design, comfortable seating and good food variety. Having to request every food item and drink slowed service, especially compared with a self-service buffet.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Fly for Points · Le Zénith I review",
+            "url": "https://www.flyforpoints.com/en/reviewing-royal-air-maroc-zenith-i-lounge-at-casablanca-airport/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://www.flyforpoints.com/en/reviewing-royal-air-maroc-zenith-i-lounge-at-casablanca-airport/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    },
+    {
+      "id": "cmn-aspire-executive-t2",
+      "name": "Aspire Executive Lounge Casablanca",
+      "terminal": "Terminal 2 · International",
+      "location": "Airside after passport control, near Gate A8. Priority Pass describes a first-floor entrance and a dedicated lift from the second floor.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "snacks",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "route": "international",
+          "maxMinutesBeforeDeparture": 180,
+          "sourceIds": [
+            "priority-pass"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · Aspire Executive Terminal 2",
+          "url": "https://www.prioritypass.com/en-GB/lounges/morocco/casablanca-mohammed-v-intl/cmn7-aspire-executive-lounge-casablanca",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "aspire-casablanca",
+          "title": "Aspire · Casablanca Terminal 2",
+          "url": "https://www.aspirelounges.com/airport-lounges/casablanca-international-airport-aspire-lounge-terminal-2/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "Priority Pass entry starts three hours before departure. Terminal 1 Aspire is a separate facility with different hours. Floor numbering differs between operator and program descriptions; use the A8 signs. Independent quality review pending.",
+      "photoLinks": [
+        {
+          "label": "View lounge photos",
+          "url": "https://www.aspirelounges.com/airport-lounges/casablanca-international-airport-aspire-lounge-terminal-2/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    }
+  ]
+}

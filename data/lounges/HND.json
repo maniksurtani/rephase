@@ -1,0 +1,318 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "HND",
+  "timeZone": "Asia/Tokyo",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "hnd-ana-t2-international",
+      "name": "ANA Lounge (Terminal 2 International)",
+      "terminal": "T2",
+      "location": "Terminal 2 international departure area, after security.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "flight-dependent",
+        "note": "05:00 until the final ANA Group international departure from Terminal 2."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "star-premium",
+          "label": "Star Alliance Business or First Class",
+          "sourceIds": [
+            "operator"
+          ],
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingAlliance": "star",
+          "route": "international"
+        },
+        {
+          "id": "star-gold",
+          "label": "Star Alliance Gold",
+          "sourceIds": [
+            "operator"
+          ],
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingAlliance": "star",
+          "route": "international"
+        },
+        {
+          "id": "ana-premium-economy",
+          "label": "ANA Premium Economy",
+          "sourceIds": [
+            "operator"
+          ],
+          "cabinsAnyOf": [
+            "premium-economy"
+          ],
+          "operatingCarriersAnyOf": [
+            "NH"
+          ],
+          "route": "international"
+        },
+        {
+          "id": "united-club",
+          "label": "United Club membership on a Star Alliance flight",
+          "sourceIds": [
+            "operator"
+          ],
+          "membershipsAnyOf": [
+            "united-club"
+          ],
+          "operatingAlliance": "star",
+          "route": "international"
+        }
+      ],
+      "sources": [
+        {
+          "id": "operator",
+          "title": "ANA · HND international lounges",
+          "url": "https://www.ana.co.jp/en/jp/guide/lounge/international/hnd/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "A noodle bar, buffet and showers before an eligible Star Alliance departure."
+      },
+      "note": "This is ANA Lounge, not the separately restricted ANA Suite Lounge. Showers may need a reservation or queue.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "A September 2026 review praised natural light, plentiful seating, noodles and shower suites. Some seats lacked convenient power, and the food and drink selection was good rather than exceptional.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "The Alviator · ANA Haneda T2 review",
+            "url": "https://thealviator.com/2026/09/ana-lounge-haneda-t2/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://thealviator.com/2026/09/ana-lounge-haneda-t2/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    },
+    {
+      "id": "hnd-jal-sakura-main",
+      "name": "Japan Airlines Sakura Lounge (Main)",
+      "terminal": "T3",
+      "location": "International departures, main building level 4. This is the main Sakura Lounge, not the separate Sky View floor.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "flight-dependent",
+        "note": "05:30 until departure of the last flight. The separate Sky View lounge has different hours."
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "oneworld-cabin",
+          "label": "oneworld Business or First Class",
+          "sourceIds": [
+            "oneworld"
+          ],
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "international",
+          "conditions": [
+            "The ticket must include lounge access; Qatar Airways Business Lite and Finnair Business Light fares are excluded."
+          ]
+        },
+        {
+          "id": "oneworld-status",
+          "label": "oneworld Sapphire or Emerald",
+          "sourceIds": [
+            "oneworld"
+          ],
+          "membershipsAnyOf": [
+            "oneworld-sapphire",
+            "oneworld-emerald"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "international"
+        },
+        {
+          "id": "jal-premium-economy",
+          "label": "JAL Premium Economy",
+          "sourceIds": [
+            "jal-access"
+          ],
+          "cabinsAnyOf": [
+            "premium-economy"
+          ],
+          "operatingCarriersAnyOf": [
+            "JL"
+          ],
+          "marketingCarriersAnyOf": [
+            "JL"
+          ],
+          "route": "international",
+          "conditions": [
+            "Airport upgrades to Premium Economy do not include this lounge access."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "oneworld",
+          "title": "oneworld · Lounge access policy",
+          "url": "https://www.oneworld.com/airport-lounges",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "operator",
+          "title": "JAL · HND Sakura Lounge",
+          "url": "https://www.jal.co.jp/jp/en/inter/service/lounge/hnd/sakura/",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "jal-access",
+          "title": "JAL · Haneda lounge cabin eligibility",
+          "url": "https://www.jal.co.jp/jp/en/inter/service/lounge/hnd/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "A buffet and comfortable waiting space for eligible oneworld travellers."
+      },
+      "note": "International departures only; JAL First Class Lounge has separate eligibility. Airport upgrades to Premium Economy do not include lounge access; Economy Flex entry is not yet modelled.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "A January 2026 visit found excellent showers and convenient facilities, but repetitive seating and a limited self-service food selection. A practical departure lounge rather than a destination in itself.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "The Alviator · JAL Sakura Haneda main lounge review",
+            "url": "https://thealviator.com/2026/02/japan-airlines-sakura-lounge-review/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://thealviator.com/2026/02/japan-airlines-sakura-lounge-review/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    },
+    {
+      "id": "hnd-tiat-t3",
+      "name": "TIAT Lounge",
+      "terminal": "T3",
+      "location": "Level 4, centre of the international departure hall, after security and passport control.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "01:00",
+            "close": "05:00"
+          }
+        ],
+        "note": "These are Priority Pass access hours. The lounge itself operates 24 hours for other eligible access routes."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "route": "international",
+          "maxVisitMinutes": 180
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · TIAT Lounge",
+          "url": "https://www.prioritypass.com/en-GB/lounges/japan/haneda/hnd10-tiat-lounge",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "airport",
+          "title": "Haneda Airport · TIAT services and Priority Pass hours",
+          "url": "https://tokyo-haneda.com/en/service/facilities/lounge.html?terminal=hnd_int",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "A shower and simple buffet for Priority Pass travellers departing in the early hours."
+      },
+      "note": "Priority Pass entry is only 01:00–05:00, not throughout the lounge’s 24-hour operation. Capacity limits apply; maximum two guests per cardholder, with charges where applicable.",
+      "qualityRating": {
+        "score": 2.5,
+        "summary": "A firsthand review found clean showers and apron views but a small, plain lounge with limited food. Its former all-day Priority Pass access has since changed to the overnight window shown here.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "One Mile at a Time · TIAT Lounge review",
+            "url": "https://onemileatatime.com/reviews/tiat-lounge-tokyo-haneda/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://onemileatatime.com/reviews/tiat-lounge-tokyo-haneda/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    }
+  ]
+}

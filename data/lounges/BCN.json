@@ -1,0 +1,243 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "BCN",
+  "timeZone": "Europe/Madrid",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "bcn-pau-casals",
+      "name": "Sala VIP Pau Casals",
+      "terminal": "1",
+      "location": "Sky Center, level 2, boarding areas A, B and C; domestic and Schengen Terminal 1 departures.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              3,
+              6
+            ],
+            "open": "04:30",
+            "close": "23:30"
+          },
+          {
+            "days": [
+              2,
+              4
+            ],
+            "open": "04:30",
+            "close": "23:50"
+          },
+          {
+            "days": [
+              5,
+              7
+            ],
+            "open": "04:30",
+            "close": "23:55"
+          }
+        ],
+        "note": "Priority Pass publishes these day-specific hours. Aena describes closing as the last flight; confirm late departures."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass · T1 Schengen",
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "destinationCountriesAnyOf": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "maxVisitMinutes": 180,
+          "conditions": [
+            "Departure must be from Terminal 1; entry is subject to available space."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · Sala VIP Pau Casals",
+          "url": "https://www.prioritypass.com/en-GB/lounges/spain/barcelona-el-prat/bcn8-sala-vip-pau-casals",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "aena",
+          "title": "Aena · Pau Casals facilities",
+          "url": "https://www.aena.es/en/josep-tarradellas-barcelona-el-prat/vip-services/vip-lounges/pau-casals-vip-lounge.html",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "Priority Pass permits transit passengers to enter up to four hours before departure; the app conservatively applies the ordinary three-hour entry window. Aena confirms catering but not its service format.",
+      "qualityRating": {
+        "score": 3,
+        "summary": "LoungeReview’s undated firsthand account describes comfortable seating and rest space, but weak food and inconsistent Wi-Fi. Its age is unclear, so the assessment is provisional.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "LoungeReview · Sala VIP Pau Casals (undated firsthand review)",
+            "url": "https://loungereview.com/lounges/sala-vip-pau-casals-bcn/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://loungereview.com/lounges/sala-vip-pau-casals-bcn/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    },
+    {
+      "id": "bcn-joan-miro",
+      "name": "Sala VIP Joan Miró",
+      "terminal": "1",
+      "location": "After passport control on level 2, serving gates D and E; follow VIP signs and take the stairs or lift down near Burger King.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "06:00",
+            "close": "21:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass · T1 intercontinental",
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "excludedDestinationCountries": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "maxVisitMinutes": 180,
+          "conditions": [
+            "Priority Pass specifies intercontinental non-Schengen Terminal 1 flights only. Confirm that your flight qualifies; a non-Schengen destination alone is insufficient."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · Sala VIP Miró",
+          "url": "https://www.prioritypass.com/en-GB/lounges/spain/barcelona-el-prat/bcn9-sala-vip-miro",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "aena",
+          "title": "Aena · Joan Miró facilities",
+          "url": "https://www.aena.es/en/josep-tarradellas-barcelona-el-prat/vip-services/vip-lounges/joan-miro-vip-lounge.html",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "The hours shown are Priority Pass access hours. Aena publishes a wider 05:00-to-last-flight operating window. Transit entry can start four hours before departure; the app conservatively uses three. A current independent review remains outstanding.",
+      "photoLinks": [
+        {
+          "label": "View lounge details and photos",
+          "url": "https://www.prioritypass.com/en-GB/lounges/spain/barcelona-el-prat/bcn9-sala-vip-miro",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    }
+  ]
+}

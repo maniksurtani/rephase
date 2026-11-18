@@ -1,0 +1,207 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "CGK",
+  "timeZone": "Asia/Jakarta",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "cgk-garuda-business-international",
+      "name": "Garuda Indonesia Business Class Lounge (International)",
+      "terminal": "T3 International",
+      "location": "International departure area; follow Garuda Business Class Lounge signs. Confirm the assigned entrance with ANA at check-in.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "unknown",
+        "note": "A current fixed opening schedule was not available from the operator. Confirm opening for your flight."
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "ana-premium",
+          "label": "ANA Business or Premium Economy",
+          "cabinsAnyOf": [
+            "business",
+            "premium-economy"
+          ],
+          "operatingCarriersAnyOf": [
+            "NH"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "ana"
+          ]
+        },
+        {
+          "id": "ana-star-gold",
+          "label": "Star Alliance Gold travelling on ANA",
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingCarriersAnyOf": [
+            "NH"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "ana"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "ana",
+          "title": "ANA · contracted Jakarta lounges and ANA-flight eligibility",
+          "url": "https://www.ana.co.jp/en/us/travel-information/lounges/jakarta/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "ANA contract access is verified here. Garuda/SkyTeam eligibility and individual amenities remain unverified because Garuda’s current policy pages could not be read. This is not the domestic, First Class or Platinum lounge section.",
+      "qualityRating": {
+        "score": 3,
+        "summary": "The July 2025 review found the ordinary Business section functional but densely seated, with uneven food and slow Wi-Fi. This assessment excludes its more attractive Platinum area, whose eligibility is different.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "JakartaPotato · Garuda international Business section (July 2025)",
+            "url": "https://www.jakartapotato.com/2025/07/25/review-garuda-indonesia-lounge-jakarta-cgk/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://www.jakartapotato.com/2025/07/25/review-garuda-indonesia-lounge-jakarta-cgk/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    },
+    {
+      "id": "cgk-saphire-plaza-premium-international",
+      "name": "Saphire Plaza Premium Lounge (International)",
+      "terminal": "T3 International",
+      "location": "Level 2, near Gate 6, after international security and immigration.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "route": "international",
+          "maxVisitMinutes": 120,
+          "sourceIds": [
+            "priority-pass"
+          ]
+        },
+        {
+          "id": "ana-premium",
+          "label": "ANA Business or Premium Economy",
+          "cabinsAnyOf": [
+            "business",
+            "premium-economy"
+          ],
+          "operatingCarriersAnyOf": [
+            "NH"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "ana"
+          ]
+        },
+        {
+          "id": "ana-star-gold",
+          "label": "Star Alliance Gold travelling on ANA",
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingCarriersAnyOf": [
+            "NH"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "ana"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · Saphire Plaza Premium T3 International",
+          "url": "https://www.prioritypass.com/en-GB/lounges/indonesia/jakarta-soekarno-hatta-intl/cgk16-saphire-plaza-premium-lounge",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "operator",
+          "title": "Plaza Premium · Saphire T3 International facilities and opening",
+          "url": "https://www.plazapremiumlounge.com/en-uk/find/asia/indonesia/jakarta/jakarta-soekarno-hatta-international-airport/international-departures-terminal-three",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "ana",
+          "title": "ANA · contracted Jakarta lounges and ANA-flight eligibility",
+          "url": "https://www.ana.co.jp/en/us/travel-information/lounges/jakarta/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "Standard lounge only, not Plaza Premium First or airline-exclusive rooms. Showers may cost extra and depend on availability. Hot meals are confirmed; a full-service restaurant is not.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "An October 2024 visit praised the food and service even when busy, but found the large open room noisy and short on privacy. The assessment covers the standard lounge, not First or airline-reserved areas.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Flyctory · Saphire standard lounge (October 2024 visit)",
+            "url": "https://flyctory.com/2025/04/01/saphire-plaza-premium-lounge-jakarta-airport-cgk-terminal-3/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://flyctory.com/2025/04/01/saphire-plaza-premium-lounge-jakarta-airport-cgk-terminal-3/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,154 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "PTY",
+  "timeZone": "America/Panama",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "pty-copa-club-t2",
+      "name": "Copa Club",
+      "terminal": "T2",
+      "location": "International departures, near Gate 208; take the escalator or lift to the third floor.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:30",
+            "close": "22:15"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "route": "international",
+          "maxVisitMinutes": 300,
+          "maxMinutesBeforeDeparture": 300
+        },
+        {
+          "id": "star-gold",
+          "label": "Star Alliance Gold on a Star Alliance departure",
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingAlliance": "star",
+          "route": "international",
+          "sourceIds": [
+            "copa-access"
+          ]
+        },
+        {
+          "id": "star-business-first",
+          "label": "Star Alliance Business or First",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingAlliance": "star",
+          "route": "international",
+          "sourceIds": [
+            "copa-access"
+          ]
+        },
+        {
+          "id": "united-club",
+          "label": "United Club membership on Star Alliance",
+          "membershipsAnyOf": [
+            "united-club"
+          ],
+          "operatingAlliance": "star",
+          "route": "international",
+          "sourceIds": [
+            "copa-access"
+          ]
+        },
+        {
+          "id": "af-kl-business",
+          "label": "Air France or KLM Business",
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "AF",
+            "KL"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "copa-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass: Copa Club Terminal 2 entry and hours",
+          "url": "https://www.prioritypass.com/en-GB/lounges/panama/tocumen-international/pty5-copa-club",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "copa-location",
+          "title": "Copa Airlines: Copa Club locations and facilities",
+          "url": "https://www.copaair.com/en-EC/discover-copa-airlines/airport-experience/copaclub/",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "copa-access",
+          "title": "Copa Club access and shower usage policy",
+          "url": "https://www.copaair.com/en-gs/discover-copa-airlines/airport-experience/copa-club-rules/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "The main Terminal 2 airline lounge also accepts Priority Pass, with a five-hour visit window."
+      },
+      "note": "Shower eligibility is restricted to qualifying flights over 4.5 hours or ConnectMiles Platinum/Presidential status; sessions are limited to 20 minutes. Confirm eligibility at reception. Priority Pass limits guest access separately. Terminal 1 has a different Copa Club.",
+      "qualityRating": {
+        "score": 3,
+        "summary": "A 2025 visit found a modern, spacious layout and comfortable seating, but substantial crowding, modest catering and inconsistent service. It works as a practical connection stop rather than a dining destination.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Upgraded Points · Copa Club Panama Terminal 2 firsthand review",
+            "url": "https://upgradedpoints.com/travel/airports/copa-club-terminal-2-panama-city-pty-review/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://upgradedpoints.com/travel/airports/copa-club-terminal-2-panama-city-pty-review/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    }
+  ]
+}

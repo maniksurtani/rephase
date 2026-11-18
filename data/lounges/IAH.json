@@ -1,0 +1,187 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "IAH",
+  "timeZone": "America/Chicago",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "iah-centurion",
+      "name": "The Centurion Lounge",
+      "terminal": "Terminal D",
+      "location": "Near Gate D12; use the elevator inside Duty Free to reach the entrance.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "unknown",
+        "note": "Current opening hours could not be verified; check the operator before visiting."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "platinum",
+          "label": "Eligible Amex Platinum card",
+          "membershipsAnyOf": [
+            "amex-platinum"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "sourceIds": [
+            "amex-access"
+          ],
+          "conditions": [
+            "Confirm the lounge is operating during the current expansion works."
+          ]
+        },
+        {
+          "id": "platinum-connection",
+          "label": "Amex Platinum on a qualifying connection",
+          "membershipsAnyOf": [
+            "amex-platinum"
+          ],
+          "maxMinutesBeforeDeparture": 300,
+          "conditions": [
+            "Confirm a same-day onward connection; a same-day round trip does not qualify.",
+            "Confirm the lounge is operating during the current expansion works."
+          ],
+          "sourceIds": [
+            "amex-access"
+          ]
+        },
+        {
+          "id": "delta-reserve-operating",
+          "label": "Delta Reserve on a Delta operating flight",
+          "membershipsAnyOf": [
+            "delta-skymiles-reserve"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "sourceIds": [
+            "amex-access"
+          ],
+          "conditions": [
+            "Confirm the lounge is operating during the current expansion works."
+          ]
+        },
+        {
+          "id": "delta-reserve-marketing",
+          "label": "Delta Reserve on a Delta marketing flight",
+          "membershipsAnyOf": [
+            "delta-skymiles-reserve"
+          ],
+          "marketingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "sourceIds": [
+            "amex-access"
+          ],
+          "conditions": [
+            "Confirm the lounge is operating during the current expansion works."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "amex-location",
+          "title": "American Express: IAH Centurion Lounge",
+          "url": "https://www.americanexpress.com/en-us/travel/lounges/the-platinum-card/IAH/The-Centurion-Lounge-Terminal-D-szoGgVnikl/",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "amex-access",
+          "title": "American Express: Centurion access",
+          "url": "https://www.americanexpress.com/en-us/travel/lounges/centurion-network/access/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "The May 2023 visits praised food and attentive staff in a compact lounge. Current construction limits capacity, so that review is only a baseline.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "independent-review",
+            "title": "Independent Centurion Lounge review",
+            "url": "https://princeoftravel.com/reviews/centurion-lounge-houston/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "Photos and independent review",
+          "url": "https://princeoftravel.com/reviews/centurion-lounge-houston/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "note": "Departing passengers only; no access after the final arrival. Card-specific guest benefits are not modelled. Expansion is underway: seating and amenities may be limited, with occasional short closures."
+    },
+    {
+      "id": "iah-united-club-b-north",
+      "name": "United Club \u2014 Terminal B North",
+      "terminal": "Terminal B North",
+      "location": "Mezzanine level of the new North Concourse, opened October 2026.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "unknown",
+        "note": "Current opening hours could not be verified; check the operator before visiting."
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "united-club-member",
+          "label": "United Club membership",
+          "membershipsAnyOf": [
+            "united-club"
+          ],
+          "operatingAlliance": "star",
+          "sourceIds": [
+            "united-card-policy"
+          ],
+          "conditions": [
+            "Your qualifying United/Star Alliance boarding pass must be for the same calendar day as this lounge visit."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "united-card-policy",
+          "title": "Chase: United Club membership and same-day flight requirements",
+          "url": "https://www.chase.com/personal/credit-cards/education/rewards-benefits/guide-to-united-lounges",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "airport-location",
+          "title": "Houston Airports: Terminal B North and new United Club",
+          "url": "https://www.fly2houston.com/airport-business/newsroom/press-releases/item/united-airlines-terminal-b-north-opens-at-iah/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "This is the replacement North Concourse club, not the former Terminal B club or the grab-and-go Club Fly. Status and premium-ticket eligibility need confirmation; this record matches paid membership only. Quality rating awaits an independent firsthand review.",
+      "photoLinks": [
+        {
+          "label": "Opening coverage and photos",
+          "url": "https://www.afar.com/magazine/united-airliness-massive-houston-lounge-is-now-open",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    }
+  ]
+}

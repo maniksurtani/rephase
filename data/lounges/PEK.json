@@ -1,0 +1,153 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "PEK",
+  "timeZone": "Asia/Shanghai",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "pek-air-china-business",
+      "name": "Air China Business Class Lounge (T3E)",
+      "terminal": "T3E",
+      "location": "International departures, east of the fountain in Terminal 3E; follow signs to Air China Business Class Lounge.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "unknown",
+        "note": "A current fixed opening schedule could not be verified from the airline. Confirm opening hours for your departure."
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "star-business",
+          "label": "Star Alliance Business Class",
+          "sourceIds": [
+            "ana-access"
+          ],
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingAlliance": "star",
+          "route": "international"
+        },
+        {
+          "id": "star-gold",
+          "label": "Star Alliance Gold",
+          "sourceIds": [
+            "ana-access"
+          ],
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingAlliance": "star",
+          "route": "international"
+        }
+      ],
+      "sources": [
+        {
+          "id": "airchina-directory",
+          "title": "Air China · Published lounge locations and membership privileges",
+          "url": "https://ffp.airchina.com.cn/appen/en/plan-en/VIP_exclusive_inviolable_details.html",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "ana-access",
+          "title": "ANA · PEK Air China lounge access",
+          "url": "https://www.ana.co.jp/en/jp/guide/lounge/international/pek/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "An airline-lounge option for eligible Star Alliance departures; check hours before relying on it."
+      },
+      "note": "This is the Business lounge. Do not infer First lounge or Priority Pass access. The airline sources do not provide a complete current facilities list; unverified facilities remain unknown.",
+      "qualityRating": {
+        "score": 2.5,
+        "summary": "A June 2024 overnight visit found an adequate food selection but severe crowding and few comfortable seats. The review’s historical Priority Pass access is not included in the current access rules.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "KN Aviation · Air China Business T3E (June 2024 visit)",
+            "url": "https://knaviation.net/air-china-business-lounge-beijing-t3e-review/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://knaviation.net/air-china-business-lounge-beijing-t3e-review/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    },
+    {
+      "id": "pek-bgs-t3e",
+      "name": "BGS Premier Lounge (T3E)",
+      "terminal": "T3E",
+      "location": "International departures, near Gate E19.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "23:59"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "route": "international",
+          "maxVisitMinutes": 180
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · BGS Premier Lounge T3E",
+          "url": "https://www.prioritypass.com/en-GB/lounges/china/beijing-capital-international/pek4-bgs-premier-lounge",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "A Priority Pass option in the T3E international departure area."
+      },
+      "note": "Massage chairs are listed; these are not a staffed spa. This record does not describe the separate Terminal 2 BGS lounge."
+    }
+  ]
+}

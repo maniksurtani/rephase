@@ -1,0 +1,482 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "FCO",
+  "timeZone": "Europe/Rome",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "fco-ita-hangar",
+      "name": "ITA Airways Hangar Lounge",
+      "terminal": "1",
+      "location": "After security, close to boarding area A for Schengen departures.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "06:00",
+            "close": "23:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "star-premium",
+          "label": "Star Alliance Business or First",
+          "sourceIds": [
+            "ita-access"
+          ],
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingAlliance": "star",
+          "conditions": [
+            "Confirm that your fare includes lounge access; ITA short-haul Business/Superior Classic is excluded."
+          ],
+          "destinationCountriesAnyOf": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ]
+        },
+        {
+          "id": "star-gold",
+          "label": "Star Alliance Gold",
+          "sourceIds": [
+            "ita-access"
+          ],
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingAlliance": "star",
+          "destinationCountriesAnyOf": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ]
+        },
+        {
+          "id": "united-club",
+          "label": "United Club membership",
+          "sourceIds": [
+            "ita-access"
+          ],
+          "membershipsAnyOf": [
+            "united-club"
+          ],
+          "operatingAlliance": "star",
+          "destinationCountriesAnyOf": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ]
+        },
+        {
+          "id": "frequent-traveller",
+          "label": "Miles & More Frequent Traveller",
+          "sourceIds": [
+            "ita-access"
+          ],
+          "membershipsAnyOf": [
+            "miles-and-more-frequent-traveller"
+          ],
+          "operatingAlliance": "star",
+          "destinationCountriesAnyOf": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "lounge",
+          "title": "ITA Airways · Hangar Lounge",
+          "url": "https://www.ita-airways.com/hr/en/book-and-prepare/travel-information/at-the-airport/lounges/hangar-lounge",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "ita-access",
+          "title": "ITA Airways · Current lounge admission table",
+          "url": "https://www.ita-airways.com/it/en/book-and-prepare/travel-information/at-the-airport/lounges/lounges-admission.html",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "Hot cooking is advertised 12:00–15:00 and 17:00–20:00, alongside buffet and bar service. The central admission table supplies current Star Alliance eligibility. The separate HON Circle room is not included in ordinary access.",
+      "photoLinks": [
+        {
+          "label": "View lounge details and photos",
+          "url": "https://www.ita-airways.com/hr/en/book-and-prepare/travel-information/at-the-airport/lounges/hangar-lounge",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    },
+    {
+      "id": "fco-ita-piazza-di-spagna",
+      "name": "ITA Airways Piazza di Spagna",
+      "terminal": "3",
+      "location": "After security and passport control, near the E gates; non-Schengen departures only.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "06:00",
+            "close": "23:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "star-premium",
+          "label": "Star Alliance Business or First",
+          "sourceIds": [
+            "ita-access"
+          ],
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingAlliance": "star",
+          "conditions": [
+            "Confirm that your fare includes lounge access; ITA short-haul Business/Superior Classic is excluded."
+          ],
+          "excludedDestinationCountries": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ]
+        },
+        {
+          "id": "star-gold",
+          "label": "Star Alliance Gold",
+          "sourceIds": [
+            "ita-access"
+          ],
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingAlliance": "star",
+          "excludedDestinationCountries": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ]
+        },
+        {
+          "id": "united-club",
+          "label": "United Club membership",
+          "sourceIds": [
+            "ita-access"
+          ],
+          "membershipsAnyOf": [
+            "united-club"
+          ],
+          "operatingAlliance": "star",
+          "excludedDestinationCountries": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ]
+        },
+        {
+          "id": "frequent-traveller",
+          "label": "Miles & More Frequent Traveller",
+          "sourceIds": [
+            "ita-access"
+          ],
+          "membershipsAnyOf": [
+            "miles-and-more-frequent-traveller"
+          ],
+          "operatingAlliance": "star",
+          "excludedDestinationCountries": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "lounge",
+          "title": "ITA Airways · Piazza di Spagna",
+          "url": "https://www.ita-airways.com/us/en/book-and-prepare/travel-information/at-the-airport/lounges/piazza-spagna",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "ita-access",
+          "title": "ITA Airways · Current lounge admission table",
+          "url": "https://www.ita-airways.com/it/en/book-and-prepare/travel-information/at-the-airport/lounges/lounges-admission.html",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "Buffet, live cooking and pizza service. The private HON Circle room and its à la carte menu are separate; ordinary admission does not include them.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "A June 2026 firsthand review praises fresh food and knowledgeable bar staff, with quieter seating away from the buffet. Shower towels and slippers were a notable weakness.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "The Aircraft King · ITA Piazza di Spagna (June 2026)",
+            "url": "https://theaircraftking.com/2026/06/28/review-ita-airways-piazza-di-spagna-lounge-rome-fco-terminal-3/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://theaircraftking.com/2026/06/28/review-ita-airways-piazza-di-spagna-lounge-rome-fco-terminal-3/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    }
+  ]
+}

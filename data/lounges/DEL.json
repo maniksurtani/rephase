@@ -1,0 +1,167 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "DEL",
+  "timeZone": "Asia/Kolkata",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "del-air-india-maharaja-business",
+      "name": "Air India Maharaja Lounge (Business)",
+      "terminal": "T3 International",
+      "location": "International departures, Terminal 3; follow the Maharaja Lounge signs after immigration and security.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "unknown",
+        "note": "A current fixed opening schedule was not available from the operator. Confirm opening for your flight."
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "air-india-business",
+          "label": "Air India Business or First Class",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingCarriersAnyOf": [
+            "AI"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "air-india",
+            "air-india-access-review"
+          ]
+        },
+        {
+          "id": "star-gold-air-india",
+          "label": "Star Alliance Gold travelling on Air India",
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingCarriersAnyOf": [
+            "AI"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "air-india",
+            "air-india-access-review"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "air-india",
+          "title": "Air India · new Delhi Maharaja Lounge opening and eligibility",
+          "url": "https://www.airindia.com/content/air-india/in/en/newsroom/press-release/Air-India-welcomes-guests-to-new-flagship-Maharaja-Lounge-at-Delhi-Airport-starting-today.html",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "tata-facilities",
+          "title": "Tata Group · Delhi Maharaja Business and First sections (September 2026)",
+          "url": "https://www.tata.com/newsroom/business/air-india-maharaja-lounge-delhi-international-airport",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "air-india-access-review",
+          "title": "One Mile at a Time · July 2026 visit and Air India-only access exception",
+          "url": "https://onemileatatime.com/reviews/air-india-maharaja-business-lounge-delhi/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "New February 2026 Business lounge. Air India departures only in this guide: the July 2026 review reports other Star Alliance airlines were not admitted. First Class sleep suites and restaurant are separate. Business-section showers need primary-source confirmation.",
+      "qualityRating": {
+        "score": 4.5,
+        "summary": "A July 2026 visit praised the new decor, food, drinks, cleanliness and plentiful power. There are no windows; the quiet afternoon visit does not establish conditions during overnight departure peaks.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "One Mile at a Time · new Maharaja Business (July 2026 visit)",
+            "url": "https://onemileatatime.com/reviews/air-india-maharaja-business-lounge-delhi/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://onemileatatime.com/reviews/air-india-maharaja-business-lounge-delhi/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    },
+    {
+      "id": "del-encalm-t3-international",
+      "name": "Encalm Lounge (T3 International)",
+      "terminal": "T3 International",
+      "location": "Security Hold Area, Food Court Level, next to Encalm Spa.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "23:59"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "route": "international",
+          "maxVisitMinutes": 120,
+          "sourceIds": [
+            "priority-pass"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · Encalm T3 International",
+          "url": "https://www.prioritypass.com/en-GB/lounges/india/indira-gandhi-international/del15-encalm-lounge",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "Standard Encalm, not Encalm Xenia or Privé. The adjacent spa is separate; showers and quiet facilities are unconfirmed. No rating is assigned because the reviewed older location could not be conclusively matched to this current listing.",
+      "photoLinks": [
+        {
+          "label": "View lounge details and photos",
+          "url": "https://www.prioritypass.com/en-GB/lounges/india/indira-gandhi-international/del15-encalm-lounge",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    }
+  ]
+}

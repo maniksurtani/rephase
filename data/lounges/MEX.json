@@ -1,0 +1,187 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "MEX",
+  "timeZone": "America/Mexico_City",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "mex-grand-lounge-elite-t1",
+      "name": "The Grand Lounge Elite",
+      "terminal": "T1",
+      "location": "After security, near waiting area H; use entrance G and follow lounge signs.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "restaurant",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "maxVisitMinutes": 180
+        },
+        {
+          "id": "contracted-premium",
+          "label": "Business or First on a contracted airline",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingCarriersAnyOf": [
+            "AF",
+            "KL",
+            "NH",
+            "IB",
+            "LH",
+            "CZ",
+            "HU"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "operator-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass: Grand Lounge Elite location and entry",
+          "url": "https://www.prioritypass.com/es-LA/lounges/mexico/mexico-city-international/mex13-the-grand-lounge-elite",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "operator-access",
+          "title": "Grand Lounge Elite: membership and airline access",
+          "url": "https://thegrandloungeelite.com.mx/en/",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "operator-facilities",
+          "title": "Grand Lounge Elite: à la carte dining, salon and showers",
+          "url": "https://thegrandloungeelite.com.mx/en/lounge/the-grand-lounge-elite/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "Table service and showers in Terminal 1, with a complimentary menu and separately priced upgrades."
+      },
+      "note": "Some menu items and premium services cost extra; ask which services your access method includes. Availability can be limited at busy times. This record is for Terminal 1, not the separate AIFA airport.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "A February 2026 review found comfortable, well-spaced seating and clean facilities, with table service. Limited charging sockets, an ordinary buffet and slower drink service kept the experience from being exceptional.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Points to Seats · Grand Lounge Elite firsthand review",
+            "url": "https://pointstoseats.com/2026/02/14/lounge-review-grand-lounge-elite-at-mexico-city-mex-terminal-1/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://pointstoseats.com/2026/02/14/lounge-review-grand-lounge-elite-at-mexico-city-mex-terminal-1/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    },
+    {
+      "id": "mex-harmony-t2",
+      "name": "The Harmony Lounge",
+      "terminal": "T2",
+      "location": "Airside departures; take the lift to the first floor, then turn left.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "maxVisitMinutes": 240
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass: Harmony Lounge Mexico City Terminal 2",
+          "url": "https://www.prioritypass.com/es-LA/lounges/mexico/mexico-city-international/mex45-the-harmony-lounge",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "A Terminal 2 Priority Pass alternative with a buffet, quiet area and four-hour visit limit."
+      },
+      "note": "Priority Pass lists domestic and international departures. Confirm the route from your departure area; do not transfer terminals just for a lounge. Shower facilities have not been verified.",
+      "photoLinks": [
+        {
+          "label": "View lounge photos",
+          "url": "https://www.prioritypass.com/es-LA/lounges/mexico/mexico-city-international/mex45-the-harmony-lounge",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    }
+  ]
+}

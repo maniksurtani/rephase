@@ -1,0 +1,86 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "EWR",
+  "timeZone": "America/New_York",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "ewr-united-club-c123",
+      "name": "United Club \u2014 C123",
+      "terminal": "Terminal C",
+      "location": "Mezzanine near Gate C123.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "unknown",
+        "note": "Current opening hours could not be verified; check the operator before visiting."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "united-club-member",
+          "label": "United Club membership",
+          "membershipsAnyOf": [
+            "united-club"
+          ],
+          "operatingAlliance": "star",
+          "sourceIds": [
+            "united-card-policy"
+          ],
+          "conditions": [
+            "Your qualifying United/Star Alliance boarding pass must be for the same calendar day as this lounge visit."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "united-card-policy",
+          "title": "Chase: United Club membership and same-day flight requirements",
+          "url": "https://www.chase.com/personal/credit-cards/education/rewards-benefits/guide-to-united-lounges",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "airport-location",
+          "title": "Newark Airport: Terminal C lounges",
+          "url": "https://www.newarkairport.com/explore-ewr/terminals/terminal-c",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "united-opening",
+          "title": "United: C123 lounge facilities",
+          "url": "https://united.mediaroom.com/2022-05-19-United-Opens-Its-Largest-Club-in-the-Country",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "qualityRating": {
+        "score": 4,
+        "summary": "LoungeReview praises the varied seating, coffee bar and showers, while noting busy periods. Its visit date is not stated.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "independent-review",
+            "title": "LoungeReview: United Club C123",
+            "url": "https://loungereview.com/lounges/united-club-ewr-c123/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "Photos and independent review",
+          "url": "https://loungereview.com/lounges/united-club-ewr-c123/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "note": "This record currently matches paid United Club membership only. Premium-ticket and status eligibility need a separate policy check; Polaris is a different lounge."
+    }
+  ]
+}

@@ -1,0 +1,216 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "GRU",
+  "timeZone": "America/Sao_Paulo",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "gru-latam-international",
+      "name": "LATAM Lounge São Paulo",
+      "terminal": "T3 International",
+      "location": "After passport control, mezzanine level; take the stairs opposite duty free.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "latam-premium",
+          "label": "LATAM Premium Business or Premium Economy",
+          "cabinsAnyOf": [
+            "business",
+            "premium-economy"
+          ],
+          "operatingCarriersAnyOf": [
+            "LA",
+            "JJ"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "latam-location"
+          ]
+        },
+        {
+          "id": "delta-one",
+          "label": "Delta One",
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "latam-location"
+          ],
+          "conditions": [
+            "Your boarding pass must be for Delta One on this departing international segment; another business or domestic First product does not qualify."
+          ]
+        },
+        {
+          "id": "delta-medallion-latam-delta",
+          "label": "Eligible Delta SkyMiles Medallion status on LATAM or Delta",
+          "membershipsAnyOf": [
+            "delta-gold-medallion",
+            "delta-platinum-medallion",
+            "delta-diamond-medallion"
+          ],
+          "operatingCarriersAnyOf": [
+            "LA",
+            "JJ",
+            "DL"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "latam-location"
+          ],
+          "note": "Show your valid SkyMiles tier and same-day international boarding pass."
+        },
+        {
+          "id": "iberia-business",
+          "label": "Iberia Business",
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "IB"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "latam-location"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "latam-location",
+          "title": "LATAM São Paulo: facilities and current cabin/partner access",
+          "url": "https://www.latamairlines.com/us/en/experience/airport/lounges-and-facilities/sao-paulo",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "airport",
+          "title": "GRU Airport: lounge directory and terminal locations",
+          "url": "https://www.gru.com.br/en/passenger/discover-gru/relax/vip-lounges",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "A 24-hour international lounge with a dedicated resting area and showers."
+      },
+      "note": "LATAM is not a oneworld member. LATAM Pass and country-specific bank-card access are not yet modeled. Partner access is tied to this departing segment, not a past premium flight.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "The October 2025 review highlights a generous layout, a strong food selection and well-kept shower facilities. Charging is less convenient at some individual seats.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "BoardingGroup.One · LATAM São Paulo firsthand review",
+            "url": "https://boardinggroup.one/review/lounge/latam-vip-lounge-sao-paulo-guarulhos-review/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://boardinggroup.one/review/lounge/latam-vip-lounge-sao-paulo-guarulhos-review/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    },
+    {
+      "id": "gru-w-premium-the-pier",
+      "name": "W Premium Lounge – The Pier",
+      "terminal": "T3 International",
+      "location": "After security, at the end of the pier on the right near the boarding gates.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "route": "international",
+          "maxVisitMinutes": 180
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass: W Premium The Pier, Terminal 3",
+          "url": "https://www.prioritypass.com/en-GB/lounges/brazil/sao-paulo-guarulhos-governador-andre-franco-montoro-international/gru28-w-premium-lounge-the-pier",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "A 24-hour Priority Pass alternative near the end of the international pier, with showers available for a separate fee."
+      },
+      "note": "Showers cost extra under Priority Pass terms. This is The Pier, not W Premium 5th Avenue or the Terminal 1/2 lounges. Dining format and quiet facilities remain unverified. Space restrictions can apply.",
+      "photoLinks": [
+        {
+          "label": "View lounge photos",
+          "url": "https://www.prioritypass.com/en-GB/lounges/brazil/sao-paulo-guarulhos-governador-andre-franco-montoro-international/gru28-w-premium-lounge-the-pier",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    }
+  ]
+}

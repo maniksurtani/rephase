@@ -1,0 +1,242 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "ORD",
+  "timeZone": "America/Chicago",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "ord-american-flagship",
+      "name": "American Airlines Flagship Lounge",
+      "terminal": "Terminal 3, Concourses H/K",
+      "location": "At the junction of Concourses H and K.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "04:15",
+            "close": "22:15"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "non-us-oneworld-status",
+          "label": "Eligible Qantas, British Airways or Cathay status",
+          "membershipsAnyOf": [
+            "qantas-gold",
+            "qantas-platinum",
+            "qantas-platinum-one",
+            "british-airways-silver",
+            "british-airways-gold",
+            "cathay-gold",
+            "cathay-diamond"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "sourceIds": [
+            "aa-access"
+          ]
+        },
+        {
+          "id": "other-oneworld-status",
+          "label": "Other oneworld Sapphire or Emerald",
+          "membershipsAnyOf": [
+            "oneworld-sapphire",
+            "oneworld-emerald"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "conditions": [
+            "Status must be from a programme other than American AAdvantage or Alaska Atmos; those programmes have separate qualifying-international rules."
+          ],
+          "sourceIds": [
+            "aa-access"
+          ]
+        },
+        {
+          "id": "aa-alaska-international-status",
+          "label": "American or Alaska status on a qualifying international itinerary",
+          "membershipsAnyOf": [
+            "american-platinum",
+            "american-platinum-pro",
+            "american-executive-platinum",
+            "atmos-gold",
+            "atmos-platinum",
+            "atmos-titanium"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "conditions": [
+            "Confirm the same-day itinerary meets American\u2019s qualifying international geography and ticket rules; domestic-only travel does not qualify."
+          ],
+          "sourceIds": [
+            "aa-access"
+          ]
+        },
+        {
+          "id": "qualifying-premium",
+          "label": "Qualifying First or Business ticket",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "conditions": [
+            "Confirm a qualifying international or selected Flagship domestic itinerary. Ordinary domestic First alone does not qualify."
+          ],
+          "sourceIds": [
+            "aa-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "aa-access",
+          "title": "American Airlines: Flagship access, locations and hours",
+          "url": "https://www.aa.com/web/i18n/travel-info/clubs/flagship-lounge.html",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "qualityRating": {
+        "score": 3,
+        "summary": "A June 2025 visit found useful food and showers but worn surroundings and heavy evening crowding.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "independent-review",
+            "title": "Independent Flagship Lounge review",
+            "url": "https://www.thepointymiles.com/posts/american-airlines-flagship-lounge-chicago-ohare-review-crowded-and-dated-due-for-a-refresh",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "Photos and independent review",
+          "url": "https://www.thepointymiles.com/posts/american-airlines-flagship-lounge-chicago-ohare-review-crowded-and-dated-due-for-a-refresh",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "note": "Flagship Dining is a separate ticket-restricted service; status access to this lounge does not establish dining-room eligibility. Admirals Club membership alone does not grant Flagship access."
+    },
+    {
+      "id": "ord-air-france-t5",
+      "name": "Air France Lounge",
+      "terminal": "Terminal 5",
+      "location": "After security near Gate M17. Allow for terminal transfer and security when departing elsewhere.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:00",
+            "close": "22:30"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass outside restricted hours",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "maxVisitMinutes": 180,
+          "conditions": [
+            "Priority Pass admission may be refused from 12:00 to 17:00; confirm availability if your visit overlaps that period."
+          ],
+          "sourceIds": [
+            "priority-pass"
+          ]
+        },
+        {
+          "id": "air-france-business",
+          "label": "Air France Business",
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "AF"
+          ],
+          "sourceIds": [
+            "air-france-location"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass: Air France ORD hours and access limits",
+          "url": "https://www.prioritypass.com/en-GB/lounges/united-states-of-america/ohare-international/ord11-air-france-lounge",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "air-france-location",
+          "title": "Air France: Chicago lounge facilities and eligibility",
+          "url": "https://corporate.airfrance.com/en/press-releases/air-france-inaugurates-its-new-lounge-chicago-airport",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "The Christmas Eve visit found good food and design but extreme crowding when the neighbouring Delta club was closed; conditions improved later.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "independent-review",
+            "title": "Live and Let\u2019s Fly: Air France Chicago",
+            "url": "https://liveandletsfly.com/review-air-france-lounge-chicago-ord/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "Photos and independent review",
+          "url": "https://liveandletsfly.com/review-air-france-lounge-chicago-ord/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "note": "The Priority Pass admission blackout is separate from lounge opening hours. The private Flying Blue Ultimate section is not included in this record."
+    }
+  ]
+}

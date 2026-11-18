@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "airport": "CDG",
   "timeZone": "Europe/Paris",
-  "updatedAt": "2026-11-17",
+  "updatedAt": "2026-11-18",
   "lounges": [
     {
       "id": "cdg-star-alliance-non-schengen",
@@ -223,6 +223,334 @@
           "label": "View photos and review",
           "url": "https://liveandletsfly.com/star-alliance-lounge-paris-review/",
           "checkedOn": "2026-11-17"
+        }
+      ]
+    },
+    {
+      "id": "cdg-air-france-2f",
+      "name": "Air France Lounge Terminal 2F",
+      "terminal": "2F",
+      "location": "After security in Terminal 2F, near the Lacoste shop; Schengen departures.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:30",
+            "close": "22:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "yes",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "air-france-business",
+          "label": "Air France Business Standard or Flex",
+          "sourceIds": [
+            "air-france-access"
+          ],
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "AF"
+          ],
+          "conditions": [
+            "Business Light is excluded. Departure must be from Terminal 2F."
+          ],
+          "destinationCountriesAnyOf": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ]
+        },
+        {
+          "id": "skyteam-elite-plus",
+          "label": "SkyTeam Elite Plus",
+          "sourceIds": [
+            "air-france-access"
+          ],
+          "membershipsAnyOf": [
+            "skyteam-elite-plus"
+          ],
+          "operatingAlliance": "skyteam",
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Departure must be from Terminal 2F; confirm your status issuer’s lounge conditions."
+          ],
+          "destinationCountriesAnyOf": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "lounge",
+          "title": "Air France · Paris Terminal 2F lounge",
+          "url": "https://wwws.airfrance.co.uk/information/prepare/salons/cdg2f",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "air-france-access",
+          "title": "Air France · Lounge admission conditions",
+          "url": "https://wwws.airfrance.co.za/information/prepare/salons",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "Clarins treatments run Monday–Saturday 07:40–18:40, subject to appointments. SkyTeam Elite Plus entry begins three hours before departure; connecting passengers may enter earlier, an exception not currently automated.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "A September 2025 review praises the design, food quality and spa option but reports heavy crowding and a limited food selection. Allow time to book a treatment rather than assuming immediate availability.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "The Alviator · Air France 2F (September 2025)",
+            "url": "https://thealviator.com/2025/09/air-france-lounge-cdg/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://thealviator.com/2025/09/air-france-lounge-cdg/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    },
+    {
+      "id": "cdg-air-france-2e-l",
+      "name": "Air France Lounge Terminal 2E Hall L",
+      "terminal": "2E L",
+      "location": "After security in Terminal 2E Hall L; non-Schengen departures from this hall only.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:30",
+            "close": "23:30"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "yes",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "air-france-business",
+          "label": "Air France Business Standard or Flex",
+          "sourceIds": [
+            "air-france-access"
+          ],
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "AF"
+          ],
+          "conditions": [
+            "Business Light is excluded. Departure must be from Terminal 2E Hall L."
+          ],
+          "excludedDestinationCountries": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ]
+        },
+        {
+          "id": "skyteam-elite-plus",
+          "label": "SkyTeam Elite Plus",
+          "sourceIds": [
+            "air-france-access"
+          ],
+          "membershipsAnyOf": [
+            "skyteam-elite-plus"
+          ],
+          "operatingAlliance": "skyteam",
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Departure must be from Terminal 2E Hall L; confirm your status issuer’s lounge conditions."
+          ],
+          "excludedDestinationCountries": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "lounge",
+          "title": "Air France · Paris Terminal 2E Hall L lounge",
+          "url": "https://wwws.airfrance.fr/en/information/prepare/salons/cdg2el?msockid=16d948e477356e6b317d5ebf761c6f6c",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "air-france-access",
+          "title": "Air France · Lounge admission conditions",
+          "url": "https://wwws.airfrance.co.za/information/prepare/salons",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "Clarins treatments are advertised except Wednesday, 07:40–13:30 and 15:20–20:30, subject to appointments. SkyTeam Elite Plus entry begins three hours before departure, with an earlier-entry exception for connections. Other 2E halls have separate lounges.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "An April 2026 firsthand review finds varied seating, relaxation space and useful showers. Spa appointments required planning and waiting, so a treatment should be treated as a possibility.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "NerdWallet · Air France 2E Hall L (April 2026)",
+            "url": "https://www.nerdwallet.com/travel/learn/paris-air-france-lounge-review",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://www.nerdwallet.com/travel/learn/paris-air-france-lounge-review",
+          "checkedOn": "2026-11-18"
         }
       ]
     }

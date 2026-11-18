@@ -1,0 +1,474 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "FRA",
+  "timeZone": "Europe/Berlin",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "fra-lufthansa-business-a13",
+      "name": "Lufthansa Business Lounge A13",
+      "terminal": "1",
+      "location": "Concourse A, level 2, near Gate A13, after security in the Schengen area.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:00",
+            "close": "22:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "star-premium",
+          "label": "Star Alliance Business or First",
+          "sourceIds": [
+            "lufthansa-access"
+          ],
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingAlliance": "star",
+          "destinationCountriesAnyOf": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ],
+          "conditions": [
+            "Confirm that your ticket includes lounge access; restricted Business fares may exclude it."
+          ]
+        },
+        {
+          "id": "star-gold",
+          "label": "Star Alliance Gold",
+          "sourceIds": [
+            "lufthansa-access"
+          ],
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingAlliance": "star",
+          "destinationCountriesAnyOf": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ]
+        },
+        {
+          "id": "frequent-traveller",
+          "label": "Miles & More Frequent Traveller",
+          "sourceIds": [
+            "lufthansa-access"
+          ],
+          "membershipsAnyOf": [
+            "miles-and-more-frequent-traveller"
+          ],
+          "operatingAlliance": "star",
+          "destinationCountriesAnyOf": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "airport",
+          "title": "Frankfurt Airport · Lufthansa Business Lounge A13",
+          "url": "https://www.frankfurt-airport.com/en/locations/l/lufthansa-business-lounge/lh-business-lounge-5.html",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "lufthansa-access",
+          "title": "Lufthansa · Lounge admission rules",
+          "url": "https://www.lufthansa.com/am/en/admission-rules",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "The airport verifies Wi-Fi and food service but does not specify its format or all amenities. Additional Lufthansa lounges in A, B, C and Z are outside this initial guide.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "An August 2026 visit found comfortable seats and friendly staff but heavy initial crowding, closely spaced furniture and an ordinary breakfast. A convenient short-stop option.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "ChefinTravels · Lufthansa Business A13 (August 2026 visit)",
+            "url": "https://chefintravels.com/lufthansa-business-lounge-a13/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://chefintravels.com/lufthansa-business-lounge-a13/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    },
+    {
+      "id": "fra-lufthansa-senator-z",
+      "name": "Lufthansa Senator Lounge Z",
+      "terminal": "1",
+      "location": "Concourse Z, level 3, after passport control. Use only if your boarding area permits access.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:00",
+            "close": "22:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "star-gold",
+          "label": "Star Alliance Gold",
+          "sourceIds": [
+            "lufthansa-access"
+          ],
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingAlliance": "star",
+          "excludedDestinationCountries": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ],
+          "conditions": [
+            "Confirm that you can reach the Z departure area for your flight."
+          ]
+        },
+        {
+          "id": "star-first",
+          "label": "Star Alliance First Class",
+          "sourceIds": [
+            "lufthansa-access"
+          ],
+          "cabinsAnyOf": [
+            "first"
+          ],
+          "operatingAlliance": "star",
+          "excludedDestinationCountries": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ],
+          "conditions": [
+            "Confirm that you can reach the Z departure area for your flight."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "airport",
+          "title": "Frankfurt Airport · Senator lounge locations and hours",
+          "url": "https://www.frankfurt-airport.com/en/locations/l/lufthansa-senator-lounge.html",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "lufthansa-access",
+          "title": "Lufthansa · Lounge admission rules",
+          "url": "https://www.lufthansa.com/am/en/admission-rules",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "Business Class alone does not qualify for the Senator lounge. Facility-specific amenity confirmation is still needed; review observations are not treated as current operational guarantees.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "A May 2026 visit reports generous space, good food and a relaxed atmosphere, with undersized bathrooms the principal weakness.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Flyctory · Senator Z50 (May 2026 visit)",
+            "url": "https://flyctory.com/2026/06/14/lufthansa-senator-lounge-frankfurt-fra-t1z/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://flyctory.com/2026/06/14/lufthansa-senator-lounge-frankfurt-fra-t1z/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    },
+    {
+      "id": "fra-priority-terminal-3",
+      "name": "Priority Lounge",
+      "terminal": "3",
+      "location": "Area J, level 5, after security and passport control in Terminal 3.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "06:15",
+            "close": "21:15"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass · Terminal 3",
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "excludedDestinationCountries": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ],
+          "maxVisitMinutes": 180,
+          "conditions": [
+            "Departure must permit access to Terminal 3 after passport control; do not assume an airside transfer from Terminal 1 is practical."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · Priority Lounge Terminal 3",
+          "url": "https://www.prioritypass.com/en-GB/lounges/germany/frankfurt/fra15-priority-lounge",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "airport",
+          "title": "Frankfurt Airport · Priority Lounge Terminal 3",
+          "url": "https://www.frankfurt-airport.com/en/locations/p/priority-lounge/priority-lounge-1.html",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "This is the current Terminal 3 location, not the old Terminal 2 lounge. Daybeds are subject to availability. An independent review of the new facility has not yet been verified.",
+      "photoLinks": [
+        {
+          "label": "View lounge details and photos",
+          "url": "https://www.prioritypass.com/en-GB/lounges/germany/frankfurt/fra15-priority-lounge",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,318 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "SEA",
+  "timeZone": "America/Los_Angeles",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "sea-centurion",
+      "name": "The Centurion Lounge",
+      "terminal": "Central Terminal",
+      "location": "Mezzanine above the food court; facing the windows, turn left toward the elevator.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "unknown",
+        "note": "Current opening hours could not be verified; check the operator before visiting."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "platinum",
+          "label": "Eligible Amex Platinum card",
+          "membershipsAnyOf": [
+            "amex-platinum"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "sourceIds": [
+            "amex-access"
+          ]
+        },
+        {
+          "id": "platinum-connection",
+          "label": "Amex Platinum on a qualifying connection",
+          "membershipsAnyOf": [
+            "amex-platinum"
+          ],
+          "maxMinutesBeforeDeparture": 300,
+          "conditions": [
+            "Confirm a same-day onward connection; a same-day round trip does not qualify."
+          ],
+          "sourceIds": [
+            "amex-access"
+          ]
+        },
+        {
+          "id": "delta-reserve-operating",
+          "label": "Delta Reserve on a Delta operating flight",
+          "membershipsAnyOf": [
+            "delta-skymiles-reserve"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "sourceIds": [
+            "amex-access"
+          ]
+        },
+        {
+          "id": "delta-reserve-marketing",
+          "label": "Delta Reserve on a Delta marketing flight",
+          "membershipsAnyOf": [
+            "delta-skymiles-reserve"
+          ],
+          "marketingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "sourceIds": [
+            "amex-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "amex-location",
+          "title": "American Express: SEA Centurion Lounge",
+          "url": "https://www.americanexpress.com/en-us/travel/lounges/the-platinum-card/SEA/The-Centurion-Lounge-Central-Terminal-qaepzzmahS/",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "amex-access",
+          "title": "American Express: Centurion access",
+          "url": "https://www.americanexpress.com/en-us/travel/lounges/centurion-network/access/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "qualityRating": {
+        "score": 4,
+        "summary": "The March 2023 visit praised the new space, barista coffee and food. This assessment predates subsequent demand changes.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "independent-review",
+            "title": "Independent Centurion Lounge review",
+            "url": "https://onemileatatime.com/reviews/amex-centurion-lounge-seattle/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "Photos and independent review",
+          "url": "https://onemileatatime.com/reviews/amex-centurion-lounge-seattle/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "note": "Departing passengers only; no access after the final arrival. Card-specific guest benefits are not modelled."
+    },
+    {
+      "id": "sea-alaska-n",
+      "name": "Alaska Lounge \u2014 N Gates",
+      "terminal": "North Satellite",
+      "location": "Mezzanine above Gates N13\u2013N18.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:00",
+            "close": "23:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "snacks",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "lounge-plus",
+          "label": "Alaska Lounge+ on oneworld",
+          "membershipsAnyOf": [
+            "alaska-lounge-plus"
+          ],
+          "operatingAlliance": "oneworld",
+          "sourceIds": [
+            "alaska-access"
+          ]
+        },
+        {
+          "id": "lounge-plus-hawaiian",
+          "label": "Alaska Lounge+ on Hawaiian",
+          "membershipsAnyOf": [
+            "alaska-lounge-plus"
+          ],
+          "operatingCarriersAnyOf": [
+            "HA"
+          ],
+          "sourceIds": [
+            "alaska-access"
+          ]
+        },
+        {
+          "id": "other-oneworld-status",
+          "label": "Non-American/Alaska oneworld Sapphire or Emerald",
+          "membershipsAnyOf": [
+            "oneworld-sapphire",
+            "oneworld-emerald",
+            "qantas-gold",
+            "qantas-platinum",
+            "qantas-platinum-one",
+            "british-airways-silver",
+            "british-airways-gold",
+            "cathay-gold",
+            "cathay-diamond"
+          ],
+          "operatingAlliance": "oneworld",
+          "conditions": [
+            "The eligible frequent-flyer number must be on the reservation before check-in; American and Alaska status follow separate international rules."
+          ],
+          "sourceIds": [
+            "alaska-access"
+          ]
+        },
+        {
+          "id": "alaska-status",
+          "label": "Atmos Gold, Platinum or Titanium beyond North America",
+          "membershipsAnyOf": [
+            "atmos-gold",
+            "atmos-platinum",
+            "atmos-titanium"
+          ],
+          "operatingAlliance": "oneworld",
+          "route": "international",
+          "excludedDestinationCountries": [
+            "CA",
+            "MX"
+          ],
+          "conditions": [
+            "The eligible frequent-flyer number must be on the reservation before check-in."
+          ],
+          "sourceIds": [
+            "alaska-access"
+          ]
+        },
+        {
+          "id": "first-long-flight",
+          "label": "Paid or award Alaska/Hawaiian First on an eligible itinerary",
+          "cabinsAnyOf": [
+            "first"
+          ],
+          "operatingCarriersAnyOf": [
+            "AS",
+            "HA"
+          ],
+          "conditions": [
+            "A same-day Alaska/Hawaiian flight must be at least 2,000 miles, with a paid or award First ticket; upgraded seats do not qualify."
+          ],
+          "sourceIds": [
+            "alaska-access"
+          ]
+        },
+        {
+          "id": "oneworld-international-premium",
+          "label": "Qualifying oneworld international First or Business",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingAlliance": "oneworld",
+          "conditions": [
+            "Confirm a qualifying international premium-cabin segment; an ordinary US domestic First ticket or upgrade does not establish this entitlement."
+          ],
+          "sourceIds": [
+            "alaska-access"
+          ]
+        },
+        {
+          "id": "admirals-club",
+          "label": "Eligible Admirals Club membership on AA/Alaska/Hawaiian",
+          "membershipsAnyOf": [
+            "admirals-club"
+          ],
+          "operatingCarriersAnyOf": [
+            "AA",
+            "AS",
+            "HA"
+          ],
+          "marketingCarriersAnyOf": [
+            "AA",
+            "AS",
+            "HA"
+          ],
+          "conditions": [
+            "Confirm your membership includes partner lounges: Single memberships and supplementary credit-card users are excluded."
+          ],
+          "sourceIds": [
+            "alaska-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "alaska-access",
+          "title": "Alaska Airlines: access policies",
+          "url": "https://www.alaskaair.com/content/airport-lounge/policies-and-rules",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "alaska-location",
+          "title": "Alaska Airlines: locations and hours",
+          "url": "https://www.alaskaair.com/content/airport-lounge/location-and-hours",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "alaska-amenities",
+          "title": "Alaska Airlines: lounge amenities",
+          "url": "https://www.alaskaair.com/content/airport-lounge/perks-and-amenities",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "qualityRating": {
+        "score": 4,
+        "summary": "The March 2023 visit praised views, warm interiors, staff and barista coffee; the food selection was less impressive.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "independent-review",
+            "title": "One Mile at a Time: Alaska N Gates Lounge",
+            "url": "https://onemileatatime.com/reviews/alaska-lounge-seattle/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "Photos and independent review",
+          "url": "https://onemileatatime.com/reviews/alaska-lounge-seattle/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "note": "American and Alaska status do not by themselves grant domestic-only access. Sleeping or lying across furniture is prohibited under Alaska\u2019s lounge rules."
+    }
+  ]
+}

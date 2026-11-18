@@ -1,0 +1,285 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "DOH",
+  "timeZone": "Asia/Qatar",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "doh-al-mourjan-garden",
+      "name": "Qatar Airways Al Mourjan Business Lounge – The Garden",
+      "terminal": "Main terminal · North / Orchard",
+      "location": "Northern terminal extension, overlooking the Orchard; follow Al Mourjan Garden signs.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "unknown",
+        "note": "A fixed opening schedule was not verified in the current operator sources. Confirm opening for your flight."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "restaurant",
+        "spa": "yes",
+        "quietArea": "yes",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "qatar-first",
+          "label": "Qatar Airways First",
+          "cabinsAnyOf": [
+            "first"
+          ],
+          "operatingCarriersAnyOf": [
+            "QR"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "qatar-garden"
+          ]
+        },
+        {
+          "id": "qatar-business",
+          "label": "Qatar Airways eligible Business fare",
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "QR"
+          ],
+          "route": "international",
+          "conditions": [
+            "Business Elite, Comfort or Classic fare required; Business Lite does not include access."
+          ],
+          "sourceIds": [
+            "qatar-garden"
+          ]
+        },
+        {
+          "id": "oneworld-premium",
+          "label": "oneworld First or Business",
+          "cabinsAnyOf": [
+            "first",
+            "business"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "international",
+          "conditions": [
+            "Confirm the departing premium fare includes Al Mourjan access; Qatar Business Lite is excluded."
+          ],
+          "sourceIds": [
+            "qatar-garden",
+            "jal-doh"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "qatar-garden",
+          "title": "Qatar Airways · Al Mourjan Garden eligibility",
+          "url": "https://www.qatarairways.com/en-us/lounges/al-mourjan-garden.html",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "qatar-garden-facilities",
+          "title": "Qatar Airways · Garden facilities",
+          "url": "https://www.qatarairways.com/press-releases/en-WW/225226-qatar-airways-welcomes-passengers-to-the-new-al-mourjan-business-lounge-the-garden/",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "jal-doh",
+          "title": "JAL · Doha lounge access by status and cabin",
+          "url": "https://www.jal.co.jp/jp/en/inter/service/lounge/doh/index.html",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "Premium-cabin lounge: oneworld Sapphire or Emerald alone does not grant entry. Quiet-room use and spa appointments depend on availability; check any extra charges.",
+      "qualityRating": {
+        "score": 4.5,
+        "summary": "An October 2026 review found spacious surroundings, good food and useful rest facilities, but uneven dinner service. A strong premium option, with the assessment based on one extended visit.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Live and Let’s Fly · Al Mourjan Garden review",
+            "url": "https://liveandletsfly.com/qatar-airways-al-mourjan-business-lounge-the-garden-review/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://liveandletsfly.com/qatar-airways-al-mourjan-business-lounge-the-garden-review/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    },
+    {
+      "id": "doh-qatar-gold-south",
+      "name": "Qatar Airways Gold Lounge South",
+      "terminal": "Main terminal · Concourse A",
+      "location": "Level 1 beside Gate A1, near Duty Free South.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "unknown",
+        "note": "A fixed opening schedule was not verified in the current operator sources. Confirm opening for your flight."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "oneworld-status",
+          "label": "oneworld Sapphire or Emerald",
+          "membershipsAnyOf": [
+            "oneworld-sapphire",
+            "oneworld-emerald"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "international",
+          "sourceIds": [
+            "qatar-status",
+            "jal-doh"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "qatar-status",
+          "title": "Qatar Airways · Platinum and Gold lounge eligibility and locations",
+          "url": "https://www.qatarairways.com/en-sd/lounges/platinum-and-gold-lounges.html",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "qatar-gold-facilities",
+          "title": "Qatar Airways · Gold South facilities",
+          "url": "https://www.qatarairways.com/press-releases/en-WW/218271-qatar-airways-unveils-platinum-gold-and-silver-lounges-for-privilege-club-members-and-oneworld-partners/",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "jal-doh",
+          "title": "JAL · Doha lounge access by status and cabin",
+          "url": "https://www.jal.co.jp/jp/en/inter/service/lounge/doh/index.html",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "A status lounge distinct from Al Mourjan. Emerald travellers can also check the separate Platinum lounge; it is not included in this record.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "A 2024 visit reported plentiful seats, apron views, attentive upkeep and a good bar. Food was similar to the basic Al Maha buffet; the main advantage was a calmer atmosphere during that visit.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Upgraded Points · Gold Lounge South review",
+            "url": "https://upgradedpoints.com/travel/airports/qatar-airways-gold-lounge-south-doha-doh-review/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://upgradedpoints.com/travel/airports/qatar-airways-gold-lounge-south-doha-doh-review/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    },
+    {
+      "id": "doh-al-maha-south",
+      "name": "Al Maha Lounge (South Node)",
+      "terminal": "Main terminal · South",
+      "location": "After security and passport control, Level 2 of Duty Free South, near Concourses A, B and C.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "snacks",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "route": "international",
+          "maxVisitMinutes": 240,
+          "conditions": [
+            "Admission can be restricted at busy times, especially the published evening and early-morning peaks."
+          ],
+          "sourceIds": [
+            "priority-pass"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · Al Maha South Node",
+          "url": "https://www.prioritypass.com/en-GB/lounges/qatar/hamad-international/doh2-al-maha-lounge-south-node",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "dragonpass-south",
+          "title": "DragonPass · Al Maha South facilities",
+          "url": "https://en.dragonpass.com.cn/lounge/102029",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "Four-hour Priority Pass visits. This is the South Node lounge, not the newer North/Orchard or Southeast locations.",
+      "qualityRating": {
+        "score": 3,
+        "summary": "The South Node review describes useful drinks, snacks and prompt clearing, but frequent crowding and food replenishment gaps. Useful for a short stop; the review’s old claim that this is Doha’s only Priority Pass option no longer applies.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Upgraded Points · Al Maha South review",
+            "url": "https://upgradedpoints.com/travel/airports/al-maha-lounge-doha-doh-review/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://upgradedpoints.com/travel/airports/al-maha-lounge-doha-doh-review/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    }
+  ]
+}

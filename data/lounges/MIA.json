@@ -1,0 +1,254 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "MIA",
+  "timeZone": "America/New_York",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "mia-centurion",
+      "name": "The Centurion Lounge",
+      "terminal": "North Terminal, Concourse D",
+      "location": "Fourth floor near Gate D12.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "unknown",
+        "note": "Current opening hours could not be verified; check the operator before visiting."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "platinum",
+          "label": "Eligible Amex Platinum card",
+          "membershipsAnyOf": [
+            "amex-platinum"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "sourceIds": [
+            "amex-access"
+          ]
+        },
+        {
+          "id": "platinum-connection",
+          "label": "Amex Platinum on a qualifying connection",
+          "membershipsAnyOf": [
+            "amex-platinum"
+          ],
+          "maxMinutesBeforeDeparture": 300,
+          "conditions": [
+            "Confirm a same-day onward connection; a same-day round trip does not qualify."
+          ],
+          "sourceIds": [
+            "amex-access"
+          ]
+        },
+        {
+          "id": "delta-reserve-operating",
+          "label": "Delta Reserve on a Delta operating flight",
+          "membershipsAnyOf": [
+            "delta-skymiles-reserve"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "sourceIds": [
+            "amex-access"
+          ]
+        },
+        {
+          "id": "delta-reserve-marketing",
+          "label": "Delta Reserve on a Delta marketing flight",
+          "membershipsAnyOf": [
+            "delta-skymiles-reserve"
+          ],
+          "marketingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "sourceIds": [
+            "amex-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "amex-location",
+          "title": "American Express: MIA Centurion Lounge",
+          "url": "https://www.americanexpress.com/en-us/travel/lounges/the-platinum-card/MIA/The-Centurion-Lounge-North-Terminal-Concourse-D-oqAlwnCGyo/",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "amex-access",
+          "title": "American Express: Centurion access",
+          "url": "https://www.americanexpress.com/en-us/travel/lounges/centurion-network/access/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "The January 2023 visit praised food, drinks and views, but crowding reduced comfort.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "independent-review",
+            "title": "Independent Centurion Lounge review",
+            "url": "https://onemileatatime.com/reviews/amex-centurion-lounge-miami/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "Photos and independent review",
+          "url": "https://onemileatatime.com/reviews/amex-centurion-lounge-miami/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "note": "Departing passengers only; no access after the final arrival. Card-specific guest benefits are not modelled."
+    },
+    {
+      "id": "mia-american-flagship",
+      "name": "American Airlines Flagship Lounge",
+      "terminal": "North Terminal, Concourse D",
+      "location": "Near Gate D30.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:00",
+            "close": "22:30"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "non-us-oneworld-status",
+          "label": "Eligible Qantas, British Airways or Cathay status",
+          "membershipsAnyOf": [
+            "qantas-gold",
+            "qantas-platinum",
+            "qantas-platinum-one",
+            "british-airways-silver",
+            "british-airways-gold",
+            "cathay-gold",
+            "cathay-diamond"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "sourceIds": [
+            "aa-access"
+          ]
+        },
+        {
+          "id": "other-oneworld-status",
+          "label": "Other oneworld Sapphire or Emerald",
+          "membershipsAnyOf": [
+            "oneworld-sapphire",
+            "oneworld-emerald"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "conditions": [
+            "Status must be from a programme other than American AAdvantage or Alaska Atmos; those programmes have separate qualifying-international rules."
+          ],
+          "sourceIds": [
+            "aa-access"
+          ]
+        },
+        {
+          "id": "aa-alaska-international-status",
+          "label": "American or Alaska status on a qualifying international itinerary",
+          "membershipsAnyOf": [
+            "american-platinum",
+            "american-platinum-pro",
+            "american-executive-platinum",
+            "atmos-gold",
+            "atmos-platinum",
+            "atmos-titanium"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "conditions": [
+            "Confirm the same-day itinerary meets American\u2019s qualifying international geography and ticket rules; domestic-only travel does not qualify."
+          ],
+          "sourceIds": [
+            "aa-access"
+          ]
+        },
+        {
+          "id": "qualifying-premium",
+          "label": "Qualifying First or Business ticket",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "conditions": [
+            "Confirm a qualifying international or selected Flagship domestic itinerary. Ordinary domestic First alone does not qualify."
+          ],
+          "sourceIds": [
+            "aa-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "aa-access",
+          "title": "American Airlines: Flagship access, locations and hours",
+          "url": "https://www.aa.com/web/i18n/travel-info/clubs/flagship-lounge.html",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "The April 2026 visit found better meals and less crowding than the adjacent club, but dated surroundings and inconsistent shower performance.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "independent-review",
+            "title": "Independent Flagship Lounge review",
+            "url": "https://onemileatatime.com/reviews/american-flagship-lounge-miami/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "Photos and independent review",
+          "url": "https://onemileatatime.com/reviews/american-flagship-lounge-miami/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "note": "Flagship Dining is a separate ticket-restricted service; status access to this lounge does not establish dining-room eligibility. Admirals Club membership alone does not grant Flagship access."
+    }
+  ]
+}

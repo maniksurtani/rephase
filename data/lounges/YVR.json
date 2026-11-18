@@ -1,0 +1,209 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "YVR",
+  "timeZone": "America/Vancouver",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "yvr-maple-leaf-international",
+      "name": "Air Canada Maple Leaf Lounge \u2014 International",
+      "terminal": "International Terminal, Pier D",
+      "location": "Pier D, non-US international departures.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "unknown",
+        "note": "Current opening hours could not be verified; check the operator before visiting."
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "snacks",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "star-business",
+          "label": "Star Alliance First or Business",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingAlliance": "star",
+          "route": "international",
+          "excludedDestinationCountries": [
+            "US"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "sourceIds": [
+            "ac-access"
+          ]
+        },
+        {
+          "id": "star-gold",
+          "label": "Star Alliance Gold",
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingAlliance": "star",
+          "route": "international",
+          "excludedDestinationCountries": [
+            "US"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "sourceIds": [
+            "ac-access"
+          ]
+        },
+        {
+          "id": "aeroplan-status",
+          "label": "Aeroplan 50K, 75K or Super Elite",
+          "membershipsAnyOf": [
+            "aeroplan-50k",
+            "aeroplan-75k",
+            "aeroplan-super-elite"
+          ],
+          "operatingAlliance": "star",
+          "route": "international",
+          "excludedDestinationCountries": [
+            "US"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "sourceIds": [
+            "ac-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "ac-access",
+          "title": "Air Canada: Maple Leaf Lounge access",
+          "url": "https://www.aircanada.com/ca/en/aco/home/fly/premium-services/maple-leaf-lounges.html",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "ac-location",
+          "title": "Air Canada: Canadian lounge locations",
+          "url": "https://www.mapleleafclub.ca/en/service/lounges-canada/",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "airport-amenities",
+          "title": "Vancouver Airport: Maple Leaf lounge amenities",
+          "url": "https://www.yvr.ca/en/passengers/shop-dine-and-services/services/420",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "qualityRating": {
+        "score": 3,
+        "summary": "LoungeReview\u2019s late-2022 visit found elegant interiors but tight circulation, limited food and noise spilling into the quiet area.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "independent-review",
+            "title": "Independent Maple Leaf international lounge review",
+            "url": "https://loungereview.com/lounges/air-canada-maple-leaf-lounge-yvr-international/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "Photos and independent review",
+          "url": "https://loungereview.com/lounges/air-canada-maple-leaf-lounge-yvr-international/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "note": "For international departures other than the US. Connecting guests may enter earlier than three hours; this guide conservatively models the ordinary departure window. Signature Suite access is separate and is not established by Star Gold or ordinary lounge admission."
+    },
+    {
+      "id": "yvr-plaza-premium-international",
+      "name": "Plaza Premium Lounge \u2014 International",
+      "terminal": "International Terminal, Pier D",
+      "location": "Level 4 between Gates D67 and D68, after international departures controls.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "06:30",
+            "close": "01:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "route": "international",
+          "excludedDestinationCountries": [
+            "US"
+          ],
+          "maxVisitMinutes": 120,
+          "sourceIds": [
+            "priority-pass"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass: location, access and two-hour limit",
+          "url": "https://www.prioritypass.com/en-GB/lounges/canada/vancouver-international/yvr7-plaza-premium-lounge-international-departures",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "operator-location",
+          "title": "Plaza Premium: location, facilities and opening hours",
+          "url": "https://www.plazapremiumlounge.com/en-uk/find/americas/canada/vancouver/vancouver-international-airport/international-departures-pier-d-gate-67",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "qualityRating": {
+        "score": 3,
+        "summary": "A January 2025 review of the replacement lounge found cramped regular seating and average food, with a better noodle station. The separate First area is excluded.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "independent-review",
+            "title": "Independent Plaza Premium international lounge review",
+            "url": "https://weleavetoday.com/2025/01/29/lounge-review-new-plaza-premium-lounge-yvr-international-departures-pier-d/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "Photos and independent review",
+          "url": "https://weleavetoday.com/2025/01/29/lounge-review-new-plaza-premium-lounge-yvr-international-departures-pier-d/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "note": "Shower charges may apply. This record covers the standard lounge, not a separately charged premium section."
+    }
+  ]
+}

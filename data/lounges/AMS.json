@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "airport": "AMS",
   "timeZone": "Europe/Amsterdam",
-  "updatedAt": "2026-11-17",
+  "updatedAt": "2026-11-18",
   "lounges": [
     {
       "id": "ams-aspire-26",
@@ -240,6 +240,306 @@
           "label": "View photos and review",
           "url": "https://www.amsterdamtips.com/aspire-lounge-41",
           "checkedOn": "2026-11-17"
+        }
+      ]
+    },
+    {
+      "id": "ams-klm-crown-25",
+      "name": "KLM Crown Lounge 25 (Schengen)",
+      "terminal": "Schengen departures",
+      "location": "Upper level opposite Pier D; follow Lounge 25 signs in the Schengen area.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "unknown",
+        "note": "Current fixed opening hours could not be confirmed from an accessible primary source; check KLM before an early or late visit."
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "klm-business",
+          "label": "KLM Business Standard or Flex",
+          "sourceIds": [
+            "klm-access"
+          ],
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "KL"
+          ],
+          "conditions": [
+            "Confirm a Standard or Flex ticket; Business Light does not include access."
+          ],
+          "destinationCountriesAnyOf": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ]
+        },
+        {
+          "id": "skyteam-elite-plus",
+          "label": "SkyTeam Elite Plus",
+          "sourceIds": [
+            "klm-access"
+          ],
+          "membershipsAnyOf": [
+            "skyteam-elite-plus"
+          ],
+          "operatingAlliance": "skyteam",
+          "route": "international",
+          "conditions": [
+            "Confirm your status issuer’s lounge conditions and access to the departure area."
+          ],
+          "destinationCountriesAnyOf": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "airport",
+          "title": "Schiphol · Airline lounge locations",
+          "url": "https://www.schiphol.nl/en/services/schiphol-lounges/",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "klm-access",
+          "title": "KLM · Crown Lounge access policy",
+          "url": "https://www.klm.co.za/information/airport/worldwide-lounges",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "KLM’s access policy is verified, but its detailed Crown facilities page was inaccessible. Showers, exact meal format and rest spaces remain unconfirmed in structured data.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "A November 2025 firsthand review describes a functional lounge and enjoyable breakfast, with severe crowding the main drawback.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Points to Seats · KLM Crown 25 (November 2025)",
+            "url": "https://pointstoseats.com/2025/11/04/lounge-review-klm-crown-lounge-no-25-at-amsterdam-schiphol-ams/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://pointstoseats.com/2025/11/04/lounge-review-klm-crown-lounge-no-25-at-amsterdam-schiphol-ams/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    },
+    {
+      "id": "ams-klm-crown-52",
+      "name": "KLM Crown Lounge 52 (non-Schengen)",
+      "terminal": "Non-Schengen departures",
+      "location": "Upper level opposite Pier F; follow Lounge 52 signs after passport control.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "unknown",
+        "note": "Current fixed opening hours could not be confirmed from an accessible primary source; check KLM before an early or late visit."
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "klm-business",
+          "label": "KLM Business Standard or Flex",
+          "sourceIds": [
+            "klm-access"
+          ],
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "KL"
+          ],
+          "conditions": [
+            "Confirm a Standard or Flex ticket; Business Light does not include access."
+          ],
+          "excludedDestinationCountries": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ]
+        },
+        {
+          "id": "skyteam-elite-plus",
+          "label": "SkyTeam Elite Plus",
+          "sourceIds": [
+            "klm-access"
+          ],
+          "membershipsAnyOf": [
+            "skyteam-elite-plus"
+          ],
+          "operatingAlliance": "skyteam",
+          "route": "international",
+          "conditions": [
+            "Confirm your status issuer’s lounge conditions and access to the departure area."
+          ],
+          "excludedDestinationCountries": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "airport",
+          "title": "Schiphol · Airline lounge locations",
+          "url": "https://www.schiphol.nl/en/services/schiphol-lounges/",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "klm-access",
+          "title": "KLM · Crown Lounge access policy",
+          "url": "https://www.klm.co.za/information/airport/worldwide-lounges",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "KLM’s access policy is verified, but its detailed Crown facilities page was inaccessible. Restaurant, shower and sleep-cabin availability should be checked directly; optional paid extras are not included in ordinary access.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "A firsthand review updated in November 2026 praises the layout, upstairs seating and barista coffee. Crowding can be substantial downstairs, and some upstairs food and drinks cost extra.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Live and Let’s Fly · KLM Crown 52 (November 2026 update)",
+            "url": "https://liveandletsfly.com/klm-crown-lounge-52-amsterdam-review/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://liveandletsfly.com/klm-crown-lounge-52-amsterdam-review/",
+          "checkedOn": "2026-11-18"
         }
       ]
     }

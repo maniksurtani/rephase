@@ -1,0 +1,206 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "JNB",
+  "timeZone": "Africa/Johannesburg",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "jnb-saa-international-premium",
+      "name": "South African Airways International Premium Lounge",
+      "terminal": "Terminal A · International",
+      "location": "International departures, above the duty-free area; take the escalator to the lounge level.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "04:30",
+            "close": "22:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "saa-business",
+          "label": "SAA Business",
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "SA"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "saa-lounges"
+          ]
+        },
+        {
+          "id": "star-gold",
+          "label": "Star Alliance Gold",
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingAlliance": "star",
+          "route": "international",
+          "sourceIds": [
+            "saa-lounges"
+          ]
+        },
+        {
+          "id": "velocity-status",
+          "label": "Velocity Gold or Platinum on SAA",
+          "membershipsAnyOf": [
+            "velocity-gold",
+            "velocity-platinum"
+          ],
+          "operatingCarriersAnyOf": [
+            "SA"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "saa-lounges"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "saa-lounges",
+          "title": "South African Airways · International Premium facilities, hours and access",
+          "url": "https://www.flysaa.com/en/manage-fly/before-flying/at-the-airport/lounges",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "The refurbished Premium lounge (“The Lounge”), separate from the restricted Platinum and landside Arrivals lounges. SAA Voyager-specific tiers, bank cards and contracted partner invitations are not matched yet.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "Two 2024 visits praised the renovated seating, quieter work areas, consistent service and colourful salad buffet. The hot-food range was narrower than some flagship lounges. This rates the Premium section, not Platinum.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Point Hacks · SAA International Premium review",
+            "url": "https://www.pointhacks.com.au/reviews/south-african-airways-international-premium-lounge-johannesburg/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://www.pointhacks.com.au/reviews/south-african-airways-international-premium-lounge-johannesburg/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    },
+    {
+      "id": "jnb-bidvest-premier-international",
+      "name": "Bidvest Premier Lounge (International)",
+      "terminal": "Terminal A · International",
+      "location": "After passport control, pass through duty free. Take the escalator before Out of Africa to the mezzanine; the lounge is on the right.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "route": "international",
+          "maxVisitMinutes": 240,
+          "sourceIds": [
+            "priority-pass",
+            "bidvest-operator"
+          ],
+          "maxMinutesBeforeDeparture": 240
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · Bidvest International Terminal A",
+          "url": "https://www.prioritypass.com/en-GB/lounges/south-africa/o-r-tambo-international/joh-bidvest-premier-lounge",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "bidvest-operator",
+          "title": "Bidvest · OR Tambo International location, hours and entry window",
+          "url": "https://www.bidvestlounge.co.za/commercial-lounge-or-tambo-international/",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "amex-facilities",
+          "title": "American Express · Bidvest International facilities",
+          "url": "https://www.americanexpress.com/en-us/travel/lounges/the-platinum-card/JNB/Bidvest-Premier-Lounge-Terminal-A-voli-internazionali-VhT5lt4QvU/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "Priority Pass currently warns that refurbishment is in progress while the lounge stays open. Four-hour visits; earlier entry can incur an extra charge. Domestic Bidvest is a different lounge.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "A family review found plentiful seats, power outlets, varied food and active cleaning on two visits. The current refurbishment may affect that experience, so this assessment should be revisited when the work finishes.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Upgraded Points · Bidvest International review",
+            "url": "https://upgradedpoints.com/travel/airports/bidvest-premier-lounge-johannesburg-jnb-review/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://upgradedpoints.com/travel/airports/bidvest-premier-lounge-johannesburg-jnb-review/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    }
+  ]
+}

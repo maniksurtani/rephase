@@ -1,0 +1,182 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "NBO",
+  "timeZone": "Africa/Nairobi",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "nbo-kenya-pride",
+      "name": "Kenya Airways Pride Lounge",
+      "terminal": "Terminal 1A · International",
+      "location": "After passport control and security, turn left past duty free toward Gate 17 and take the lift or stairs to Level 2.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "unknown",
+        "note": "DragonPass lists 24 hours, while Kenya Airways publishes 05:00–00:01 in general day-pass terms. The specific overnight schedule needs confirmation."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "snacks",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "kenya-business",
+          "label": "Kenya Airways Business",
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "KQ"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "kenya-lounges"
+          ]
+        },
+        {
+          "id": "skyteam-elite-plus",
+          "label": "SkyTeam Elite Plus on an international SkyTeam departure",
+          "membershipsAnyOf": [
+            "skyteam-elite-plus"
+          ],
+          "operatingAlliance": "skyteam",
+          "route": "international",
+          "sourceIds": [
+            "kenya-lounges",
+            "skyteam-benefits"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "kenya-lounges",
+          "title": "Kenya Airways · Lounge facilities and admission",
+          "url": "https://www.kenya-airways.com/en-gb/experience/at-the-airport/lounge-services/",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "dragonpass-pride",
+          "title": "DragonPass · Pride Terminal 1A location and facilities",
+          "url": "https://en.dragonpass.com.cn/lounge/3941888",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "skyteam-benefits",
+          "title": "Delta · SkyTeam partner lounge access",
+          "url": "https://www.delta.com/us/en/skymiles/medallion-program/international-partner-skyteam-benefits",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "Pride has a dedicated napping area and live cooking. Simba T1A, Asante T1C and domestic Msafiri are separate lounges. Paid day passes and contracted non-SkyTeam airline invitations are not matched here.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "A July 2026 visit praised comfortable apron-view seating, fresh food and warm service. It was only a 30-minute stop and the showers were not tested, so the review provides limited evidence about longer stays or peak periods.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "The Afritraveller · Pride Lounge firsthand review",
+            "url": "https://afritraveller.wixsite.com/the-afritraveller/post/lounge-review-kenya-airways-pride-lounge-nairobi",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://afritraveller.wixsite.com/the-afritraveller/post/lounge-review-kenya-airways-pride-lounge-nairobi",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    },
+    {
+      "id": "nbo-aspire-1b",
+      "name": "Aspire Nairobi",
+      "terminal": "Terminal 1B · International",
+      "location": "After security, opposite Gate 11.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "route": "international",
+          "maxVisitMinutes": 180,
+          "sourceIds": [
+            "priority-pass"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · Aspire Nairobi",
+          "url": "https://www.prioritypass.com/en-GB/lounges/kenya/jomo-kenyatta-international/nbo3-aspire-nairobi",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "aspire-nairobi",
+          "title": "Aspire · Nairobi facilities and opening hours",
+          "url": "https://www.aspirelounges.com/airport-lounges/nairobi-jomo-kenyatta-airport-aspire-lounge/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "Three-hour Priority Pass visits; smart-casual dress. Confirm shower availability and any charge on arrival. This is the Terminal 1B lounge, not a Terminal 2 facility.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "The reviewed short visit found a varied hot-food buffet and efficient, unobtrusive staff. The shower space was small and drink choices limited; the reviewer did not test Wi-Fi or a longer stay.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Upgraded Points · Aspire Nairobi review",
+            "url": "https://upgradedpoints.com/travel/airports/aspire-lounge-nairobi-nbo-review/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://upgradedpoints.com/travel/airports/aspire-lounge-nairobi-nbo-review/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    }
+  ]
+}

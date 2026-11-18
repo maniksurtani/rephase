@@ -31,7 +31,7 @@ Specific boundaries in this batch:
 
 Keep quality research separate from operational research. A new rating must not advance the airport's `updatedAt` or an access rule's source date. Reviews cannot silently change eligibility, opening hours or structured amenities; those still need current operator/program evidence. A rating remains an assessment of the documented experience until re-reviewed, not live monitoring.
 
-For a new lounge without credible review evidence, omit `qualityRating` until researched rather than inventing a score. The schema permits that, and unrated lounges sort after rated lounges with equal suitability. The current coverage test checks that our existing guides have completed assessments; update that expectation explicitly if adding unreviewed coverage.
+For a new lounge without credible review evidence, omit `qualityRating` until researched rather than inventing a score. The schema permits that, and unrated lounges sort after rated lounges with equal suitability. Every missing score must have a specific research reason in [the quality backlog](research/quality-backlog.json). The coverage test requires that backlog to match the unrated catalog exactly, so completing a review also removes its backlog entry.
 
 ## Ordering
 

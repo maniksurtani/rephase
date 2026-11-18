@@ -1,0 +1,203 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "YYZ",
+  "timeZone": "America/Toronto",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "yyz-maple-leaf-international",
+      "name": "Air Canada Maple Leaf Lounge \u2014 International",
+      "terminal": "Terminal 1, international departures",
+      "location": "Pier F, international departures. Separate from domestic, US transborder and Signature Suite facilities.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "unknown",
+        "note": "Current opening hours could not be verified; check the operator before visiting."
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "star-business",
+          "label": "Star Alliance First or Business",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingAlliance": "star",
+          "route": "international",
+          "excludedDestinationCountries": [
+            "US"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "sourceIds": [
+            "ac-access"
+          ]
+        },
+        {
+          "id": "star-gold",
+          "label": "Star Alliance Gold",
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingAlliance": "star",
+          "route": "international",
+          "excludedDestinationCountries": [
+            "US"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "sourceIds": [
+            "ac-access"
+          ]
+        },
+        {
+          "id": "aeroplan-status",
+          "label": "Aeroplan 50K, 75K or Super Elite",
+          "membershipsAnyOf": [
+            "aeroplan-50k",
+            "aeroplan-75k",
+            "aeroplan-super-elite"
+          ],
+          "operatingAlliance": "star",
+          "route": "international",
+          "excludedDestinationCountries": [
+            "US"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "sourceIds": [
+            "ac-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "ac-access",
+          "title": "Air Canada: Maple Leaf Lounge access",
+          "url": "https://www.aircanada.com/ca/en/aco/home/fly/premium-services/maple-leaf-lounges.html",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "ac-location",
+          "title": "Air Canada: Canadian lounge locations",
+          "url": "https://www.mapleleafclub.ca/en/service/lounges-canada/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "A March 2025 visit found a useful meal selection and comfortable working space, becoming busier before evening departures.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "independent-review",
+            "title": "Independent Maple Leaf international lounge review",
+            "url": "https://thebulkheadseat.com/lounge-review-air-canada-maple-leaf-lounge-yyz-terminal-1-level-3-node-f/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "Photos and independent review",
+          "url": "https://thebulkheadseat.com/lounge-review-air-canada-maple-leaf-lounge-yyz-terminal-1-level-3-node-f/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "note": "For international departures other than the US. Connecting guests may enter earlier than three hours; this guide conservatively models the ordinary departure window. Signature Suite access is separate and is not established by Star Gold or ordinary lounge admission."
+    },
+    {
+      "id": "yyz-plaza-premium-international",
+      "name": "Plaza Premium Lounge \u2014 International",
+      "terminal": "Terminal 3, international departures",
+      "location": "AT level via the elevator at Gate C32. Unavailable for domestic or US transborder departures.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:30",
+            "close": "23:59"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "route": "international",
+          "excludedDestinationCountries": [
+            "US"
+          ],
+          "maxVisitMinutes": 120,
+          "sourceIds": [
+            "priority-pass"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass: location, access and two-hour limit",
+          "url": "https://www.prioritypass.com/en-GB/lounges/canada/toronto-pearson-international/yyz5-plaza-premium-lounge-international-departures",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "operator-location",
+          "title": "Plaza Premium: location, facilities and opening hours",
+          "url": "https://www.plazapremiumlounge.com/en-uk/find/americas/canada/toronto/toronto-pearson-international-airport/international-departures-terminal-three",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "The 2024 review valued freshly prepared breakfast and coffee but reported crowding even early in the morning.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "independent-review",
+            "title": "Independent Plaza Premium international lounge review",
+            "url": "https://liveandletsfly.com/plaza-premium-toronto-terminal-3-international-review/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "Photos and independent review",
+          "url": "https://liveandletsfly.com/plaza-premium-toronto-terminal-3-international-review/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "note": "Shower charges may apply. This record covers the standard lounge, not a separately charged premium section. The operator and programme differ on the earliest opening; the listed window uses the more conservative 05:30 start."
+    }
+  ]
+}

@@ -15,26 +15,26 @@ When useful aggregate usage becomes available, reorder after each batch using di
 | Batch | Airports | Purpose | Status |
 | --- | --- | --- | --- |
 | Existing guides | SYD, HNL, SIN, LHR, SFO | Eight missing options, including domestic/status distinctions and current refurbishment restrictions | Implemented in `563aca9`; remaining gaps below |
-| 1 | DXB, ICN, AMS, IST, CDG | Largest uncovered international gateways; include airline and independent options and distinct airside zones | Started: nine sourced records; main-airline gaps remain below |
-| 2 | HKG, FRA, DOH, JFK, ORD | Additional alliance hubs and North American gateways | Queued |
-| 3 | BKK, KUL, TPE, HND, NRT | Broader Asian connectivity; separate Tokyo airports | Queued |
-| 4 | DFW, EWR, ATL, YYZ, YVR | North American connecting traffic and Canada | Queued |
-| 5 | DEL, BOM, PVG, PEK, CAN | India and mainland China; prioritise reliable local-language sources | Queued |
-| 6 | MAD, FCO, BCN, MEX, GRU | Southern Europe and major Latin American gateways | Queued |
-| 7 | JNB, ADD, NBO, CMN, CAI | African gateways and intercontinental connections | Queued |
-| 8 | MEL, BNE, PER, AKL, AUH | Oceania and additional Gulf coverage | Queued |
+| 1 | DXB, ICN, AMS, IST, CDG | Largest uncovered international gateways; include airline and independent options and distinct airside zones | Selected guides added; AMS/CDG/ICN airline gaps expanded 18 November |
+| 2 | HKG, FRA, DOH, JFK, ORD | Additional alliance hubs and North American gateways | Selected guides added 18 November; gaps in regional notes |
+| 3 | BKK, KUL, TPE, HND, NRT | Broader Asian connectivity; separate Tokyo airports | Selected guides added 18 November; gaps in regional notes |
+| 4 | DFW, EWR, ATL, YYZ, YVR | North American connecting traffic and Canada | Selected guides added 18 November; gaps in regional notes |
+| 5 | DEL, BOM, PVG, PEK, CAN | India and mainland China; prioritise reliable local-language sources | Selected guides added 18 November; gaps in regional notes |
+| 6 | MAD, FCO, BCN, MEX, GRU | Southern Europe and major Latin American gateways | Selected guides added 18 November; gaps in regional notes |
+| 7 | JNB, ADD, NBO, CMN, CAI | African gateways and intercontinental connections | Selected guides added 18 November; gaps in regional notes |
+| 8 | MEL, BNE, PER, AKL, AUH | Oceania and additional Gulf coverage | Selected guides added 18 November; gaps in regional notes |
 
-This is an initial queue, not a commitment to wait through every preceding batch. Actual demand can advance any airport. Further candidates include SEA, IAH, MIA, BOS, ZRH, VIE, HEL, CPH, WAW, PTY, BOG, LIM, SCL, CPT, DPS, MNL and CGK. Review geographic gaps after each two batches.
+This is an initial queue, not a commitment to wait through every preceding batch. Actual demand can advance any airport. The 18 November parallel expansion also includes SEA, IAH, MIA, ZRH, HEL, CPH, PTY, BOG, SCL, MNL and CGK. Further candidates are listed below. Review geographic gaps after each two batches.
 
 ## Definition of a useful first guide
 
 - Inventory the principal departure zones before selecting lounges. Include major hub-airline/status options and a verified membership alternative where available. Never invent Priority Pass participation to satisfy that target.
 - Model separate lounges separately: First versus Business, Schengen versus non-Schengen, different terminals and different concourses. Airport presence alone is not evidence of usable coverage.
 - For each published record, read official location, access and facilities sources; record their actual check dates. Encode fare, operating/marketing carrier, status issuer, route, entry window and visit-limit restrictions where supported. Keep unresolved restrictions conditional.
-- Use the common review rubric for quality. Historical or hosted reviews must be labelled; no rating without evidence. Operational source dates and editorial rating dates remain separate. Photos are optional and must be licensed.
+- Use the common review rubric for quality. Historical or hosted reviews must be labelled; no rating without evidence. Operational source dates and editorial rating dates remain separate. External photo/review page links are preferred; any embedded photos must be licensed.
 - Explicitly document omitted lounges, memberships, restricted dining hours, closures and uncertain facilities. Do not silently convert a missing access rule into a claim that no access exists.
-- Run existing schema/provenance, access, airport and visit-window tests plus type/build checks. Add only meaningful policy regressions for new exceptions. Verify the same generated data reaches the mobile engine; no duplicated Dart dataset or new backend.
-- Commit a reviewable batch and update this table. Website deployment and native distributions are separate release steps; installed apps do not receive new bundled JSON until rebuilt.
+- Run existing schema/provenance, access, airport and visit-window tests plus type/build checks. Add only meaningful policy regressions for new exceptions. Verify both clients validate the same downloadable schema and access rules; no duplicated Dart dataset or new backend.
+- Commit a reviewable batch and update this table. Compatible guide updates publish through the normal web deployment and reach clients using on-demand guides. Shared airline, access-engine or schema changes still require a mobile release; older clients keep conservative unknown-carrier/country handling.
 
 ## Existing-guide follow-up queue
 
@@ -56,7 +56,7 @@ The first pass adds nine lounges and brings the dataset to **59 selected lounges
 | IST | Turkish international Business and Miles&Smiles; iGA international | Domestic options, paid club/corporate invitations and reviews of the recent Turkish expansion. Resolve Priority Pass's conflicting textual/structured visit limits against current member entitlement. |
 | CDG | New T1 non-Schengen Star Alliance lounge | Air France 2F/2E, separate Schengen options and independent lounges. Air France pages were inaccessible during this pass; no SkyTeam/paid/PP access is invented for the Star Alliance lounge. |
 
-Complete these principal airline and terminal gaps before treating batch 1 as complete. Keep private sleep-suite eligibility separate from ordinary lounge access. Last-entry and gate restrictions the matcher cannot resolve remain explicit conditions; no gate-entry fields were added to trips.
+These are the original 17 November gaps. The parallel expansion adds Korean Air at ICN, KLM Crown at AMS and Air France at CDG; remaining terminal, opening-hour and access-route gaps stay in the regional notes. Follow up in parallel with geographic expansion. Keep private sleep-suite eligibility separate from ordinary lounge access. Last-entry and gate restrictions the matcher cannot resolve remain explicit conditions; no gate-entry fields were added to trips.
 
 ## Maintenance and success measures
 
@@ -65,3 +65,20 @@ Recheck popular guides approximately every 90 days, and renovation/closure notic
 Track the share of actual departure/connection opportunities with useful guidance, including relevant terminal, membership and visiting time. Also track unsupported searches and stale records. Until we have measured usage, report airport/lounge counts as inventory only; do not claim a percentage of travellers covered.
 
 Keep the data under `data/lounges/`, with the existing schema and automatic discovery on web and Flutter. No runtime lounge API, scraper service, ratings database or additional analytics infrastructure is required for these batches.
+
+## Parallel global hub expansion — 18 November 2026
+
+The working scope is **61 airports**: 14 existing guides plus 47 additional international gateways/transfer hubs. “Tier 1” here is an editorial working list, not an official airport classification or a claim of complete worldwide coverage. It combines all queued batches with additional major regional connection points; existing smaller requested airports remain supported. All six regional tracks ran concurrently, as requested. The result is **165 selected lounges (106 added)**, with 147 sourced quality assessments and 18 explicit review-backlog entries. See the [coverage and size snapshot](COVERAGE.md).
+
+| Regional track | New airports | Existing guide gaps assigned | Status |
+| --- | --- | --- | --- |
+| Europe | FRA, MAD, FCO, BCN, ZRH, CPH, HEL | AMS, CDG | 21 added lounges; [evidence and gaps](research/europe-2026-11.md) |
+| North America | JFK, ORD, DFW, EWR, ATL, YYZ, YVR, SEA, IAH, MIA, DEN | — | 22 added lounges; [evidence and gaps](research/north-america-2026-11.md) |
+| East Asia | HKG, TPE, HND, NRT, PVG, PEK, CAN | ICN | 20 added lounges; [evidence and gaps](research/east-asia-2026-11.md) |
+| South/Southeast Asia | BKK, KUL, DEL, BOM, CGK, MNL | — | 11 added lounges; [evidence and gaps](research/south-southeast-asia-2026-11.md) |
+| Gulf and Africa | DOH, AUH, JNB, ADD, NBO, CMN, CAI | DXB where evidence permits | 15 added lounges; [evidence and gaps](research/gulf-africa-2026-11.md) |
+| Oceania and Latin America | MEL, BNE, PER, AKL, MEX, GRU, PTY, BOG, SCL | — | 17 added lounges; [evidence and gaps](research/oceania-latin-america-2026-11.md) |
+
+The acceptance target is a useful guide for each airport, not a synthetic minimum lounge count. Research should cover principal airline/status options plus a verified independent membership alternative where one can be established. Missing operational evidence stays unknown or conditional; a search snippet alone does not establish access, hours or facilities. Unavailable independent review evidence means no quality score, rather than an invented rating. Regional evidence notes live under `research/`.
+
+Follow-on tier review: BOS, IAD, CLT, DTW, MSP, VIE, WAW, LGW, DUB, ARN, OSL, BRU, LIS, KIX, SZX, PKX, TFU, SGN, HAN, DPS, JED, RUH, BAH, KWI, LIM, SJO, SJU and CPT. Promote gaps based on connection utility and actual demand; do not call the initial working list exhaustive.

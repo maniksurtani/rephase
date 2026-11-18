@@ -268,3 +268,15 @@ Updated 2026-11-16. Active work is kept here; the previous complete checklist is
 - [x] Add external photo/review page links in both clients and nine initial lounge records; document licensing requirements for embedded images.
 - [x] Document publishing, offline behavior and compatibility across installed mobile releases.
 - [x] Validate on-demand/offline downloads, invalid-update fallback, native guide parity, Flutter widgets, browser flows and production assets; publish the changes to main.
+
+## Parallel global lounge hub batches — 18 November 2026
+
+- [x] Define a globally balanced 61-airport working scope and assign six parallel regional research tracks.
+- [x] Research and add Europe guides and close verified AMS/CDG airline gaps.
+- [x] Research and add North American hub guides.
+- [x] Research and add East Asian hub guides and close verified ICN airline gaps.
+- [x] Research and add South/Southeast Asian hub guides.
+- [x] Research and add Gulf/Africa hub guides.
+- [x] Research and add Oceania/Latin American hub guides.
+- [x] Integrate shared country/airline support; validate source provenance, policy exceptions and generated airport downloads.
+- [x] Commit/push reviewed batches and record precise coverage, ratings and unresolved gaps in `data/lounges/COVERAGE.md`.

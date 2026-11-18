@@ -1,0 +1,191 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "AKL",
+  "timeZone": "Pacific/Auckland",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "akl-air-new-zealand-international",
+      "name": "Air New Zealand International Koru Lounge",
+      "terminal": "International Terminal",
+      "location": "Airside international departures; follow the Air New Zealand lounge signs or your check-in invitation.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "unknown",
+        "note": "The current official page does not publish fixed hours for the main lounge; check your lounge allocation during the refurbishment."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "nz-business",
+          "label": "Air New Zealand Business Premier",
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "NZ"
+          ],
+          "route": "international",
+          "conditions": [
+            "Confirm your lounge allocation at check-in during the staged refurbishment."
+          ],
+          "sourceIds": [
+            "nz-connections",
+            "nz-lounges"
+          ]
+        },
+        {
+          "id": "nz-star-gold",
+          "label": "Star Alliance Gold on Air New Zealand",
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingCarriersAnyOf": [
+            "NZ"
+          ],
+          "route": "international",
+          "conditions": [
+            "Confirm your lounge allocation at check-in during the staged refurbishment."
+          ],
+          "sourceIds": [
+            "nz-connections",
+            "nz-lounges"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "nz-lounges",
+          "title": "Air New Zealand international Koru lounges and refurbishment advisory",
+          "url": "https://www.airnewzealand.com/en-nz/koru/tier-benefits/koru-lounges/international-lounges",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "nz-connections",
+          "title": "Air New Zealand: international connections and lounge eligibility at Auckland",
+          "url": "https://www.airnewzealand.com/international-connection-auckland",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "Food and showers when allocated the main lounge; check-in may direct you to an alternative during rebuilding."
+      },
+      "note": "Staged refurbishment continues through the end of 2027. Eligible guests may be allocated the temporary Lookout Lounge, which has different facilities and opening hours. This is not a guarantee of access to the main lounge.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "The 2022 visit praised the spacious design, varied seating and food. This historical assessment predates the current rebuild and does not describe the temporary Lookout Lounge or the future refurbished lounge.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Point Hacks · Air New Zealand Auckland International Lounge review",
+            "url": "https://www.pointhacks.com.au/reviews/air-new-zealand-international-lounge-auckland/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://www.pointhacks.com.au/reviews/air-new-zealand-international-lounge-auckland/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    },
+    {
+      "id": "akl-strata",
+      "name": "Strata Lounge",
+      "terminal": "International Terminal",
+      "location": "After security, Level 2; turn left at the top of the escalators and follow Premium Lounges signs.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "04:30",
+            "close": "00:30"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "route": "international",
+          "maxVisitMinutes": 180
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass: Strata Lounge Auckland",
+          "url": "https://www.prioritypass.com/en-GB/lounges/new-zealand/auckland/akl-strata-lounge",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "airport",
+          "title": "Auckland Airport: Strata Lounge facilities and program entry",
+          "url": "https://www.aucklandairport.co.nz/eat-and-relax/strata-lounge",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "An independent alternative with a hot and cold buffet and complimentary showers."
+      },
+      "note": "Priority Pass visits are limited to three hours; direct paid bookings have separate terms. Allow time to walk to your gate.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "An October 2025 visit found comfortable seating, a broad breakfast spread and accessible showers. The reviewer found it calm at that visit, but food and exclusivity were less premium than airline lounges.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Sarah Symbalisty · Strata Lounge firsthand review",
+            "url": "https://www.sarahsymbalisty.com/home/strata-lounge-auckland-airport-review",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://www.sarahsymbalisty.com/home/strata-lounge-auckland-airport-review",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    }
+  ]
+}

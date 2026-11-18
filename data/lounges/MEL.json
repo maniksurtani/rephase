@@ -1,0 +1,223 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "MEL",
+  "timeZone": "Australia/Melbourne",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "mel-qantas-international",
+      "name": "Qantas International Lounge",
+      "terminal": "T2",
+      "location": "International departures, airside Level 1; enter via the departures concourse.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "04:45",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "qantas-status",
+          "label": "Qantas Gold, Platinum or Platinum One",
+          "membershipsAnyOf": [
+            "qantas-gold",
+            "qantas-platinum",
+            "qantas-platinum-one"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "international",
+          "sourceIds": [
+            "qantas-access",
+            "oneworld-access"
+          ]
+        },
+        {
+          "id": "oneworld-status",
+          "label": "oneworld Sapphire or Emerald",
+          "membershipsAnyOf": [
+            "oneworld-sapphire",
+            "oneworld-emerald"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "international",
+          "sourceIds": [
+            "oneworld-access"
+          ]
+        },
+        {
+          "id": "oneworld-premium",
+          "label": "oneworld international Business or First",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "international",
+          "sourceIds": [
+            "oneworld-access"
+          ],
+          "conditions": [
+            "Your fare must include lounge access; check any airline fare exclusions."
+          ]
+        },
+        {
+          "id": "qantas-club",
+          "label": "Qantas Club on Qantas",
+          "membershipsAnyOf": [
+            "qantas-club"
+          ],
+          "operatingCarriersAnyOf": [
+            "QF"
+          ],
+          "marketingCarriersAnyOf": [
+            "QF"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "qantas-access"
+          ],
+          "conditions": [
+            "An eligible 1-, 2- or 4-year Qantas Club membership is required; Flexible membership does not include international lounges."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "qantas-location",
+          "title": "Qantas official lounge location, opening hours and facilities",
+          "url": "https://www.qantas.com/en-au/at-the-airport/lounges/locations/melbourne-international",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "qantas-access",
+          "title": "Qantas lounge access and eligibility",
+          "url": "https://www.qantas.com/en-au/at-the-airport/lounges/access",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "oneworld-access",
+          "title": "oneworld lounge access policy and exceptions",
+          "url": "https://www.oneworld.com/airport-lounges",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "A shower and refreshments before an eligible international departure."
+      },
+      "note": "International lounge only. Qantas domestic Business and Qantas Club lounges are separate products and are not covered by this record. Jetstar and Emirates special arrangements are not modeled.",
+      "qualityRating": {
+        "score": 3,
+        "summary": "A 2025 visit found good coffee and generally satisfying food, with a basement setting and mixed buffet presentation. This is a competent airline lounge rather than a destination in its own right.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "PointsMath · Qantas Melbourne International Business Lounge review",
+            "url": "https://pointsmath.com/review-qantas-international-business-lounge-melbourne/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://pointsmath.com/review-qantas-international-business-lounge-melbourne/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    },
+    {
+      "id": "mel-aspire-t2",
+      "name": "Aspire Lounge",
+      "terminal": "T2",
+      "location": "After security, take the lift opposite Gate 8 down to Level 1 and follow Aspire signs.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "07:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "route": "international",
+          "maxMinutesBeforeDeparture": 180
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass: Aspire Lounge Melbourne, hours and entry conditions",
+          "url": "https://www.prioritypass.com/en-GB/lounges/australia/melbourne/mel11l-the-house",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "A Priority Pass alternative in international departures with a cold buffet."
+      },
+      "note": "Priority Pass lists an optional AUD 20 premium upgrade covering showers, à la carte food and premium drinks. Confirm current facilities and inclusions at reception: this listing retains legacy The House wording but now gives the Aspire Gate 8 / Level 1 location. Older The House reviews have not been used to rate it.",
+      "photoLinks": [
+        {
+          "label": "View lounge photos",
+          "url": "https://www.prioritypass.com/en-GB/lounges/australia/melbourne/mel11l-the-house",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    }
+  ]
+}

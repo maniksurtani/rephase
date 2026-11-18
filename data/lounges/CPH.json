@@ -1,0 +1,218 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "CPH",
+  "timeZone": "Europe/Copenhagen",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "cph-sas",
+      "name": "SAS Lounge",
+      "terminal": "3",
+      "location": "After security, before passport control, by Pier C. Non-Schengen passengers must allow time to clear passport control afterwards.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "flight-dependent",
+        "note": "Opens one hour before the first SAS departure and closes 30 minutes before the last SAS departure."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "skyteam-business",
+          "label": "SkyTeam Business Class",
+          "sourceIds": [
+            "sas",
+            "airport"
+          ],
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingAlliance": "skyteam",
+          "conditions": [
+            "Eligible same-day departure; charter flights are excluded."
+          ]
+        },
+        {
+          "id": "skyteam-elite-plus",
+          "label": "SkyTeam Elite Plus",
+          "sourceIds": [
+            "sas",
+            "airport"
+          ],
+          "membershipsAnyOf": [
+            "skyteam-elite-plus"
+          ],
+          "operatingAlliance": "skyteam",
+          "conditions": [
+            "Eligible same-day departure; charter flights are excluded."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "sas",
+          "title": "SAS · Lounge access and Copenhagen facilities",
+          "url": "https://www.flysas.com/gb-en/travel-info/at-the-airport/lounges",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "airport",
+          "title": "Copenhagen Airport · SAS Lounge",
+          "url": "https://www.cph.dk/en/practical/workspaces-and-lounges/sas-lounge",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "The current combined SAS lounge replaces the former separate Business and Gold spaces. International Premium Economy alone does not confer access.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "An October 2025 visit to the combined lounge praises barista coffee, workspaces and showers, but reports crowding and limited hot-food variety.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Quiet Vacationer · SAS Copenhagen (October 2025 visit)",
+            "url": "https://quietvacationer.com/2025/12/07/review-sas-lounge-copenhagen-cph/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://quietvacationer.com/2025/12/07/review-sas-lounge-copenhagen-cph/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    },
+    {
+      "id": "cph-pearl",
+      "name": "Pearl Lounge (formerly Eventyr)",
+      "terminal": "3",
+      "location": "Non-Schengen Pier C, after passport control, near Gates C26–C28.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "07:30",
+            "close": "20:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass · non-Schengen",
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "excludedDestinationCountries": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ],
+          "maxVisitMinutes": 120,
+          "conditions": [
+            "Departure must use the non-Schengen C-gate area. Entry is subject to capacity, particularly 12:00–16:00."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · Pearl Lounge (formerly Eventyr)",
+          "url": "https://www.prioritypass.com/en-GB/lounges/denmark/copenhagen-kastrup/cph1-eventyr-lounge",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "airport",
+          "title": "Copenhagen Airport · Pearl Lounge",
+          "url": "https://public.cph.dk/en/practical/workspaces-and-lounges/pearl-lounge",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "operator",
+          "title": "Menzies · Pearl refurbishment and facilities, May 2026",
+          "url": "https://menziesaviation.com/news/menzies-aviation-unveils-flagship-pearl-lounge-at-copenhagen-airport/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "Refurbished and reopened in May 2026. The displayed hours are those published by Priority Pass; confirm early access directly. Hot and cold buffet, showers and work/relaxation zones are available, with capacity restrictions for cardholders.",
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://boardinggroup.one/review/lounge/pearl-lounge-copenhagen-airport-review/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "A November 2026 review of the refurbished lounge praises runway views and connectivity, but finds it crowded, with drinks stronger than food and power sockets concentrated near the windows.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "BoardingGroup.One · Pearl Copenhagen (November 2026)",
+            "url": "https://boardinggroup.one/review/lounge/pearl-lounge-copenhagen-airport-review/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      }
+    }
+  ]
+}

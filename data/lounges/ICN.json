@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "airport": "ICN",
   "timeZone": "Asia/Seoul",
-  "updatedAt": "2026-11-17",
+  "updatedAt": "2026-11-18",
   "lounges": [
     {
       "id": "icn-matina-t2",
@@ -88,6 +88,218 @@
           "label": "View photos and review",
           "url": "https://bunworldtraveler.com/2025/01/06/lounge-review-matina-lounge-seoul-incheon-icn-terminal-2/",
           "checkedOn": "2026-11-17"
+        }
+      ]
+    },
+    {
+      "id": "icn-korean-prestige-east-right",
+      "name": "Korean Air Prestige East (Right)",
+      "terminal": "T2",
+      "location": "Level 4 opposite Gate 253. East Left and East Right are separate lounges sharing an entrance area.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "06:00",
+            "close": "22:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "korean-prestige",
+          "label": "Korean Air Prestige Class",
+          "sourceIds": [
+            "korean-access"
+          ],
+          "operatingCarriersAnyOf": [
+            "KE"
+          ],
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "route": "international"
+        },
+        {
+          "id": "skyteam-elite-plus",
+          "label": "SkyTeam Elite Plus",
+          "sourceIds": [
+            "korean-access"
+          ],
+          "membershipsAnyOf": [
+            "skyteam-elite-plus"
+          ],
+          "operatingAlliance": "skyteam",
+          "route": "international"
+        }
+      ],
+      "sources": [
+        {
+          "id": "korean-access",
+          "title": "Korean Air · Lounge access eligibility",
+          "url": "https://www.koreanair.com/contents/plan-your-travel/at-the-airport/lounge?hl=en",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "airport",
+          "title": "Incheon Airport · Terminal 2 lounge directory",
+          "url": "https://www.airport.kr/ap_en/1536/subview.do?enc=Zm5jdDF8QEB8JTJGZmFjaWxpdHlJbmZvJTJGYXBfZW4lMkY0MiUyRmxpc3QuZG8lM0ZzcmNoVGVybWluYWxJZCUzRFAwMyUyNnNyY2hDb2x1bW4lM0R1c2VyJTI2c3JjaExjbGFzJTNEMSUyNnNyY2hNbHNmYyUzRCUyNnNyY2hTY2xhcyUzRCUyNnNyY2hXcmQlM0QlMjY%3D",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "operator",
+          "title": "Korean Air · Renovated Prestige East Right",
+          "url": "https://www.koreanair.com/contents/footer/about-us/newsroom/list/250814--lounges-at-Incheon-Airport?hc=kr&hl=en",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "Live cooking and a shower before an eligible Korean Air or SkyTeam departure. The Right lounge includes a wellness area."
+      },
+      "note": "This is the renovated Right lounge, not Miler Club, First or Prestige Garden. Staff may direct guests between sides depending on capacity. Asiana/Star Alliance transitional access mentioned in traveller reviews is not inferred without a current airline policy.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "March and April 2026 visits found thoughtful seating, good Korean food, a live noodle station and a separate wellness area. Popular seats and nap rooms became busy.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "The Quiet Vacationer · Prestige East Right (March/April 2026 visits)",
+            "url": "https://quietvacationer.com/2026/04/22/review-korean-air-prestige-lounge-east-right-icn/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://quietvacationer.com/2026/04/22/review-korean-air-prestige-lounge-east-right-icn/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    },
+    {
+      "id": "icn-korean-prestige-east-left",
+      "name": "Korean Air Prestige East (Left)",
+      "terminal": "T2",
+      "location": "Level 4 opposite Gate 253. East Left and East Right are separate lounges sharing an entrance area.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "06:00",
+            "close": "22:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "korean-prestige",
+          "label": "Korean Air Prestige Class",
+          "sourceIds": [
+            "korean-access"
+          ],
+          "operatingCarriersAnyOf": [
+            "KE"
+          ],
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "route": "international"
+        },
+        {
+          "id": "skyteam-elite-plus",
+          "label": "SkyTeam Elite Plus",
+          "sourceIds": [
+            "korean-access"
+          ],
+          "membershipsAnyOf": [
+            "skyteam-elite-plus"
+          ],
+          "operatingAlliance": "skyteam",
+          "route": "international"
+        }
+      ],
+      "sources": [
+        {
+          "id": "korean-access",
+          "title": "Korean Air · Lounge access eligibility",
+          "url": "https://www.koreanair.com/contents/plan-your-travel/at-the-airport/lounge?hl=en",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "airport",
+          "title": "Incheon Airport · Terminal 2 lounge directory",
+          "url": "https://www.airport.kr/ap_en/1536/subview.do?enc=Zm5jdDF8QEB8JTJGZmFjaWxpdHlJbmZvJTJGYXBfZW4lMkY0MiUyRmxpc3QuZG8lM0ZzcmNoVGVybWluYWxJZCUzRFAwMyUyNnNyY2hDb2x1bW4lM0R1c2VyJTI2c3JjaExjbGFzJTNEMSUyNnNyY2hNbHNmYyUzRCUyNnNyY2hTY2xhcyUzRCUyNnNyY2hXcmQlM0QlMjY%3D",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "operator",
+          "title": "Korean Air · Renovated Prestige East Left",
+          "url": "https://news.koreanair.com/%EB%8C%80%ED%95%9C%ED%95%AD%EA%B3%B5-%EC%97%94%ED%84%B0%ED%85%8C%EC%9D%B8%EB%A8%BC%ED%8A%B8-%EB%8D%94%ED%95%9C-%EA%B3%B5%ED%95%AD-%EB%9D%BC%EC%9A%B4%EC%A7%80-%EC%84%A0%EB%B3%B4%EC%97%AC/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "Live cooking and a shower before an eligible Korean Air or SkyTeam departure. The Left lounge includes a ramyeon library and family activities."
+      },
+      "note": "This is the renovated Left lounge, not Miler Club, First or Prestige Garden. Staff may direct guests between sides depending on capacity. Asiana/Star Alliance transitional access mentioned in traveller reviews is not inferred without a current airline policy.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "March and April 2026 visits praised the food, contemporary interiors and ramyeon library. Cooking activities and the arcade add family appeal; the Right lounge offers better resting facilities.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "The Quiet Vacationer · Prestige East Left (March/April 2026 visits)",
+            "url": "https://quietvacationer.com/2026/04/25/review-korean-air-prestige-lounge-east-left-icn/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://quietvacationer.com/2026/04/25/review-korean-air-prestige-lounge-east-left-icn/",
+          "checkedOn": "2026-11-18"
         }
       ]
     }

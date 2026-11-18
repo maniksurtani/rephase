@@ -1,0 +1,207 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "SCL",
+  "timeZone": "America/Santiago",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "scl-latam-signature",
+      "name": "LATAM Signature Lounge",
+      "terminal": "T2 International",
+      "location": "Level 4; pass through duty free after security, then turn left.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "unknown",
+        "note": "Opens at 05:00 daily; closes at midnight in standard time and 01:00 during daylight saving time. Seasonal dates are not represented in this guide; confirm the closing time for your travel date."
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "latam-business",
+          "label": "LATAM Premium Business",
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "LA",
+            "JJ"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "latam-location"
+          ]
+        },
+        {
+          "id": "delta-one",
+          "label": "Delta One",
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "latam-location"
+          ],
+          "conditions": [
+            "Your boarding pass must be for Delta One on this departing international segment."
+          ]
+        },
+        {
+          "id": "delta-medallion-latam-delta",
+          "label": "Eligible Delta SkyMiles Medallion status on LATAM or Delta",
+          "membershipsAnyOf": [
+            "delta-platinum-medallion",
+            "delta-diamond-medallion"
+          ],
+          "operatingCarriersAnyOf": [
+            "LA",
+            "JJ",
+            "DL"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "latam-location"
+          ],
+          "note": "Show your valid SkyMiles tier and same-day international boarding pass."
+        }
+      ],
+      "sources": [
+        {
+          "id": "latam-location",
+          "title": "LATAM Santiago: separate lounge tiers, hours and access",
+          "url": "https://www.latamairlines.com/us/en/experience/airport/lounges-and-facilities/santiago",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "A premium international lounge with dedicated quiet and sleeping areas; confirm its seasonal closing time."
+      },
+      "note": "Signature is distinct from the Premium and Santander WorldMember lounges. Premium Economy and Delta Gold alone do not qualify for Signature. LATAM Pass Black/Black Signature benefits are not yet represented in settings.",
+      "qualityRating": {
+        "score": 4.5,
+        "summary": "The September 2024 visit praises the design, varied food and drinks, and sleeping and shower facilities. A standout airline lounge in that review, rather than simply a place to wait.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "One Mile at a Time · LATAM Signature Santiago firsthand review",
+            "url": "https://onemileatatime.com/reviews/latam-lounge-santiago/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://onemileatatime.com/reviews/latam-lounge-santiago/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    },
+    {
+      "id": "scl-skyteam-international",
+      "name": "SkyTeam Lounge",
+      "terminal": "T2 International",
+      "location": "After security and passport control, Pier E, first floor; use the lift on Level 3.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass-skyteam-operating",
+          "label": "Priority Pass on a SkyTeam operated flight",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "route": "international",
+          "maxVisitMinutes": 240,
+          "operatingAlliance": "skyteam"
+        },
+        {
+          "id": "priority-pass-skyteam-marketing",
+          "label": "Priority Pass on a SkyTeam codeshare",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "route": "international",
+          "maxVisitMinutes": 240,
+          "marketingAlliance": "skyteam"
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass: SkyTeam Santiago and airline restriction",
+          "url": "https://www.prioritypass.com/en-GB/lounges/chile/arturo-merino-benitez-international/scl8-skyteam-lounge",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "A 24-hour lounge with showers and a quiet area; Priority Pass access requires a SkyTeam-operated or SkyTeam-marketed flight."
+      },
+      "note": "Priority Pass access is limited to SkyTeam flights or SkyTeam codeshares; membership by itself does not qualify on an unrelated flight. Airline-invitation access is not yet modeled.",
+      "qualityRating": {
+        "score": 3,
+        "summary": "The September 2024 review found comfortable seating and a decent drinks selection, but underwhelming food. A functional place to wait rather than a reason to arrive early.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "One Mile at a Time · SkyTeam Santiago firsthand review",
+            "url": "https://onemileatatime.com/reviews/skyteam-lounge-santiago/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://onemileatatime.com/reviews/skyteam-lounge-santiago/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    }
+  ]
+}

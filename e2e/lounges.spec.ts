@@ -228,7 +228,7 @@ test('airline defaults follow marketing until overridden, with sourced ratings a
   api.data.preferences.loungePriority = 'showers';
   await api.install(page);
   // Access assertions use a clock at/after the latest research, not the older trip date.
-  await page.clock.setFixedTime(new Date('2026-11-17T12:00:00Z'));
+  await page.clock.setFixedTime(new Date('2026-11-18T12:00:00Z'));
   await openLounges(page);
   await page.getByRole('combobox', { name: 'Airport', exact: true }).fill('SYD');
   await page.getByLabel('Visit date', { exact: true }).fill('2026-10-17');
@@ -292,10 +292,10 @@ test('new airport guides work on a narrow screen with saved card and airline mem
     'united-premier-1k',
   ];
   await api.install(page);
-  await page.clock.setFixedTime(new Date('2026-11-17T12:00:00Z'));
+  await page.clock.setFixedTime(new Date('2026-11-18T12:00:00Z'));
   await page.setViewportSize({ width: 390, height: 844 });
   await openLounges(page);
-  await page.getByLabel('Visit date', { exact: true }).fill('2026-11-10');
+  await page.getByLabel('Visit date', { exact: true }).fill('2026-11-19');
   await page.getByLabel('From', { exact: true }).fill('16:00');
   await page.getByLabel('Until', { exact: true }).fill('17:30');
   await page.getByLabel('Departure time', { exact: true }).fill('18:00');
@@ -309,6 +309,12 @@ test('new airport guides work on a narrow screen with saved card and airline mem
     ['AMS', 'ams-aspire-26'],
     ['IST', 'ist-turkish-miles-smiles'],
     ['CDG', 'cdg-star-alliance-non-schengen'],
+    ['FRA', 'fra-lufthansa-business-a13'],
+    ['JFK', 'jfk-centurion'],
+    ['HKG', 'hkg-cathay-pier-business'],
+    ['BKK', 'bkk-thai-royal-orchid-d4-business'],
+    ['DOH', 'doh-qatar-gold-south'],
+    ['GRU', 'gru-latam-international'],
     ['SLC', 'slc-centurion'],
   ]) {
     await page.getByRole('combobox', { name: 'Airport', exact: true }).fill(airport);
@@ -344,7 +350,7 @@ test('compact mobile lounge links precede departures and preserve flight context
   await expect(page.getByRole('heading', { name: itinerary.name, exact: true })).toBeVisible();
   const navigation = page.getByRole('navigation', { name: 'Mobile navigation' });
   await navigation.getByRole('button', { name: 'Your plan', exact: true }).click();
-  // Representative researched connection and uncovered departure; the full
+  // Representative connection and departure; the full
   // five-leg journey is covered once in travel-feedback.spec.ts.
   for (const leg of itinerary.legs.filter((leg) => ['qf94', 'qf490'].includes(leg.id))) {
     await page.locator(`.day-button[data-date="${leg.departureDateTime.slice(0, 10)}"]`).click();
@@ -380,6 +386,9 @@ test('compact mobile lounge links precede departures and preserve flight context
   await expect(page.getByRole('heading', { name: 'Lounge Explorer', exact: true })).toBeVisible();
   await expect(page.getByRole('combobox', { name: 'Airport', exact: true })).toHaveValue('MEL');
   await expect(page.locator('.lounge-context')).toContainText('QF490');
+  await expect(page.locator('.lounge-card').first()).toBeVisible();
+  // Melbourne is now covered. An unresearched airport must still explain the gap.
+  await page.getByRole('combobox', { name: 'Airport', exact: true }).fill('ADL');
   await expect(page.locator('.lounge-empty')).toContainText(
     'We haven’t researched lounges here yet.',
   );

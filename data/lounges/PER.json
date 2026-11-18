@@ -1,0 +1,228 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "PER",
+  "timeZone": "Australia/Perth",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "per-qantas-international",
+      "name": "Qantas International Lounge",
+      "terminal": "T3",
+      "location": "Level 1 international departures, after immigration; this is not in Terminal 1.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "flight-dependent",
+        "note": "Opens three hours before Qantas international departures from Terminal 3."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "qantas-status",
+          "label": "Qantas Gold, Platinum or Platinum One",
+          "membershipsAnyOf": [
+            "qantas-gold",
+            "qantas-platinum",
+            "qantas-platinum-one"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "international",
+          "sourceIds": [
+            "qantas-access",
+            "oneworld-access"
+          ]
+        },
+        {
+          "id": "oneworld-status",
+          "label": "oneworld Sapphire or Emerald",
+          "membershipsAnyOf": [
+            "oneworld-sapphire",
+            "oneworld-emerald"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "international",
+          "sourceIds": [
+            "oneworld-access"
+          ]
+        },
+        {
+          "id": "oneworld-premium",
+          "label": "oneworld international Business or First",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "international",
+          "sourceIds": [
+            "oneworld-access"
+          ],
+          "conditions": [
+            "Your fare must include lounge access; check any airline fare exclusions."
+          ]
+        },
+        {
+          "id": "qantas-club",
+          "label": "Qantas Club on Qantas",
+          "membershipsAnyOf": [
+            "qantas-club"
+          ],
+          "operatingCarriersAnyOf": [
+            "QF"
+          ],
+          "marketingCarriersAnyOf": [
+            "QF"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "qantas-access"
+          ],
+          "conditions": [
+            "An eligible 1-, 2- or 4-year Qantas Club membership is required; Flexible membership does not include international lounges."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "qantas-location",
+          "title": "Qantas official lounge location, opening hours and facilities",
+          "url": "https://www.qantas.com/en-au/at-the-airport/lounges/locations/perth-international",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "qantas-access",
+          "title": "Qantas lounge access and eligibility",
+          "url": "https://www.qantas.com/en-au/at-the-airport/lounges/access",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "oneworld-access",
+          "title": "oneworld lounge access policy and exceptions",
+          "url": "https://www.oneworld.com/airport-lounges",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "A shower and refreshments before an eligible international departure."
+      },
+      "note": "International lounge only. Qantas domestic Business and Qantas Club lounges are separate products and are not covered by this record. Jetstar and Emirates special arrangements are not modeled.",
+      "qualityRating": {
+        "score": 4.5,
+        "summary": "The 2024 review praises the fresh design, outdoor terrace and extensive shower facilities. A well-equipped stop before a long international flight, provided it departs from Terminal 3.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Point Hacks · Qantas Perth T3 International Lounge review",
+            "url": "https://www.pointhacks.com.au/reviews/qantas-international-transit-lounge-perth-t3/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://www.pointhacks.com.au/reviews/qantas-international-transit-lounge-perth-t3/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    },
+    {
+      "id": "per-aspire-international-t1",
+      "name": "Aspire Lounge",
+      "terminal": "T1 International",
+      "location": "Airside international departures; take the stairs or lift from Level 2 to the lounge.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "04:00",
+            "close": "02:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "route": "international",
+          "maxVisitMinutes": 180
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass: Perth International Aspire Lounge",
+          "url": "https://www.prioritypass.com/en-GB/lounges/australia/perth/per2-international-aspire-lounge",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "operator",
+          "title": "Aspire Perth International: facilities and shower fees",
+          "url": "https://www.aspirelounges.com/airport-lounges/perth-international-airport-aspire-lounge",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "A useful Terminal 1 option with showers and airport views."
+      },
+      "note": "Separate from Qantas Terminal 3. The operator charges card-program visitors AUD 20 for optional showers; this is not an entry surcharge.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "The 2024 firsthand review praises the design, runway views and variety of seating, with a good food and drink selection. Busy periods can change the atmosphere.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Flight Hacks · Aspire Perth International T1 review",
+            "url": "https://flighthacks.com.au/stunning-aspire-lounge-perth-international-t1/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://flighthacks.com.au/stunning-aspire-lounge-perth-international-t1/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    }
+  ]
+}

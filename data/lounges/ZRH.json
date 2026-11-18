@@ -1,0 +1,333 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "ZRH",
+  "timeZone": "Europe/Zurich",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "zrh-swiss-business-e",
+      "name": "SWISS Business Lounge E",
+      "terminal": "E",
+      "location": "Dock E, after passport control. Allow time for the Skymetro and gate walk.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "06:00",
+            "close": "22:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "swiss-business",
+          "label": "SWISS Business Class",
+          "sourceIds": [
+            "swiss"
+          ],
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "LX"
+          ],
+          "excludedDestinationCountries": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ],
+          "conditions": [
+            "Confirm your fare includes lounge access and your departure uses Dock E."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "swiss",
+          "title": "SWISS · Zurich lounges, hours and facilities",
+          "url": "https://www.swiss.com/ae/en/fly/airport/lounges/lounges-zurich",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "Live cooking, recliners, showers and an outdoor terrace. This first guide models SWISS Business access; other partner cabin entitlements need confirmation.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "An April 2026 review praises the terrace but finds the seating and catering ordinary for a hub lounge. A useful shower and rest stop, with the terrace dependent on weather.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "The Alviator · SWISS E Business Lounge (April 2026)",
+            "url": "https://thealviator.com/2026/04/swiss-e-lounge-zurich/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://thealviator.com/2026/04/swiss-e-lounge-zurich/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    },
+    {
+      "id": "zrh-swiss-senator-e",
+      "name": "SWISS Senator Lounge E",
+      "terminal": "E",
+      "location": "Dock E, after passport control; beside the Business Lounge.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "06:00",
+            "close": "22:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "star-gold",
+          "label": "Star Alliance Gold",
+          "sourceIds": [
+            "swiss"
+          ],
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingAlliance": "star",
+          "excludedDestinationCountries": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ],
+          "conditions": [
+            "Confirm departure from Dock E on an eligible same-day flight."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "swiss",
+          "title": "SWISS · Zurich lounges, hours and facilities",
+          "url": "https://www.swiss.com/ae/en/fly/airport/lounges/lounges-zurich",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "Live cooking, showers, relaxation areas, a terrace and whisky bar. Not the separate First Lounge.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "A February 2024 visit found the terrace and whisky bar distinctive, while ordinary food and drinks were less impressive. The assessment predates the current operating check.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "One Mile at a Time · SWISS Senator Lounge E (2024 visit)",
+            "url": "https://onemileatatime.com/reviews/swiss-senator-lounge-zurich/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://onemileatatime.com/reviews/swiss-senator-lounge-zurich/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    },
+    {
+      "id": "zrh-aspire-e",
+      "name": "Aspire Lounge E",
+      "terminal": "E",
+      "location": "Above Gate E52 on the third floor; non-Schengen departures only.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "06:00",
+            "close": "21:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass · E gates",
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "excludedDestinationCountries": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ],
+          "conditions": [
+            "Your flight must depart from the E gates. Entry is subject to available space."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · Aspire Lounge E",
+          "url": "https://www.prioritypass.com/en-GB/lounges/switzerland/zurich/zrh1-aspire-lounge",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "amex-facilities",
+          "title": "American Express · Aspire E facilities",
+          "url": "https://www.americanexpress.com/en-gb/travel/lounges/the-platinum-card/ZRH/aspire-lounge-terminal-e-jtradxQEqd/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "Buffet with hot dishes at lunch and dinner; the Amex facilities listing describes two hours of free Wi-Fi. Showers and rest areas are unconfirmed. A sufficiently current independent review of this specific location remains outstanding.",
+      "photoLinks": [
+        {
+          "label": "View lounge details and photos",
+          "url": "https://www.prioritypass.com/en-GB/lounges/switzerland/zurich/zrh1-aspire-lounge",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    }
+  ]
+}

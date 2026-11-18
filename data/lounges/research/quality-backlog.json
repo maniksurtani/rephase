@@ -1,0 +1,74 @@
+[
+  {
+    "loungeId": "add-star-gold",
+    "reason": "Available descriptions do not establish a verified independent review of the separate Star Alliance Gold lounge."
+  },
+  {
+    "loungeId": "bcn-joan-miro",
+    "reason": "The available Priority Pass review is promotional; an independent firsthand assessment remains outstanding."
+  },
+  {
+    "loungeId": "bne-escape-international",
+    "reason": "A verified independent review of the current Escape facility remains outstanding; predecessor reviews do not establish its quality."
+  },
+  {
+    "loungeId": "bom-adani-silver-international",
+    "reason": "A credible independent review of this exact international Silver lounge remains outstanding."
+  },
+  {
+    "loungeId": "can-china-southern-t2-domestic",
+    "reason": "No verified current independent review of this exact domestic facility was available."
+  },
+  {
+    "loungeId": "cmn-aspire-executive-t2",
+    "reason": "Current operational sources were available, but a credible firsthand quality review was not verified."
+  },
+  {
+    "loungeId": "del-encalm-t3-international",
+    "reason": "Current access and facilities are documented; a credible independent review of this exact Encalm lounge remains outstanding."
+  },
+  {
+    "loungeId": "fco-ita-hangar",
+    "reason": "Recent independent review was inaccessible; older reviews may predate the December 2025 refurbishment."
+  },
+  {
+    "loungeId": "fra-priority-terminal-3",
+    "reason": "Older Terminal 2 Priority Lounge reviews do not describe the new Terminal 3 facility."
+  },
+  {
+    "loungeId": "gru-w-premium-the-pier",
+    "reason": "A current independent firsthand review of The Pier was not verified; other W Premium locations are not interchangeable."
+  },
+  {
+    "loungeId": "iah-united-club-b-north",
+    "reason": "Opened 22 October 2026; launch reports establish facilities but not an independent ordinary-visit quality assessment."
+  },
+  {
+    "loungeId": "mel-aspire-t2",
+    "reason": "No verified independent firsthand review of this Terminal 2 lounge; do not reuse other Aspire locations."
+  },
+  {
+    "loungeId": "mex-harmony-t2",
+    "reason": "Current operational listing verified; an independent firsthand review of this Terminal 2 lounge remains outstanding."
+  },
+  {
+    "loungeId": "nrt-jal-sakura-main",
+    "reason": "No readable current independent review of the main lounge was verified during this pass; satellite reviews are not substitutes."
+  },
+  {
+    "loungeId": "pek-bgs-t3e",
+    "reason": "No credible current independent review of this exact lounge was verified."
+  },
+  {
+    "loungeId": "pvg-air-china-business",
+    "reason": "A current independent firsthand account of this exact lounge remains outstanding."
+  },
+  {
+    "loungeId": "pvg-china-eastern-77",
+    "reason": "A current independent firsthand account of Lounge 77 remains outstanding."
+  },
+  {
+    "loungeId": "zrh-aspire-e",
+    "reason": "Found older 2016/2020 E-gate reviews, but no sufficiently current verified firsthand account; Schengen Aspire reviews do not apply."
+  }
+]

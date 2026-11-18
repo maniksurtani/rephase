@@ -1,0 +1,154 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "CAN",
+  "timeZone": "Asia/Shanghai",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "can-china-southern-t2-domestic",
+      "name": "China Southern Sky Pearl Lounge (Domestic)",
+      "terminal": "T2",
+      "location": "After domestic security, level 3, turn left.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "unknown",
+        "note": "Published hours conflict: China Southern lists 05:45–21:00; Priority Pass lists 04:30 until the last China Southern flight. Confirm the hours applicable to your access route."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "route": "domestic",
+          "maxVisitMinutes": 120
+        }
+      ],
+      "sources": [
+        {
+          "id": "operator",
+          "title": "China Southern · Guangzhou T2 lounge locations and facilities",
+          "url": "https://www.csair.com/sg/en/tourguide/airport_service/priority_pass/domestic/18ibblf3861ua.shtml",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · China Southern Domestic T2",
+          "url": "https://www.prioritypass.com/en-GB/lounges/china/guangzhou-baiyun-international/can26-china-southern-first-business-class-lounge",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "Showers and sleeping rooms for a longer domestic connection."
+      },
+      "note": "Domestic and international lounges are in separate controlled areas. Massage areas or chairs are not treated as a staffed spa. Shower or private rest-room charges and availability may vary. China Southern is not treated as a SkyTeam airline."
+    },
+    {
+      "id": "can-china-southern-t2-international",
+      "name": "China Southern Sky Pearl Lounge (International)",
+      "terminal": "T2",
+      "location": "International departures, level 4 mezzanine after passport control and security.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "flight-dependent",
+        "note": "04:30 until the final China Southern departure of the day."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "route": "international",
+          "maxVisitMinutes": 120
+        },
+        {
+          "id": "china-southern-premium",
+          "label": "China Southern Business or First Class",
+          "sourceIds": [
+            "operator"
+          ],
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingCarriersAnyOf": [
+            "CZ"
+          ],
+          "route": "international"
+        }
+      ],
+      "sources": [
+        {
+          "id": "operator",
+          "title": "China Southern · Guangzhou T2 lounge locations and facilities",
+          "url": "https://www.csair.com/sg/en/tourguide/airport_service/priority_pass/domestic/18ibblf3861ua.shtml",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · China Southern International T2",
+          "url": "https://www.prioritypass.com/en-GB/lounges/china/guangzhou-baiyun-international/can28-china-southern-first-business-class-lounge",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "partner",
+          "title": "Plaza Premium · China Southern international facilities",
+          "url": "https://www.plazapremiumlounge.com/en-uk/find/china-regions/mainland-china/guangzhou/guangzhou-baiyun-international-airport/china-southern-skypearl-international",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "Showers and sleeping rooms for a longer international connection."
+      },
+      "note": "Domestic and international lounges are in separate controlled areas. Massage areas or chairs are not treated as a staffed spa. Shower or private rest-room charges and availability may vary. China Southern is not treated as a SkyTeam airline.",
+      "qualityRating": {
+        "score": 3,
+        "summary": "A March 2025 visit found quiet seating, clean showers and day beds, but underwhelming food, failed power outlets and difficulty connecting to Wi-Fi. More useful for resting than a special meal.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "The Airport Lounge Bro · China Southern T2 (March 2025 visit)",
+            "url": "https://theairportloungebro.com/china-southern-business-class-lounge-guangzhou-airport-terminal-2-can/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://theairportloungebro.com/china-southern-business-class-lounge-guangzhou-airport-terminal-2-can/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    }
+  ]
+}

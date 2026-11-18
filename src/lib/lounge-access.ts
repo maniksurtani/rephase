@@ -63,6 +63,8 @@ const ALLIANCES: Record<string, LoungeAlliance> = {
   AC: 'star',
   AI: 'star',
   AV: 'star',
+  // ITA joined on 1 April 2026; source recorded in the global-hubs research note.
+  AZ: 'star',
   BR: 'star',
   CA: 'star',
   CM: 'star',
@@ -93,6 +95,7 @@ const ALLIANCES: Record<string, LoungeAlliance> = {
   KL: 'skyteam',
   KQ: 'skyteam',
   ME: 'skyteam',
+  MF: 'skyteam',
   MU: 'skyteam',
   RO: 'skyteam',
   SV: 'skyteam',
@@ -100,7 +103,22 @@ const ALLIANCES: Record<string, LoungeAlliance> = {
   VS: 'skyteam',
   UX: 'skyteam',
 };
-const NON_ALLIANCE_CARRIERS = new Set(['B6', 'EK', 'F9', 'G4', 'JQ', 'NK', 'TR', 'VA', 'WN']);
+const NON_ALLIANCE_CARRIERS = new Set([
+  'B6',
+  'CZ',
+  'EK',
+  'EY',
+  'F9',
+  'G4',
+  'JJ',
+  'JQ',
+  'LA',
+  'NK',
+  'PR',
+  'TR',
+  'VA',
+  'WN',
+]);
 
 export function loungeCarrierAlliance(carrier?: string): LoungeAlliance | undefined {
   return carrier ? ALLIANCES[carrier.trim().toUpperCase()] : undefined;

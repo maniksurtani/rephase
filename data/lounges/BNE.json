@@ -1,0 +1,243 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "BNE",
+  "timeZone": "Australia/Brisbane",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "bne-qantas-international",
+      "name": "Qantas International Lounge",
+      "terminal": "International Terminal",
+      "location": "Official listing: airside Level 3. Confirm the current entrance while terminal access works continue.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:15",
+            "close": "23:30"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "qantas-status",
+          "label": "Qantas Gold, Platinum or Platinum One",
+          "membershipsAnyOf": [
+            "qantas-gold",
+            "qantas-platinum",
+            "qantas-platinum-one"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "international",
+          "sourceIds": [
+            "qantas-access",
+            "oneworld-access"
+          ],
+          "conditions": [
+            "Confirm the current entrance with Qantas: temporary landside access was reported during terminal works; allow time to clear security if required."
+          ]
+        },
+        {
+          "id": "oneworld-status",
+          "label": "oneworld Sapphire or Emerald",
+          "membershipsAnyOf": [
+            "oneworld-sapphire",
+            "oneworld-emerald"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "international",
+          "sourceIds": [
+            "oneworld-access"
+          ],
+          "conditions": [
+            "Confirm the current entrance with Qantas: temporary landside access was reported during terminal works; allow time to clear security if required."
+          ]
+        },
+        {
+          "id": "oneworld-premium",
+          "label": "oneworld international Business or First",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "international",
+          "sourceIds": [
+            "oneworld-access"
+          ],
+          "conditions": [
+            "Your fare must include lounge access; check any airline fare exclusions.",
+            "Confirm the current entrance with Qantas: temporary landside access was reported during terminal works; allow time to clear security if required."
+          ]
+        },
+        {
+          "id": "qantas-club",
+          "label": "Qantas Club on Qantas",
+          "membershipsAnyOf": [
+            "qantas-club"
+          ],
+          "operatingCarriersAnyOf": [
+            "QF"
+          ],
+          "marketingCarriersAnyOf": [
+            "QF"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "qantas-access"
+          ],
+          "conditions": [
+            "An eligible 1-, 2- or 4-year Qantas Club membership is required; Flexible membership does not include international lounges.",
+            "Confirm the current entrance with Qantas: temporary landside access was reported during terminal works; allow time to clear security if required."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "qantas-location",
+          "title": "Qantas official lounge location, opening hours and facilities",
+          "url": "https://www.qantas.com/en-au/at-the-airport/lounges/locations/brisbane-international",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "qantas-access",
+          "title": "Qantas lounge access and eligibility",
+          "url": "https://www.qantas.com/en-au/at-the-airport/lounges/access",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "oneworld-access",
+          "title": "oneworld lounge access policy and exceptions",
+          "url": "https://www.oneworld.com/airport-lounges",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "entrance-works",
+          "title": "Point Hacks: temporary landside Qantas entrance from April 2026",
+          "url": "https://www.pointhacks.com.au/news/qantas-brisbane-lounge-landside-cut-jetstar-access/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "A shower and refreshments before an eligible international departure."
+      },
+      "note": "International lounge only. Qantas domestic Business and Qantas Club lounges are separate products and are not covered by this record. Jetstar and Emirates special arrangements are not modeled.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "An earlier review praises the choice of seating and dining across three levels. That assessment predates temporary entrance works, so the current approach to the lounge needs checking.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Point Hacks · Qantas Brisbane International Lounge review",
+            "url": "https://www.pointhacks.com.au/reviews/qantas-international-lounge-brisbane/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://www.pointhacks.com.au/reviews/qantas-international-lounge-brisbane/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    },
+    {
+      "id": "bne-escape-international",
+      "name": "Escape Lounge",
+      "terminal": "International Terminal",
+      "location": "After security and passport control, Level 4 near Gate 81.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "06:00",
+            "close": "01:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "route": "international",
+          "maxMinutesBeforeDeparture": 180
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass: Brisbane Escape Lounge",
+          "url": "https://www.prioritypass.com/en-GB/lounges/australia/brisbane/bne11-escape-lounges",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "operator",
+          "title": "Escape Lounges Brisbane: location, access and facilities",
+          "url": "https://escapelounges.com/au/airport-lounges/brisbane/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "A Priority Pass option for a meal and drinks before an international flight."
+      },
+      "note": "Food and drinks service ends 30 minutes before closing. Shower and spa availability have not been verified.",
+      "photoLinks": [
+        {
+          "label": "View lounge photos",
+          "url": "https://escapelounges.com/au/airport-lounges/brisbane/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    }
+  ]
+}

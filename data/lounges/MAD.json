@@ -1,0 +1,291 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "MAD",
+  "timeZone": "Europe/Madrid",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "mad-iberia-dali",
+      "name": "Iberia Premium Lounge Dalí",
+      "terminal": "4",
+      "location": "After security in Terminal 4, serving boarding areas H, J, K and M. Allow substantial transfer time if departing from T4S.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:30",
+            "close": "23:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "iberia-business",
+          "label": "Iberia Business Class",
+          "sourceIds": [
+            "iberia"
+          ],
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "IB"
+          ],
+          "conditions": [
+            "Your boarding pass must permit access to this lounge and terminal."
+          ]
+        },
+        {
+          "id": "oneworld-status",
+          "label": "oneworld Sapphire or Emerald",
+          "sourceIds": [
+            "oneworld",
+            "iberia"
+          ],
+          "membershipsAnyOf": [
+            "oneworld-sapphire",
+            "oneworld-emerald"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "conditions": [
+            "Confirm that your departure terminal and boarding pass permit access to this lounge."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "iberia",
+          "title": "Iberia · Madrid VIP lounges",
+          "url": "https://www.iberia.com/us/iberia-madrid-vip-lounges/",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "facilities",
+          "title": "Iberia · Lounge directory and facilities",
+          "url": "https://www.iberia.com/gb/vip-lounges/",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "oneworld",
+          "title": "oneworld · Lounge access policy",
+          "url": "https://www.oneworld.com/airport-lounges",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "Showers and relaxation areas are available. Non-Schengen passengers should usually use Velázquez nearer the T4S gates. The separate Emerald Lounge Sorolla is not yet covered.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "A July 2026 visit found generous space, good food and a choice of seating. Barista coffee and staffed drinks service had limited hours, and the early morning was busy.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "The Alviator · Iberia Dalí Lounge (July 2026 visit)",
+            "url": "https://thealviator.com/2026/09/iberia-dali-lounge-review/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://thealviator.com/2026/09/iberia-dali-lounge-review/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    },
+    {
+      "id": "mad-iberia-velazquez",
+      "name": "Iberia Premium Lounge Velázquez",
+      "terminal": "4S",
+      "location": "Terminal 4S, first floor, S gate area; after passport control for non-Schengen departures.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "06:00",
+            "close": "01:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "restaurant",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "iberia-business",
+          "label": "Iberia Business Class",
+          "sourceIds": [
+            "iberia"
+          ],
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "IB"
+          ],
+          "conditions": [
+            "Your boarding pass must permit access to this lounge and terminal."
+          ],
+          "excludedDestinationCountries": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ]
+        },
+        {
+          "id": "oneworld-status",
+          "label": "oneworld Sapphire or Emerald",
+          "sourceIds": [
+            "oneworld",
+            "iberia"
+          ],
+          "membershipsAnyOf": [
+            "oneworld-sapphire",
+            "oneworld-emerald"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "conditions": [
+            "Confirm that your departure terminal and boarding pass permit access to this lounge."
+          ],
+          "excludedDestinationCountries": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "iberia",
+          "title": "Iberia · Madrid VIP lounges",
+          "url": "https://www.iberia.com/us/iberia-madrid-vip-lounges/",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "facilities",
+          "title": "Iberia · Lounge directory and facilities",
+          "url": "https://www.iberia.com/gb/vip-lounges/",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "oneworld",
+          "title": "oneworld · Lounge access policy",
+          "url": "https://www.oneworld.com/airport-lounges",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "Buffet and restaurant facilities, showers and relaxation areas. Confirm restaurant service times at reception; full table service is not promised throughout lounge opening hours.",
+      "qualityRating": {
+        "score": 4.5,
+        "summary": "A review updated in January 2026 praises natural light, varied dining and substantial space for working or resting. Its seated restaurant was not open at breakfast.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Upgraded Points · Iberia Velázquez Lounge (January 2026 update)",
+            "url": "https://upgradedpoints.com/travel/airports/iberia-premium-lounge-velazquez-madrid-mad-review/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://upgradedpoints.com/travel/airports/iberia-premium-lounge-velazquez-madrid-mad-review/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    }
+  ]
+}

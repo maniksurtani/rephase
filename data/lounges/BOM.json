@@ -1,0 +1,76 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "BOM",
+  "timeZone": "Asia/Kolkata",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "bom-adani-silver-international",
+      "name": "Adani Silver International Lounge",
+      "terminal": "T2 International",
+      "location": "After security and passport control, Level 4 near duty free; use the current Priority Pass listing to identify the entrance.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "23:59"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "yes",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "route": "international",
+          "maxVisitMinutes": 120,
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "conditions": [
+            "Confirm the current BOM20 Silver International entrance and Priority Pass acceptance; nearby Adani lounges have different admission rules."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · Adani Silver International (BOM20, former East URL)",
+          "url": "https://www.prioritypass.com/en-GB/lounges/india/chhatrapati-shivaji-international/bom20-adani-lounge-east",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "This is Priority Pass location BOM20, not the separately listed BOM26 Silver Lounge, domestic Adani lounges, or Navi Mumbai Airport. Shower and spa fees should be checked locally. No rating is assigned while the renamed lounge cannot be safely matched to older East/West reviews.",
+      "photoLinks": [
+        {
+          "label": "View lounge details and photos",
+          "url": "https://www.prioritypass.com/en-GB/lounges/india/chhatrapati-shivaji-international/bom20-adani-lounge-east",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    }
+  ]
+}

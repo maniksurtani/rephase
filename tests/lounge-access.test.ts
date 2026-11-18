@@ -52,6 +52,8 @@ describe('lounge access matching', () => {
     expect(airlineAlliance('UA')).toBe('star');
     expect(airlineAlliance('VS')).toBe('skyteam');
     expect(airlineAlliance('HA')).toBe('oneworld');
+    expect(airlineAlliance('AZ')).toBe('star');
+    expect(airlineAlliance('SK')).toBe('skyteam');
     expect(airlineAlliance('ZZ')).toBeUndefined();
   });
 
@@ -60,6 +62,15 @@ describe('lounge access matching', () => {
     expect(check(candidate, context({ memberships: ['qantas-gold'] })).access).toBe('eligible');
     expect(check(candidate, context({ memberships: ['qantas-gold'], operatingCarrier: 'EK' })).access).toBe('ineligible');
     expect(check(candidate, context({ memberships: ['qantas-gold'], marketingCarrier: 'UA' })).access).toBe('ineligible');
+  });
+
+  it('does not grant alliance access to known non-alliance hub airlines', () => {
+    for (const operatingCarrier of ['CZ', 'EY', 'LA', 'JJ', 'PR']) {
+      for (const operatingAlliance of ['oneworld', 'star', 'skyteam'] as const) {
+        const candidate = ruleLounge({ id: 'alliance-business', label: 'Alliance business', cabinsAnyOf: ['business'], operatingAlliance });
+        expect(check(candidate, context({ cabin: 'business', operatingCarrier })).access).toBe('ineligible');
+      }
+    }
   });
 
   it('does not infer the operator from the marketing flight number or alliance', () => {

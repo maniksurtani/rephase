@@ -1,0 +1,224 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "DEN",
+  "timeZone": "America/Denver",
+  "updatedAt": "2026-11-18",
+  "lounges": [
+    {
+      "id": "den-centurion",
+      "name": "The Centurion Lounge",
+      "terminal": "Concourse C",
+      "location": "Mezzanine between Gates C46 and C48.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:00",
+            "close": "22:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "platinum",
+          "label": "Eligible Amex Platinum card",
+          "membershipsAnyOf": [
+            "amex-platinum"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "sourceIds": [
+            "amex-access"
+          ]
+        },
+        {
+          "id": "platinum-connection",
+          "label": "Amex Platinum on a qualifying connection",
+          "membershipsAnyOf": [
+            "amex-platinum"
+          ],
+          "maxMinutesBeforeDeparture": 300,
+          "conditions": [
+            "Confirm a same-day onward connection; a same-day round trip does not qualify."
+          ],
+          "sourceIds": [
+            "amex-access"
+          ]
+        },
+        {
+          "id": "delta-reserve-operating",
+          "label": "Delta Reserve on a Delta operating flight",
+          "membershipsAnyOf": [
+            "delta-skymiles-reserve"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "sourceIds": [
+            "amex-access"
+          ]
+        },
+        {
+          "id": "delta-reserve-marketing",
+          "label": "Delta Reserve on a Delta marketing flight",
+          "membershipsAnyOf": [
+            "delta-skymiles-reserve"
+          ],
+          "marketingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "sourceIds": [
+            "amex-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "amex-location",
+          "title": "American Express: DEN Centurion Lounge",
+          "url": "https://www.americanexpress.com/en-us/travel/lounges/the-platinum-card/DEN/The-Centurion-Lounge-Concourse-C-Y0gab269l3/",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "amex-access",
+          "title": "American Express: Centurion access",
+          "url": "https://www.americanexpress.com/en-us/travel/lounges/centurion-network/access/",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "airport-location",
+          "title": "Denver Airport: Centurion Lounge",
+          "url": "https://www.flydenver.com/relax/american-express-centurion-lounge/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "The October 2025 review found strong drinks and desserts, uneven meals and frequent pressure on seating.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "independent-review",
+            "title": "Independent Centurion Lounge review",
+            "url": "https://www.nerdwallet.com/travel/learn/den-amex-lounge",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "Photos and independent review",
+          "url": "https://www.nerdwallet.com/travel/learn/den-amex-lounge",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "note": "Departing passengers only; no access after the final arrival. Card-specific guest benefits are not modelled."
+    },
+    {
+      "id": "den-united-club-b32",
+      "name": "United Club \u2014 B32",
+      "terminal": "Concourse B",
+      "location": "West side near Gate B32; two levels.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:00",
+            "close": "21:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "united-club-member",
+          "label": "United Club membership",
+          "membershipsAnyOf": [
+            "united-club"
+          ],
+          "operatingAlliance": "star",
+          "sourceIds": [
+            "united-card-policy"
+          ],
+          "conditions": [
+            "Your qualifying United/Star Alliance boarding pass must be for the same calendar day as this lounge visit."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "united-card-policy",
+          "title": "Chase: United Club membership and same-day flight requirements",
+          "url": "https://www.chase.com/personal/credit-cards/education/rewards-benefits/guide-to-united-lounges",
+          "checkedOn": "2026-11-18"
+        },
+        {
+          "id": "airport-location",
+          "title": "Denver Airport: United Club B West",
+          "url": "https://www.flydenver.com/relax/united-club-west/",
+          "checkedOn": "2026-11-18"
+        }
+      ],
+      "photos": [],
+      "note": "This record currently matches paid United Club membership only. Premium-ticket and status eligibility need a separate policy check.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "The December 2025 visit praised generous seating, attractive interiors, breakfast and friendly staff; it found no showers or barista service.",
+        "reviewedOn": "2026-11-18",
+        "sources": [
+          {
+            "id": "independent-review",
+            "title": "BoardingArea: United Club Denver B West",
+            "url": "https://boardingarea.com/review-united-club-denver-den-concourse-b-west/",
+            "checkedOn": "2026-11-18"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "Photos and independent review",
+          "url": "https://boardingarea.com/review-united-club-denver-den-concourse-b-west/",
+          "checkedOn": "2026-11-18"
+        }
+      ]
+    }
+  ]
+}

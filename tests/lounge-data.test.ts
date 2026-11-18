@@ -5,7 +5,11 @@ import Ajv from 'ajv';
 import { Temporal } from '@js-temporal/polyfill';
 import { describe, expect, it } from 'vitest';
 import schema from '../data/lounges/schema.json';
+import qualityBacklog from '../data/lounges/research/quality-backlog.json';
 import { LOUNGE_DATA } from './support/lounge-data';
+import { LOUNGE_AIRLINES } from '../src/lib/lounge-data';
+import { findAirport } from '../src/lib/airports';
+import { airportCountry } from '../src/lib/lounge-windows';
 import sfo from '../data/lounges/SFO.json';
 import { LOUNGE_MEMBERSHIPS, type AirportLoungeData } from '../src/lib/lounge-types';
 
@@ -133,7 +137,27 @@ describe('curated lounge research data', () => {
     expect(new Set(files.map(data => data.airport)).size).toBe(files.length);
     const ids = files.flatMap(data => data.lounges.map(lounge => lounge.id));
     expect(new Set(ids).size).toBe(ids.length);
-    expect(files.flatMap(data => data.lounges).every(lounge => lounge.qualityRating)).toBe(true);
+  });
+
+  it('tracks every unrated lounge explicitly without borrowing or inventing a score', () => {
+    const unrated = files.flatMap(data => data.lounges.filter(lounge => !lounge.qualityRating).map(lounge => lounge.id));
+    expect(qualityBacklog.map(item => item.loungeId).sort()).toEqual(unrated.sort());
+    expect(qualityBacklog.every(item => item.reason.trim().length > 0)).toBe(true);
+  });
+
+  it('can represent every guide airport, route country and explicitly required carrier in both clients', () => {
+    const carriers = new Set<string>(LOUNGE_AIRLINES.map(([code]) => code));
+    for (const data of files) {
+      expect(findAirport(data.airport)?.timeZone, data.airport).toBe(data.timeZone);
+      expect(airportCountry(data.airport), data.airport).toMatch(/^[A-Z]{2}$/);
+      for (const lounge of data.lounges) {
+        for (const rule of lounge.accessRules) {
+          for (const carrier of [...(rule.operatingCarriersAnyOf ?? []), ...(rule.marketingCarriersAnyOf ?? [])]) {
+            expect(carriers.has(carrier), `${lounge.id}/${rule.id}: ${carrier} missing from airline choices`).toBe(true);
+          }
+        }
+      }
+    }
   });
 
   it('requires bounded half-point ratings and review provenance without refreshing access research', () => {
