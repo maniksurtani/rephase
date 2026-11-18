@@ -1,5 +1,6 @@
 import { Temporal } from '@js-temporal/polyfill';
 import { AIRPORTS, findAirport } from '../lib/airports';
+import { flightCarbonFootprint } from '../lib/flight-carbon';
 import { createDemoTrip, createEmptyTrip, createLeg, DEFAULT_PREFERENCES } from '../lib/defaults';
 import { buildDayTimeline, timelineTimeZone } from '../lib/day-timeline';
 import { phaseChangeLabel, remainingAdjustmentLabel } from '../lib/display';
@@ -47,6 +48,10 @@ function presentPlan(plan: Plan, trip: Trip, now: number) {
   });
   const flight = (value: PlanTravelSegment) => ({
     ...value,
+    carbonFootprint: flightCarbonFootprint({
+      ...value,
+      travelClass: trip.legs.find((leg) => leg.id === value.id)?.travelClass ?? value.travelClass,
+    }),
     departureCity: findAirport(value.departureAirport)?.city ?? 'Departure city',
     arrivalCity: findAirport(value.arrivalAirport)?.city ?? 'Destination',
     departureClock: travelClock(value.departure, value.departureTimeZone),

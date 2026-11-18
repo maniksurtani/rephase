@@ -134,6 +134,11 @@ void main() {
         'departureClock': clock('11:00'),
         'arrivalClock': clock('19:00'),
         'aircraft': {'model': 'Boeing 787'},
+        'carbonFootprint': {
+          'climateImpactLabel': '≈ 3.0 t CO₂e',
+          'co2Label': '≈ 940 kg CO₂',
+          'cabinLabel': 'Economy',
+        },
       };
       final journey = <String, dynamic>{
         'start': start,
@@ -303,6 +308,21 @@ void main() {
       await tester.tap(find.text('Flight details'));
       await tester.pumpAndSettle();
       expect(find.text('Aircraft · Boeing 787'), findsOneWidget);
+      expect(find.text('≈ 3.0 t CO₂e'), findsNothing);
+      await tester.tap(find.text('Flight details'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Carbon footprint'));
+      await tester.pumpAndSettle();
+      expect(find.text('≈ 3.0 t CO₂e'), findsOneWidget);
+      expect(
+        find.text('Economy · Direct emissions: ≈ 940 kg CO₂'),
+        findsOneWidget,
+      );
+      expect(find.text('How we calculate this'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      await tester.tap(find.text('Carbon footprint'));
+      await tester.pumpAndSettle();
+      expect(find.text('≈ 3.0 t CO₂e'), findsNothing);
       await tester.tap(find.byTooltip('Close details'));
       await tester.pumpAndSettle();
       await tester.ensureVisible(

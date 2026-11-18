@@ -203,6 +203,21 @@ test('Today and the full plan retain all five flights with both local clocks and
       .click();
     await expect(flightCard(page, leg.id)).toBeVisible();
     await expect(flightCard(page, leg.id)).toContainText(leg.flightNumber);
+    if (leg.id === 'qf103') {
+      const carbon = flightCard(page, leg.id).locator('details.flight-carbon');
+      await expect(carbon).not.toHaveAttribute('open', '');
+      await expect(carbon.locator('.flight-carbon-total')).toBeHidden();
+      await carbon.locator('summary').focus();
+      await page.keyboard.press('Enter');
+      await expect(carbon.locator('.flight-carbon-total')).toContainText('CO₂e');
+      await expect(carbon).toContainText('per passenger · one way');
+      await expect(carbon).toContainText('Direct emissions:');
+      await expect(carbon.getByRole('link', { name: 'How we calculate this' })).toHaveAttribute('href', '/science.html#flight-carbon');
+      await page.setViewportSize({ width: 390, height: 844 });
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      await page.screenshot({ path: 'artifacts/flight-carbon-mobile.png' });
+      await page.setViewportSize({ width: 1440, height: 1000 });
+    }
     mealWindowCount += await expectMealAdvice(page, leg.id);
     await page.getByRole('button', { name: 'Close dialog', exact: true }).click();
   }

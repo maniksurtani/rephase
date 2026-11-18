@@ -25,3 +25,46 @@
 .flight-details .flight-segment-events {
   padding-bottom: 3px;
 }
+.flight-carbon {
+  border-top: 1px solid #393745;
+  padding-bottom: 12px;
+  font-size: 13px;
+}
+.flight-carbon > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  color: #a8c7b3;
+  cursor: pointer;
+}
+.flight-carbon > summary::after {
+  content: '+';
+  margin-left: auto;
+}
+.flight-carbon > summary::-webkit-details-marker {
+  display: none;
+}
+.flight-carbon[open] > summary::after {
+  content: '−';
+}
+.flight-carbon > summary:focus-visible {
+  outline: 2px solid #d6c4ee;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+.flight-carbon-content p {
+  margin: 0 0 8px;
+}
+.flight-carbon-content .flight-carbon-total {
+  font-size: 22px;
+  font-weight: 650;
+  color: #d5e6db;
+}
+.flight-carbon-note {
+  color: #aaa6b5;
+  line-height: 1.5;
+}
+.flight-carbon a {
+  color: #c6b2dd;
+}

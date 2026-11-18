@@ -138,7 +138,12 @@ describe('planning rules', () => {
       trip([{ ...first, travelClass: 'business', lieFlat: false }]),
       preferences,
     );
-    expect(economy.days).toEqual(business.days);
+    // Cabin is now retained for carbon estimates; sleep and meal guidance must still match.
+    const recommendations = (plan: ReturnType<typeof generatePlan>) => plan.days.map(day => ({
+      ...day,
+      travelSegments: day.travelSegments?.map(segment => ({ ...segment, travelClass: undefined })),
+    }));
+    expect(recommendations(economy)).toEqual(recommendations(business));
     const lieFlat = generatePlan(
       trip([{ ...first, travelClass: 'economy', lieFlat: true }]),
       preferences,

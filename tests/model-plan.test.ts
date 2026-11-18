@@ -140,7 +140,12 @@ describe('light-driven itinerary model', () => {
     expect(timing).toEqual({ takeoff: departure + 0.5 * HOUR, landing: arrival - 0.5 * HOUR });
     const a = generatePlan(trip([{ ...leg, travelClass: 'economy', lieFlat: false }]), prefs);
     const b = generatePlan(trip([{ ...leg, travelClass: 'business', lieFlat: false }]), prefs);
-    expect(a.days).toEqual(b.days);
+    // Cabin is now retained for carbon estimates; sleep and meal guidance must still match.
+    const recommendations = (plan: ReturnType<typeof generatePlan>) => plan.days.map(day => ({
+      ...day,
+      travelSegments: day.travelSegments?.map(segment => ({ ...segment, travelClass: undefined })),
+    }));
+    expect(recommendations(a)).toEqual(recommendations(b));
     const flat = generatePlan(trip([{ ...leg, travelClass: 'first', lieFlat: true }]), prefs);
     const inFlightSleep = (plan: ReturnType<typeof generatePlan>) =>
       all(plan).filter((action) => action.type === 'sleep' && overlaps(action, departure, arrival));

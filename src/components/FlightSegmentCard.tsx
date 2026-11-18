@@ -1,7 +1,8 @@
-import { Moon, Plane, Utensils } from 'lucide-react';
+import { Leaf, Moon, Plane, Utensils } from 'lucide-react';
 import type { PlanTravelSegment } from '../lib/types';
 import { travelClock } from '../lib/travel-clocks';
 import { aircraftLabel } from '../lib/aircraft';
+import { CARBON_METHODOLOGY_URL, flightCarbonFootprint } from '../lib/flight-carbon';
 import '../flight-details.css';
 
 export function FlightSegmentCard({
@@ -11,6 +12,7 @@ export function FlightSegmentCard({
   segment: PlanTravelSegment;
   collapseMeals?: boolean;
 }) {
+  const carbon = flightCarbonFootprint(segment);
   function clockRow(
     instant: string,
     airport: string,
@@ -146,6 +148,29 @@ export function FlightSegmentCard({
             )}
           </section>
         </div>
+      </details>
+      <details className="flight-carbon">
+        <summary>
+          <Leaf size={16} aria-hidden="true" /> Carbon footprint
+        </summary>
+        {carbon ? (
+          <div className="flight-carbon-content">
+            <p className="flight-carbon-total">{carbon.climateImpactLabel}</p>
+            <p>Estimated climate impact · per passenger · one way</p>
+            <p>
+              {carbon.cabinLabel} · Direct emissions: {carbon.co2Label}
+            </p>
+            <p className="flight-carbon-note">
+              Includes fuel production and non-CO₂ warming. Uses route and cabin averages, not this
+              aircraft’s measured emissions.
+            </p>
+          </div>
+        ) : (
+          <p>Estimate unavailable: airport coordinates are missing or the route is invalid.</p>
+        )}
+        <a href={CARBON_METHODOLOGY_URL} target="_blank" rel="noopener noreferrer">
+          How we calculate this
+        </a>
       </details>
       {segment.mealPlan && (
         <section className="meal-plan" aria-label="Meals and sleep for this flight">

@@ -280,3 +280,10 @@ Updated 2026-11-16. Active work is kept here; the previous complete checklist is
 - [x] Research and add Oceania/Latin American hub guides.
 - [x] Integrate shared country/airline support; validate source provenance, policy exceptions and generated airport downloads.
 - [x] Commit/push reviewed batches and record precise coverage, ratings and unresolved gaps in `data/lounges/COVERAGE.md`.
+
+## Flight carbon footprint — 18 November 2026
+
+- [x] Implement one offline distance/cabin model shared by web and native, with source provenance and explicit missing-data handling.
+- [x] Add a collapsed leaf-icon section to flight details on every platform, showing per-passenger climate impact and direct CO₂.
+- [x] Link to a plain-language methodology section with authoritative further reading.
+- [x] Verify arithmetic, cabin propagation, native rendering and the mobile-width browser interaction: 719 unit tests passed across the full run and focused rerun, 3 Flutter planner tests and 2 browser scenarios; typecheck, lint, format, Flutter analyze and production build passed.

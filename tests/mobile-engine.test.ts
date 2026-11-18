@@ -12,6 +12,7 @@ import { groupPlanDays } from '../src/lib/plan-calendar';
 import { buildFlightLoungeContexts } from '../src/lib/lounge-windows';
 import { generatePlan } from './support/planning';
 import { evaluateAirportLounges } from '../src/lib/lounge-access';
+import { flightCarbonFootprint } from '../src/lib/flight-carbon';
 import { LOUNGE_DATA, loungeDataFor } from './support/lounge-data';
 import type { LoungeVisitContext } from '../src/lib/lounge-types';
 import type { AppData, Plan, Trip } from '../src/lib/types';
@@ -48,6 +49,11 @@ describe('bundled offline mobile boundary', () => {
     const trip = october.trip as Trip;
     const prefs = { ...preferences, planningMode: 'rules' as const };
     const result = invoke('plan', { trip, preferences: prefs, now });
+    for (const leg of trip.legs) {
+      const flight = result.days.flatMap((day: Result) => day.travelSegments).find((value: Result) => value.id === leg.id);
+      expect(flight.travelClass).toBe(leg.travelClass);
+      expect(flight.carbonFootprint).toEqual(flightCarbonFootprint(leg));
+    }
     expect(comparable(result.plan)).toEqual(comparable(generatePlan(trip, prefs, { now })));
     expect(result.days.find((day: Result) => day.date === '2026-10-20').city).toBe('San Francisco');
     expect(result.days.map((day: Result) => day.date)).toContain('2026-10-18');

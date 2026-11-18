@@ -164,6 +164,8 @@ test('static science page works without JavaScript and fits a mobile screen', as
   await page.goto('http://127.0.0.1:4173/science.html');
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
   await expect(page.locator('#source-cdc > a')).toHaveAttribute('href', /cdc\.gov/);
+  await expect(page.locator('#flight-carbon')).toContainText('Direct CO₂');
+  await expect(page.locator('#flight-carbon a').first()).toHaveAttribute('href', /myclimate\.org/);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(
     true,
   );

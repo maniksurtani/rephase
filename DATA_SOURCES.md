@@ -42,6 +42,10 @@ The same checksum validation applies to local files. To intentionally refresh th
 
 `tests/airports.test.ts` checks unique codes, sort order, zones, coordinates, lookup normalization, and fractional/DST/date-line examples including Kathmandu, Paro, Chatham Islands, Lord Howe Island, Samoa, and American Samoa.
 
+## Flight carbon estimates
+
+`src/lib/flight-carbon.ts` implements the **standard short/long-haul** columns of [myclimate’s published calculation principles](https://www.myclimate.org/en/information/about-myclimate/downloads/flight-emission-calculator/), sections 2–11, checked **2026-11-18**. Snapshot identifier: `myclimate-standard-2023-v1`. Numeric parameters are factual methodology inputs; no calculator code or images are copied. The linked science section explains scope and uncertainty. Review parameters deliberately when the publication changes; no runtime provider or API key is required.
+
 ## Public science explanation
 
 [public/science.html](public/science.html) is a standalone informational page with plain-language explanations and links to the source publications. It requires no JavaScript or login; its typography is bundled locally. The prose is original and summarizes evidence rather than copying proprietary app content or journal text.

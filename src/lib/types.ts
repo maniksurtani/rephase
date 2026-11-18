@@ -119,6 +119,7 @@ export interface PlanTravelSegment {
   arrivalTimeZone: string;
   mealPlan?: FlightMealPlan;
   aircraft?: AircraftType;
+  travelClass?: TravelClass;
 }
 export interface PlanDay {
   id: string;

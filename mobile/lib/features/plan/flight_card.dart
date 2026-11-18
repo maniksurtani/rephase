@@ -12,6 +12,7 @@ class FlightCard extends StatelessWidget {
     final aircraft = mapOf(flight['aircraft']);
     final aircraftName = labelOf(aircraft, 'model', labelOf(aircraft, 'name'));
     final meal = mapOf(flight['mealPlan']);
+    final carbon = mapOf(flight['carbonFootprint']);
     return Card(
       key: ValueKey('flight:${flight['id']}'),
       shape: RoundedRectangleBorder(
@@ -73,6 +74,56 @@ class FlightCard extends StatelessWidget {
                       '${flight['arrivalCity']} · ${flight['arrivalAirport']} arrival',
                   clock: flight['arrivalClock'],
                   clocks: jsonObjects(flight['arrivalClocks']),
+                ),
+              ],
+            ),
+            ExpansionTile(
+              key: ValueKey('flight-carbon:${flight['id']}'),
+              initiallyExpanded: false,
+              tilePadding: EdgeInsets.zero,
+              childrenPadding: const EdgeInsets.only(bottom: 12),
+              leading: const Icon(Icons.eco_outlined, size: 20),
+              title: const Text(
+                'Carbon footprint',
+                style: TextStyle(fontSize: 14),
+              ),
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (carbon.isNotEmpty) ...[
+                        Text(
+                          labelOf(carbon, 'climateImpactLabel'),
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'Estimated climate impact · per passenger · one way',
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          '${carbon['cabinLabel']} · Direct emissions: ${carbon['co2Label']}',
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'Includes fuel production and non-CO₂ warming. Uses route and cabin averages, not this aircraft’s measured emissions.',
+                          style: TextStyle(color: muted, fontSize: 13),
+                        ),
+                      ] else
+                        const Text(
+                          'Estimate unavailable: airport coordinates are missing or the route is invalid.',
+                        ),
+                      TextButton(
+                        onPressed: () => openSource(
+                          context,
+                          'https://rephase.surtani.org/science.html#flight-carbon',
+                        ),
+                        child: const Text('How we calculate this'),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

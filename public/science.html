@@ -34,7 +34,7 @@
 
       <nav class="contents" aria-label="On this page">
         <span>On this page</span>
-        <a href="#body-clock">Body clock</a><a href="#light">Light</a><a href="#sleep">Sleep</a><a href="#meals">Meals</a><a href="#melatonin">Melatonin</a><a href="#caffeine">Caffeine</a><a href="#itinerary">Whole trip</a><a href="#limits">What we can estimate</a><a href="#sources">Sources</a>
+        <a href="#body-clock">Body clock</a><a href="#light">Light</a><a href="#sleep">Sleep</a><a href="#meals">Meals</a><a href="#melatonin">Melatonin</a><a href="#caffeine">Caffeine</a><a href="#itinerary">Whole trip</a><a href="#limits">What we can estimate</a><a href="#flight-carbon">Flight carbon</a><a href="#sources">Sources</a>
       </nav>
 
       <div class="article-layout">
@@ -124,6 +124,14 @@
             <p>Rephase remains an evidence-informed prototype. It does not directly measure your body clock, know how well you slept, or provide medical diagnosis or treatment. Clinical validation and individual prediction accuracy remain separate work.</p>
             <p>Rephase is independently developed and is not affiliated with Timeshifter. It does not reproduce or claim equivalence to that app's proprietary algorithm.</p>
             <p>Persistent sleep problems, significant daytime impairment, or a medical question deserve advice from a qualified healthcare professional. Your safety and actual sleep needs take priority over any schedule.</p>
+          </section>
+          <section id="flight-carbon" class="science-section">
+            <p class="section-label">Flight footprint · checked 18 November 2026</p>
+            <h2>One passenger, one flight</h2>
+            <p>Rephase implements <a href="https://www.myclimate.org/en/information/about-myclimate/downloads/flight-emission-calculator/" rel="noopener">myclimate’s published standard-aircraft model</a>: airport great-circle distance plus 95 km, fleet-average fuel use, and cabin allocation. Connections are separate legs; missing cabin information assumes Economy.</p>
+            <p><strong>Direct CO₂</strong> estimates fuel-combustion emissions. <strong>Climate impact (CO₂e)</strong> applies myclimate’s 3× CO₂ multiplier to include non-CO₂ warming, then adds fuel production and infrastructure. That multiplier reflects a roughly 30-year perspective; it is uncertain, not a measurement of this flight’s contrails.</p>
+            <p>These are rounded estimates, not airline-reported results. Actual routing, aircraft, occupancy, freight and weather vary. Aircraft names and lie-flat availability do not establish fuel consumption or seat layouts. No offsets are deducted.</p>
+            <p>For further reading: <a href="https://doi.org/10.1016/j.atmosenv.2020.117834" rel="noopener">Lee et al. on aviation’s climate effects</a> and <a href="https://www.icao.int/environmental-protection/environmental-tools/icec" rel="noopener">ICAO’s aircraft- and route-specific CO₂ method</a>. Different accounting boundaries produce different totals.</p>
           </section>
         </article>
 
