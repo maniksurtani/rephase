@@ -147,7 +147,7 @@ jobs:
   distribute:
     needs: publish
     if: >-
-      always() && github.ref == 'refs/heads/main' &&
+      always() && !cancelled() && github.ref == 'refs/heads/main' &&
       ((inputs.mode == 'upload' && needs.publish.result == 'success') || inputs.mode == 'distribute')
     runs-on: ubuntu-latest
     timeout-minutes: 35
