@@ -21,6 +21,7 @@ on:
       - 'scripts/lounge-assets.mjs'
       - 'scripts/check-mobile-engine.mjs'
       - 'scripts/run-ios-runtime-test.mjs'
+      - 'scripts/select-ios-simulator.py'
       - 'tests/ios-runtime-runner.test.ts'
       - 'package.json'
       - 'package-lock.json'
@@ -48,6 +49,7 @@ on:
       - 'scripts/lounge-assets.mjs'
       - 'scripts/check-mobile-engine.mjs'
       - 'scripts/run-ios-runtime-test.mjs'
+      - 'scripts/select-ios-simulator.py'
       - 'tests/ios-runtime-runner.test.ts'
       - 'package.json'
       - 'package-lock.json'
@@ -207,16 +209,8 @@ jobs:
         timeout-minutes: 2
         shell: bash
         run: |
-          device_id=$(xcrun simctl list devices available --json | python3 -c '
-          import json, sys
-          devices = [device for runtime, group in json.load(sys.stdin)["devices"].items()
-                     if ".iOS-" in runtime for device in group
-                     if device.get("isAvailable") and device["name"].startswith("iPhone")]
-          if not devices:
-              raise SystemExit("No available iPhone simulator is installed")
-          selected = next((device for device in devices if device["state"] == "Booted"), devices[0])
-          print(selected["udid"])
-          ')
+          sdk_version=$(xcrun --sdk iphonesimulator --show-sdk-version)
+          device_id=$(xcrun simctl list devices available --json | python3 scripts/select-ios-simulator.py "$sdk_version")
           echo "REPHASE_SIMULATOR_ID=$device_id" >> "$GITHUB_ENV"
           # First boot migrates the runner's fresh simulator data. Overlap it with
           # compilation rather than spending the readiness budget on migration.

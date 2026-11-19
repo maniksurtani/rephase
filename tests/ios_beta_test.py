@@ -19,6 +19,26 @@ def load(name):
 
 prepare = load('prepare-ios-beta')
 verify = load('verify-ios-beta')
+simulators = load('select-ios-simulator')
+
+
+class IOSSimulatorSelectionTests(unittest.TestCase):
+    def test_selects_sdk_runtime_instead_of_first_old_or_booted_device(self):
+        def device(udid, state='Shutdown', **extra):
+            return {'udid': udid, 'name': 'iPhone 16', 'isAvailable': True, 'state': state, **extra}
+        devices = {'devices': {
+            'com.apple.CoreSimulator.SimRuntime.iOS-18-5': [device('old', 'Booted')],
+            'com.apple.CoreSimulator.SimRuntime.iOS-26-2': [device('matching'), device('matching-booted', 'Booted')],
+        }}
+        self.assertEqual(simulators.select_simulator(devices, '26.2'), 'matching-booted')
+        self.assertEqual(simulators.select_simulator(devices, '26.2.1\n'), 'matching-booted')
+        with self.assertRaisesRegex(ValueError, 'older runtimes are not a fallback'):
+            simulators.select_simulator(devices, '27.0')
+        devices['devices']['com.apple.CoreSimulator.SimRuntime.iOS-26-2'] = [
+            device('unavailable', isAvailable=False), device('tablet', name='iPad Pro'),
+        ]
+        with self.assertRaises(ValueError):
+            simulators.select_simulator(devices, '26.2')
 
 
 class IOSBetaTests(unittest.TestCase):
