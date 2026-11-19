@@ -1,0 +1,299 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "OSL",
+  "timeZone": "Europe/Oslo",
+  "updatedAt": "2026-11-19",
+  "lounges": [
+    {
+      "id": "osl-sas-domestic",
+      "name": "SAS Domestic Lounge",
+      "terminal": "Domestic",
+      "location": "Opposite A2 on the mezzanine in domestic departures.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "flight-dependent",
+        "note": "SAS normally opens one hour before its first departure and closes 30 minutes before its last; confirm the relevant domestic or international schedule."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "skyteam-business",
+          "label": "SAS / SkyTeam Business",
+          "sourceIds": [
+            "sas"
+          ],
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingAlliance": "skyteam",
+          "conditions": [
+            "A same-day scheduled departure is required; SAS charter flights are excluded."
+          ],
+          "route": "domestic"
+        },
+        {
+          "id": "skyteam-elite-plus",
+          "label": "SkyTeam Elite Plus",
+          "sourceIds": [
+            "sas"
+          ],
+          "membershipsAnyOf": [
+            "skyteam-elite-plus"
+          ],
+          "operatingAlliance": "skyteam",
+          "conditions": [
+            "A same-day scheduled departure is required; SAS charter flights are excluded."
+          ],
+          "route": "domestic"
+        },
+        {
+          "id": "sas-domestic-premium",
+          "label": "SAS domestic Premium",
+          "sourceIds": [
+            "sas"
+          ],
+          "cabinsAnyOf": [
+            "premium-economy"
+          ],
+          "operatingCarriersAnyOf": [
+            "SK"
+          ],
+          "route": "domestic",
+          "conditions": [
+            "Confirm this is SAS Premium on a scheduled domestic flight; charter flights are excluded."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "sas",
+          "title": "SAS · current lounge facilities and access",
+          "url": "https://www.flysas.com/en/travel-info/at-the-airport/lounges",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "airport",
+          "title": "Avinor · Oslo lounge locations and eligibility",
+          "url": "https://www.avinor.no/en/airport/oslo/info/lounge/",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "Showers, a barista counter and work areas for eligible domestic SAS travellers.",
+        "bestFor": [
+          "showers",
+          "quiet"
+        ]
+      },
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "A December 2025 review praises the workspaces, seating and barista coffee, but describes a basic breakfast with few hot options. Its single morning visit does not establish peak-time conditions.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "The Quiet Vacationer · SAS Domestic Oslo (December 2025)",
+            "url": "https://quietvacationer.com/2025/12/10/review-sas-domestic-lounge-oslo-osl/",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://quietvacationer.com/2025/12/10/review-sas-domestic-lounge-oslo-osl/",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    },
+    {
+      "id": "osl-sas-international",
+      "name": "SAS Lounge · International",
+      "terminal": "International",
+      "location": "One floor above E2, in the international Schengen area. Non-Schengen passengers must still pass passport control.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "flight-dependent",
+        "note": "SAS normally opens one hour before its first departure and closes 30 minutes before its last; confirm the relevant domestic or international schedule."
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "skyteam-business",
+          "label": "SAS / SkyTeam Business",
+          "sourceIds": [
+            "sas"
+          ],
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingAlliance": "skyteam",
+          "conditions": [
+            "A same-day scheduled departure is required; SAS charter flights are excluded."
+          ],
+          "route": "international"
+        },
+        {
+          "id": "skyteam-elite-plus",
+          "label": "SkyTeam Elite Plus",
+          "sourceIds": [
+            "sas"
+          ],
+          "membershipsAnyOf": [
+            "skyteam-elite-plus"
+          ],
+          "operatingAlliance": "skyteam",
+          "conditions": [
+            "A same-day scheduled departure is required; SAS charter flights are excluded."
+          ],
+          "route": "international"
+        }
+      ],
+      "sources": [
+        {
+          "id": "sas",
+          "title": "SAS · current lounge facilities and access",
+          "url": "https://www.flysas.com/en/travel-info/at-the-airport/lounges",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "airport",
+          "title": "Avinor · Oslo lounge locations and eligibility",
+          "url": "https://www.avinor.no/en/airport/oslo/info/lounge/",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Shower availability is unverified here; the confirmed showers belong to the separate domestic lounge.",
+      "qualityRating": {
+        "score": 3,
+        "summary": "An October 2026 visit finds useful work and relaxation spaces, but limited hot food. The reviewer considers it adequate rather than outstanding.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Verylvke · SAS international Oslo (October 2026)",
+            "url": "https://www.verylvke.com/en/2026/10/11/my-review-of-sas-schengen-lounge-oslo/",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://www.verylvke.com/en/2026/10/11/my-review-of-sas-schengen-lounge-oslo/",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    },
+    {
+      "id": "osl-lounge-international",
+      "name": "OSL Lounge International",
+      "terminal": "International",
+      "location": "Mezzanine by E2 in international departures; allow onward passport-control time for non-Schengen gates.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:15",
+            "close": "20:30"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "snacks",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "nordic-amex-platinum",
+          "label": "Amex Platinum · Nordic-issued cards",
+          "sourceIds": [
+            "airport"
+          ],
+          "membershipsAnyOf": [
+            "amex-platinum"
+          ],
+          "route": "international",
+          "conditions": [
+            "Only Platinum cards issued in Norway, Sweden or Finland are covered; confirm your card’s entitlement."
+          ]
+        },
+        {
+          "id": "partner-business",
+          "label": "Selected airline Business Class",
+          "sourceIds": [
+            "airport"
+          ],
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "AF",
+            "BA",
+            "EK",
+            "ET",
+            "AY",
+            "IB",
+            "KL",
+            "TP",
+            "TG",
+            "TK",
+            "QR"
+          ],
+          "route": "international",
+          "conditions": [
+            "Confirm your airline invitation and whether it directs you to the main or separate Premium section."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "airport",
+          "title": "Avinor · Oslo lounge locations and eligibility",
+          "url": "https://www.avinor.no/en/airport/oslo/info/lounge/",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Reception sells access for NOK 495, subject to availability, for international departures from three hours before departure. The Premium section has separate agreements and opening times. Priority Pass participation was not established; it is not an access route in this guide.",
+      "photoLinks": [
+        {
+          "label": "View historical photos and review (2022)",
+          "url": "https://callumelsdon.com/2022/05/30/snapshot-review-osl-lounge-oslo-gardermoen-airport/",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    }
+  ]
+}

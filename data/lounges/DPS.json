@@ -1,0 +1,167 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "DPS",
+  "timeZone": "Asia/Makassar",
+  "updatedAt": "2026-11-19",
+  "lounges": [
+    {
+      "id": "dps-concordia-international",
+      "name": "Concordia Lounge · International",
+      "terminal": "International",
+      "location": "Third floor of international departures, after security and immigration, reached by lift or stairs.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "unknown",
+        "note": "Priority Pass publishes 06:00–02:00, while Plaza Premium’s booking page publishes 05:00–01:00. Confirm the applicable hours before an early or late visit."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "route": "international"
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · Concordia International",
+          "url": "https://www.prioritypass.com/en-GB/lounges/indonesia/ngurah-rai-international/dps9-concordia-lounge",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "plaza-premium",
+          "title": "Plaza Premium · Concordia International facilities and hours",
+          "url": "https://www.plazapremiumlounge.com/en-uk/find/asia/indonesia/denpasar-dps-1/denpasar-dps/concordia-lounge-international-terminal",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Plaza Premium now lists showers, subject to availability and possible charges; older reviews describing no showers are not used for current facilities. No alcohol is served. The current Priority Pass page does not state a maximum visit length.",
+      "qualityRating": {
+        "score": 2.5,
+        "summary": "A July 2023 visit praised the natural light and coffee but reported crowding and slow buffet replenishment. This older assessment may not reflect later changes, including the shower facilities now listed by a booking partner.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "The Shutterwhale · Concordia International, July 2023 visit",
+            "url": "https://theshutterwhale.com/blog/2023/8/3/lounge-review-concordia-lounge-international-terminal-i-gusti-ngurah-rai-international-airport-dps",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://theshutterwhale.com/blog/2023/8/3/lounge-review-concordia-lounge-international-terminal-i-gusti-ngurah-rai-international-airport-dps",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    },
+    {
+      "id": "dps-blue-sky-premier-domestic",
+      "name": "Blue Sky Premier Lounge",
+      "terminal": "Domestic",
+      "location": "Domestic departures, second floor near Gate 6, with seating across the second and third floors.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:30",
+            "close": "21:30"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "maxVisitMinutes": 180,
+          "route": "domestic"
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · Blue Sky Premier Bali",
+          "url": "https://www.prioritypass.com/en-GB/lounges/indonesia/ngurah-rai-international/dps11-blue-sky-premier-lounge",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "operator",
+          "title": "Blue Sky Group · Bali lounge facilities",
+          "url": "https://www.blue-sky.co.id/product/blue-sky-premier-lounge-bali",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "VIP rooms cost extra. Drink descriptions differ between the operator and Priority Pass, so do not assume every listed beverage is included.",
+      "recommendation": {
+        "summary": "A domestic-terminal option with buffet food, coffee and a shower, subject to the three-hour Priority Pass allowance.",
+        "bestFor": [
+          "showers",
+          "dining"
+        ]
+      },
+      "qualityRating": {
+        "score": 4,
+        "summary": "A February 2026 review praises the food, barista coffee and comfortable space. The lounge is a walk from security, and its single shower may require waiting; this is one reported visit.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Live and Let’s Fly · Blue Sky Premier Bali, February 2026",
+            "url": "https://liveandletsfly.com/blue-sky-premier-lounge-bali-review/",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://liveandletsfly.com/blue-sky-premier-lounge-bali-review/",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    }
+  ]
+}

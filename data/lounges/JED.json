@@ -1,0 +1,149 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "JED",
+  "timeZone": "Asia/Riyadh",
+  "updatedAt": "2026-11-19",
+  "lounges": [
+    {
+      "id": "jed-plaza-premium-international",
+      "name": "Plaza Premium Lounge · International",
+      "terminal": "1",
+      "location": "International departures, near Gate 39, after security.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "maxVisitMinutes": 120,
+          "route": "international"
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · Jeddah Plaza Premium access",
+          "url": "https://www.prioritypass.com/en-GB/lounges/saudi-arabia/king-abdulaziz-international/jed6-plaza-premium-lounge-international-departures",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "operator",
+          "title": "Plaza Premium · Jeddah location, hours and facilities",
+          "url": "https://www.plazapremiumlounge.com/en-uk/find/india-middle-east-south-africa/saudi-arabia/jeddah/king-abdulaziz-international-airport/international-departures-terminal-one",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Two-hour Priority Pass visits. The operator confirms prepared food and drinks but does not establish the current dining service style or showers. Wellcome is not included in the current Priority Pass airport directory.",
+      "qualityRating": {
+        "score": 3,
+        "summary": "A January 2024 visit found a stocked overnight buffet and reliable Wi-Fi, but no daylight and slow table clearing. This older account is a quality reference, not confirmation of current facilities.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Flying Smart · Plaza Premium Jeddah (January 2024 visit)",
+            "url": "https://www.flyingsmart.info/en/lounge-review-plaza-premium-lounge-jeddah-terminal-1-20240131/",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://www.flyingsmart.info/en/lounge-review-plaza-premium-lounge-jeddah-terminal-1-20240131/",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    },
+    {
+      "id": "jed-nasmiles-domestic",
+      "name": "naSmiles Lounge · Domestic",
+      "terminal": "Domestic Terminal",
+      "location": "Airside, first floor, in the domestic departure area.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "maxVisitMinutes": 180,
+          "route": "domestic"
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · Jeddah domestic naSmiles",
+          "url": "https://www.prioritypass.com/en-GB/lounges/saudi-arabia/king-abdulaziz-international/jed5-nasmiles-lounge",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Domestic departures only. Priority Pass labels the terminal Domestic Terminal; confirm the lounge location for your flight. Airline cabin/status access, food service and showers have not been verified."
+    }
+  ]
+}

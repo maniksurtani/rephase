@@ -1,0 +1,220 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "ARN",
+  "timeZone": "Europe/Stockholm",
+  "updatedAt": "2026-11-19",
+  "lounges": [
+    {
+      "id": "arn-sas-e1",
+      "name": "SAS Lounge · E1",
+      "terminal": "5",
+      "location": "Upstairs by E1, after security in the Schengen area. Allow time for passport control before non-Schengen flights.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "flight-dependent",
+        "note": "SAS normally opens one hour before its first departure and closes 30 minutes before its last; confirm the relevant domestic or international schedule."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "skyteam-business",
+          "label": "SAS / SkyTeam Business",
+          "sourceIds": [
+            "sas"
+          ],
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingAlliance": "skyteam",
+          "conditions": [
+            "A same-day scheduled departure is required; SAS charter flights are excluded."
+          ]
+        },
+        {
+          "id": "skyteam-elite-plus",
+          "label": "SkyTeam Elite Plus",
+          "sourceIds": [
+            "sas"
+          ],
+          "membershipsAnyOf": [
+            "skyteam-elite-plus"
+          ],
+          "operatingAlliance": "skyteam",
+          "conditions": [
+            "A same-day scheduled departure is required; SAS charter flights are excluded."
+          ]
+        },
+        {
+          "id": "sas-domestic-premium",
+          "label": "SAS domestic Premium",
+          "sourceIds": [
+            "sas"
+          ],
+          "cabinsAnyOf": [
+            "premium-economy"
+          ],
+          "operatingCarriersAnyOf": [
+            "SK"
+          ],
+          "route": "domestic",
+          "conditions": [
+            "Confirm this is SAS Premium on a scheduled domestic flight; charter flights are excluded."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "sas",
+          "title": "SAS · current lounge facilities and access",
+          "url": "https://www.flysas.com/en/travel-info/at-the-airport/lounges",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "airport",
+          "title": "Swedavia · SAS Lounge E1",
+          "url": "https://www.swedavia.com/arlanda/service/sas-business-scandinavian2/",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "A June 2026 account of the combined lounge finds ample seating and useful work zones, with two buffets offering mostly light fare. This rates the current shared space, not a separate former Gold lounge.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "TravelUpdate · SAS Stockholm (June 2026)",
+            "url": "https://travelupdate.com/review-sas-lounge-stockholm-arn/",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://travelupdate.com/review-sas-lounge-stockholm-arn/",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    },
+    {
+      "id": "arn-aspire-non-schengen",
+      "name": "Aspire Lounge · non-Schengen",
+      "terminal": "5",
+      "location": "F pier, one level above passport control; non-Schengen departures only.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5
+            ],
+            "open": "06:00",
+            "close": "20:00"
+          },
+          {
+            "days": [
+              6,
+              7
+            ],
+            "open": "06:00",
+            "close": "21:30"
+          }
+        ],
+        "note": "Uses the operator’s earlier closing times. Priority Pass instead lists 22:00 daily; confirm evening opening with the lounge."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass · non-Schengen",
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "excludedDestinationCountries": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Departure must use the non-Schengen F-pier area. Confirm evening closing time because official listings differ."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · Aspire non-Schengen",
+          "url": "https://www.prioritypass.com/en-GB/lounges/sweden/stockholm-arlanda/arn9-aspire-lounge-non-schengen",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "operator",
+          "title": "Aspire · non-Schengen location and amenities",
+          "url": "https://www.aspirelounges.com/airport-lounges/stockholm-arlanda-airport-aspire-lounge-non-schengen/",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Showers and premium drinks cost extra. Separate paid Luxe/Suite upgrades are not included in this access rule.",
+      "recommendation": {
+        "summary": "Useful for a shower or reclining rest before a non-Schengen departure; showers cost extra.",
+        "bestFor": [
+          "showers",
+          "quiet"
+        ]
+      }
+    }
+  ]
+}

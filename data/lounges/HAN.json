@@ -1,0 +1,168 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "HAN",
+  "timeZone": "Asia/Ho_Chi_Minh",
+  "updatedAt": "2026-11-19",
+  "lounges": [
+    {
+      "id": "han-lotus-t2",
+      "name": "Vietnam Airlines Lotus Lounge",
+      "terminal": "2",
+      "location": "International departures, fourth floor, reached from the escalator between Gates 28–29 after security.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "unknown",
+        "note": "Current fixed opening hours for this specific international Lotus lounge were not verified."
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "skyteam-premium",
+          "label": "SkyTeam international premium cabins",
+          "sourceIds": [
+            "vietnam-airlines"
+          ],
+          "operatingAlliance": "skyteam",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "route": "international"
+        },
+        {
+          "id": "skyteam-elite-plus",
+          "label": "SkyTeam Elite Plus on an international departure",
+          "sourceIds": [
+            "vietnam-airlines"
+          ],
+          "membershipsAnyOf": [
+            "skyteam-elite-plus"
+          ],
+          "operatingAlliance": "skyteam",
+          "route": "international"
+        }
+      ],
+      "sources": [
+        {
+          "id": "vietnam-airlines",
+          "title": "Vietnam Airlines · Lotus lounge access policy",
+          "url": "https://www.vietnamairlines.com/us/en/travel-information/airports-transit/lotus-lounge",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "hainan-location",
+          "title": "Hainan Airlines · Hanoi Lotus lounge location",
+          "url": "https://www.hainanairlines.com/HUPortal/dyn/portal/DisplayPage?COUNTRY_SITE=VN&LANGUAGE=GB&PAGE=AIST&SITE=CBHZCBHZ",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Domestic T1 lounges and their 2026 renovations are separate. Hainan’s published service window applies to its own flights and is not used as this lounge’s opening timetable. Lotusmiles tiers and other contracted airline routes are not yet modeled."
+    },
+    {
+      "id": "han-sh-premium-t2-east",
+      "name": "SH Premium Lounge Ha Noi · East Wing",
+      "terminal": "2",
+      "location": "International departures, fourth floor, East Wing. Priority Pass directs travelers near Gates 21–22; the operator still references Gate 28.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "06:30",
+            "close": "02:00"
+          }
+        ],
+        "note": "Priority Pass entry hours are used. The operator advertises an earlier 06:00 opening."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "maxVisitMinutes": 180,
+          "route": "international"
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · SH Premium Ha Noi T2 East",
+          "url": "https://www.prioritypass.com/en-GB/lounges/vietnam/noi-bai-international/han3-sh-premium-lounge-ha-noi",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "operator",
+          "title": "SH Airport Lounge · T2 East facilities",
+          "url": "https://shairportlounge.com.vn/en/sh-premium-lounge-ha-noi.html",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "amex-facilities",
+          "title": "American Express · T2 East location and facilities",
+          "url": "https://www.americanexpress.com/en-in/travel/lounges/the-platinum-card/HAN/Song-Hong-Premium-Lounge-and-Bar-International-Terminal-lfI066JPot/",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "This is the East Wing lounge, not SH Premium Ha Noi 3 or the domestic T1 lounge. Follow the current signs because the operator and membership directories differ on the nearby gate number.",
+      "recommendation": {
+        "summary": "An international Priority Pass option with a buffet and verified showers; visits are limited to three hours.",
+        "bestFor": [
+          "showers",
+          "dining"
+        ]
+      },
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "A December 2025 visit to the international SH lounge found a calm, well-arranged space and enjoyed the noodle counter and bar. The rest of the buffet was respectable rather than exceptional; this is a single-visit assessment.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Fly for Points · SH Premium international lounge, December 2025",
+            "url": "https://www.flyforpoints.com/en/sh-premium-lounge-hanoi-a-pleasant-surprise-for-a-credit-card-lounge/",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://www.flyforpoints.com/en/sh-premium-lounge-hanoi-a-pleasant-surprise-for-a-credit-card-lounge/",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    }
+  ]
+}

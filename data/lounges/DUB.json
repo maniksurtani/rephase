@@ -1,0 +1,199 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "DUB",
+  "timeZone": "Europe/Dublin",
+  "updatedAt": "2026-11-19",
+  "lounges": [
+    {
+      "id": "dub-liffey",
+      "name": "Liffey Lounge",
+      "terminal": "1 / 2",
+      "location": "Level 1 in the airside corridor linking Terminals 1 and 2; before US Preclearance.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "04:00",
+            "close": "21:00"
+          }
+        ],
+        "exceptions": [
+          {
+            "date": "2026-12-25",
+            "periods": [],
+            "note": "Priority Pass lists Christmas Day closure."
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "sourceIds": [
+            "airport",
+            "priority-pass"
+          ],
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "maxVisitMinutes": 120,
+          "conditions": [
+            "Use before US Preclearance. Confirm visit length: the airport publishes two hours while Priority Pass lists three; this plan allows two. Entry is often restricted 11:00–15:00."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "airport",
+          "title": "Dublin Airport · Liffey Lounge",
+          "url": "https://www.dublinairport.com/enhance-your-journey/lounges/the-liffey-lounge",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · Liffey Lounge",
+          "url": "https://www.prioritypass.com/en-GB/lounges/ireland/dublin/dub-liffey-lounge",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Cold buffet, showers and quiet workstations. Not accessible after US Preclearance; airline contract invitations are not inferred from carrier alone.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "An April 2025 visit found a modern interior, attractive views and a solid cold-food selection in a small footprint. This assessment covers the refurbished Liffey facility, not the former T2 lounge.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "One Mile at a Time · Liffey, April 2025 visit",
+            "url": "https://onemileatatime.com/reviews/the-liffey-lounge-dublin/",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://onemileatatime.com/reviews/the-liffey-lounge-dublin/",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    },
+    {
+      "id": "dub-51st-green",
+      "name": "51st & Green Lounge",
+      "terminal": "2",
+      "location": "After US Preclearance, just beyond the US departure gates.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "07:15",
+            "close": "17:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "us-premium",
+          "label": "Aer Lingus, American, Delta or United premium cabin",
+          "sourceIds": [
+            "access",
+            "airport"
+          ],
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingCarriersAnyOf": [
+            "EI",
+            "AA",
+            "DL",
+            "UA"
+          ],
+          "destinationCountriesAnyOf": [
+            "US"
+          ],
+          "route": "international",
+          "maxVisitMinutes": 120,
+          "conditions": [
+            "Complete US Preclearance before entering. Confirm your airline’s lounge invitation, including any fare-specific exclusions."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "airport",
+          "title": "Dublin Airport · 51st & Green facilities and hours",
+          "url": "https://www.dublinairport.com/enhance-your-journey/lounges/us-preclearance-lounge-51st-green",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "access",
+          "title": "Dublin Airport · airline lounge partners",
+          "url": "https://www.dublinairport.com/enhance-your-journey/lounges/lounge-airline-partners",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "A US-departure option after immigration formalities, with hot buffet and showers. Priority Pass, alliance status alone and unrelated airlines are not assumed to grant entry. Paid access is available separately.",
+      "qualityRating": {
+        "score": 3,
+        "summary": "A September 2026 visit after refurbishment praises friendly staff, the refreshed bar and breakfast, but finds severe peak-time crowding, queues and heat. Comfortable facilities do not guarantee a quiet stop.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Window Seat Preferred · 51st & Green, September 2026",
+            "url": "https://windowseatpreferred.com/2026/09/51st-green-lounge-dublin-2026-refreshed-but-overcrowded/",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://windowseatpreferred.com/2026/09/51st-green-lounge-dublin-2026-refreshed-but-overcrowded/",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,269 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "KIX",
+  "timeZone": "Asia/Tokyo",
+  "updatedAt": "2026-11-19",
+  "lounges": [
+    {
+      "id": "kix-lounge-kansai",
+      "name": "KIX Lounge Kansai",
+      "terminal": "1",
+      "location": "International departures, after security and immigration; follow the KIX Lounge Kansai signs.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "flight-dependent",
+        "note": "ANA lists 06:00–00:55, with opening tied to security and closing tied to the last participating scheduled departure. Confirm the hours for your flight."
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "ana-business",
+          "label": "ANA Business Class",
+          "sourceIds": [
+            "ana"
+          ],
+          "operatingCarriersAnyOf": [
+            "NH"
+          ],
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "route": "international"
+        },
+        {
+          "id": "ana-star-gold",
+          "label": "Star Alliance Gold on ANA",
+          "sourceIds": [
+            "ana"
+          ],
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingCarriersAnyOf": [
+            "NH"
+          ],
+          "route": "international"
+        }
+      ],
+      "sources": [
+        {
+          "id": "ana",
+          "title": "ANA · Kansai lounge access and hours",
+          "url": "https://www.ana.co.jp/en/jp/guide/lounge/international/kix/",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "This replaces the former ANA Lounge. Other airlines may issue invitations, but only the verified ANA access routes are included. Detailed operator facilities could not be rechecked.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "An April 2026 visit found the new shared lounge spacious, clean and comfortable, with a useful food selection and family facilities. This is one visit; peak-time conditions may differ.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "OreumUnni · KIX Lounge Kansai, April 2026",
+            "url": "https://oreumunni.com/en/kansai-airport-lounge-kix-kansai-review/",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://oreumunni.com/en/kansai-airport-lounge-kix-kansai-review/",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    },
+    {
+      "id": "kix-lounge-premium",
+      "name": "KIX Lounge Premium",
+      "terminal": "1",
+      "location": "International departures; upstairs from the central duty-free area, after immigration.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "06:30",
+            "close": "00:30"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "jal-premium-cabin",
+          "label": "JAL premium cabins",
+          "sourceIds": [
+            "jal"
+          ],
+          "operatingCarriersAnyOf": [
+            "JL"
+          ],
+          "cabinsAnyOf": [
+            "premium-economy",
+            "business",
+            "first"
+          ],
+          "route": "international"
+        }
+      ],
+      "sources": [
+        {
+          "id": "jal",
+          "title": "JAL · Kansai International Airport Lounge",
+          "url": "https://www.jal.co.jp/jp/en/inter/service/lounge/kix/",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "ana",
+          "title": "ANA · Kansai lounge access and hours",
+          "url": "https://www.ana.co.jp/en/jp/guide/lounge/international/kix/",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Separate from KIX Lounge Kansai. ANA Business Class and Star Alliance Gold alone do not qualify for Premium. JAL status, eligible Economy fares and other airline invitations need additional research; detailed operator facilities remain unverified.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "The MileLion’s May 2026 review praises the food, design and service of the new shared lounge. Showers were functional rather than luxurious, and the experience fell short of a flagship First lounge.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "The MileLion · KIX Lounge Premium, May 2026",
+            "url": "https://milelion.com/2026/05/27/kix-lounge-premium-review-surprisingly-good-for-a-common-lounge/",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://milelion.com/2026/05/27/kix-lounge-premium-review-surprisingly-good-for-a-common-lounge/",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    },
+    {
+      "id": "kix-nodoka-aeroplaza",
+      "name": "Airport Cafe Lounge NODOKA",
+      "terminal": "Aeroplaza",
+      "location": "Landside, second floor of Aeroplaza, near the Terminal 2 shuttle stop.",
+      "airside": false,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ],
+        "note": "The operator confirms 24-hour lounge and shower service. Priority Pass uses 00:00–23:59 in its daily listing."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "snacks",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "sourceIds": [
+            "priority-pass",
+            "operator"
+          ],
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "maxMinutesBeforeDeparture": 720,
+          "maxVisitMinutes": 180,
+          "conditions": [
+            "Confirm you have not used Priority Pass at this lounge in the previous 12 hours."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · NODOKA",
+          "url": "https://www.prioritypass.com/en-GB/lounges/japan/kansai-international/kix12-airport-cafe-lounge-nodoka",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "operator",
+          "title": "NODOKA · Operator facilities, hours and Priority Pass FAQ",
+          "url": "https://aprecio.jp/nodoka/",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Departure visits only. The three-hour option includes two choices from a meal, two beers, or a 40-minute shower; bath towels cost extra. A separate paid extension option offers a discount rather than free longer access. Leave time for terminal transfers, security and any immigration requirements.",
+      "recommendation": {
+        "summary": "A landside option for a shower before entering the departure area; choose the shower as one of the included benefits.",
+        "bestFor": [
+          "showers"
+        ]
+      },
+      "qualityRating": {
+        "score": 3,
+        "summary": "A March 2026 visit describes comfortable reclining booths and useful showers, but a basic cafe-style food offer and a separate landside building. Meal and shower choices depend on the entry package.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "MileZINE · NODOKA, March 2026 visit",
+            "url": "https://milezine.jp/kix-cafe-lounge-nodoka-priority-pass-12552.html",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://milezine.jp/kix-cafe-lounge-nodoka-priority-pass-12552.html",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    }
+  ]
+}

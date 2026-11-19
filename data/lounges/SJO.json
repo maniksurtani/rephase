@@ -1,0 +1,159 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "SJO",
+  "timeZone": "America/Costa_Rica",
+  "updatedAt": "2026-11-19",
+  "lounges": [
+    {
+      "id": "sjo-vip-costa-rica",
+      "name": "VIP Lounge Costa Rica / VIP MasterCard",
+      "terminal": "Main Terminal",
+      "location": "Upper level near Gate 19, after security and passport control. Distinct from the neighbouring BAC Credomatic lounge.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "04:00",
+            "close": "20:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "maxVisitMinutes": 180
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · VIP Lounge Costa Rica",
+          "url": "https://www.prioritypass.com/en-GB/lounges/costa-rica/juan-santamaria-international/sjo5-vip-lounge-costa-rica",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "airport",
+          "title": "San José airport · VIP MasterCard location, facilities and access agreements",
+          "url": "https://www.sjoairport.com/vip-lounges/?lang=en",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "The airport calls the Gate 19 Priority Pass facility VIP MasterCard; older listings also use Copa Club. Breakfast runs to 11:00, lunch to 15:00, then snacks. Showers require availability or a reservation; confirm any charge. Airline and bank agreements are not blanket cabin or alliance entitlements.",
+      "photoLinks": [
+        {
+          "label": "View lounge photos and details",
+          "url": "https://www.sjoairport.com/vip-lounges/?lang=en",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "recommendation": {
+        "summary": "The Gate 19 Priority Pass option with confirmed showers, subject to availability."
+      }
+    },
+    {
+      "id": "sjo-vip-santamaria",
+      "name": "VIP Santamaria / VIP VISA",
+      "terminal": "Main Terminal",
+      "location": "Level 3 near Gate 5, after security and passport control; the airport calls this facility VIP VISA.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "04:30",
+            "close": "20:00"
+          }
+        ],
+        "note": "Priority Pass publishes 04:30 opening; the airport publishes 04:00. Use 04:30 conservatively and confirm earlier admission directly."
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "maxVisitMinutes": 180,
+          "conditions": [
+            "Present your Priority Pass membership credential; direct payment-card entry is not accepted under this program listing."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · VIP Santamaria and food charges",
+          "url": "https://www.prioritypass.com/en-GB/lounges/costa-rica/juan-santamaria-international/sjo4-vip-santamaria",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "airport",
+          "title": "San José airport · Gate 5 VIP VISA lounge",
+          "url": "https://www.sjoairport.com/vip-lounges/?lang=en",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Priority Pass says the food menu costs extra; confirm the included meal benefit before relying on it. The airport lists breakfast, lunch and afternoon snacks but does not establish a buffet or restaurant service style. Other airline/bank invitations remain unmodeled.",
+      "photoLinks": [
+        {
+          "label": "View lounge photos and details",
+          "url": "https://www.sjoairport.com/vip-lounges/?lang=en",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "recommendation": {
+        "summary": "A Gate 5 alternative for Priority Pass; check meal charges and the earlier-opening discrepancy."
+      }
+    }
+  ]
+}

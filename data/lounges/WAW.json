@@ -1,0 +1,539 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "WAW",
+  "timeZone": "Europe/Warsaw",
+  "updatedAt": "2026-11-19",
+  "lounges": [
+    {
+      "id": "waw-lot-polonez",
+      "name": "LOT Business Lounge Polonez",
+      "terminal": "A",
+      "location": "Schengen mezzanine, Level +1, after security.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:00",
+            "close": "23:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "yes",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "star-business",
+          "label": "Star Alliance Business",
+          "sourceIds": [
+            "access"
+          ],
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingAlliance": "star",
+          "conditions": [
+            "Scheduled services only; LOT charter Business has separate status requirements."
+          ],
+          "destinationCountriesAnyOf": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ],
+          "maxVisitMinutes": 240
+        },
+        {
+          "id": "star-gold",
+          "label": "Star Alliance Gold / Miles & More Senator or HON",
+          "sourceIds": [
+            "access"
+          ],
+          "membershipsAnyOf": [
+            "star-gold",
+            "miles-and-more-senator",
+            "miles-and-more-hon-circle"
+          ],
+          "operatingAlliance": "star",
+          "conditions": [
+            "LOT charter Economy and Premium Economy are excluded."
+          ],
+          "destinationCountriesAnyOf": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ],
+          "maxVisitMinutes": 240
+        },
+        {
+          "id": "frequent-traveller",
+          "label": "Miles & More Frequent Traveller · selected operators",
+          "sourceIds": [
+            "access"
+          ],
+          "membershipsAnyOf": [
+            "miles-and-more-frequent-traveller"
+          ],
+          "operatingCarriersAnyOf": [
+            "LO",
+            "LH",
+            "OS",
+            "SN",
+            "LX",
+            "OU"
+          ],
+          "conditions": [
+            "Scheduled services only; charter access is not inferred."
+          ],
+          "destinationCountriesAnyOf": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ],
+          "maxVisitMinutes": 240
+        }
+      ],
+      "sources": [
+        {
+          "id": "access",
+          "title": "LOT · Polonez and Mazurek admission rules",
+          "url": "https://www.lot.com/pl/en/legal-documents/rules-of-entry-to-lot-business-lounges",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "location",
+          "title": "LOT · Polonez facilities and opening hours",
+          "url": "https://www.lot.com/pl/en/journey/additional-services/executive-lounges/lot-business-lounge-polonez",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "The four-hour ordinary visit cap does not apply to qualifying connections under LOT’s published rules; confirm an extension at reception. Codeshares, paid passes and the separate Polonez Gold section are not inferred. Spa treatments have separate availability; confirm at reception.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "A January 2026 review of the renovated general lounge praises varied hot food, a staffed bar and spa, with useful seating zones despite a compact footprint and inward-facing views. The separate Gold section is not rated here.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Points Miles and Bling · Polonez, January 2026",
+            "url": "https://pointsmilesandbling.com/lot-business-lounge-review-warsaw-airport/",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://pointsmilesandbling.com/lot-business-lounge-review-warsaw-airport/",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    },
+    {
+      "id": "waw-lot-mazurek",
+      "name": "LOT Business Lounge Mazurek",
+      "terminal": "A",
+      "location": "Level 0 after passport control, beside the LOT Transfer Center; use the lift or escalator.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "06:00",
+            "close": "23:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "star-business",
+          "label": "Star Alliance Business",
+          "sourceIds": [
+            "access"
+          ],
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingAlliance": "star",
+          "conditions": [
+            "Scheduled services only; LOT charter Business has separate status requirements."
+          ],
+          "excludedDestinationCountries": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ],
+          "maxVisitMinutes": 240
+        },
+        {
+          "id": "star-gold",
+          "label": "Star Alliance Gold / Miles & More Senator or HON",
+          "sourceIds": [
+            "access"
+          ],
+          "membershipsAnyOf": [
+            "star-gold",
+            "miles-and-more-senator",
+            "miles-and-more-hon-circle"
+          ],
+          "operatingAlliance": "star",
+          "conditions": [
+            "LOT charter Economy and Premium Economy are excluded."
+          ],
+          "excludedDestinationCountries": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ],
+          "maxVisitMinutes": 240
+        },
+        {
+          "id": "frequent-traveller",
+          "label": "Miles & More Frequent Traveller · selected operators",
+          "sourceIds": [
+            "access"
+          ],
+          "membershipsAnyOf": [
+            "miles-and-more-frequent-traveller"
+          ],
+          "operatingCarriersAnyOf": [
+            "LO",
+            "LH",
+            "OS",
+            "SN",
+            "LX",
+            "OU"
+          ],
+          "conditions": [
+            "Scheduled services only; charter access is not inferred."
+          ],
+          "excludedDestinationCountries": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ],
+          "maxVisitMinutes": 240
+        }
+      ],
+      "sources": [
+        {
+          "id": "access",
+          "title": "LOT · Polonez and Mazurek admission rules",
+          "url": "https://www.lot.com/pl/en/legal-documents/rules-of-entry-to-lot-business-lounges",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "location",
+          "title": "LOT · Mazurek facilities and opening hours",
+          "url": "https://www.lot.com/pl/en/journey/additional-services/executive-lounges/lot-business-lounge-mazurek",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "The four-hour ordinary visit cap does not apply to qualifying connections under LOT’s published rules; confirm an extension at reception. Codeshares, paid passes and the separate Polonez Gold section are not inferred."
+    },
+    {
+      "id": "waw-preludium",
+      "name": "Preludium Lounge",
+      "terminal": "A",
+      "location": "Schengen area, Level 0, near Gates 34–35.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:00",
+            "close": "22:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "snacks",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass · Schengen",
+          "sourceIds": [
+            "priority-pass",
+            "facilities"
+          ],
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "destinationCountriesAnyOf": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ],
+          "maxMinutesBeforeDeparture": 180
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · Preludium Lounge",
+          "url": "https://www.prioritypass.com/en-GB/lounges/poland/warsaw-chopin/waw3-preludium-lounge",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "facilities",
+          "title": "DragonPass · Preludium facilities and Schengen restriction",
+          "url": "https://en.dragonpass.com.cn/lounge/329291",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Current program sources confirm showers, Wi-Fi and snacks. A full buffet was described in an older review but is not confirmed by the current facilities list. Non-Schengen options remain outside this independent-lounge record.",
+      "qualityRating": {
+        "score": 2.5,
+        "summary": "A September 2024 visit found a modest open-plan space, limited breakfast choices and weak restroom upkeep. This is older evidence of a basic short-stop lounge, not a current inspection.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Premium-Flights · Preludium, September 2024",
+            "url": "https://premium-flights.com/lounge-review-preludium-lounge-warsaw/",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://premium-flights.com/lounge-review-preludium-lounge-warsaw/",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    }
+  ]
+}

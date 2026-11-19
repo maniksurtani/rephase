@@ -1,0 +1,227 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "KWI",
+  "timeZone": "Asia/Kuwait",
+  "updatedAt": "2026-11-19",
+  "lounges": [
+    {
+      "id": "kwi-bayan-t4",
+      "name": "Kuwait Airways Bayan Lounge",
+      "terminal": "4",
+      "location": "Airside, first floor of Terminal 4, facing the departure gates.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "unknown",
+        "note": "Kuwait Airways does not publish a verified fixed schedule on the reviewed product page."
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "kuwait-premium",
+          "label": "Kuwait Airways Business or First",
+          "sourceIds": [
+            "kuwait-airways"
+          ],
+          "operatingCarriersAnyOf": [
+            "KU"
+          ],
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "route": "international"
+        }
+      ],
+      "sources": [
+        {
+          "id": "kuwait-airways",
+          "title": "Kuwait Airways · T4 lounge products and premium eligibility",
+          "url": "https://kuwaitairways.com/en/information/pages/products-services.aspx",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "aaco-bayan",
+          "title": "AACO · Kuwait Airways Bayan T4 inauguration and facilities (2019)",
+          "url": "https://www.aaco.org/media-center/news/aaco-members/kuwait-airways-inaugurates-al-bayan-lounge-at-t4-building",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Separate from Al Mubarakiya and the Royal/First Elite lounge. Kuwait Airways confirms Business and First access. Oasis Club status and partner invitations are not yet matched. Wi-Fi is documented by the airline association announcement; other current facilities require further verification."
+    },
+    {
+      "id": "kwi-al-mubarakiya-t4",
+      "name": "Al Mubarakiya Lounge",
+      "terminal": "4",
+      "location": "Airside after passport control, turn right towards Gate B5; international and transit departures.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "maxVisitMinutes": 180,
+          "route": "international"
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · Al Mubarakiya T4",
+          "url": "https://www.prioritypass.com/en-GB/lounges/kuwait/kuwait-international/kwi6-al-mubarakiya-lounge",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "kuwait-airways",
+          "title": "Kuwait Airways · Mubarkiya buffet and business facilities",
+          "url": "https://kuwaitairways.com/en/information/pages/products-services.aspx",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Three-hour Priority Pass visits; capacity restrictions can apply. The program requests smart casual dress. This is not the Bayan premium-cabin lounge.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "A January 2026 account of two visits found ample comfortable seating and a useful food selection, including vegetarian choices and desserts. Evidence is limited to one traveller and does not establish peak crowding or shower availability.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Free Luxury Travel · Al Mubarakiya T4 (January 2026)",
+            "url": "https://www.freeluxurytravel.com/2026/01/al-mubarakiya-lounge-kuwait-airport-review.html",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://www.freeluxurytravel.com/2026/01/al-mubarakiya-lounge-kuwait-airport-review.html",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    },
+    {
+      "id": "kwi-dasman-t1",
+      "name": "Kuwait Airways Dasman Lounge",
+      "terminal": "1",
+      "location": "Airside after immigration, turn right; opposite Gates 22 and 23.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "maxVisitMinutes": 180,
+          "route": "international"
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · Kuwait Airways Dasman T1",
+          "url": "https://www.prioritypass.com/en-GB/lounges/kuwait/kuwait-international/kwi5-kuwait-airways-dasman-lounge",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "loungekey",
+          "title": "Mastercard Airport Experiences · Dasman facilities and meal-service notice",
+          "url": "https://airport.mastercard.com/en/lounge-finder/lounge?loungecode=KWI5",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Three-hour Priority Pass visits. Separate from Dasman Premier at Gate 26 and Bayan in T4. LoungeKey still carries a boxed-meal notice, so current dining style remains unconfirmed despite older buffet reviews. Capacity restrictions can apply.",
+      "qualityRating": {
+        "score": 3,
+        "summary": "December 2024 visits found a reasonable lunch selection but limited breakfast choices, less comfortable sofas and scarce accessible power sockets. These observations predate the current meal-service uncertainty.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Citizen of the World · Kuwait Airways Dasman T1 (December 2024 visits)",
+            "url": "https://okainov.com/en/reports/kuwait-lounges-review/",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://okainov.com/en/reports/kuwait-lounges-review/",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    }
+  ]
+}

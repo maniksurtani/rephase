@@ -1,0 +1,318 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "LIM",
+  "timeZone": "America/Lima",
+  "updatedAt": "2026-11-19",
+  "lounges": [
+    {
+      "id": "lim-club-international",
+      "name": "The Club LIM · International B/C",
+      "terminal": "International Pier",
+      "location": "New terminal, international departures, mezzanine level serving B/C gates; follow lounge signs after security and passport control.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "route": "international",
+          "maxMinutesBeforeDeparture": 180,
+          "maxVisitMinutes": 180
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · The Club LIM International",
+          "url": "https://www.prioritypass.com/en-GB/lounges/peru/jorge-chavez-international/lim11-the-club-lim",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "operator",
+          "title": "The Club · International B/C location, facilities and access",
+          "url": "https://theclubairportlounges.com/lounges/lim-the-club-international-airside",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Separate from the domestic and D-gate lounges. Showers are included. The operator confirms meals but the current dining service style is not established here. Airline-operated club memberships do not qualify by themselves.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "The August 2025 new-terminal review praises spacious seating, Peruvian food and separate work, family and relaxation zones. Closely spaced workstations and a lack of outside views are drawbacks; this is one early visit rather than ongoing monitoring.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Last Man Boarding · The Club LIM, new airport, August 2025",
+            "url": "https://lastmanboarding.ch/2025/08/27/new-lounge-review-the-club-lim-new-airport-lima/",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://lastmanboarding.ch/2025/08/27/new-lounge-review-the-club-lim-new-airport-lima/",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "recommendation": {
+        "summary": "A 24-hour international option with included showers and a dedicated quiet zone, within three hours of departure."
+      }
+    },
+    {
+      "id": "lim-club-domestic",
+      "name": "The Club LIM · Domestic",
+      "terminal": "Domestic Pier",
+      "location": "New terminal, domestic departures mezzanine; take the lift or escalator after duty free.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ],
+        "exceptions": [
+          {
+            "date": "2026-11-30",
+            "periods": [
+              {
+                "open": "00:00",
+                "close": "11:00"
+              }
+            ],
+            "note": "Maintenance closure begins at 11:00."
+          },
+          {
+            "date": "2026-12-01",
+            "periods": [
+              {
+                "open": "04:00",
+                "close": "24:00"
+              }
+            ],
+            "note": "Reopens after maintenance at 04:00."
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "route": "domestic",
+          "maxMinutesBeforeDeparture": 180
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · The Club LIM Domestic and maintenance notice",
+          "url": "https://www.prioritypass.com/en-GB/lounges/peru/jorge-chavez-international/lim16-the-club-at-lim-domestic",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "operator",
+          "title": "The Club · Domestic location, buffet and closure dates",
+          "url": "https://theclubairportlounges.com/lounges/lim-the-club-domestic-airside",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "airport",
+          "title": "Lima Airport · New domestic lounge, August 2026",
+          "url": "https://www.lima-airport.com/en/comunicados/noticias/361",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Domestic departures only. Closed for maintenance from 30 November 2026 at 11:00 until 1 December at 04:00. Do not use international-lounge reviews or shower facilities for this separate lounge.",
+      "photoLinks": [
+        {
+          "label": "View lounge photos and details",
+          "url": "https://theclubairportlounges.com/lounges/lim-the-club-domestic-airside",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "recommendation": {
+        "summary": "A domestic buffet and workspace option; the published overnight maintenance closure is included in opening checks."
+      }
+    },
+    {
+      "id": "lim-latam-signature",
+      "name": "LATAM Signature Lounge",
+      "terminal": "International departures",
+      "location": "New terminal, level 4: follow duty-free signs to the escalator/lift, continue to the end of the corridor, then turn right.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "04:30",
+            "close": "24:00"
+          }
+        ],
+        "note": "Closed from midnight to 04:30 for cleaning; the separate Premium lounge has different hours."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "latam-business",
+          "label": "LATAM Premium Business",
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "LA",
+            "JJ"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "latam"
+          ]
+        },
+        {
+          "id": "delta-one",
+          "label": "Delta One",
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "route": "international",
+          "conditions": [
+            "The departing segment must be booked in Delta One; an Economy connection does not qualify."
+          ],
+          "sourceIds": [
+            "latam"
+          ]
+        },
+        {
+          "id": "delta-status",
+          "label": "Delta Platinum or Diamond Medallion",
+          "membershipsAnyOf": [
+            "delta-platinum-medallion",
+            "delta-diamond-medallion"
+          ],
+          "operatingCarriersAnyOf": [
+            "LA",
+            "JJ",
+            "DL"
+          ],
+          "route": "international",
+          "conditions": [
+            "Confirm the Delta status benefit applies to this departing flight."
+          ],
+          "sourceIds": [
+            "latam"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "latam",
+          "title": "LATAM · Lima Signature and Premium lounge access, hours and facilities",
+          "url": "https://www.latamairlines.com/us/en/experience/airport/lounges-and-facilities/lima",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Signature and Premium are separate access tiers. LATAM Premium Economy and Delta Gold do not establish Signature access. LATAM Pass tiers and other bank/partner agreements are not yet represented in settings.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "A September 2026 review describes attractive seating, a substantial breakfast buffet and rest facilities. Its visit lasted only ten minutes, so service consistency and peak-time crowding remain untested.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "TravelUpdate · LATAM Signature Lima, September 2026",
+            "url": "https://travelupdate.com/latam-signature-lounge-lima-lim-review/",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://travelupdate.com/latam-signature-lounge-lima-lim-review/",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "recommendation": {
+        "summary": "Buffet dining and rest facilities for eligible international premium travellers; allow for the overnight cleaning closure."
+      }
+    }
+  ]
+}

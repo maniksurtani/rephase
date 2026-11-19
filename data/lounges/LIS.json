@@ -1,0 +1,352 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "LIS",
+  "timeZone": "Europe/Lisbon",
+  "updatedAt": "2026-11-19",
+  "lounges": [
+    {
+      "id": "lis-tap-tejo",
+      "name": "TAP Premium Lounge Tejo",
+      "terminal": "1",
+      "location": "Schengen area after security. Non-Schengen travellers must leave time for passport control.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "no",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "tap-business",
+          "label": "TAP Business",
+          "sourceIds": [
+            "tap"
+          ],
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "TP"
+          ]
+        },
+        {
+          "id": "star-gold-on-tap",
+          "label": "Star Alliance Gold on TAP",
+          "sourceIds": [
+            "tap"
+          ],
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingCarriersAnyOf": [
+            "TP"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "tap",
+          "title": "TAP · Lisbon lounge facilities, opening and eligibility",
+          "url": "https://www.flytap.com/en-at/manage-booking/extras/lounges",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Showers and restrooms are currently closed for renovation. TAP confirms hot and cold meals, but the current source does not specify dining service style. Partner-airline and paid-access entitlements are not yet covered.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "A 2025 visit, published in 2026, praises the seating choice, self-serve food and staffed cocktail bar, but finds it busy. The review predates the current restroom and shower closure.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Frugal Flyer · Tejo lounge within TAP review (2025 visit)",
+            "url": "https://frugalflyer.ca/blog/review-tap-air-portugal-business-class-a330-900neo/",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://frugalflyer.ca/blog/review-tap-air-portugal-business-class-a330-900neo/",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    },
+    {
+      "id": "lis-tap-atlantico",
+      "name": "TAP Premium Lounge Atlântico",
+      "terminal": "1",
+      "location": "Non-Schengen area after passport control.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "tap-business",
+          "label": "TAP Business",
+          "sourceIds": [
+            "tap"
+          ],
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "TP"
+          ],
+          "excludedDestinationCountries": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ]
+        },
+        {
+          "id": "star-gold-on-tap",
+          "label": "Star Alliance Gold on TAP",
+          "sourceIds": [
+            "tap"
+          ],
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingCarriersAnyOf": [
+            "TP"
+          ],
+          "excludedDestinationCountries": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "tap",
+          "title": "TAP · Lisbon lounge facilities, opening and eligibility",
+          "url": "https://www.flytap.com/en-at/manage-booking/extras/lounges",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "A separate, smaller TAP lounge beyond passport control. Hot and cold meals are published; service style and shower availability remain unverified. No general Star Alliance partner-fare entitlement is inferred.",
+      "qualityRating": {
+        "score": 3,
+        "summary": "An older 2024 visit finds this smaller lounge less crowded than Tejo, with work and relaxation seating but a more limited buffet and self-serve bar. Recheck current peak-time conditions.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "The Points Guy · Atlântico lounge within TAP review (2024)",
+            "url": "https://thepointsguy.com/airline/reviews/tap-air-portugal-business-class-review",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://thepointsguy.com/airline/reviews/tap-air-portugal-business-class-review",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    },
+    {
+      "id": "lis-ana-t1",
+      "name": "ANA Lounge",
+      "terminal": "1",
+      "location": "Sixth floor near gate 22, before passport control; available to Schengen and non-Schengen departures from Terminal 1.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "04:00",
+            "close": "23:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "snacks",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "sourceIds": [
+            "priority-pass",
+            "rules"
+          ],
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "maxVisitMinutes": 180,
+          "conditions": [
+            "Entry is permitted from 3 hours 30 minutes before boarding time; confirm the boarding time shown on your pass."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · ANA Lounge",
+          "url": "https://www.prioritypass.com/en-GB/lounges/portugal/lisbon-portela/lis6-ana-lounge-lisbon",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "airport",
+          "title": "Lisbon Airport · ANA Lounge facilities and access",
+          "url": "https://www.lisbonairport.pt/en/lis/services-shopping/premium-services/ana-lounge?language=en",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "rules",
+          "title": "ANA · lounge rules of use",
+          "url": "https://www.ana.pt/sites/default/files/2026-04/loungeana_rulesofuse_LIS.pdf",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Allow passport-control time for non-Schengen departures. ANA warns of possible 24–25 December closure; confirm holiday availability. Shower kit charges should be checked at reception.",
+      "recommendation": {
+        "summary": "A Priority Pass option with published showers and rest booths before passport control; leave time to reach non-Schengen gates.",
+        "bestFor": [
+          "showers",
+          "quiet"
+        ]
+      },
+      "qualityRating": {
+        "score": 2,
+        "summary": "A December 2025 visit reports heavy crowding, sparse food and some facilities out of service, despite working Wi-Fi and a staffed bar. This is one historical visit, not a claim of a current closure.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "BoardingGroup.One · ANA Lounge (December 2025)",
+            "url": "https://boardinggroup.one/review/lounge/ana-lounge-lisbon-airport-review/",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://boardinggroup.one/review/lounge/ana-lounge-lisbon-airport-review/",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    }
+  ]
+}

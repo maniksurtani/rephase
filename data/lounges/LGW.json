@@ -1,0 +1,317 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "LGW",
+  "timeZone": "Europe/London",
+  "updatedAt": "2026-11-19",
+  "lounges": [
+    {
+      "id": "lgw-ba-club-south",
+      "name": "British Airways Club Lounge",
+      "terminal": "South",
+      "location": "Upper mezzanine after security, between InMotion and the former Dixons location; lift access.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "unknown",
+        "note": "BA directs travellers to the oneworld lounge finder; a current fixed schedule was not verified."
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "ba-business",
+          "label": "British Airways Club Europe or Club World",
+          "sourceIds": [
+            "access"
+          ],
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingCarriersAnyOf": [
+            "BA"
+          ],
+          "conditions": [
+            "Scheduled British Airways service required."
+          ]
+        },
+        {
+          "id": "ba-status",
+          "label": "British Airways Silver or Gold",
+          "sourceIds": [
+            "access"
+          ],
+          "membershipsAnyOf": [
+            "british-airways-silver",
+            "british-airways-gold"
+          ],
+          "operatingAlliance": "oneworld"
+        },
+        {
+          "id": "oneworld-status",
+          "label": "oneworld Sapphire or Emerald",
+          "sourceIds": [
+            "access"
+          ],
+          "membershipsAnyOf": [
+            "oneworld-sapphire",
+            "oneworld-emerald"
+          ],
+          "operatingAlliance": "oneworld"
+        }
+      ],
+      "sources": [
+        {
+          "id": "access",
+          "title": "British Airways · Business lounge access and facilities",
+          "url": "https://www.britishairways.com/content/en/bb/information/lounges/business",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "location",
+          "title": "British Airways · Gatwick South lounge locations",
+          "url": "https://www.britishairways.com/content/en/at/information/airport-information/london-gatwick",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Separate from the First Lounge. Hot food and Wi-Fi are documented, but dining service style and current shower availability remain unconfirmed. AerClub privileges and codeshare exceptions need separate research.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "A November 2025 visit found thoughtfully arranged seating, a quiet mezzanine and a staffed cocktail bar. Very slow Wi-Fi was the main drawback; this assessment covers the Club room, not First.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "The Alviator · BA Club Gatwick, November 2025",
+            "url": "https://thealviator.com/2025/11/british-airways-lounge-gatwick-impressions/",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://thealviator.com/2025/11/british-airways-lounge-gatwick-impressions/",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    },
+    {
+      "id": "lgw-no1-north",
+      "name": "No1 Lounge (North)",
+      "terminal": "North",
+      "location": "After security; follow Airport Lounges signs through glass doors.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "04:00",
+            "close": "20:00"
+          }
+        ],
+        "exceptions": [
+          {
+            "date": "2026-12-25",
+            "periods": [
+              {
+                "open": "05:30",
+                "close": "15:30"
+              }
+            ],
+            "note": "Priority Pass published Christmas Day hours."
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "no",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "sourceIds": [
+            "priority-pass",
+            "airport"
+          ],
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "maxVisitMinutes": 180,
+          "conditions": [
+            "Smart-casual dress rules apply; admission is subject to capacity."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · No1 Gatwick North",
+          "url": "https://www.prioritypass.com/en-GB/lounges/united-kingdom/gatwick/lgw15-no1-lounge-gatwick",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "airport",
+          "title": "Gatwick Airport · No1 locations, facilities and entry window",
+          "url": "https://www.gatwickairport.com/premium-services/lounge-airport/lounge-no1.html",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "operator",
+          "title": "No1 Lounges · FAQ including shower availability",
+          "url": "https://no1lounges.com/faqs/",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Prebooking is optional and costs extra. The operator confirms no showers currently in use. Library areas are for over-12s; the lounge’s general admission permits children. Use the lounge in your departure terminal.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "Finder’s published review praises friendly staff, decent hot food and a calm library area, but reports limited power sockets and uncleared tables. The article was updated in August 2026; its visit date is unspecified.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Finder · No1 Gatwick North",
+            "url": "https://www.finder.com/uk/credit-cards/rewards-credit-cards/london-gatwick-no-1-lounge-north-terminal",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://www.finder.com/uk/credit-cards/rewards-credit-cards/london-gatwick-no-1-lounge-north-terminal",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    },
+    {
+      "id": "lgw-no1-south",
+      "name": "No1 Lounge (South)",
+      "terminal": "South",
+      "location": "After security on the upper level, between JD Sports and InMotion.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "04:00",
+            "close": "21:00"
+          }
+        ],
+        "exceptions": [
+          {
+            "date": "2026-12-25",
+            "periods": [
+              {
+                "open": "07:30",
+                "close": "17:00"
+              }
+            ],
+            "note": "Priority Pass published Christmas Day hours."
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "no",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "sourceIds": [
+            "priority-pass",
+            "airport"
+          ],
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "maxVisitMinutes": 180,
+          "conditions": [
+            "Smart-casual dress rules apply; admission is subject to capacity."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · No1 Gatwick South",
+          "url": "https://www.prioritypass.com/en-GB/lounges/united-kingdom/gatwick/lgw17-no1-lounge-gatwick",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "airport",
+          "title": "Gatwick Airport · No1 locations, facilities and entry window",
+          "url": "https://www.gatwickairport.com/premium-services/lounge-airport/lounge-no1.html",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "operator",
+          "title": "No1 Lounges · FAQ including shower availability",
+          "url": "https://no1lounges.com/faqs/",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Prebooking is optional and costs extra. The operator confirms no showers currently in use. Library areas are for over-12s; the lounge’s general admission permits children. Use the lounge in your departure terminal.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "A January 2025 review describes a useful breakfast buffet, runway views and a pleasant setting. Wi-Fi reliability and some food freshness fell short; this is an affiliate-supported firsthand account.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Mr Plane Guy · No1 Gatwick South, January 2025",
+            "url": "https://www.mrplaneguy.com/post/no1-lounge-at-gatwick-south",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://www.mrplaneguy.com/post/no1-lounge-at-gatwick-south",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    }
+  ]
+}

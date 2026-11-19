@@ -82,3 +82,18 @@ The working scope is **61 airports**: 14 existing guides plus 47 additional inte
 The acceptance target is a useful guide for each airport, not a synthetic minimum lounge count. Research should cover principal airline/status options plus a verified independent membership alternative where one can be established. Missing operational evidence stays unknown or conditional; a search snippet alone does not establish access, hours or facilities. Unavailable independent review evidence means no quality score, rather than an invented rating. Regional evidence notes live under `research/`.
 
 Follow-on tier review: BOS, IAD, CLT, DTW, MSP, VIE, WAW, LGW, DUB, ARN, OSL, BRU, LIS, KIX, SZX, PKX, TFU, SGN, HAN, DPS, JED, RUH, BAH, KWI, LIM, SJO, SJU and CPT. Promote gaps based on connection utility and actual demand; do not call the initial working list exhaustive.
+
+## Second parallel expansion — 19 November 2026
+
+Six parallel research tracks added **61 selected lounges at 25 additional airports**, bringing the catalog to **226 lounges at 86 airports**. Forty-eight new records have sourced ratings; thirteen remain explicitly unrated. These batches prioritise major regional connections and geographic breadth; they are not an exact traffic ranking. Each first guide targets selected current airline/status options and verified independent membership alternatives, with terminal and access gaps documented. A familiar lounge name or historical review does not establish that a renovated lounge is open or that a membership still qualifies.
+
+| Track | Airports | Status |
+| --- | --- | --- |
+| North America | BOS, IAD, CLT, DTW, MSP | 10 lounges added; [evidence and gaps](research/north-america-2026-11-19.md) |
+| Central Europe, UK and Ireland | VIE, WAW, LGW, DUB | 12 lounges added; [evidence and gaps](research/europe-central-2026-11-19.md) |
+| Northern and western Europe | ARN, OSL, BRU, LIS | 11 lounges added; [evidence and gaps](research/europe-north-2026-11-19.md) |
+| Asia | KIX, SGN, HAN, DPS | 9 lounges added; [evidence and gaps](research/asia-2026-11-19.md) |
+| Gulf | JED, RUH, BAH, KWI | 9 lounges added; [evidence and gaps](research/gulf-2026-11-19.md) |
+| Latin America, Caribbean and Africa | LIM, SJO, SJU, CPT | 10 lounges added; [evidence and gaps](research/latam-africa-2026-11-19.md) |
+
+After these batches, prioritise a mainland-China pass for **PKX, SZX and TFU**, using current local-language airport/airline sources and distinguishing newly opened terminals from predecessor lounges. In parallel, deepen the existing-guide gaps listed above, especially high-use airline/terminal omissions and closure notices. Subsequent candidates include **ICN T1, KUL satellite, ATH, MXP, MAN, YUL, YYC, PHL, PHX, BOG additional airline options, BLR, HYD and DAC**; some are improvements at already listed airports rather than new airport counts. Reassess using user demand instead of treating this queue as fixed.

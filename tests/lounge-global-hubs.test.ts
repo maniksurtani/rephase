@@ -24,6 +24,182 @@ function check(airport: string, id: string, overrides: Partial<LoungeVisitContex
 }
 
 describe('global hub access exceptions', () => {
+  it('applies Charlotte’s 150-minute Priority Pass limit and Detroit’s split admission hours', () => {
+    const pp: Partial<LoungeVisitContext> = {
+      memberships: ['priority-pass'],
+      visitStart: '2026-11-19T14:00:00Z',
+      visitEnd: '2026-11-19T17:00:00Z',
+      departure: '2026-11-19T17:00:00Z',
+    };
+    expect(check('CLT', 'clt-the-club-a', pp).visit?.minutes).toBe(150);
+    expect(check('DTW', 'dtw-lufthansa-business', pp).opening).toBe('open');
+    expect(
+      check('DTW', 'dtw-lufthansa-business', {
+        ...pp,
+        visitStart: '2026-11-19T18:00:00Z',
+        visitEnd: '2026-11-19T19:00:00Z',
+        departure: '2026-11-19T21:00:00Z',
+      }).opening,
+    ).toBe('closed');
+    expect(
+      check('DTW', 'dtw-lufthansa-business', {
+        ...pp,
+        visitStart: '2026-11-22T14:00:00Z',
+        visitEnd: '2026-11-22T15:00:00Z',
+        departure: '2026-11-22T17:00:00Z',
+      }).opening,
+    ).toBe('closed');
+  });
+
+  it('does not extend temporary Brussels Business access or Warsaw Frequent Traveller to every Star carrier', () => {
+    const business: Partial<LoungeVisitContext> = {
+      cabin: 'business',
+      destinationCountry: 'DE',
+      operatingCarrier: 'SN',
+      marketingCarrier: 'SN',
+    };
+    expect(check('BRU', 'bru-pop-up-loft', business).access).toBe('conditional');
+    expect(
+      check('BRU', 'bru-pop-up-loft', {
+        ...business,
+        operatingCarrier: 'TP',
+        marketingCarrier: 'TP',
+      }).access,
+    ).toBe('ineligible');
+    const frequent: Partial<LoungeVisitContext> = {
+      memberships: ['miles-and-more-frequent-traveller'],
+      destinationCountry: 'DE',
+      operatingCarrier: 'LO',
+      marketingCarrier: 'LO',
+    };
+    expect(check('WAW', 'waw-lot-polonez', frequent).access).toBe('conditional');
+    expect(
+      check('WAW', 'waw-lot-polonez', {
+        ...frequent,
+        operatingCarrier: 'TK',
+        marketingCarrier: 'TK',
+      }).access,
+    ).toBe('ineligible');
+    expect(check('WAW', 'waw-lot-mazurek', frequent).access).toBe('ineligible');
+  });
+
+  it('keeps Bahrain’s closed flagship separate from its airline-invitation replacement', () => {
+    const premium: Partial<LoungeVisitContext> = {
+      cabin: 'business',
+      operatingCarrier: 'GF',
+      marketingCarrier: 'GF',
+    };
+    expect(check('BAH', 'bah-falcon-gold', premium).opening).toBe('closed');
+    expect(check('BAH', 'bah-pearl-departures', premium)).toMatchObject({
+      access: 'conditional',
+      opening: 'unknown',
+    });
+    expect(
+      check('BAH', 'bah-pearl-departures', {
+        ...premium,
+        cabin: 'economy',
+        memberships: ['priority-pass'],
+      }).access,
+    ).toBe('ineligible');
+  });
+
+  it('distinguishes Brussels’ temporary Star Gold access from The View’s carrier restriction', () => {
+    const gold: Partial<LoungeVisitContext> = {
+      memberships: ['united-premier-1k'],
+      operatingCarrier: 'TK',
+      marketingCarrier: 'TK',
+      destinationCountry: 'DE',
+    };
+    expect(check('BRU', 'bru-pop-up-loft', gold).access).toBe('eligible');
+    expect(check('BRU', 'bru-the-view', { ...gold, destinationCountry: 'US' }).access).toBe(
+      'ineligible',
+    );
+    expect(
+      check('BRU', 'bru-the-view', {
+        ...gold,
+        destinationCountry: 'US',
+        operatingCarrier: 'SN',
+        marketingCarrier: 'SN',
+      }).access,
+    ).toBe('eligible');
+  });
+
+  it('keeps Kansai’s ANA and JAL replacement lounge entitlements separate', () => {
+    const ana: Partial<LoungeVisitContext> = {
+      memberships: ['united-premier-1k'],
+      operatingCarrier: 'NH',
+      marketingCarrier: 'NH',
+    };
+    expect(check('KIX', 'kix-lounge-kansai', ana)).toMatchObject({
+      access: 'conditional',
+      opening: 'unknown',
+    });
+    expect(check('KIX', 'kix-lounge-premium', ana).access).toBe('ineligible');
+    const jal: Partial<LoungeVisitContext> = {
+      cabin: 'business',
+      operatingCarrier: 'JL',
+      marketingCarrier: 'JL',
+    };
+    expect(check('KIX', 'kix-lounge-premium', jal).access).toBe('eligible');
+    expect(check('KIX', 'kix-lounge-kansai', jal).access).toBe('ineligible');
+  });
+
+  it('respects both ends of Lima’s overnight domestic lounge maintenance closure', () => {
+    const pp: Partial<LoungeVisitContext> = { memberships: ['priority-pass'], route: 'domestic' };
+    for (const [start, end, departure, opening] of [
+      [
+        '2026-11-30T09:00:00-05:00',
+        '2026-11-30T10:00:00-05:00',
+        '2026-11-30T11:00:00-05:00',
+        'open',
+      ],
+      [
+        '2026-11-30T12:00:00-05:00',
+        '2026-11-30T13:00:00-05:00',
+        '2026-11-30T14:00:00-05:00',
+        'closed',
+      ],
+      [
+        '2026-12-01T02:00:00-05:00',
+        '2026-12-01T03:00:00-05:00',
+        '2026-12-01T04:00:00-05:00',
+        'closed',
+      ],
+      [
+        '2026-12-01T04:00:00-05:00',
+        '2026-12-01T05:00:00-05:00',
+        '2026-12-01T06:00:00-05:00',
+        'open',
+      ],
+    ]) {
+      expect(
+        check('LIM', 'lim-club-domestic', {
+          ...pp,
+          visitStart: start,
+          visitEnd: end,
+          departure,
+        }).opening,
+        start,
+      ).toBe(opening);
+    }
+  });
+
+  it('requires Delta marketing for the San Juan Escape Reserve benefit', () => {
+    const reserve: Partial<LoungeVisitContext> = {
+      memberships: ['delta-skymiles-reserve'],
+      operatingCarrier: 'DL',
+      marketingCarrier: 'AF',
+    };
+    expect(check('SJU', 'sju-escape-b', reserve).access).toBe('ineligible');
+    expect(
+      check('SJU', 'sju-escape-b', {
+        ...reserve,
+        operatingCarrier: 'AF',
+        marketingCarrier: 'DL',
+      }).access,
+    ).toBe('conditional');
+  });
+
   it('sends oneworld status in Economy to Qatar Gold rather than Al Mourjan', () => {
     const status = { memberships: ['qantas-platinum'] as const };
     expect(

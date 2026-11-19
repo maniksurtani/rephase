@@ -1,0 +1,288 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "DTW",
+  "timeZone": "America/New_York",
+  "updatedAt": "2026-11-19",
+  "lounges": [
+    {
+      "id": "dtw-lufthansa-business",
+      "name": "Lufthansa Business Lounge",
+      "terminal": "Evans",
+      "location": "After security, by Gate D8. Evans and McNamara are separate terminals.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6
+            ],
+            "open": "06:00",
+            "close": "12:00"
+          },
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6
+            ],
+            "open": "17:00",
+            "close": "20:00"
+          }
+        ],
+        "note": "These are Priority Pass admission windows, not airline-passenger opening hours. The current Priority Pass page lists Sunday closed; Amex still shows a Sunday morning window, so the current program listing is used conservatively."
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "maxVisitMinutes": 180,
+          "conditions": [
+            "Show a confirmed same-day outbound DTW boarding pass; verify admission during the published program window."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · Lufthansa Business DTW",
+          "url": "https://www.prioritypass.com/en-GB/lounges/united-states-of-america/detroit-metropolitan-wayne-county/dtw5-lufthansa-business-lounge",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "amex-facilities",
+          "title": "American Express · Lufthansa Evans location and facilities",
+          "url": "https://www.americanexpress.com/en-us/travel/lounges/the-platinum-card/DTW/Lufthansa-Lounge-Evans-Terminal-QjSoIBFa8M/",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "This record models Priority Pass access to the Business lounge only, not Senator access or airline-ticket entitlements. No direct Amex-only Lufthansa access is inferred. Dining service style and showers remain unverified.",
+      "qualityRating": {
+        "score": 3,
+        "summary": "An October 2026 review of a late-September visit found dated decor but adequate seating, useful power points and a decent breakfast/lunch selection. It lacked the polish of newer Lufthansa lounges.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "review",
+            "title": "Independent review of this lounge",
+            "url": "https://boardingarea.com/review-lufthansa-lounge-detroit-international-dtw-evans-terminal/",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "Photos and independent review",
+          "url": "https://boardingarea.com/review-lufthansa-lounge-detroit-international-dtw-evans-terminal/",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    },
+    {
+      "id": "dtw-delta-sky-club-a38",
+      "name": "Delta Sky Club — A38",
+      "terminal": "McNamara",
+      "location": "Departure level, across from Gate A38, with the lounge upstairs.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "unknown",
+        "note": "Current fixed hours could not be verified from the operator or program; check before visiting."
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "club-member",
+          "label": "Delta Sky Club membership on Delta",
+          "sourceIds": [
+            "delta-access"
+          ],
+          "membershipsAnyOf": [
+            "delta-sky-club"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Basic/Light fares are excluded; confirm same-day travel."
+          ]
+        },
+        {
+          "id": "delta-one",
+          "label": "Delta One ticket",
+          "sourceIds": [
+            "delta-access"
+          ],
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Confirm Delta One, not ordinary domestic First."
+          ]
+        },
+        {
+          "id": "medallion-premium",
+          "label": "Delta Gold, Platinum or Diamond on international premium travel",
+          "sourceIds": [
+            "delta-access"
+          ],
+          "membershipsAnyOf": [
+            "delta-gold-medallion",
+            "delta-platinum-medallion",
+            "delta-diamond-medallion"
+          ],
+          "cabinsAnyOf": [
+            "premium-economy",
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "route": "international",
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Requires Premium Select or Delta One; Caribbean itineraries are excluded."
+          ]
+        },
+        {
+          "id": "non-delta-elite-plus",
+          "label": "Non-Delta SkyTeam Elite Plus",
+          "sourceIds": [
+            "delta-access"
+          ],
+          "membershipsAnyOf": [
+            "skyteam-elite-plus"
+          ],
+          "operatingAlliance": "skyteam",
+          "route": "international",
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Confirm non-Delta status and an eligible same-day international itinerary; Caribbean and Basic/Light fares are excluded."
+          ]
+        },
+        {
+          "id": "platinum-card",
+          "label": "Eligible Amex Platinum on Delta",
+          "sourceIds": [
+            "delta-access"
+          ],
+          "membershipsAnyOf": [
+            "amex-platinum"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Confirm card entitlement and remaining visits or visit charge; Basic/Light fares are excluded."
+          ]
+        },
+        {
+          "id": "reserve-operated",
+          "label": "Delta Reserve on Delta",
+          "sourceIds": [
+            "delta-access"
+          ],
+          "membershipsAnyOf": [
+            "delta-skymiles-reserve"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Confirm remaining card visits or visit charge; Basic/Light fares are excluded."
+          ]
+        },
+        {
+          "id": "reserve-marketed",
+          "label": "Delta Reserve on a Delta-marketed flight",
+          "sourceIds": [
+            "delta-access"
+          ],
+          "membershipsAnyOf": [
+            "delta-skymiles-reserve"
+          ],
+          "marketingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Confirm remaining card visits or visit charge; Basic/Light fares are excluded."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "delta-access",
+          "title": "Delta · Sky Club access and exclusions",
+          "url": "https://www.delta.com/us/en/delta-sky-club/access",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "amex-facilities",
+          "title": "American Express · Delta A38 location and facilities",
+          "url": "https://www.americanexpress.com/en-us/travel/lounges/the-platinum-card/DTW/Delta-Sky-Club-Gate-A38-McNamara-Terminal-Concourse-A-Vvl2DMgydz/",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Ordinary domestic First and Delta status in Economy do not establish entry. Qualifying connections can permit earlier admission than the three-hour window modelled here. Partner premium tickets, Delta First status exceptions and arrival access remain follow-ups. The accessible current directory did not verify shower availability or dining style.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "A historical March 2022 review praised the generous food selection and found a seat despite crowds, but described tired interiors. Reassessment of the current experience is needed.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "review",
+            "title": "Independent review of this lounge",
+            "url": "https://liveandletsfly.com/delta-sky-cub-review-detroit-a38/",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "Photos and independent review",
+          "url": "https://liveandletsfly.com/delta-sky-cub-review-detroit-a38/",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    }
+  ]
+}

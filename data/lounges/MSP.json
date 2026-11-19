@@ -1,0 +1,357 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "MSP",
+  "timeZone": "America/Chicago",
+  "updatedAt": "2026-11-19",
+  "lounges": [
+    {
+      "id": "msp-delta-sky-club-g",
+      "name": "Delta Sky Club — Concourse G",
+      "terminal": "1",
+      "location": "Near Gates G17/G18; separate from the F/G entrance club.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "06:00",
+            "close": "22:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "club-member",
+          "label": "Delta Sky Club membership on Delta",
+          "sourceIds": [
+            "delta-access"
+          ],
+          "membershipsAnyOf": [
+            "delta-sky-club"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Basic/Light fares are excluded; confirm same-day travel."
+          ]
+        },
+        {
+          "id": "delta-one",
+          "label": "Delta One ticket",
+          "sourceIds": [
+            "delta-access"
+          ],
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Confirm Delta One, not ordinary domestic First."
+          ]
+        },
+        {
+          "id": "medallion-premium",
+          "label": "Delta Gold, Platinum or Diamond on international premium travel",
+          "sourceIds": [
+            "delta-access"
+          ],
+          "membershipsAnyOf": [
+            "delta-gold-medallion",
+            "delta-platinum-medallion",
+            "delta-diamond-medallion"
+          ],
+          "cabinsAnyOf": [
+            "premium-economy",
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "route": "international",
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Requires Premium Select or Delta One; Caribbean itineraries are excluded."
+          ]
+        },
+        {
+          "id": "non-delta-elite-plus",
+          "label": "Non-Delta SkyTeam Elite Plus",
+          "sourceIds": [
+            "delta-access"
+          ],
+          "membershipsAnyOf": [
+            "skyteam-elite-plus"
+          ],
+          "operatingAlliance": "skyteam",
+          "route": "international",
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Confirm non-Delta status and an eligible same-day international itinerary; Caribbean and Basic/Light fares are excluded."
+          ]
+        },
+        {
+          "id": "platinum-card",
+          "label": "Eligible Amex Platinum on Delta",
+          "sourceIds": [
+            "delta-access"
+          ],
+          "membershipsAnyOf": [
+            "amex-platinum"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Confirm card entitlement and remaining visits or visit charge; Basic/Light fares are excluded."
+          ]
+        },
+        {
+          "id": "reserve-operated",
+          "label": "Delta Reserve on Delta",
+          "sourceIds": [
+            "delta-access"
+          ],
+          "membershipsAnyOf": [
+            "delta-skymiles-reserve"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Confirm remaining card visits or visit charge; Basic/Light fares are excluded."
+          ]
+        },
+        {
+          "id": "reserve-marketed",
+          "label": "Delta Reserve on a Delta-marketed flight",
+          "sourceIds": [
+            "delta-access"
+          ],
+          "membershipsAnyOf": [
+            "delta-skymiles-reserve"
+          ],
+          "marketingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Confirm remaining card visits or visit charge; Basic/Light fares are excluded."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "delta-access",
+          "title": "Delta · Sky Club access and exclusions",
+          "url": "https://www.delta.com/us/en/delta-sky-club/access",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "airport",
+          "title": "MSP Airport · Lounge locations, hours and facilities",
+          "url": "https://www.mspairport.com/airport/msp-airport-lounges",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "amex-facilities",
+          "title": "American Express · Delta G17/G18 location and facilities",
+          "url": "https://www.americanexpress.com/en-us/travel/lounges/the-platinum-card/MSP/Delta-Air-Lines-Delta-Sky-Club-Terminal-1-Concourse-G-6dwcCCso5E/",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Ordinary domestic First and Delta status in Economy do not establish entry. Qualifying connections can permit earlier admission than the three-hour window modelled here. Partner premium tickets, Delta First status exceptions and arrival access remain follow-ups. This is the newer G lounge, not the F/G location affected by November maintenance. Showers were not verified.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "A September 2025 visit enjoyed varied hot food, several seating zones and the Sky Deck without serious crowding. The walk from other concourses is long; that quiet visit may not reflect peak periods.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "review",
+            "title": "Independent review of this lounge",
+            "url": "https://emptynestermiles.com/2025/09/22/delta-skyclub-minneapolis-g18-review/",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "Photos and independent review",
+          "url": "https://emptynestermiles.com/2025/09/22/delta-skyclub-minneapolis-g18-review/",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    },
+    {
+      "id": "msp-escape-t1",
+      "name": "Escape Lounge",
+      "terminal": "1",
+      "location": "Mezzanine above the entrance to Concourse E, in the MSP Mall.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "04:00",
+            "close": "21:00"
+          }
+        ],
+        "exceptions": [
+          {
+            "date": "2026-11-26",
+            "periods": [
+              {
+                "open": "04:00",
+                "close": "17:00"
+              }
+            ],
+            "note": "Thanksgiving hours published by Priority Pass and the operator."
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Smart-casual dress is required; check available capacity or pre-book."
+          ]
+        },
+        {
+          "id": "amex-platinum",
+          "label": "Eligible Amex Platinum",
+          "sourceIds": [
+            "escape-access"
+          ],
+          "membershipsAnyOf": [
+            "amex-platinum"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Confirm applicable card terms, including the operator’s US-issued Amex flight-payment requirement."
+          ]
+        },
+        {
+          "id": "delta-reserve",
+          "label": "Delta Reserve on a Delta-marketed flight",
+          "sourceIds": [
+            "escape-access"
+          ],
+          "membershipsAnyOf": [
+            "delta-skymiles-reserve"
+          ],
+          "marketingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "The same-day flight must meet the operator’s US-issued Amex payment requirement."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · Escape MSP",
+          "url": "https://www.prioritypass.com/en-GB/lounges/united-states-of-america/minneapolis-saint-paul-international/msp3-escape-lounges",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "escape-location",
+          "title": "Escape Lounges · Minneapolis location and holiday hours",
+          "url": "https://escapelounges.com/us/airport-lounges/minneapolis-saint-paul/",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "escape-access",
+          "title": "Escape Lounges · US access conditions",
+          "url": "https://escapelounges.com/us/access/",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "airport",
+          "title": "MSP Airport · Escape location and facilities",
+          "url": "https://www.mspairport.com/airport/eat-shop-relax/escape-lounge",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "airport-guide",
+          "title": "MSP Airport · Lounge dining information",
+          "url": "https://www.mspairport.com/airport/msp-airport-lounges",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Food and drinks stop 30 minutes before closing. The operator, Priority Pass and individual airport listing agree on 21:00; the airport overview still says 20:00. Cardholders on qualifying connections may enter earlier than the modelled three-hour window. Premium drinks can cost extra.",
+      "qualityRating": {
+        "score": 2.5,
+        "summary": "The 2026 published review found tasty but limited hot food, worn furnishings and difficulty finding seats together. It suited a short stop better than a long stay.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "review",
+            "title": "Independent review of this lounge",
+            "url": "https://upgradedpoints.com/travel/airports/escape-lounge-minneapolis-st-paul-msp-review/",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "Photos and independent review",
+          "url": "https://upgradedpoints.com/travel/airports/escape-lounge-minneapolis-st-paul-msp-review/",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    }
+  ]
+}

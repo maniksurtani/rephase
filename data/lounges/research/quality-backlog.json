@@ -4,6 +4,10 @@
     "reason": "Available descriptions do not establish a verified independent review of the separate Star Alliance Gold lounge."
   },
   {
+    "loungeId": "arn-aspire-non-schengen",
+    "reason": "A current exact-facility review was found but could not be opened; separate Schengen and paid Luxe/Suite sections must not supply its rating."
+  },
+  {
     "loungeId": "bcn-joan-miro",
     "reason": "The available Priority Pass review is promotional; an independent firsthand assessment remains outstanding."
   },
@@ -24,6 +28,10 @@
     "reason": "Current operational sources were available, but a credible firsthand quality review was not verified."
   },
   {
+    "loungeId": "cpt-saa-premium-domestic",
+    "reason": "The available Point Hacks July 2024 visit predates the August 2025 refurbishment; no verified independent visit to the current Premium section was found."
+  },
+  {
     "loungeId": "del-encalm-t3-international",
     "reason": "Current access and facilities are documented; a credible independent review of this exact Encalm lounge remains outstanding."
   },
@@ -40,8 +48,24 @@
     "reason": "A current independent firsthand review of The Pier was not verified; other W Premium locations are not interchangeable."
   },
   {
+    "loungeId": "han-lotus-t2",
+    "reason": "Current primary lounge details remain incomplete and a NASCO 2026 facility announcement could not be read; older reviews are not used before confirming they describe the current T2 facility."
+  },
+  {
     "loungeId": "iah-united-club-b-north",
     "reason": "Opened 22 October 2026; launch reports establish facilities but not an independent ordinary-visit quality assessment."
+  },
+  {
+    "loungeId": "jed-nasmiles-domestic",
+    "reason": "Current program access is verified, but no credible independent firsthand review of the exact domestic facility was read."
+  },
+  {
+    "loungeId": "kwi-bayan-t4",
+    "reason": "The official cabin entitlement and location are verified; no credible independent firsthand assessment of the exact Bayan Business facility was found."
+  },
+  {
+    "loungeId": "lim-club-domestic",
+    "reason": "Opened in August 2026; operator and program evidence is available, but an independent firsthand review of this exact domestic facility was not verified."
   },
   {
     "loungeId": "mel-aspire-t2",
@@ -56,6 +80,10 @@
     "reason": "No readable current independent review of the main lounge was verified during this pass; satellite reviews are not substitutes."
   },
   {
+    "loungeId": "osl-lounge-international",
+    "reason": "Readable independent review dates from March 2022 and may not reflect the current standard/Premium layout; current exact-section firsthand evidence remains outstanding."
+  },
+  {
     "loungeId": "pek-bgs-t3e",
     "reason": "No credible current independent review of this exact lounge was verified."
   },
@@ -66,6 +94,30 @@
   {
     "loungeId": "pvg-china-eastern-77",
     "reason": "A current independent firsthand account of Lounge 77 remains outstanding."
+  },
+  {
+    "loungeId": "ruh-hayyak-t5",
+    "reason": "Available listings and promotional descriptions do not establish an independent review of the T5 facility after the terminal reassignments."
+  },
+  {
+    "loungeId": "sgn-lotus-t3",
+    "reason": "No verified independent firsthand review of the ordinary Lotus Lounge opposite Gate 10 in the new T3; Premier and old T1 reviews are not substitutes."
+  },
+  {
+    "loungeId": "sjo-vip-costa-rica",
+    "reason": "The current airport-operated Gate 19 facility is listed under VIP MasterCard and Priority Pass names; a review of the current operation was not verified, and older Copa Club reports may not describe the current service."
+  },
+  {
+    "loungeId": "sjo-vip-santamaria",
+    "reason": "The airport now lists the Gate 5 facility as VIP VISA; a current independent visit under the present operation was not verified."
+  },
+  {
+    "loungeId": "vie-austrian-non-schengen-g",
+    "reason": "Current combined Level 3 G-gate lounge replaces older Business/Senator facilities; a firsthand review of the replacement was not verified."
+  },
+  {
+    "loungeId": "waw-lot-mazurek",
+    "reason": "Current official operations were verified, but an independent firsthand review of this exact non-Schengen lounge was not verified; Polonez reviews are not substitutes."
   },
   {
     "loungeId": "zrh-aspire-e",

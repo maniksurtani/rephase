@@ -1,0 +1,172 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "RUH",
+  "timeZone": "Asia/Riyadh",
+  "updatedAt": "2026-11-19",
+  "lounges": [
+    {
+      "id": "ruh-plaza-premium-t1",
+      "name": "Plaza Premium Lounge",
+      "terminal": "1",
+      "location": "Airside mezzanine, opposite Gate 108; the lounge operator lists this as international departures.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "maxVisitMinutes": 120,
+          "route": "international",
+          "conditions": [
+            "Confirm this lounge is reachable from your current departure terminal; Riyadh terminal assignments have changed and the operator still lists international Terminal 1."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · Riyadh Plaza Premium",
+          "url": "https://www.prioritypass.com/en-GB/lounges/saudi-arabia/king-khalid-international/ruh12-plaza-premium-lounge",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "operator",
+          "title": "Plaza Premium · Riyadh T1",
+          "url": "https://www.plazapremiumlounge.com/en-uk/find/india-middle-east-south-africa/saudi-arabia/riyadh/riyadh-king-khalid-international-airport/international-departures-terminal-one",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "terminal-transition",
+          "title": "King Khalid Airport · Completed terminal redistribution",
+          "url": "https://www.kkia.sa/en/news/king-khalid-international-airport-completes-major-terminal-relocation-project",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Two-hour Priority Pass visits. Quiet area, prayer room and play area are listed by the program. Older factsheets mention showers and private cabins, but current availability is unverified; these amenities remain unknown.",
+      "qualityRating": {
+        "score": 3,
+        "summary": "An August 2026 review found a regularly replenished food selection and an airy space, but criticised the awkward layout and terminal noise. It describes a practical stop rather than a secluded place to rest.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "The Flight Club · Riyadh Plaza Premium (August 2026)",
+            "url": "https://www.theflightclub.it/en/2026/08/plaza-premium-lounge-riyadh-review/",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://www.theflightclub.it/en/2026/08/plaza-premium-lounge-riyadh-review/",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    },
+    {
+      "id": "ruh-hayyak-t5",
+      "name": "Hayyak Luxury Lounge",
+      "terminal": "5",
+      "location": "Airside departures, first floor, opposite Gate 509.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "maxVisitMinutes": 240,
+          "conditions": [
+            "Confirm Priority Pass admission for your flight: its listing still says domestic, while the airport assigns Terminal 5 to foreign-airline international departures."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · Hayyak Luxury T5",
+          "url": "https://www.prioritypass.com/en-GB/lounges/saudi-arabia/king-khalid-international/ruh11-hayyak-luxury-lounge",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "airport",
+          "title": "King Khalid Airport · Hayyak lounges and facilities",
+          "url": "https://www.kkia.sa/en/services/hayyak-lounge",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "terminal-transition",
+          "title": "King Khalid Airport · Completed terminal redistribution",
+          "url": "https://www.kkia.sa/en/news/king-khalid-international-airport-completes-major-terminal-relocation-project",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "The airport confirms Hayyak locations in T2 and T5 and round-the-clock opening. This record is only T5. The Priority Pass route label conflicts with the airport transition notice, so membership access stays conditional. The separate T2/T3 facilities and access routes are not assumed interchangeable."
+    }
+  ]
+}

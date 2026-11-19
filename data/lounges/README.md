@@ -2,9 +2,9 @@
 
 Edit one JSON file per airport, named with its three-letter IATA code (for example `SIN.json`). The build publishes each guide as static JSON; clients download only the airports they need, cache them locally and match access offline. No lounge API or database is needed. `schema.json` is the editor/CI contract, and `src/lib/lounge-types.ts` defines the matching types.
 
-## Current coverage: 18 November 2026
+## Current coverage: 19 November 2026
 
-**165 selected lounges across 61 airports**, including 47 new airports and expanded AMS/CDG/ICN guides. Six regional research tracks ran in parallel. See [coverage and download sizes](COVERAGE.md), [regional evidence and follow-ups](EXPANSION.md#parallel-global-hub-expansion--18-november-2026), and the [18 unrated-lounge backlog](research/quality-backlog.json). A guide covers selected verified options, not every lounge or entitlement at its airport. External photo/review links open the original publisher; no third-party images are bundled.
+**226 selected lounges across 86 airports**. The second parallel expansion adds 61 lounges at 25 regional hubs, with current closure, terminal, membership and holiday-hour restrictions. See [coverage and download sizes](COVERAGE.md), [regional evidence and follow-ups](EXPANSION.md#second-parallel-expansion--19-november-2026), and the [31 unrated-lounge backlog](research/quality-backlog.json). A guide covers selected verified options, not every lounge or entitlement at its airport. External photo/review links open the original publisher; no third-party images are bundled.
 
 ## Existing-guide improvements: 17 November 2026
 

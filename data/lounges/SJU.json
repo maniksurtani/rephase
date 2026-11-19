@@ -1,0 +1,295 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "SJU",
+  "timeZone": "America/Puerto_Rico",
+  "updatedAt": "2026-11-19",
+  "lounges": [
+    {
+      "id": "sju-the-lounge-a",
+      "name": "The Lounge San Juan · Terminal A",
+      "terminal": "A",
+      "location": "After security, turn left through duty free; entrance is on the right.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "06:00",
+            "close": "20:00"
+          }
+        ],
+        "note": "Published daily schedule may vary with flights."
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "maxVisitMinutes": 180,
+          "conditions": [
+            "Smart-casual dress, including a shirt and shoes, is required."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · The Lounge San Juan Terminal A",
+          "url": "https://www.prioritypass.com/en-GB/lounges/puerto-rico/luis-munoz-marin-international/sju5-the-lounge-san-juan-at-terminal-a",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "amex-facilities",
+          "title": "American Express · Terminal A facilities",
+          "url": "https://www.americanexpress.com/en-us/travel/lounges/the-platinum-card/SJU/The-Lounge-San-Juan-at-Terminal-A-Terminal-A-yUUTpWzG4G/",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "A separate lounge from Terminals B and C. Priority Pass currently uses a three-hour entry and stay limit; older card-provider guides show four hours. Admission can be restricted when busy.",
+      "qualityRating": {
+        "score": 2,
+        "summary": "A March 2025 firsthand visit found cramped, worn seating and limited facilities, despite friendly reception. The reviewer did not try the ordered food, so this assessment does not judge that menu.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Your Mileage May Vary · Terminal A firsthand visit, March 2025",
+            "url": "https://yourmileagemayvary.com/2025/03/14/this-may-be-the-worst-airport-lounge-weve-ever-visited/",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://yourmileagemayvary.com/2025/03/14/this-may-be-the-worst-airport-lounge-weve-ever-visited/",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    },
+    {
+      "id": "sju-the-lounge-c",
+      "name": "The Lounge San Juan · Terminal C",
+      "terminal": "C",
+      "location": "After Security Checkpoint B, head left toward Terminal C and follow The Lounge signs; take the lift to floor 3R.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "06:00",
+            "close": "20:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "maxVisitMinutes": 180,
+          "conditions": [
+            "Smart-casual dress, including a shirt and shoes, is required."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · The Lounge San Juan Terminal C",
+          "url": "https://www.prioritypass.com/en-GB/lounges/puerto-rico/luis-munoz-marin-international/sju4-the-lounge-san-juan-at-terminal-c",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "amex-facilities",
+          "title": "American Express · Terminal C food and Wi-Fi",
+          "url": "https://www.americanexpress.com/en-us/travel/lounges/the-platinum-card/SJU/The-Lounge-San-Juan-at-Terminal-C-Terminal-C-BOJLtzxQdB/",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Food is available, but the current service style is not verified. Priority Pass currently permits entry and a stay of up to three hours; older card-provider listings show four hours. Capacity restrictions can apply.",
+      "qualityRating": {
+        "score": 2.5,
+        "summary": "The 2024 firsthand account praises friendly staff and drinks but describes dated seating, basic meals and substantial crowding at busy times. The older visit is useful context, not a current condition guarantee.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Ware on the Globe · Terminal C firsthand review",
+            "url": "https://wareontheglobe.com/2024/09/17/airport-lounge-review-the-lounge-san-juan-puerto-rico-at-terminal-c/",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://wareontheglobe.com/2024/09/17/airport-lounge-review-the-lounge-san-juan-puerto-rico-at-terminal-c/",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    },
+    {
+      "id": "sju-escape-b",
+      "name": "Escape Lounge",
+      "terminal": "B",
+      "location": "Concourse B opposite Gate B2; enter at concourse level and descend to the lounge.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "06:00",
+            "close": "21:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "amex-platinum",
+          "label": "Eligible American Express Platinum",
+          "membershipsAnyOf": [
+            "amex-platinum"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Confirm your Platinum card variant qualifies and show the physical card, ID and same-day boarding pass. The operator’s published Amex terms require the flight to have been booked on a US-issued Amex card; check any local-card exception directly."
+          ],
+          "sourceIds": [
+            "operator",
+            "access"
+          ]
+        },
+        {
+          "id": "delta-reserve",
+          "label": "Delta SkyMiles Reserve on a Delta-marketed flight",
+          "membershipsAnyOf": [
+            "delta-skymiles-reserve"
+          ],
+          "marketingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Show an eligible Reserve card and confirm its booking/payment conditions; the departure must be Delta-marketed on the same day."
+          ],
+          "sourceIds": [
+            "operator",
+            "access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "operator",
+          "title": "Escape Lounges · San Juan location, opening and access",
+          "url": "https://escapelounges.com/us/airport-lounges/luis-munoz-marin/",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "access",
+          "title": "Escape Lounges · US entry and card conditions",
+          "url": "https://escapelounges.com/us/access/",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "menu",
+          "title": "Escape Lounges · San Juan hot and cold buffet menu",
+          "url": "https://escapelounges.com/us/airport-lounges/luis-munoz-marin/menu/",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Priority Pass is not confirmed at this Escape location. Ordinary entry is within three hours of departure; the operator allows qualifying connections earlier, but the app does not infer that exception. No premium-cabin or alliance-status access is assumed.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "A July 2025 visit, published that October, enjoyed the hot lunch selection and friendly welcome. The small lounge was already at capacity, making queues and limited seating the principal tradeoffs.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "TravelUpdate · Escape San Juan firsthand review, October 2025",
+            "url": "https://travelupdate.com/review-escape-lounge-san-juan-sju/",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://travelupdate.com/review-escape-lounge-san-juan-sju/",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "recommendation": {
+        "summary": "A buffet option for eligible Amex or Delta Reserve cardholders; allow for a wait at busy times."
+      }
+    }
+  ]
+}

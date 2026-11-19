@@ -1,0 +1,152 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "BAH",
+  "timeZone": "Asia/Bahrain",
+  "updatedAt": "2026-11-19",
+  "lounges": [
+    {
+      "id": "bah-falcon-gold",
+      "name": "Gulf Air Falcon Gold Lounge",
+      "terminal": "New Passenger Terminal",
+      "location": "Airside departures; follow the Gulf Air lounge signs.",
+      "airside": true,
+      "status": "temporarily-closed",
+      "hours": {
+        "type": "unknown",
+        "note": "Closed for renovation from 7 October 2026; no reopening date has been confirmed."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "gulf-air-business",
+          "label": "Gulf Air Falcon Gold Business",
+          "sourceIds": [
+            "gulf-air"
+          ],
+          "operatingCarriersAnyOf": [
+            "GF"
+          ],
+          "cabinsAnyOf": [
+            "business"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "gulf-air",
+          "title": "Gulf Air · Bahrain lounge eligibility and renovation notice",
+          "url": "https://www.gulfair.com/flying-with-us/at-the-airport/bahrain-falcon-gold-lounge",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Temporarily closed for renovation. Gulf Air directs eligible passengers to The Pearl Lounge with existing eligibility unchanged. Facilities and the quality assessment describe the pre-renovation lounge. Falconflyer tiers are not yet selectable in Rephase.",
+      "qualityRating": {
+        "score": 3,
+        "summary": "A 2023 visit found adequate food and seating but weak shower facilities and poorly placed daybeds. This historical assessment predates the October 2026 renovation closure and must be revisited after reopening.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "One Mile at a Time · Gulf Air Bahrain (2023, before renovation)",
+            "url": "https://onemileatatime.com/reviews/gulf-air-lounge-bahrain/",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://onemileatatime.com/reviews/gulf-air-lounge-bahrain/",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    },
+    {
+      "id": "bah-pearl-departures",
+      "name": "The Pearl Lounge · Departures",
+      "terminal": "New Passenger Terminal",
+      "location": "Airside west of the departures concourse, past duty-free; follow Pearl Departures signs. Distinct from Pearl Arrivals.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "unknown",
+        "note": "No current fixed opening schedule was verified from the operator; confirm access with your airline or Hala Bahrain."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "gulf-air-replacement",
+          "label": "Gulf Air Falcon Gold replacement lounge",
+          "sourceIds": [
+            "gulf-air"
+          ],
+          "operatingCarriersAnyOf": [
+            "GF"
+          ],
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "conditions": [
+            "Confirm the Pearl invitation and permitted entry time with Gulf Air while its Falcon Gold lounge is under renovation."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "gulf-air",
+          "title": "Gulf Air · Bahrain lounge eligibility and renovation notice",
+          "url": "https://www.gulfair.com/flying-with-us/at-the-airport/bahrain-falcon-gold-lounge",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "operator-brochure",
+          "title": "Hala Bahrain · Official brochure, Pearl departures location and facilities",
+          "url": "https://d26tkd2us9iia0.cloudfront.net/media/images/70543/hala-bahrain-brochure-english.pdf",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "priority-pass-directory",
+          "title": "Priority Pass · Current Bahrain airport directory",
+          "url": "https://www.prioritypass.com/en-GB/lounges/bahrain/bahrain-international",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Gulf Air confirms this replacement during the Falcon Gold closure. The current Priority Pass airport directory does not list Pearl, so no Priority Pass entitlement is granted. Other airline invitations, Falconflyer status and paid entry are follow-ups. Showers and a silent area are documented in the operator brochure; confirm current availability. The nearby hotel spa is separate.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "A July 2026 visit praised the varied seating rooms, attractive library area and broad food choice. The account predates the extra demand from the Falcon Gold closure, so it does not establish current crowding.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Pointszilla · Pearl Bahrain (July 2026)",
+            "url": "https://pointszilla.com/review-pearl-lounge-bahrain",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://pointszilla.com/review-pearl-lounge-bahrain",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    }
+  ]
+}

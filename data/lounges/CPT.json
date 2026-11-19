@@ -1,0 +1,210 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "CPT",
+  "timeZone": "Africa/Johannesburg",
+  "updatedAt": "2026-11-19",
+  "lounges": [
+    {
+      "id": "cpt-saa-premium-domestic",
+      "name": "The Lounge · SAA Premium Domestic",
+      "terminal": "Domestic",
+      "location": "Domestic transit/departures area, fourth floor. This record is the Premium section, not the separate Platinum section.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5
+            ],
+            "open": "04:30",
+            "close": "21:00"
+          },
+          {
+            "days": [
+              6,
+              7
+            ],
+            "open": "05:30",
+            "close": "21:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "saa-business",
+          "label": "SAA Business Class",
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "SA"
+          ],
+          "route": "domestic",
+          "sourceIds": [
+            "saa"
+          ]
+        },
+        {
+          "id": "star-gold",
+          "label": "Star Alliance Gold on a Star Alliance flight",
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingAlliance": "star",
+          "route": "domestic",
+          "sourceIds": [
+            "saa"
+          ]
+        },
+        {
+          "id": "velocity",
+          "label": "Velocity Gold or Platinum on SAA",
+          "membershipsAnyOf": [
+            "velocity-gold",
+            "velocity-platinum"
+          ],
+          "operatingCarriersAnyOf": [
+            "SA"
+          ],
+          "route": "domestic",
+          "sourceIds": [
+            "saa"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "saa",
+          "title": "South African Airways · Cape Town hours and separate Premium/Platinum eligibility",
+          "url": "https://www.flysaa.com/manage-fly/before-flying/at-the-airport/lounges",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "refurbishment",
+          "title": "Discovery and SAA · Cape Town refurbishment and buffet, August 2025",
+          "url": "https://discovery-holdings-ltd.mynewsdesk.com/pressreleases/saa-and-discovery-unveil-a-reimagined-the-lounge-experience-in-cape-town-3400392",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Refurbished in August 2025. Star Gold and SAA Business grant Premium access, not the separate Platinum section. Showers and a dedicated quiet rest area were not verified for this current section. Discovery/Investec and SAA Voyager benefits are not yet selectable.",
+      "photoLinks": [
+        {
+          "label": "View lounge photos and details",
+          "url": "https://discovery-holdings-ltd.mynewsdesk.com/pressreleases/saa-and-discovery-unveil-a-reimagined-the-lounge-experience-in-cape-town-3400392",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "recommendation": {
+        "summary": "A domestic buffet and work-space option for eligible SAA, Star Gold or Velocity travellers."
+      }
+    },
+    {
+      "id": "cpt-bidvest-international-2",
+      "name": "Bidvest Premier Lounge · International 2",
+      "terminal": "International",
+      "location": "Mezzanine near the B-gate escalator; turn left after passport control and continue past Gate A3.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:00",
+            "close": "00:30"
+          }
+        ],
+        "note": "The operator publishes 05:00 opening, while Priority Pass lists 04:00. Use 05:00 conservatively; confirm earlier access directly. Hours can vary with flights."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "route": "international",
+          "maxMinutesBeforeDeparture": 240
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · Bidvest near B gates and four-hour entry window",
+          "url": "https://www.prioritypass.com/en-GB/lounges/south-africa/cape-town-international/cpt4-bidvest-premier-lounge",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "operator",
+          "title": "Bidvest · International Premier 2 location, amenities and hours",
+          "url": "https://www.bidvestlounge.co.za/commercial-lounge-cape-town-international-premier-2/",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "amex-facilities",
+          "title": "American Express · Bidvest B-gate shower and Wi-Fi facilities",
+          "url": "https://www.americanexpress.com/en-us/travel/lounges/the-platinum-card/CPT/Bidvest-Premier-Lounge-International-Terminal-xERFO6ZwPv/",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Separate from Premier 1 and the domestic lounge. The operator lists light meals/snacks and à-la-carte options; dining style and any meal charges are unverified here. Entry earlier than four hours before departure can cost extra; no online or group bookings are accepted at this location.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "An August 2026 review found this B-gate lounge more spacious than Premier 1, with comfortable seating and a solid hot/cold food spread. Power outlets were unevenly distributed; the meal selection was useful rather than exceptional.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Points to Seats · Bidvest International 2, August 2026",
+            "url": "https://pointstoseats.com/2026/08/05/bidvest-premier-lounge-2-b-gates-cpt/",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://pointstoseats.com/2026/08/05/bidvest-premier-lounge-2-b-gates-cpt/",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "recommendation": {
+        "summary": "A shower option before an international flight, within the published four-hour entry window."
+      }
+    }
+  ]
+}

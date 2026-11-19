@@ -1,0 +1,279 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "CLT",
+  "timeZone": "America/New_York",
+  "updatedAt": "2026-11-19",
+  "lounges": [
+    {
+      "id": "clt-admirals-b",
+      "name": "Admirals Club — Concourse B",
+      "terminal": "Concourse B",
+      "location": "After security, between Gates B3 and B5.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:15",
+            "close": "22:45"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "member-operated",
+          "label": "Admirals Club member on oneworld",
+          "sourceIds": [
+            "aa-access"
+          ],
+          "membershipsAnyOf": [
+            "admirals-club"
+          ],
+          "operatingAlliance": "oneworld"
+        },
+        {
+          "id": "member-marketed",
+          "label": "Admirals Club member on a oneworld-marketed flight",
+          "sourceIds": [
+            "aa-access"
+          ],
+          "membershipsAnyOf": [
+            "admirals-club"
+          ],
+          "marketingAlliance": "oneworld"
+        },
+        {
+          "id": "member-aer-lingus",
+          "label": "Admirals Club member on Aer Lingus",
+          "sourceIds": [
+            "aa-access"
+          ],
+          "membershipsAnyOf": [
+            "admirals-club"
+          ],
+          "operatingCarriersAnyOf": [
+            "EI"
+          ]
+        },
+        {
+          "id": "foreign-oneworld-status",
+          "label": "Eligible non-US oneworld elite status",
+          "sourceIds": [
+            "aa-access"
+          ],
+          "membershipsAnyOf": [
+            "qantas-gold",
+            "qantas-platinum",
+            "qantas-platinum-one",
+            "british-airways-silver",
+            "british-airways-gold",
+            "cathay-gold",
+            "cathay-diamond"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld"
+        },
+        {
+          "id": "generic-oneworld-status",
+          "label": "Other oneworld Sapphire or Emerald",
+          "sourceIds": [
+            "aa-access"
+          ],
+          "membershipsAnyOf": [
+            "oneworld-sapphire",
+            "oneworld-emerald"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "conditions": [
+            "Confirm status issuer and route: AAdvantage and Atmos have restricted qualifying itineraries."
+          ]
+        },
+        {
+          "id": "aa-international-premium",
+          "label": "American international First or Business",
+          "sourceIds": [
+            "aa-access"
+          ],
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingCarriersAnyOf": [
+            "AA"
+          ],
+          "marketingCarriersAnyOf": [
+            "AA"
+          ],
+          "route": "international",
+          "conditions": [
+            "Confirm this is an American qualifying international itinerary; a different destination-country code alone does not establish eligibility, particularly for US territories."
+          ]
+        },
+        {
+          "id": "aa-international-elite",
+          "label": "AAdvantage Platinum or higher on American internationally",
+          "sourceIds": [
+            "aa-access"
+          ],
+          "membershipsAnyOf": [
+            "american-platinum",
+            "american-platinum-pro",
+            "american-executive-platinum"
+          ],
+          "operatingCarriersAnyOf": [
+            "AA"
+          ],
+          "marketingCarriersAnyOf": [
+            "AA"
+          ],
+          "route": "international",
+          "conditions": [
+            "Confirm this is an American qualifying international itinerary; a different destination-country code alone does not establish eligibility, particularly for US territories."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "aa-access",
+          "title": "American Airlines · Admirals Club access",
+          "url": "https://www.aa.com/web/i18n/travel-info/clubs/admirals-club-access.html",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "aa-location",
+          "title": "American Airlines · Charlotte lounge locations and hours",
+          "url": "https://www.aa.com/web/i18n/travelInformation/airportAmenities/clt-club.html",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "A separate Admirals Club is at the C/D junction. Ordinary US domestic First alone does not grant access. Confirm same-day travel; Atmos, partner premium tickets and qualifying long-haul connections remain follow-ups.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "An August 2026 visit found friendly staff, good airfield views and a promising breakfast spread. The room is small and was fairly busy; the reviewer did not sample the food.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "review",
+            "title": "Independent review of this lounge",
+            "url": "https://thebulkheadseat.com/lounge-review-admirals-club-clt-concourse-b/",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "Photos and independent review",
+          "url": "https://thebulkheadseat.com/lounge-review-admirals-club-clt-concourse-b/",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    },
+    {
+      "id": "clt-the-club-a",
+      "name": "The Club CLT",
+      "terminal": "Concourse A",
+      "location": "On the left before Gates A21 and A22.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:00",
+            "close": "21:30"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "sourceIds": [
+            "priority-pass",
+            "operator"
+          ],
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "maxMinutesBeforeDeparture": 150,
+          "maxVisitMinutes": 150,
+          "conditions": [
+            "Admission may be restricted by capacity, especially 14:00–18:30."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · The Club CLT",
+          "url": "https://www.prioritypass.com/en-GB/lounges/united-states-of-america/charlotte-douglas-international/clt5-the-club-clt",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "operator",
+          "title": "The Club · Charlotte location, facilities and access",
+          "url": "https://theclubairportlounges.com/lounges/clt-the-club-main-terminal",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Priority Pass admission starts 2.5 hours before departure; the three-hour rule is for purchased Club Passes. Showers cost USD20. Food is available, but the current operator page does not establish its service style.",
+      "qualityRating": {
+        "score": 3,
+        "summary": "A 2026 visit found friendly service and natural light, but limited food, noise and a waitlist. Useful for a drink and a short break; less reliable for a full meal or focused work.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "review",
+            "title": "Independent review of this lounge",
+            "url": "https://explorewithintent.com/theclubclt/",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "Photos and independent review",
+          "url": "https://explorewithintent.com/theclubclt/",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    }
+  ]
+}

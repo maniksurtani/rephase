@@ -292,6 +292,19 @@ Updated 2026-11-19. Active work is kept here; the previous complete checklist is
 - [x] Integrate shared country/airline support; validate source provenance, policy exceptions and generated airport downloads.
 - [x] Commit/push reviewed batches and record precise coverage, ratings and unresolved gaps in `data/lounges/COVERAGE.md`.
 
+## Parallel lounge expansion — 19 November 2026
+
+- [x] Audit the 61-airport catalog and start six parallel research tracks covering 25 additional regional hubs.
+- [x] North America: BOS, IAD, CLT, DTW, MSP.
+- [x] Central Europe, UK and Ireland: VIE, WAW, LGW, DUB.
+- [x] Northern and western Europe: ARN, OSL, BRU, LIS.
+- [x] Asia: KIX, SGN, HAN, DPS.
+- [x] Gulf: JED, RUH, BAH, KWI.
+- [x] Latin America, Caribbean and Africa: LIM, SJO, SJU, CPT.
+- [x] Integrate country/carrier choices, audit policy exceptions and merge evidence-backed rating gaps.
+- [x] Validate guides, access matching and generated downloads; 225 targeted lounge/mobile-engine checks, type checks and production build pass. Record 86 airports, 226 lounges and the follow-on queue.
+- [x] Commit and push the reviewed expansion.
+
 ## Flight carbon footprint — 18 November 2026
 
 - [x] Implement one offline distance/cabin model shared by web and native, with source provenance and explicit missing-data handling.

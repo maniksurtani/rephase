@@ -1,0 +1,555 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "VIE",
+  "timeZone": "Europe/Vienna",
+  "updatedAt": "2026-11-19",
+  "lounges": [
+    {
+      "id": "vie-austrian-business-f",
+      "name": "Austrian Business Lounge (Schengen F)",
+      "terminal": "3",
+      "location": "Level 2, F-gate Schengen area.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:00",
+            "close": "22:30"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "business",
+          "label": "Star Alliance Business",
+          "sourceIds": [
+            "austrian"
+          ],
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingAlliance": "star",
+          "destinationCountriesAnyOf": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ]
+        },
+        {
+          "id": "frequent-traveller",
+          "label": "Miles & More Frequent Traveller in Economy",
+          "sourceIds": [
+            "austrian"
+          ],
+          "membershipsAnyOf": [
+            "miles-and-more-frequent-traveller"
+          ],
+          "cabinsAnyOf": [
+            "economy"
+          ],
+          "operatingAlliance": "star",
+          "destinationCountriesAnyOf": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "austrian",
+          "title": "Austrian Airlines · Vienna lounges, current layout and admission",
+          "url": "https://www.austrian.com/us/en/lounges-vienna-airport",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "directory",
+          "title": "Aegean · Austrian Vienna lounge locations and facilities",
+          "url": "https://en.aegeanair.com/travel-info/travelling-with-aegean/at-the-airport/lounge-finder/?AirlineCode=OS&AirportCode=VIE&CabinClass=B&FFPStatus=&FrequentFlyer=&PaymentMembershipCard=&ShowMore=false",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "The guide matches ordinary Schengen departures here. Other routes, paid entry and Eurowings fare-specific access need separate confirmation. Senator and HON Circle spaces are separate.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "A 2024 visit found a bright, well-kept lounge with comfortable seating and satisfying hot food. It was busy without feeling packed; this older assessment does not establish today’s peak-time conditions.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Frankfurtflyer · Austrian Business F, August 2024",
+            "url": "https://frankfurtflyer.de/review-austrian-business-lounge-wien-vie-f-gates-schengen/",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://frankfurtflyer.de/review-austrian-business-lounge-wien-vie-f-gates-schengen/",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    },
+    {
+      "id": "vie-austrian-senator-f",
+      "name": "Austrian Senator Lounge (Schengen F)",
+      "terminal": "3",
+      "location": "Level 2, F-gate Schengen area; separate from the Business Lounge.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:00",
+            "close": "22:30"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "star-gold",
+          "label": "Star Alliance Gold / Miles & More Senator",
+          "sourceIds": [
+            "austrian"
+          ],
+          "membershipsAnyOf": [
+            "star-gold",
+            "miles-and-more-senator"
+          ],
+          "operatingAlliance": "star",
+          "destinationCountriesAnyOf": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ],
+          "conditions": [
+            "Staff and industry-discount ID/AD tickets are excluded."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "austrian",
+          "title": "Austrian Airlines · Vienna lounges, current layout and admission",
+          "url": "https://www.austrian.com/us/en/lounges-vienna-airport",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Business Class or Frequent Traveller alone does not grant Senator access. Confirm any access before a non-Schengen departure separately; this guide matches ordinary F-gate departures.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "A January 2025 review describes good food, apron views and useful work booths, but limited space and frequent crowding. A practical stop rather than an especially spacious flagship lounge.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Flyctory · Austrian Senator F, January 2025",
+            "url": "https://flyctory.com/2025/01/20/austrian-airlines-senator-lounge-vienna-schengen/",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://flyctory.com/2025/01/20/austrian-airlines-senator-lounge-vienna-schengen/",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    },
+    {
+      "id": "vie-austrian-non-schengen-g",
+      "name": "Austrian Lounge (non-Schengen G)",
+      "terminal": "3",
+      "location": "Level 3, accessible from G gates opposite the Austrian Service Center during terminal construction.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:30",
+            "close": "23:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "business",
+          "label": "Star Alliance Business",
+          "sourceIds": [
+            "austrian"
+          ],
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingAlliance": "star",
+          "excludedDestinationCountries": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ]
+        },
+        {
+          "id": "frequent-traveller",
+          "label": "Miles & More Frequent Traveller in Economy",
+          "sourceIds": [
+            "austrian"
+          ],
+          "membershipsAnyOf": [
+            "miles-and-more-frequent-traveller"
+          ],
+          "cabinsAnyOf": [
+            "economy"
+          ],
+          "operatingAlliance": "star",
+          "excludedDestinationCountries": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ]
+        },
+        {
+          "id": "star-gold",
+          "label": "Star Alliance Gold / Miles & More Senator",
+          "sourceIds": [
+            "austrian"
+          ],
+          "membershipsAnyOf": [
+            "star-gold",
+            "miles-and-more-senator"
+          ],
+          "operatingAlliance": "star",
+          "excludedDestinationCountries": [
+            "AT",
+            "BE",
+            "BG",
+            "HR",
+            "CZ",
+            "DK",
+            "EE",
+            "FI",
+            "FR",
+            "DE",
+            "GR",
+            "HU",
+            "IS",
+            "IT",
+            "LV",
+            "LI",
+            "LT",
+            "LU",
+            "MT",
+            "NL",
+            "NO",
+            "PL",
+            "PT",
+            "RO",
+            "SK",
+            "SI",
+            "ES",
+            "SE",
+            "CH"
+          ],
+          "conditions": [
+            "Staff and industry-discount ID/AD tickets are excluded."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "austrian",
+          "title": "Austrian Airlines · Vienna lounges, current layout and admission",
+          "url": "https://www.austrian.com/us/en/lounges-vienna-airport",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "directory",
+          "title": "Aegean · Austrian Vienna lounge locations and facilities",
+          "url": "https://en.aegeanair.com/travel-info/travelling-with-aegean/at-the-airport/lounge-finder/?AirlineCode=OS&AirportCode=VIE&CabinClass=B&FFPStatus=&FrequentFlyer=&PaymentMembershipCard=&ShowMore=false",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Current combined non-Schengen facility; its separate HON Circle section is not included. Old reviews of the former G-gate Business/Senator rooms are not used to rate this replacement."
+    },
+    {
+      "id": "vie-vienna-lounge",
+      "name": "VIENNA Lounge",
+      "terminal": "1",
+      "location": "Level 2 after security, before passport control, serving C/D gates; F/G departures require the airport shuttle.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "04:30",
+            "close": "22:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "sourceIds": [
+            "airport",
+            "priority-pass"
+          ],
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "maxMinutesBeforeDeparture": 210,
+          "maxVisitMinutes": 180,
+          "conditions": [
+            "For F/G departures, confirm shuttle availability and allow transfer and passport-control time."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "airport",
+          "title": "Vienna Airport · VIENNA Lounge",
+          "url": "https://viennaairport.com/en/passengers/airport/lounges/vienna_lounge",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · VIENNA Lounge",
+          "url": "https://www.prioritypass.com/en-GB/lounges/austria/vienna-international/vie7-vienna-lounge",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Showers, rest loungers and a terrace are confirmed. Airline contract invitations and issuer-specific credit-card benefits are not inferred from the airport’s general partner list.",
+      "qualityRating": {
+        "score": 4.5,
+        "summary": "Firsthand accounts from 2024 and March 2025 praise the generous space, Austrian food and comfortable seating. The latter highlights the terrace; the older visit found some overcooked food. These visits do not establish peak-time crowding today.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "The Airport Lounge Bro · VIENNA Lounge, March 2025 visit",
+            "url": "https://theairportloungebro.com/vienna-lounge-vienna-airport-terminal-1/",
+            "checkedOn": "2026-11-19"
+          },
+          {
+            "id": "quality-corroboration",
+            "title": "Luxury Travel Diary · VIENNA Lounge, August 2024",
+            "url": "https://www.luxurytraveldiary.com/2024/08/review-vienna-lounge-at-vienna-airport/",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://theairportloungebro.com/vienna-lounge-vienna-airport-terminal-1/",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    }
+  ]
+}

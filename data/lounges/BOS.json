@@ -1,0 +1,289 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "BOS",
+  "timeZone": "America/New_York",
+  "updatedAt": "2026-11-19",
+  "lounges": [
+    {
+      "id": "bos-delta-sky-club-e",
+      "name": "Delta Sky Club — Terminal E",
+      "terminal": "E",
+      "location": "Upper level near Gate E13; separate from the Delta One Lounge.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "unknown",
+        "note": "Current fixed hours could not be verified from the operator or program; check before visiting."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "club-member",
+          "label": "Delta Sky Club membership on Delta",
+          "sourceIds": [
+            "delta-access"
+          ],
+          "membershipsAnyOf": [
+            "delta-sky-club"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Basic/Light fares are excluded; confirm same-day travel."
+          ]
+        },
+        {
+          "id": "delta-one",
+          "label": "Delta One ticket",
+          "sourceIds": [
+            "delta-access"
+          ],
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Confirm Delta One, not ordinary domestic First."
+          ]
+        },
+        {
+          "id": "medallion-premium",
+          "label": "Delta Gold, Platinum or Diamond on international premium travel",
+          "sourceIds": [
+            "delta-access"
+          ],
+          "membershipsAnyOf": [
+            "delta-gold-medallion",
+            "delta-platinum-medallion",
+            "delta-diamond-medallion"
+          ],
+          "cabinsAnyOf": [
+            "premium-economy",
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "route": "international",
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Requires Premium Select or Delta One; Caribbean itineraries are excluded."
+          ]
+        },
+        {
+          "id": "non-delta-elite-plus",
+          "label": "Non-Delta SkyTeam Elite Plus",
+          "sourceIds": [
+            "delta-access"
+          ],
+          "membershipsAnyOf": [
+            "skyteam-elite-plus"
+          ],
+          "operatingAlliance": "skyteam",
+          "route": "international",
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Confirm non-Delta status and an eligible same-day international itinerary; Caribbean and Basic/Light fares are excluded."
+          ]
+        },
+        {
+          "id": "platinum-card",
+          "label": "Eligible Amex Platinum on Delta",
+          "sourceIds": [
+            "delta-access"
+          ],
+          "membershipsAnyOf": [
+            "amex-platinum"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Confirm card entitlement and remaining visits or visit charge; Basic/Light fares are excluded."
+          ]
+        },
+        {
+          "id": "reserve-operated",
+          "label": "Delta Reserve on Delta",
+          "sourceIds": [
+            "delta-access"
+          ],
+          "membershipsAnyOf": [
+            "delta-skymiles-reserve"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Confirm remaining card visits or visit charge; Basic/Light fares are excluded."
+          ]
+        },
+        {
+          "id": "reserve-marketed",
+          "label": "Delta Reserve on a Delta-marketed flight",
+          "sourceIds": [
+            "delta-access"
+          ],
+          "membershipsAnyOf": [
+            "delta-skymiles-reserve"
+          ],
+          "marketingCarriersAnyOf": [
+            "DL"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "conditions": [
+            "Confirm remaining card visits or visit charge; Basic/Light fares are excluded."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "delta-access",
+          "title": "Delta · Sky Club access and exclusions",
+          "url": "https://www.delta.com/us/en/delta-sky-club/access",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "delta-facilities",
+          "title": "Delta · Boston Sky Club facilities",
+          "url": "https://news.delta.com/mediakit/boston-logan-international-airport",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "amex-location",
+          "title": "American Express · Terminal E location and facilities",
+          "url": "https://www.americanexpress.com/en-us/travel/lounges/delta-reserve/BOS/Delta-Sky-Club-Terminal-E-xCaCyeurbb/",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Ordinary domestic First and Delta status in Economy do not establish entry. Qualifying connections can permit earlier admission than the three-hour window modelled here. Partner premium tickets, Delta First status exceptions and arrival access remain follow-ups. Terminal A requires a transfer; allow time to reach your departure terminal.",
+      "qualityRating": {
+        "score": 4.5,
+        "summary": "A November 2025 visit praised the design, food, showers and staff. It was exceptionally quiet at 07:00; that does not establish peak-hour crowding.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "review",
+            "title": "Independent review of this lounge",
+            "url": "https://onemileatatime.com/reviews/delta-sky-club-boston/",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "Photos and independent review",
+          "url": "https://onemileatatime.com/reviews/delta-sky-club-boston/",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    },
+    {
+      "id": "bos-the-lounge-c",
+      "name": "The Lounge — Terminal C",
+      "terminal": "C",
+      "location": "Across from Gate C19; Gates C40–C42 cannot access this location.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              3,
+              6
+            ],
+            "open": "06:00",
+            "close": "22:30"
+          },
+          {
+            "days": [
+              2,
+              4,
+              5,
+              7
+            ],
+            "open": "06:00",
+            "close": "22:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "maxVisitMinutes": 180,
+          "conditions": [
+            "Confirm access from your departure gate; Gates C40–C42 are excluded. Capacity restrictions are common 14:30–20:00."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · The Lounge BOS",
+          "url": "https://www.prioritypass.com/en-GB/lounges/united-states-of-america/logan-international/bos10-the-lounge",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "amex-location",
+          "title": "American Express · The Lounge location and facilities",
+          "url": "https://www.americanexpress.com/en-us/travel/lounges/the-platinum-card/BOS/The-Lounge-BOS-Terminal-C-lBn0xltjPl/",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Weekly closing times follow the day-by-day Priority Pass schedule, rather than its simplified headline. Amex lists Terminal C departures only; cross-terminal access needs confirmation.",
+      "qualityRating": {
+        "score": 2.5,
+        "summary": "The January 2026 review found basic breakfast and lunch provisions and several seating areas, but considered the paid entry poor value compared with better alternatives.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "review",
+            "title": "Independent review of this lounge",
+            "url": "https://www.pointswithacrew.com/the-lounge-bos-lounge-review-boston-logan-airport-priority-pass/",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "Photos and independent review",
+          "url": "https://www.pointswithacrew.com/the-lounge-bos-lounge-review-boston-logan-airport-priority-pass/",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    }
+  ]
+}

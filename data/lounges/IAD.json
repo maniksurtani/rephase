@@ -1,0 +1,211 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "IAD",
+  "timeZone": "America/New_York",
+  "updatedAt": "2026-11-19",
+  "lounges": [
+    {
+      "id": "iad-united-club-e",
+      "name": "United Club — Concourse E",
+      "terminal": "Concourse E",
+      "location": "Opposite Gates E14 and E16, in the new Concourse E.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:30",
+            "close": "22:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "club-member",
+          "label": "United Club membership",
+          "sourceIds": [
+            "chase-access"
+          ],
+          "membershipsAnyOf": [
+            "united-club"
+          ],
+          "operatingAlliance": "star",
+          "conditions": [
+            "Your qualifying boarding pass must be for the same calendar day as the visit."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "united-opening",
+          "title": "United · New Concourse E and United Club, November 2026",
+          "url": "https://united.mediaroom.com/2026-11-09-United-Airlines-and-the-Metropolitan-Washington-Airports-Authority-Unveil-First-New-Concourse-in-Two-Decades-at-Washington-Dulles-International-Airport",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "chase-access",
+          "title": "Chase · United Club membership and same-day flight policy",
+          "url": "https://www.chase.com/personal/credit-cards/education/rewards-benefits/guide-to-united-lounges",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "Opened 10 November 2026. This record currently matches paid United Club membership only; premium-cabin, Star status and day-pass routes need a separate verified policy pass. It is not the Polaris Lounge.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "A November 2026 opening preview praises the spacious design, views and phone rooms, but finds the catering ordinary and many seats awkward for laptop work. Normal busy-day service is not yet established.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "review",
+            "title": "Independent review of this lounge",
+            "url": "https://fromthetraytable.com/united-club-dulles-concourse-e/",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "Photos and independent review",
+          "url": "https://fromthetraytable.com/united-club-dulles-concourse-e/",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    },
+    {
+      "id": "iad-turkish-b",
+      "name": "Turkish Airlines Lounge",
+      "terminal": "Concourse B",
+      "location": "Near Gate B43; allow transfer time from other concourses.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "07:15",
+            "close": "21:30"
+          }
+        ],
+        "note": "Hours published in the current Priority Pass lounge directory; no separate membership-only admission window is specified there."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "maxVisitMinutes": 180,
+          "conditions": [
+            "Show a confirmed same-day outbound IAD boarding pass."
+          ]
+        },
+        {
+          "id": "star-international-premium",
+          "label": "Star Alliance international First or Business",
+          "sourceIds": [
+            "ana-access"
+          ],
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingAlliance": "star",
+          "route": "international"
+        },
+        {
+          "id": "star-international-gold",
+          "label": "Star Alliance Gold on an international departure",
+          "sourceIds": [
+            "ana-access"
+          ],
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingAlliance": "star",
+          "route": "international"
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · Turkish Airlines IAD",
+          "url": "https://www.prioritypass.com/en-GB/lounges/united-states-of-america/washington-dulles-international/iad11-turkish-airlines-lounge-washington",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "amex-facilities",
+          "title": "American Express · Turkish IAD facilities",
+          "url": "https://www.americanexpress.com/en-us/travel/lounges/the-platinum-card/IAD/Turkish-Airlines-Lounge-Washington-D-C-Concourse-B-4pPs59HlBj/",
+          "checkedOn": "2026-11-19"
+        },
+        {
+          "id": "ana-access",
+          "title": "ANA · IAD lounge eligibility on international departures",
+          "url": "https://www.ana.co.jp/en/us/travel-information/lounges/washington-dc/",
+          "checkedOn": "2026-11-19"
+        }
+      ],
+      "photos": [],
+      "note": "International Star premium/status eligibility is supported by ANA. Domestic Star departures, paid-club reciprocity and airline-contract invitations remain follow-ups. Confirm shower availability and any charge.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "A May 2026 visit found enjoyable food but a crowded room and an awkward layout, with insufficient table space. Useful for a meal, less dependable for quiet work.",
+        "reviewedOn": "2026-11-19",
+        "sources": [
+          {
+            "id": "review",
+            "title": "Independent review of this lounge",
+            "url": "https://yourmileagemayvary.com/2026/05/26/turkish-airlines-lounge-washington-dulles-review/",
+            "checkedOn": "2026-11-19"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "Photos and independent review",
+          "url": "https://yourmileagemayvary.com/2026/05/26/turkish-airlines-lounge-washington-dulles-review/",
+          "checkedOn": "2026-11-19"
+        }
+      ]
+    }
+  ]
+}
