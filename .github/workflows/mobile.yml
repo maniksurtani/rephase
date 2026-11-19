@@ -19,6 +19,16 @@ on:
       - 'scripts/verify-ios-beta.py'
       - 'scripts/install-ios-signing.sh'
       - 'scripts/upload-testflight.sh'
+      - 'scripts/testflight.mjs'
+      - 'scripts/mobile-ci.mjs'
+      - 'scripts/mobile-artifact.mjs'
+      - 'scripts/select-release.mjs'
+      - 'scripts/release-artifact.mjs'
+      - 'tests/mobile-release.test.ts'
+      - 'tests/testflight.test.ts'
+      - '.github/workflows/mobile-release-prepare.yml'
+      - '.github/workflows/android-beta.yml'
+      - '.github/actions/setup-ios/**'
       - 'tests/ios_beta_test.py'
       - '.github/workflows/ios-beta.yml'
       - 'tests/ios-runtime-runner.test.ts'
@@ -47,6 +57,16 @@ on:
       - 'scripts/verify-ios-beta.py'
       - 'scripts/install-ios-signing.sh'
       - 'scripts/upload-testflight.sh'
+      - 'scripts/testflight.mjs'
+      - 'scripts/mobile-ci.mjs'
+      - 'scripts/mobile-artifact.mjs'
+      - 'scripts/select-release.mjs'
+      - 'scripts/release-artifact.mjs'
+      - 'tests/mobile-release.test.ts'
+      - 'tests/testflight.test.ts'
+      - '.github/workflows/mobile-release-prepare.yml'
+      - '.github/workflows/android-beta.yml'
+      - '.github/actions/setup-ios/**'
       - 'tests/ios_beta_test.py'
       - '.github/workflows/ios-beta.yml'
       - 'tests/ios-runtime-runner.test.ts'
@@ -83,7 +103,9 @@ jobs:
           bash -n scripts/install-ios-signing.sh
           bash -n scripts/upload-testflight.sh
       - run: npm ci
-      - run: node scripts/build-mobile-engine.mjs
+      - run: npx playwright install --with-deps chromium
+      - name: Verify and bundle the shared offline planner once
+        run: node scripts/check-mobile-engine.mjs
       - uses: ./.github/actions/setup-flutter
       - run: flutter pub get --enforce-lockfile
         working-directory: mobile
@@ -93,6 +115,18 @@ jobs:
         working-directory: mobile
       - run: flutter test --no-pub
         working-directory: mobile
+
+      - name: Prepare verified mobile assets
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: node scripts/mobile-artifact.mjs create
+      - name: Publish the verified mobile engine for this commit and attempt
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: verified-mobile-${{ github.sha }}-${{ github.run_attempt }}
+          path: artifacts/mobile/
+          if-no-files-found: error
+          retention-days: 30
 
 # Native builds and device tests live in mobile-runtime.yml. Ordinary widget
 # changes receive fast feedback without installing Android or iOS toolchains.

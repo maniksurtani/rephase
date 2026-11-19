@@ -1,6 +1,17 @@
 # Rephase build tasks
 
-Updated 2026-11-16. Active work is kept here; the previous complete checklist is preserved in [the task archive](docs/archive/TODO-2026-10-16.md). Release evidence is in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md).
+Updated 2026-11-19. Active work is kept here; the previous complete checklist is preserved in [the task archive](docs/archive/TODO-2026-10-16.md). Release evidence is in [the verification archive](docs/archive/VERIFICATION-2026-10-16.md).
+
+## Release efficiency and TestFlight groups
+
+- [x] Measure latest full release: 45m21s runner time / 27m11s elapsed; preserve inexpensive regression coverage.
+- [x] Verify the mobile engine and Flutter once, publish a checked artifact, and reuse it in both release builds.
+- [x] Coordinate exact-commit CI with one shared preparation lock; overlap compilation with native validation and gate uploads.
+- [x] Narrow automatic native triggers, use weekly fresh-runner checks, and align simulator/release Xcode and CocoaPods setup.
+- [x] Remove the redundant Apple pre-upload validation; keep package/signature checks and upload validation.
+- [x] Automatically assign processed iOS builds to friends-family, set notes, submit beta review as needed and provide a no-rebuild distribution retry.
+- [x] Verify actionlint, TypeScript, Bash syntax, 55 focused release/artifact/TestFlight regressions and 8 Python signing tests; preserve full CI on push.
+- [ ] Confirm automatic external-group assignment with the next TestFlight upload (requires the existing App Store Connect team key).
 
 ## Android beta distribution
 

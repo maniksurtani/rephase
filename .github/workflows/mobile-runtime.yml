@@ -14,12 +14,9 @@ on:
       - 'mobile/pubspec.lock'
       - 'mobile/integration_test/**'
       - 'mobile/test_driver/**'
-      - 'src/lib/**'
       - 'src/mobile/**'
-      - 'src/data/**'
-      - 'data/**'
-      - 'public/icon-512.png'
-      - 'public/data-licenses/**'
+      - 'src/lib/time.ts'
+      - 'mobile/lib/notifications/**'
       - 'scripts/build-mobile-engine.mjs'
       - 'scripts/lounge-assets.mjs'
       - 'scripts/check-mobile-engine.mjs'
@@ -29,6 +26,7 @@ on:
       - 'package-lock.json'
       - '.github/workflows/mobile-runtime.yml'
       - '.github/actions/setup-flutter/**'
+      - '.github/actions/setup-ios/**'
       - '!**/*.md'
   push:
     branches: [main]
@@ -43,12 +41,9 @@ on:
       - 'mobile/pubspec.lock'
       - 'mobile/integration_test/**'
       - 'mobile/test_driver/**'
-      - 'src/lib/**'
       - 'src/mobile/**'
-      - 'src/data/**'
-      - 'data/**'
-      - 'public/icon-512.png'
-      - 'public/data-licenses/**'
+      - 'src/lib/time.ts'
+      - 'mobile/lib/notifications/**'
       - 'scripts/build-mobile-engine.mjs'
       - 'scripts/lounge-assets.mjs'
       - 'scripts/check-mobile-engine.mjs'
@@ -58,9 +53,12 @@ on:
       - 'package-lock.json'
       - '.github/workflows/mobile-runtime.yml'
       - '.github/actions/setup-flutter/**'
+      - '.github/actions/setup-ios/**'
       - '!**/*.md'
   schedule:
-    - cron: '23 4 * * *'
+    # Weekly fresh-runner coverage catches hosted toolchain changes. Releases
+    # request exact-commit checks if the targeted push filters did not run them.
+    - cron: '23 4 * * 1'
   release:
     types: [published]
   workflow_dispatch:
@@ -100,9 +98,7 @@ jobs:
       - name: Restore Gradle dependencies and wrapper distributions
         uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
-      - name: Verify the offline planning bundle in a browser
-        run: node scripts/check-mobile-engine.mjs
+      - run: node scripts/build-mobile-engine.mjs
       - uses: ./.github/actions/setup-flutter
         with:
           profile: android
@@ -187,7 +183,7 @@ jobs:
   ios:
     # Standard macOS runners are free for this public repository. Build and run
     # the offline native engine test without provisioning, signing or publishing.
-    runs-on: macos-latest
+    runs-on: macos-15
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
@@ -204,18 +200,7 @@ jobs:
           profile: ios
           version: ${{ env.FLUTTER_VERSION }}
           revision: ${{ env.FLUTTER_REVISION }}
-      - name: Cache iOS dependency downloads
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
-        with:
-          # Download/repository caches only; compiled products and DerivedData
-          # depend on runner/Xcode paths and are intentionally rebuilt.
-          path: |
-            ~/Library/Caches/CocoaPods
-            ~/.cocoapods/repos
-            ~/Library/Caches/org.swift.swiftpm
-            ~/Library/org.swift.swiftpm/repositories
-          key: ios-downloads-${{ runner.os }}-${{ runner.arch }}-${{ env.FLUTTER_REVISION }}-${{ hashFiles('mobile/pubspec.lock', 'mobile/ios/Podfile', 'mobile/ios/Runner.xcodeproj/project.pbxproj', 'mobile/ios/**/Package.resolved') }}
-          restore-keys: ios-downloads-${{ runner.os }}-${{ runner.arch }}-${{ env.FLUTTER_REVISION }}-
+      - uses: ./.github/actions/setup-ios
       - run: flutter pub get --enforce-lockfile
         working-directory: mobile
       - name: Start an available iPhone simulator

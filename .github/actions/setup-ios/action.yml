@@ -1,0 +1,23 @@
+name: Prepare matching iOS toolchains
+description: Use the same Xcode and CocoaPods dependency path in runtime and release builds.
+runs:
+  using: composite
+  steps:
+    - name: Select latest stable Xcode on the pinned runner image
+      uses: maxim-lobanov/setup-xcode@1242409711ff5721add51979e9e11e23ebb7e5a4 # v1
+      with:
+        xcode-version: latest-stable
+    - name: Cache CocoaPods downloads
+      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+      with:
+        path: |
+          ~/Library/Caches/CocoaPods
+          ~/.cocoapods/repos
+        key: ios-pods-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('mobile/pubspec.lock', 'mobile/ios/Podfile', 'mobile/ios/Podfile.lock') }}
+        restore-keys: ios-pods-v1-${{ runner.os }}-${{ runner.arch }}-
+    - name: Prepare CocoaPods without a second Swift Package Manager resolution
+      shell: bash
+      run: |
+        xcodebuild -version
+        if ! command -v pod > /dev/null; then brew install cocoapods; fi
+        flutter config --no-enable-swift-package-manager

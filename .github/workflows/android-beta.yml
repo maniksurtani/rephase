@@ -26,14 +26,23 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  prepare:
+    if: github.ref == 'refs/heads/main' && inputs.existing_release == ''
+    uses: ./.github/workflows/mobile-release-prepare.yml
+    permissions:
+      contents: read
+      actions: write
+
   publish:
+    needs: prepare
     if: github.ref == 'refs/heads/main' && inputs.existing_release == ''
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 65
     environment: android-beta
     permissions:
       contents: read
       id-token: write
+      actions: read
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
@@ -41,7 +50,6 @@ jobs:
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: '24'
-          cache: npm
       - name: Validate configuration and prepare private signing files
         run: node scripts/prepare-android-beta.mjs
         env:
@@ -86,21 +94,24 @@ jobs:
             -keystore "$RUNNER_TEMP/rephase-android-beta/release.p12" \
             -storepass:env ANDROID_KEYSTORE_PASSWORD
       - uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
-      - run: npm ci
-      - run: npx playwright install --with-deps chromium
-      - name: Verify and bundle the offline planner
-        run: node scripts/check-mobile-engine.mjs
+      - name: Download the verified mobile engine
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
+        with:
+          artifact-ids: ${{ needs.prepare.outputs.artifact_id }}
+          run-id: ${{ needs.prepare.outputs.run_id }}
+          github-token: ${{ github.token }}
+          path: artifacts/mobile
+          merge-multiple: true
+      - name: Verify and install the exact-commit engine
+        run: node scripts/mobile-artifact.mjs install
+        env:
+          RELEASE_RUN_ID: ${{ needs.prepare.outputs.run_id }}
+          RELEASE_RUN_ATTEMPT: ${{ needs.prepare.outputs.run_attempt }}
       - uses: ./.github/actions/setup-flutter
         with:
           profile: android
       - run: flutter pub get --enforce-lockfile
         working-directory: mobile
-      - name: Check Flutter code
-        working-directory: mobile
-        run: |
-          dart format --output=none --set-exit-if-changed lib test
-          flutter analyze --no-pub
-          flutter test --no-pub
       - name: Build the signed release APK
         working-directory: mobile
         # Pub also regenerates platform registrants for release, excluding the
@@ -115,6 +126,14 @@ jobs:
           "$build_tools/apksigner" verify --verbose --print-certs mobile/build/app/outputs/flutter-apk/app-release.apk
           "$build_tools/aapt" dump badging mobile/build/app/outputs/flutter-apk/app-release.apk | grep -F "package: name='app.rephase.Rephase' versionCode='$BETA_BUILD_NUMBER'"
           sha256sum mobile/build/app/outputs/flutter-apk/app-release.apk >> "$GITHUB_STEP_SUMMARY"
+      - name: Require successful CI before publishing
+        timeout-minutes: 35
+        run: node scripts/mobile-ci.mjs gate android
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          CHECKS_RUN_ID: ${{ needs.prepare.outputs.checks_run_id }}
+          MOBILE_RUN_ID: ${{ needs.prepare.outputs.run_id }}
+          NATIVE_RUN_ID: ${{ needs.prepare.outputs.native_run_id }}
       - name: Install pinned Firebase CLI
         run: npm install --global firebase-tools@15.36.0
       - name: Authenticate to Firebase with GitHub OIDC

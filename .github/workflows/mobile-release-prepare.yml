@@ -1,0 +1,47 @@
+name: Prepare mobile release
+
+on:
+  workflow_call:
+    outputs:
+      checks_run_id:
+        value: ${{ jobs.prepare.outputs.checks_run_id }}
+      native_run_id:
+        value: ${{ jobs.prepare.outputs.native_run_id }}
+      run_id:
+        value: ${{ jobs.prepare.outputs.run_id }}
+      run_attempt:
+        value: ${{ jobs.prepare.outputs.run_attempt }}
+      artifact_id:
+        value: ${{ jobs.prepare.outputs.artifact_id }}
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  prepare:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    # Both distributions share this lock, so they cannot dispatch duplicate CI.
+    concurrency:
+      group: mobile-release-prepare-${{ github.sha }}
+      cancel-in-progress: false
+    outputs:
+      checks_run_id: ${{ steps.ci.outputs.checks_run_id }}
+      native_run_id: ${{ steps.ci.outputs.native_run_id }}
+      run_id: ${{ steps.ci.outputs.run_id }}
+      run_attempt: ${{ steps.ci.outputs.run_attempt }}
+      artifact_id: ${{ steps.ci.outputs.artifact_id }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+      - name: Reuse or start required CI and select verified mobile assets
+        id: ci
+        run: node scripts/mobile-ci.mjs prepare
+        env:
+          GITHUB_TOKEN: ${{ github.token }}

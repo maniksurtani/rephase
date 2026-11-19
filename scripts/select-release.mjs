@@ -40,13 +40,15 @@ export async function selectRelease({ sha, repository, triggeringRunId, request,
   throw new Error(`Timed out waiting for Checks. ${guidance}`);
 }
 
-export async function githubRequest(path, env = process.env) {
+export async function githubRequest(path, env = process.env, options = {}) {
   if (!env.GITHUB_TOKEN) throw new Error('Release selection requires the workflow token with actions:read and contents:read.');
   const response = await fetch(`https://api.github.com${path}`, {
-    headers: { Authorization: `Bearer ${env.GITHUB_TOKEN}`, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' },
+    ...options,
+    headers: { Authorization: `Bearer ${env.GITHUB_TOKEN}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json', 'X-GitHub-Api-Version': '2022-11-28' },
     signal: AbortSignal.timeout(15_000), redirect: 'error',
   });
   if (!response.ok) throw new Error(`GitHub could not verify release provenance (HTTP ${response.status}).`);
+  if (response.status === 204) return null;
   return response.json();
 }
 

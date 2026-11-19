@@ -1,5 +1,13 @@
 # Release evidence
 
+## 19 November 2026 — release coordination and external TestFlight assignment
+
+The 18 November carbon release used 45m21s of runner time and 27m11s elapsed. Mobile releases now reuse a checked engine/license artifact and the exact commit's CI results, with compilation overlapping native validation. Flutter checks and Chromium parity run once; runtime jobs retain real WebView/WKWebView coverage. Native push filters exclude routine shared calculations and lounge content, with weekly fresh-runner coverage and exact-commit validation required before publishing. iOS runtime/release builds share CocoaPods and Xcode setup. The separate pre-upload Apple validation call is removed.
+
+TestFlight assignment now runs on Linux after upload, sets What to Test, enables automatic notification, submits beta review when required, and adds only the requested version/build to the existing `friends-family` external group. `distribute` mode retries an uploaded build without rebuilding; processing, export compliance and Apple review are reported distinctly. The existing team API key is reused; no new dependency or secret is required.
+
+Local validation: actionlint, TypeScript, Bash syntax, 55 focused release/provenance/distribution tests and 8 Python signing tests passed. The App Store Connect payloads were checked against Apple's published OpenAPI specification. Actual external-group assignment will be exercised by the next upload; no beta or production deployment is needed for these workflow-only changes. Hosted runtime/CI results are recorded by Actions on this commit; the projected timing improvement remains to be measured in a full release.
+
 ## 17 November 2026 — compact plan date cards
 
 The plan's rounded date cards are now **76 × 76 pixels** at standard text size, down from 108 pixels tall in Flutter and at least 130 pixels on the web. The web strip has less surrounding spacing. Weekday, date, travel/city label, selection and full accessible city names remain available; long city labels truncate while the selected day's toolbar shows the city. Native card height grows with larger text settings, and horizontal auto-scroll uses the new shared card width/gap so the current day stays visible. The native timeline gains 32 pixels of vertical space at standard text size.

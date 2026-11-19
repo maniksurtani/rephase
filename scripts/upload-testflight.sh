@@ -17,8 +17,6 @@ directory = pathlib.Path(os.environ['API_PRIVATE_KEYS_DIR'])
 directory.mkdir(mode=0o700)
 (directory / f'AuthKey_{key_id}.p8').write_text(os.environ['APP_STORE_CONNECT_PRIVATE_KEY'])
 PY
-xcrun altool --validate-app --type ios --file "$IPA_PATH" \
-  --apiKey "$APP_STORE_CONNECT_KEY_ID" --apiIssuer "$APP_STORE_CONNECT_ISSUER_ID"
 xcrun altool --upload-app --type ios --file "$IPA_PATH" \
   --apiKey "$APP_STORE_CONNECT_KEY_ID" --apiIssuer "$APP_STORE_CONNECT_ISSUER_ID"
-printf '%s\n' 'Upload accepted by App Store Connect. Processing and tester assignment happen in TestFlight.' >> "$GITHUB_STEP_SUMMARY"
+printf '%s\n' 'Upload accepted by App Store Connect. The Linux distribution job will wait for processing and assign external testers.' >> "$GITHUB_STEP_SUMMARY"
