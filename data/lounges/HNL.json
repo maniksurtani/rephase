@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "airport": "HNL",
   "timeZone": "Pacific/Honolulu",
-  "updatedAt": "2026-11-17",
+  "updatedAt": "2026-11-20",
   "lounges": [
     {
       "id": "hnl-qantas-business",
@@ -327,6 +327,392 @@
       "recommendation": {
         "summary": "An additional JAL/oneworld option near the C gates when its flight-dependent opening matches your visit."
       }
+    },
+    {
+      "id": "hnl-ana-lounge",
+      "name": "ANA Lounge",
+      "terminal": "T2",
+      "location": "Above Gate C4, Terminal 2; separate ANA Lounge and ANA Suite Lounge areas.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "flight-dependent",
+        "note": "08:50 until the final ANA Group departure, under the schedule effective from 1 July 2026."
+      },
+      "amenities": {
+        "showers": "no",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "sources": [
+        {
+          "id": "ana-access",
+          "title": "ANA · Honolulu lounge eligibility and operating hours",
+          "url": "https://www.ana.co.jp/en/jp/guide/lounge/international/hnl/",
+          "checkedOn": "2026-11-20"
+        },
+        {
+          "id": "ana-facilities",
+          "title": "ANA · Honolulu lounge facilities",
+          "url": "https://www.ana.co.jp/en/us/travel-information/lounges/honolulu/",
+          "checkedOn": "2026-11-20"
+        },
+        {
+          "id": "airport-location",
+          "title": "Honolulu Airport · distinct lounge locations",
+          "url": "https://airports.hawaii.gov/hnl/flights/airport-lounges/",
+          "checkedOn": "2026-11-20"
+        }
+      ],
+      "photos": [],
+      "accessRules": [
+        {
+          "id": "star-premium",
+          "label": "International Star Alliance Business or First",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingAlliance": "star",
+          "route": "international",
+          "sourceIds": [
+            "ana-access"
+          ]
+        },
+        {
+          "id": "star-gold",
+          "label": "Star Alliance Gold on a Star-operated flight",
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingAlliance": "star",
+          "sourceIds": [
+            "ana-access"
+          ]
+        },
+        {
+          "id": "ana-premium-economy",
+          "label": "ANA-operated Premium Economy",
+          "cabinsAnyOf": [
+            "premium-economy"
+          ],
+          "operatingCarriersAnyOf": [
+            "NH"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "ana-access"
+          ]
+        },
+        {
+          "id": "united-club",
+          "label": "Qualifying United Club membership",
+          "membershipsAnyOf": [
+            "united-club"
+          ],
+          "operatingAlliance": "star",
+          "conditions": [
+            "Confirm your paid membership includes Star Alliance partner lounges; a one-time pass is not a membership."
+          ],
+          "sourceIds": [
+            "ana-access"
+          ]
+        }
+      ],
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "The exact-lounge review praises daylight, aircraft views, spacious seating and attentive service. The buffet is useful but fairly ordinary, and private work or relaxation spaces are lacking. The visit date is not stated.",
+        "reviewedOn": "2026-11-20",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "LoungeReview · ANA Lounge Honolulu review",
+            "url": "https://loungereview.com/lounges/ana-lounge-hnl/",
+            "checkedOn": "2026-11-20"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://loungereview.com/lounges/ana-lounge-hnl/",
+          "checkedOn": "2026-11-20"
+        }
+      ],
+      "recommendation": {
+        "summary": "A buffet and family area near the C gates; no showers. Allow extra walking time if your flight leaves another concourse."
+      },
+      "note": "Star Alliance Gold and paid lounge membership do not by themselves grant access to the adjoining Suite Lounge. ANA-specific elite, voucher and advance-paid access need separate verification."
+    },
+    {
+      "id": "hnl-ana-suite",
+      "name": "ANA Suite Lounge",
+      "terminal": "T2",
+      "location": "Above Gate C4, Terminal 2; separate ANA Lounge and ANA Suite Lounge areas.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "flight-dependent",
+        "note": "08:50 until the final ANA Group departure, under the schedule effective from 1 July 2026."
+      },
+      "amenities": {
+        "showers": "no",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "sources": [
+        {
+          "id": "ana-access",
+          "title": "ANA · Honolulu lounge eligibility and operating hours",
+          "url": "https://www.ana.co.jp/en/jp/guide/lounge/international/hnl/",
+          "checkedOn": "2026-11-20"
+        },
+        {
+          "id": "ana-facilities",
+          "title": "ANA · Honolulu lounge facilities",
+          "url": "https://www.ana.co.jp/en/us/travel-information/lounges/honolulu/",
+          "checkedOn": "2026-11-20"
+        },
+        {
+          "id": "airport-location",
+          "title": "Honolulu Airport · distinct lounge locations",
+          "url": "https://airports.hawaii.gov/hnl/flights/airport-lounges/",
+          "checkedOn": "2026-11-20"
+        }
+      ],
+      "photos": [],
+      "accessRules": [
+        {
+          "id": "star-international-first",
+          "label": "International First on a Star Alliance flight",
+          "cabinsAnyOf": [
+            "first"
+          ],
+          "operatingAlliance": "star",
+          "route": "international",
+          "sourceIds": [
+            "ana-access"
+          ]
+        }
+      ],
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "A 2019 visit, republished in 2023, describes attentive personal service and a small food upgrade over the main lounge. Limited made-to-order choices, no natural light and ordinary coffee temper the premium positioning. Historical evidence.",
+        "reviewedOn": "2026-11-20",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Live and Let's Fly · ANA Suite Lounge Honolulu review",
+            "url": "https://liveandletsfly.com/ana-suite-lounge-honolulu-review/",
+            "checkedOn": "2026-11-20"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://liveandletsfly.com/ana-suite-lounge-honolulu-review/",
+          "checkedOn": "2026-11-20"
+        }
+      ],
+      "recommendation": {
+        "summary": "A separate First Class lounge beside ANA Lounge, with buffet dining and no showers."
+      },
+      "note": "ANA Diamond, Million Miler lounge cards and Suite vouchers have separate eligibility that current membership settings cannot represent; generic Star Gold is insufficient."
+    },
+    {
+      "id": "hnl-jal-sakura-admirals",
+      "name": "JAL Sakura Lounge / Admirals Club",
+      "terminal": "T2",
+      "location": "Third level above The Local @HNL, opposite security checkpoint 3 in the central lobby; separate from Sakura Lounge Hale above Gate C1.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "04:45",
+            "close": "23:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "admirals-aa-operated",
+          "label": "Admirals Club member on an AA-operated flight",
+          "membershipsAnyOf": [
+            "admirals-club"
+          ],
+          "operatingCarriersAnyOf": [
+            "AA"
+          ],
+          "sourceIds": [
+            "aa-access"
+          ]
+        },
+        {
+          "id": "admirals-aa-marketed",
+          "label": "Admirals Club member on an AA-marketed flight",
+          "membershipsAnyOf": [
+            "admirals-club"
+          ],
+          "marketingCarriersAnyOf": [
+            "AA"
+          ],
+          "sourceIds": [
+            "aa-access"
+          ]
+        },
+        {
+          "id": "admirals-oneworld",
+          "label": "Admirals Club member on a oneworld flight",
+          "membershipsAnyOf": [
+            "admirals-club"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "sourceIds": [
+            "aa-access"
+          ]
+        },
+        {
+          "id": "non-us-oneworld-status",
+          "label": "Qantas, British Airways or Cathay qualifying status",
+          "membershipsAnyOf": [
+            "qantas-gold",
+            "qantas-platinum",
+            "qantas-platinum-one",
+            "british-airways-silver",
+            "british-airways-gold",
+            "cathay-gold",
+            "cathay-diamond"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "sourceIds": [
+            "aa-access"
+          ]
+        },
+        {
+          "id": "oneworld-status",
+          "label": "oneworld Sapphire or Emerald",
+          "membershipsAnyOf": [
+            "oneworld-sapphire",
+            "oneworld-emerald"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "conditions": [
+            "Confirm the issuing program qualifies: AAdvantage and Atmos status have route restrictions, including mainland-US flights."
+          ],
+          "sourceIds": [
+            "aa-access"
+          ]
+        },
+        {
+          "id": "oneworld-international-premium",
+          "label": "Qualifying international oneworld Business or First",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingAlliance": "oneworld",
+          "marketingAlliance": "oneworld",
+          "route": "international",
+          "conditions": [
+            "Confirm the fare includes lounge access; Alaska-operated flights to Canada, Mexico or the Caribbean are excluded."
+          ],
+          "sourceIds": [
+            "aa-access"
+          ]
+        },
+        {
+          "id": "aa-flagship-domestic",
+          "label": "American ticketed Flagship on selected domestic routes",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingCarriersAnyOf": [
+            "AA"
+          ],
+          "marketingCarriersAnyOf": [
+            "AA"
+          ],
+          "route": "domestic",
+          "conditions": [
+            "Only ticketed Flagship seats on Honolulu services to Dallas/Fort Worth, Chicago or Phoenix qualify; ordinary domestic First does not. Phoenix Flagship service is seasonal."
+          ],
+          "sourceIds": [
+            "aa-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "aa-location",
+          "title": "American · Honolulu Admirals Club / Sakura location and hours",
+          "url": "https://www.aa.com/web/i18n/travelInformation/airportAmenities/hnl-club.html",
+          "checkedOn": "2026-11-20"
+        },
+        {
+          "id": "aa-access",
+          "title": "American · Admirals Club membership, status and premium-cabin access",
+          "url": "https://www.aa.com/web/i18n/travel-info/clubs/admirals-club-access.html",
+          "checkedOn": "2026-11-20"
+        },
+        {
+          "id": "airport-location",
+          "title": "Honolulu Airport · central Sakura and separate Hale lounge",
+          "url": "https://airports.hawaii.gov/hnl/flights/airport-lounges/",
+          "checkedOn": "2026-11-20"
+        }
+      ],
+      "photos": [],
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "A May 2024 visit found comfortable seating, useful charging desks and good working Wi-Fi. The hot food was satisfactory rather than exceptional, and the walk to American gates was long. This describes a historical visit; service differs by time of day.",
+        "reviewedOn": "2026-11-20",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Neil's OneWorld · central Honolulu Sakura Lounge review",
+            "url": "https://neilsoneworld.wordpress.com/2024/05/16/hnl-terminal-2-jal-sakura-lounge-honolulu-airline-lounge-review/",
+            "checkedOn": "2026-11-20"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://neilsoneworld.wordpress.com/2024/05/16/hnl-terminal-2-jal-sakura-lounge-honolulu-airline-lounge-review/",
+          "checkedOn": "2026-11-20"
+        }
+      ],
+      "recommendation": {
+        "summary": "The central shared JAL/American facility has longer published hours than many HNL lounges. Allow time to walk to your departure gate."
+      },
+      "note": "Current official pages do not confirm individual amenities. This record does not confer access to Sakura Lounge Hale. JAL Premium Economy and Flex Y access to this central facility needs confirmation."
     }
   ]
 }

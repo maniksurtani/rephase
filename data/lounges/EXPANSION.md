@@ -97,3 +97,19 @@ Six parallel research tracks added **61 selected lounges at 25 additional airpor
 | Latin America, Caribbean and Africa | LIM, SJO, SJU, CPT | 10 lounges added; [evidence and gaps](research/latam-africa-2026-11-19.md) |
 
 After these batches, prioritise a mainland-China pass for **PKX, SZX and TFU**, using current local-language airport/airline sources and distinguishing newly opened terminals from predecessor lounges. In parallel, deepen the existing-guide gaps listed above, especially high-use airline/terminal omissions and closure notices. Subsequent candidates include **ICN T1, KUL satellite, ATH, MXP, MAN, YUL, YYC, PHL, PHX, BOG additional airline options, BLR, HYD and DAC**; some are improvements at already listed airports rather than new airport counts. Reassess using user demand instead of treating this queue as fixed.
+
+## China hubs and existing-guide depth — 20 November 2026
+
+Five parallel research tracks added **18 lounges**: four each at **PKX, SZX and TFU**, plus three each at **SFO and HNL**. The catalog now contains **244 selected lounges at 89 airports**, with **208 sourced ratings and 36 explicit rating gaps**. Existing SFO/HNL records and their source dates were preserved. See [coverage and measured sizes](COVERAGE.md).
+
+| Track | Added | Evidence and limits |
+| --- | --- | --- |
+| PKX | China Southern domestic/international, CHUM domestic, East Pacific international | [Research](research/pkx-2026-11-20.md): separate premium/status facilities, CHUM location conflict and two unrated records. |
+| SZX | King international/Hall 3, International Guest, China Southern satellite | [Research](research/szx-2026-11-20.md): domestic carrier restrictions, conflicting satellite hours and two unrated records. |
+| TFU | Air China 4F/2F, China Eastern V2, international contract lounge | [Research](research/tfu-2026-11-20.md): separate member/premium sections, airline-restricted Priority Pass, assigned invitations and one unrated record. |
+| SFO | United F Gates, Maple Leaf, temporary T2 Centurion | [Research](research/sfo-2026-11-20.md): exact temporary facility, entry windows and card conditions. United status/cabin policy remains incomplete. |
+| HNL | ANA, ANA Suite, central Sakura/Admirals | [Research](research/hnl-2026-11-20.md): separate First/status rights and central versus Hale facilities. |
+
+The schema remains compatible with existing apps. This release also includes country mappings and the ZH/KN airline choices; ZH's verified Star membership is encoded, while KN has no inferred alliance. Web deployment publishes the guides on demand. New Android/iOS builds carry the accumulated shared country/carrier changes from both November expansions.
+
+Next research can run in three geographic tracks: **ATH/MXP/MAN**, **YUL/YYC/PHL/PHX**, and **BLR/HYD/DAC**. Continue a fourth existing-guide track for SYD/SIN/LHR/MUC, ICN T1 and KUL satellite. Resolve the closure notices and missing exact-facility reviews before adding near-duplicate lounges. These are proposed batches, not a claim of exhaustive global coverage or work already completed.

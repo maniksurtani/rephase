@@ -17,13 +17,125 @@ function check(airport: string, id: string, overrides: Partial<LoungeVisitContex
     visitStart: '2026-11-19T09:00:00Z',
     visitEnd: '2026-11-19T10:00:00Z',
     departure: '2026-11-19T12:00:00Z',
-    now: '2026-11-18',
+    now: '2026-11-20',
     ...overrides,
   };
   return evaluateLounge(lounge, visit, data);
 }
 
 describe('global hub access exceptions', () => {
+  it('keeps Daxing domestic and international access separate without importing SkyTeam rights', () => {
+    const premium: Partial<LoungeVisitContext> = {
+      operatingCarrier: 'CZ',
+      marketingCarrier: 'CZ',
+      cabin: 'business',
+      route: 'domestic',
+    };
+    expect(check('PKX', 'pkx-china-southern-domestic-1', premium).access).toBe('conditional');
+    expect(check('PKX', 'pkx-china-southern-international', premium).access).toBe('ineligible');
+    expect(
+      check('PKX', 'pkx-china-southern-domestic-1', {
+        ...premium,
+        cabin: 'economy',
+        memberships: ['skyteam-elite-plus'],
+      }).access,
+    ).toBe('ineligible');
+    const pp: Partial<LoungeVisitContext> = {
+      memberships: ['priority-pass'],
+      visitStart: '2026-11-20T23:00:00+08:00',
+      visitEnd: '2026-11-21T03:00:00+08:00',
+      departure: '2026-11-21T05:00:00+08:00',
+    };
+    expect(check('PKX', 'pkx-east-pacific-international', pp)).toMatchObject({
+      access: 'eligible',
+      opening: 'open',
+      visit: { minutes: 180 },
+    });
+    expect(check('PKX', 'pkx-chum-domestic', pp).access).toBe('ineligible');
+  });
+
+  it('recognises Shenzhen Airlines as Star while retaining domestic lounge carrier limits', () => {
+    const gold: Partial<LoungeVisitContext> = {
+      operatingCarrier: 'ZH',
+      marketingCarrier: 'ZH',
+      memberships: ['united-premier-1k'],
+    };
+    expect(check('SZX', 'szx-shenzhen-king-international', gold).access).toBe('conditional');
+    expect(check('SZX', 'szx-shenzhen-king-hall-3', gold).access).toBe('ineligible');
+    expect(check('SZX', 'szx-shenzhen-king-hall-3', { ...gold, route: 'domestic' }).access).toBe(
+      'conditional',
+    );
+    expect(
+      check('SZX', 'szx-shenzhen-king-international', {
+        ...gold,
+        operatingCarrier: 'CZ',
+        marketingCarrier: 'CZ',
+      }).access,
+    ).toBe('ineligible');
+  });
+
+  it('restricts Tianfu V2 Priority Pass access to the listed domestic operating airlines', () => {
+    const pp: Partial<LoungeVisitContext> = {
+      memberships: ['priority-pass'],
+      route: 'domestic',
+      marketingCarrier: 'MU',
+      visitStart: '2026-11-20T10:00:00+08:00',
+      visitEnd: '2026-11-20T13:00:00+08:00',
+      departure: '2026-11-20T15:00:00+08:00',
+    };
+    for (const operatingCarrier of ['MU', 'FM', 'KN']) {
+      expect(check('TFU', 'tfu-china-eastern-v2', { ...pp, operatingCarrier })).toMatchObject({
+        access: 'conditional',
+        visit: { minutes: 120 },
+      });
+    }
+    expect(check('TFU', 'tfu-china-eastern-v2', { ...pp, operatingCarrier: 'CA' }).access).toBe(
+      'ineligible',
+    );
+    expect(
+      check('TFU', 'tfu-china-eastern-v2', {
+        ...pp,
+        operatingCarrier: 'MU',
+        route: 'international',
+      }).access,
+    ).toBe('ineligible');
+  });
+
+  it('does not promote Star Gold to separate First or premium sections at Tianfu and Honolulu', () => {
+    const gold: Partial<LoungeVisitContext> = {
+      memberships: ['star-gold'],
+      operatingCarrier: 'CA',
+      marketingCarrier: 'CA',
+      route: 'domestic',
+    };
+    expect(check('TFU', 'tfu-air-china-4f', gold).access).toBe('conditional');
+    expect(check('TFU', 'tfu-air-china-2f', gold).access).toBe('ineligible');
+    const ana = {
+      ...gold,
+      operatingCarrier: 'NH',
+      marketingCarrier: 'NH',
+      route: 'international' as const,
+    };
+    expect(check('HNL', 'hnl-ana-lounge', ana).access).toBe('conditional');
+    expect(check('HNL', 'hnl-ana-suite', ana).access).toBe('ineligible');
+    expect(check('HNL', 'hnl-ana-suite', { ...ana, cabin: 'first' }).access).toBe('conditional');
+  });
+
+  it('allows United Gold in SFO Maple Leaf on domestic United within the normal entry window', () => {
+    const gold: Partial<LoungeVisitContext> = {
+      memberships: ['united-premier-gold'],
+      operatingCarrier: 'UA',
+      marketingCarrier: 'UA',
+      route: 'domestic',
+      destinationCountry: 'US',
+      visitStart: '2026-11-20T10:00:00-08:00',
+      visitEnd: '2026-11-20T11:00:00-08:00',
+      departure: '2026-11-20T12:00:00-08:00',
+    };
+    expect(check('SFO', 'sfo-maple-leaf', gold).access).toBe('eligible');
+    expect(check('SFO', 'sfo-united-polaris', gold).access).toBe('ineligible');
+  });
+
   it('applies Charlotte’s 150-minute Priority Pass limit and Detroit’s split admission hours', () => {
     const pp: Partial<LoungeVisitContext> = {
       memberships: ['priority-pass'],

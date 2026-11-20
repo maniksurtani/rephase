@@ -1,0 +1,325 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "PKX",
+  "timeZone": "Asia/Shanghai",
+  "updatedAt": "2026-11-20",
+  "lounges": [
+    {
+      "id": "pkx-china-southern-domestic-1",
+      "name": "China Southern Domestic Lounge 1 (First / Business)",
+      "terminal": "Main Terminal · Domestic",
+      "location": "Domestic departures, level 3 west side of the central area, beyond the premium security checkpoint.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "flight-dependent",
+        "note": "04:30 until the final departure, according to China Southern and its booking partner. Confirm closing against the day’s flights."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "china-southern-premium",
+          "label": "China Southern Business or First Class",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingCarriersAnyOf": [
+            "CZ"
+          ],
+          "route": "domestic",
+          "sourceIds": [
+            "operator",
+            "access-policy"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "operator",
+          "title": "China Southern · Beijing Daxing lounge locations and facilities",
+          "url": "https://www.csair.com/sg/en/tourguide/airport_service/priority_pass/domestic/1e1164lke811s.shtml",
+          "checkedOn": "2026-11-20"
+        },
+        {
+          "id": "access-policy",
+          "title": "China Southern · lounge eligibility FAQ",
+          "url": "https://www.csair.com/sg/en/tourguide/faq/airport/xiuxishi.shtml",
+          "checkedOn": "2026-11-20"
+        },
+        {
+          "id": "booking-partner",
+          "title": "Plaza Premium · China Southern No. 1 VIP Lounge",
+          "url": "https://www.plazapremiumlounge.com/en-uk/find/china-regions/mainland-china/beijing/beijing-daxing-international-airport/china-southern-airlines-no1-vip-lou",
+          "checkedOn": "2026-11-20"
+        }
+      ],
+      "photos": [],
+      "photoLinks": [
+        {
+          "label": "View lounge details and photos",
+          "url": "https://www.plazapremiumlounge.com/en-uk/find/china-regions/mainland-china/beijing/beijing-daxing-international-airport/china-southern-airlines-no1-vip-lou",
+          "checkedOn": "2026-11-20"
+        }
+      ],
+      "recommendation": {
+        "summary": "A meal and shower option for China Southern premium-cabin domestic departures.",
+        "bestFor": [
+          "dining",
+          "showers"
+        ]
+      },
+      "note": "Buffet service is 06:00–09:00, 11:00–14:00 and 17:00–20:00, with a separate cooked-food counter. Shower availability and charges should be checked at reception. Lounges 2 and 3 are separate facilities; their membership access is not assigned to this lounge."
+    },
+    {
+      "id": "pkx-china-southern-international",
+      "name": "China Southern International Lounge",
+      "terminal": "Main Terminal · International",
+      "location": "International departures after border control and security, west side of the central terminal on levels 3 and 4.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "flight-dependent",
+        "note": "Until the last China Southern international departure. China Southern lists a 06:00 opening, while its booking partner lists 06:30; confirm access for an early visit."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "china-southern-premium",
+          "label": "China Southern Business or First Class",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingCarriersAnyOf": [
+            "CZ"
+          ],
+          "route": "international",
+          "sourceIds": [
+            "operator",
+            "access-policy"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "operator",
+          "title": "China Southern · Beijing Daxing lounge locations and facilities",
+          "url": "https://www.csair.com/sg/en/tourguide/airport_service/priority_pass/domestic/1e1164lke811s.shtml",
+          "checkedOn": "2026-11-20"
+        },
+        {
+          "id": "access-policy",
+          "title": "China Southern · lounge eligibility FAQ",
+          "url": "https://www.csair.com/sg/en/tourguide/faq/airport/xiuxishi.shtml",
+          "checkedOn": "2026-11-20"
+        },
+        {
+          "id": "operator-chinese",
+          "title": "China Southern · Daxing facilities, Chinese-language location page",
+          "url": "https://www.csair.cn/cn/tourguide/airport_service/priority_pass/domestic/1dpdb6s1n18bh.shtml",
+          "checkedOn": "2026-11-20"
+        },
+        {
+          "id": "booking-partner",
+          "title": "Plaza Premium · China Southern International Lounge",
+          "url": "https://www.plazapremiumlounge.com/en-uk/find/china-regions/mainland-china/beijing/beijing-daxing-international-airport/china-southern-lounge",
+          "checkedOn": "2026-11-20"
+        }
+      ],
+      "photos": [],
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://quirrow.wordpress.com/2024/08/30/china-southern-vip-lounge-at-beijing-daxing-international-airport/",
+          "checkedOn": "2026-11-20"
+        }
+      ],
+      "qualityRating": {
+        "score": 3,
+        "summary": "A 2024 review found comfortable seating and a quieter reading corner, but ordinary food and cramped shower rooms. A functional pre-flight stop; this older account is not a current service guarantee.",
+        "reviewedOn": "2026-11-20",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "QUIRROW · China Southern International Lounge (August 2024)",
+            "url": "https://quirrow.wordpress.com/2024/08/30/china-southern-vip-lounge-at-beijing-daxing-international-airport/",
+            "checkedOn": "2026-11-20"
+          }
+        ]
+      },
+      "recommendation": {
+        "summary": "Buffet dining, showers and sleeping facilities for an international connection; ask reception about sleeping-room availability.",
+        "bestFor": [
+          "dining",
+          "showers",
+          "quiet"
+        ]
+      },
+      "note": "This is separate from the domestic China Southern lounges. No general SkyTeam entitlement is inferred. Access through partner-airline invitations and China Southern status is not yet covered by this guide."
+    },
+    {
+      "id": "pkx-chum-domestic",
+      "name": "CHUM VIP Lounge (Domestic)",
+      "terminal": "Main Terminal · Domestic",
+      "location": "Airside domestic departures, level 2, on the left near Gates A100–A105, following Priority Pass directions.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "06:30",
+            "close": "22:30"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "route": "domestic",
+          "maxVisitMinutes": 180,
+          "sourceIds": [
+            "priority-pass"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · CHUM VIP Lounge at Gates A100–A105",
+          "url": "https://www.prioritypass.com/en-GB/lounges/china/beijing-daxing-international/pkx4-chum-vip-lounge",
+          "checkedOn": "2026-11-20"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "A Priority Pass option for domestic departures near the A gates, with visits limited to three hours."
+      },
+      "note": "Priority Pass confirms complimentary massage chairs. Shower, dining and quiet-area details for this exact location remain unverified."
+    },
+    {
+      "id": "pkx-east-pacific-international",
+      "name": "East Pacific Passenger Lounge (International)",
+      "terminal": "Main Terminal · International",
+      "location": "After international security, take the lift to level 3 and follow the Pay Lounge signs; the booking partner locates it near Gate 1.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "00:00",
+            "close": "24:00"
+          }
+        ],
+        "note": "Plaza Premium explicitly confirms 24-hour opening; Priority Pass displays the daily interval as 00:00–23:59."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "route": "international",
+          "maxVisitMinutes": 180,
+          "sourceIds": [
+            "priority-pass"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · East Pacific Passenger Lounge",
+          "url": "https://www.prioritypass.com/en-GB/lounges/china/beijing-daxing-international/pkx-east-pacific-passenger-lounge",
+          "checkedOn": "2026-11-20"
+        },
+        {
+          "id": "booking-partner",
+          "title": "Plaza Premium · East Pacific Passenger Lounge facilities and hours",
+          "url": "https://www.plazapremiumlounge.com/en-uk/find/china-regions/mainland-china/beijing/beijing-daxing-international-airport/east-pacific-passenger-lounge-international-depart",
+          "checkedOn": "2026-11-20"
+        }
+      ],
+      "photos": [],
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://www.jettoajet.com/post/review-east-pacific-passenger-lounge-beijing-daxing-pkx",
+          "checkedOn": "2026-11-20"
+        }
+      ],
+      "qualityRating": {
+        "score": 3,
+        "summary": "A September 2025 review found useful workspaces and a good rotating food selection, with morning crowding, limited drinks and busy bathrooms. A practical international stop rather than a standout lounge.",
+        "reviewedOn": "2026-11-20",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Jettoajet · East Pacific Passenger Lounge (September 2025)",
+            "url": "https://www.jettoajet.com/post/review-east-pacific-passenger-lounge-beijing-daxing-pkx",
+            "checkedOn": "2026-11-20"
+          }
+        ]
+      },
+      "recommendation": {
+        "summary": "A 24-hour international Priority Pass option with showers and Wi-Fi; full meals are offered only at set times.",
+        "bestFor": [
+          "showers"
+        ]
+      },
+      "note": "Meals are served 06:30–09:30, 11:00–13:30 and 17:00–19:30, with snacks outside these periods. Dining service style and a dedicated quiet area remain unverified. Confirm shower charges at reception. Priority Pass allows three hours; the separately sold Plaza Premium package describes two hours."
+    }
+  ]
+}

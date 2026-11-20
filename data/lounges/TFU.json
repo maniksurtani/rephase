@@ -1,0 +1,381 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "TFU",
+  "timeZone": "Asia/Shanghai",
+  "updatedAt": "2026-11-20",
+  "lounges": [
+    {
+      "id": "tfu-air-china-4f",
+      "name": "Air China Premium Lounge (T2, Level 4)",
+      "terminal": "T2",
+      "location": "Domestic departures, Level 4, about 10 metres after First/Business security checkpoint 1. This is the upper member lounge, separate from the Level 2 premium-cabin section.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "flight-dependent",
+        "note": "Air China’s simplified-Chinese directory lists 04:55 until the last flight finishes. Its traditional-Chinese page instead starts two hours before the first departure and closes after final boarding; confirm early-morning opening for your flight."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "star-gold",
+          "label": "Star Alliance Gold on a domestic Star Alliance departure",
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingAlliance": "star",
+          "route": "domestic",
+          "sourceIds": [
+            "air-china-sections",
+            "air-china-access"
+          ]
+        },
+        {
+          "id": "star-premium",
+          "label": "Star Alliance Business or First Class",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingAlliance": "star",
+          "route": "domestic",
+          "sourceIds": [
+            "air-china-sections",
+            "air-china-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "air-china-location",
+          "title": "Air China · Chengdu lounge directory, simplified Chinese (individual location panels)",
+          "url": "https://webresource.airchina.com.cn/zh-CN/content/travel_info/airport_guide/vip_lounge/chengdu/",
+          "checkedOn": "2026-11-20"
+        },
+        {
+          "id": "air-china-sections",
+          "title": "Air China · Chengdu lounge directory, traditional Chinese (member and premium sections)",
+          "url": "https://webresource.airchina.com.cn/zh-TW/content/travel_info/airport_guide/vip_lounge/chengdu/",
+          "checkedOn": "2026-11-20"
+        },
+        {
+          "id": "air-china-access",
+          "title": "Air China · Own and contracted lounge access matrix",
+          "url": "https://m.airchina.com.cn/c/invoke/zyxxsRules@pg",
+          "checkedOn": "2026-11-20"
+        },
+        {
+          "id": "air-china-terminal",
+          "title": "Air China · Tianfu Terminal 2 lounge catering notice (November 2025)",
+          "url": "https://pur.airchina.com.cn/001/001001/20251113/b297c703-2e88-4c01-a9d5-827abf098443.html",
+          "checkedOn": "2026-11-20"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "A domestic Star Alliance status option with showers and Wi-Fi.",
+        "bestFor": [
+          "showers"
+        ]
+      },
+      "note": "Hot food and snacks are published, but the current dining service style is unverified. The listed telephone rooms do not establish a dedicated sleeping or quiet area. This is Tianfu (TFU), not Air China’s lounges at Shuangliu (CTU)."
+    },
+    {
+      "id": "tfu-air-china-2f",
+      "name": "Air China First and Business Class Lounge (T2, Level 2)",
+      "terminal": "T2",
+      "location": "Domestic departures, Level 2, reached from Air China’s lounge entrance just after First/Business security checkpoint 1. Follow staff directions to the separate lower premium-cabin section.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "flight-dependent",
+        "note": "Air China’s simplified-Chinese directory lists 04:55 until the last flight finishes. Its traditional-Chinese page instead starts two hours before the first departure and closes after final boarding; confirm early-morning opening for your flight."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "star-premium",
+          "label": "Star Alliance Business or First Class",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingAlliance": "star",
+          "route": "domestic",
+          "sourceIds": [
+            "air-china-sections",
+            "air-china-access"
+          ],
+          "conditions": [
+            "Confirm your boarding pass or check-in invitation assigns this separate First and Business Class section."
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "air-china-location",
+          "title": "Air China · Chengdu lounge directory, simplified Chinese (individual location panels)",
+          "url": "https://webresource.airchina.com.cn/zh-CN/content/travel_info/airport_guide/vip_lounge/chengdu/",
+          "checkedOn": "2026-11-20"
+        },
+        {
+          "id": "air-china-sections",
+          "title": "Air China · Chengdu lounge directory, traditional Chinese (member and premium sections)",
+          "url": "https://webresource.airchina.com.cn/zh-TW/content/travel_info/airport_guide/vip_lounge/chengdu/",
+          "checkedOn": "2026-11-20"
+        },
+        {
+          "id": "air-china-access",
+          "title": "Air China · Own and contracted lounge access matrix",
+          "url": "https://m.airchina.com.cn/c/invoke/zyxxsRules@pg",
+          "checkedOn": "2026-11-20"
+        },
+        {
+          "id": "air-china-terminal",
+          "title": "Air China · Tianfu Terminal 2 lounge catering notice (November 2025)",
+          "url": "https://pur.airchina.com.cn/001/001001/20251113/b297c703-2e88-4c01-a9d5-827abf098443.html",
+          "checkedOn": "2026-11-20"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "The separate domestic premium-cabin lounge offers showers and Wi-Fi.",
+        "bestFor": [
+          "showers"
+        ]
+      },
+      "note": "Star Alliance Gold alone does not grant this section; use the separate Level 4 member lounge. Air China’s traditional-Chinese directory identifies the premium section explicitly, while its simplified-Chinese page labels both floors as Premium Lounges. Hot food is published; dining style and dedicated rest facilities remain unverified.",
+      "qualityRating": {
+        "score": 4,
+        "summary": "July 2025 and January 2026 firsthand reports praise the separate downstairs premium section’s spacious seating, quieter atmosphere and regional food. These visits do not establish peak-time conditions or the quality of the upstairs member lounge.",
+        "reviewedOn": "2026-11-20",
+        "sources": [
+          {
+            "id": "quality-2025",
+            "title": "FLYERT · Tianfu dedicated Business lounge (July 2025, Chinese)",
+            "url": "https://www.flyert.com.cn/forum.php?mod=viewthread&tid=4770687",
+            "checkedOn": "2026-11-20"
+          },
+          {
+            "id": "quality-2026",
+            "title": "FLYERT · ZH9438 report, Tianfu premium lounge section (January 2026, Chinese)",
+            "url": "https://www.flyert.com.cn/forum.php?extra=&mobile=1&mod=viewthread&tid=4810079",
+            "checkedOn": "2026-11-20"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://www.flyert.com.cn/forum.php?mod=viewthread&tid=4770687",
+          "checkedOn": "2026-11-20"
+        }
+      ]
+    },
+    {
+      "id": "tfu-china-eastern-v2",
+      "name": "China Eastern V2 Lounge (T2 Domestic)",
+      "terminal": "T2",
+      "location": "Domestic departures, north concourse, Level 2, opposite Gate 214. Separate from the neighbouring Sichuan Airlines lounge.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "flight-dependent",
+        "note": "Priority Pass lists 06:00 until the last China Eastern flight. Plaza Premium’s partner listing starts at 05:30; use the Priority Pass opening rule for that membership and confirm the day’s final service."
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass on China Eastern, Shanghai or China United domestic flights",
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "operatingCarriersAnyOf": [
+            "MU",
+            "FM",
+            "KN"
+          ],
+          "route": "domestic",
+          "maxVisitMinutes": 120,
+          "sourceIds": [
+            "priority-pass"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · China Eastern Airlines Lounge, Tianfu T2",
+          "url": "https://www.prioritypass.com/en-GB/lounges/china/chengdu-tianfu-international/tfu2-china-eastern-airlines-lounge",
+          "checkedOn": "2026-11-20"
+        },
+        {
+          "id": "plaza-premium",
+          "title": "Plaza Premium · V2 China Eastern partner lounge",
+          "url": "https://www.plazapremiumlounge.com/en-uk/find/china-regions/mainland-china/chengdu/chengdu-tianfu-international-airport/v2-domestic-departure",
+          "checkedOn": "2026-11-20"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "A domestic Priority Pass option for MU, FM and KN flights, with daybeds and Wi-Fi.",
+        "bestFor": [
+          "quiet"
+        ]
+      },
+      "note": "Priority Pass lists complimentary daybeds. Food and beverages are available, but the current dining style, showers and spa are unverified. The two-hour limit is a visit allowance, not a two-hour pre-departure entry window. A Plaza Premium booking link does not establish access through every paid-lounge membership.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "A July 2024 visit, reported in December 2024, found comfortable surroundings, ample seating and tasty made-to-order noodles after lunch service. This older account covers the China Eastern section separately from neighbouring Sichuan Airlines; current crowding and food may differ.",
+        "reviewedOn": "2026-11-20",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "FLYERT · Tianfu China Eastern section (2024 visit, Chinese)",
+            "url": "https://www.flyert.com.cn/portal.php?aid=509288&mod=view",
+            "checkedOn": "2026-11-20"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://www.flyert.com.cn/portal.php?aid=509288&mod=view",
+          "checkedOn": "2026-11-20"
+        }
+      ]
+    },
+    {
+      "id": "tfu-international-first-business",
+      "name": "International First and Business Class Lounge (T1)",
+      "terminal": "T1",
+      "location": "International departures, Level 3 beside Gate 117. After security and border control, descend to Level 3; the lounge is behind the escalator/lift.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "flight-dependent",
+        "note": "EVA Air publishes 07:00–22:30 subject to flight schedules; Asiana describes opening during flight operations. Confirm availability for an early or late departure."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "singapore-premium",
+          "label": "Singapore Airlines Business or First Class invitation",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingCarriersAnyOf": [
+            "SQ"
+          ],
+          "route": "international",
+          "conditions": [
+            "Use the lounge named on your boarding pass or confirm the invitation with Singapore Airlines check-in."
+          ],
+          "sourceIds": [
+            "singapore-location",
+            "singapore-access"
+          ]
+        },
+        {
+          "id": "singapore-star-gold",
+          "label": "Star Alliance Gold on a Singapore Airlines departure",
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingCarriersAnyOf": [
+            "SQ"
+          ],
+          "route": "international",
+          "conditions": [
+            "Confirm Singapore Airlines has assigned this third-party lounge on your boarding pass or at check-in."
+          ],
+          "sourceIds": [
+            "singapore-location",
+            "singapore-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "singapore-location",
+          "title": "Singapore Airlines · Chengdu Tianfu partner lounge",
+          "url": "https://www.singaporeair.com/en_UK/sg/flying-withus/before-the-flight/lounges/partner/",
+          "checkedOn": "2026-11-20"
+        },
+        {
+          "id": "singapore-access",
+          "title": "Singapore Airlines · Partner lounge access and third-party invitations",
+          "url": "https://www.singaporeair.com/content/dam/sia/web-assets/pdfs/flying-withus/lounge/Partner-Lounge-Access.pdf",
+          "checkedOn": "2026-11-20"
+        },
+        {
+          "id": "asiana-facilities",
+          "title": "Asiana Airlines · Tianfu airport lounge facilities and flight-dependent opening",
+          "url": "https://flyasiana.com/C/SG/EN/travel/airport?airportCd=TFU",
+          "checkedOn": "2026-11-20"
+        },
+        {
+          "id": "eva-location",
+          "title": "EVA Air · Tianfu T1 partner lounge location and hours",
+          "url": "https://www.evaair.com/en-sg/fly-prepare/at-the-airport/lounges/partner-lounges/mainland-china/",
+          "checkedOn": "2026-11-20"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "An international partner lounge with showers and Wi-Fi when your airline issues an invitation.",
+        "bestFor": [
+          "showers"
+        ]
+      },
+      "note": "Warm food and snacks are confirmed; the current dining style and private rest facilities remain unverified. This guide currently encodes Singapore Airlines invitations only. Other airlines may use this lounge, but their individual contracts need checking; neither Priority Pass nor Star Alliance status alone grants blanket access.",
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "A January 2025 visit found a clean, spacious lounge with plenty of seating, a buffet and noodle counter. The reviewer visited at a quiet time and did not taste the food, so the assessment is stronger on comfort than meal quality.",
+        "reviewedOn": "2026-11-20",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "Satay Away · Tianfu T1 International First and Business Lounge (January 2025)",
+            "url": "https://www.satayaway.blog/blog-sea-level-prelude/review-chengdu-tianfu-international-first-and-business-class-lounge-terminal-1",
+            "checkedOn": "2026-11-20"
+          }
+        ]
+      },
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://www.satayaway.blog/blog-sea-level-prelude/review-chengdu-tianfu-international-first-and-business-class-lounge-terminal-1",
+          "checkedOn": "2026-11-20"
+        }
+      ]
+    }
+  ]
+}

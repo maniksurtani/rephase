@@ -305,6 +305,15 @@ Updated 2026-11-19. Active work is kept here; the previous complete checklist is
 - [x] Validate guides, access matching and generated downloads; 225 targeted lounge/mobile-engine checks, type checks and production build pass. Record 86 airports, 226 lounges and the follow-on queue.
 - [x] Commit and push the reviewed expansion.
 
+## China hubs and existing-guide depth — 20 November 2026
+
+- [x] Start parallel research for PKX, SZX and TFU, plus missing SFO/HNL airline and membership lounges.
+- [x] Implement primary-source guides, exact-facility review ratings and explicit unresolved gaps: 18 additions, 89 airports / 244 lounges overall.
+- [x] Integrate country/carrier mappings and verify relevant access-policy boundaries.
+- [x] Update coverage and validate generated guides, shared/mobile access checks, types and production build; prepared for publication.
+- [ ] Deploy the verified web release to Cloudflare.
+- [ ] Publish Android and iOS beta updates for accumulated shared country/carrier changes; confirm distribution results.
+
 ## Flight carbon footprint — 18 November 2026
 
 - [x] Implement one offline distance/cabin model shared by web and native, with source provenance and explicit missing-data handling.

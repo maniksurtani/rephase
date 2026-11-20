@@ -2,9 +2,9 @@
 
 Edit one JSON file per airport, named with its three-letter IATA code (for example `SIN.json`). The build publishes each guide as static JSON; clients download only the airports they need, cache them locally and match access offline. No lounge API or database is needed. `schema.json` is the editor/CI contract, and `src/lib/lounge-types.ts` defines the matching types.
 
-## Current coverage: 19 November 2026
+## Current coverage: 20 November 2026
 
-**226 selected lounges across 86 airports**. The second parallel expansion adds 61 lounges at 25 regional hubs, with current closure, terminal, membership and holiday-hour restrictions. See [coverage and download sizes](COVERAGE.md), [regional evidence and follow-ups](EXPANSION.md#second-parallel-expansion--19-november-2026), and the [31 unrated-lounge backlog](research/quality-backlog.json). A guide covers selected verified options, not every lounge or entitlement at its airport. External photo/review links open the original publisher; no third-party images are bundled.
+**244 selected lounges across 89 airports**. The latest parallel batch adds 12 lounges at PKX, SZX and TFU, plus three each at SFO and HNL. See [coverage and download sizes](COVERAGE.md), [research and follow-ups](EXPANSION.md#china-hubs-and-existing-guide-depth--20-november-2026), and the [36 unrated-lounge backlog](research/quality-backlog.json). A guide covers selected verified options, not every lounge or entitlement at its airport. External photo/review links open the original publisher; no third-party images are bundled.
 
 ## Existing-guide improvements: 17 November 2026
 
@@ -20,7 +20,7 @@ The first gap-filling pass adds eight records, bringing selected coverage to **5
 
 Sources and independent quality assessments are stored with each new record. Older or hosted reviews are labelled; missing operational facts remain unknown. Airport `updatedAt` reflects the latest partial edit, while each existing source retains its own original `checkedOn` date. This pass does not claim that all older records were reverified. Photos are unchanged.
 
-Remaining gaps in the existing guides include SYD Virgin/Emirates/SilverKris and contracted invitations; HNL ANA and central Sakura/Admirals; SFO United Club/Maple Leaf/Centurion; SIN other SATS/Marhaba locations and PPS access; LHR other BA/airline lounges; MUC K/L satellite lounges; SLC verified Sky Club hours. CNS international availability and LAX First's temporary closure need continued operator review. A listed airport is not a complete inventory.
+The original gaps included HNL ANA/central Sakura and SFO United Club/Maple Leaf/Centurion, added on 20 November. Remaining gaps include SYD Virgin/Emirates/SilverKris and contracted invitations; SIN other SATS/Marhaba locations and PPS access; LHR other BA/airline lounges; MUC K/L satellite lounges; SLC verified Sky Club hours. CNS international availability and LAX First's temporary closure need continued operator review. A listed airport is not a complete inventory.
 
 Both clients consume the same curated data. From the on-demand guide release onward, deploying the website publishes compatible data updates to both web and installed mobile apps. Apps check the small manifest at most daily while in use; no mobile rebuild is needed for content changes.
 

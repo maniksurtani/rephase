@@ -88,6 +88,14 @@
     "reason": "No credible current independent review of this exact lounge was verified."
   },
   {
+    "loungeId": "pkx-china-southern-domestic-1",
+    "reason": "No independently read review reliably identifies domestic Lounge 1; the detailed China Southern international review cannot supply its rating."
+  },
+  {
+    "loungeId": "pkx-chum-domestic",
+    "reason": "Current partner locations conflict (A100–A105 versus B20). The April 2026 independent review does not identify either location, so it cannot confidently rate the exact program-listed facility."
+  },
+  {
     "loungeId": "pvg-air-china-business",
     "reason": "A current independent firsthand account of this exact lounge remains outstanding."
   },
@@ -110,6 +118,18 @@
   {
     "loungeId": "sjo-vip-santamaria",
     "reason": "The airport now lists the Gate 5 facility as VIP VISA; a current independent visit under the present operation was not verified."
+  },
+  {
+    "loungeId": "szx-china-southern-satellite",
+    "reason": "Partners establish the Gate 560 satellite lounge, but no adequately detailed independent exact-facility review was verified. Ratings of T3 V2/V3 lounges do not apply."
+  },
+  {
+    "loungeId": "szx-international-guest",
+    "reason": "Current program and Amex pages establish the Gate 308–309 facility, but no sufficiently detailed independent firsthand review of its present service was verified; directory averages do not establish a rating."
+  },
+  {
+    "loungeId": "tfu-air-china-4f",
+    "reason": "The readable December 2023 report predates the currently documented separation and does not isolate the upper member section; newer downstairs premium-section reviews cannot supply its rating."
   },
   {
     "loungeId": "vie-austrian-non-schengen-g",

@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "airport": "SFO",
   "timeZone": "America/Los_Angeles",
-  "updatedAt": "2026-11-17",
+  "updatedAt": "2026-11-20",
   "lounges": [
     {
       "id": "sfo-club",
@@ -397,6 +397,478 @@
       "recommendation": {
         "summary": "A strong dining, shower and rest option once your exact fare is confirmed eligible."
       }
+    },
+    {
+      "id": "sfo-united-club-f",
+      "name": "United Club — F Gates Rotunda",
+      "terminal": "Terminal 3",
+      "location": "F Gates rotunda, Level 3, near Gate F11, after security.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:00",
+            "close": "24:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "united-club-member",
+          "label": "United Club membership",
+          "membershipsAnyOf": [
+            "united-club"
+          ],
+          "operatingAlliance": "star",
+          "conditions": [
+            "Present a valid United Club membership and a qualifying same-calendar-day United or Star Alliance boarding pass."
+          ],
+          "sourceIds": [
+            "chase-access"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "sfo-airport",
+          "title": "SFO · United Club F Gates location and hours",
+          "url": "https://www.flysfo.com/passengers/shop-dine-relax/lounges?page=1",
+          "checkedOn": "2026-11-20"
+        },
+        {
+          "id": "chase-access",
+          "title": "Chase · United Club membership and same-day flight policy",
+          "url": "https://www.chase.com/personal/credit-cards/education/rewards-benefits/guide-to-united-lounges",
+          "checkedOn": "2026-11-20"
+        }
+      ],
+      "photos": [],
+      "photoLinks": [
+        {
+          "label": "Photos and independent review",
+          "url": "https://thebulkheadseat.com/lounge-review-united-club%E2%84%A0-sfo-gate-f11/",
+          "checkedOn": "2026-11-20"
+        }
+      ],
+      "qualityRating": {
+        "score": 3,
+        "summary": "An August 2025 visit found generous seating and friendly staff in a distinctive but ageing rotunda. The reviewer found the buffet mediocre and some furnishings worn.",
+        "reviewedOn": "2026-11-20",
+        "sources": [
+          {
+            "id": "independent-review",
+            "title": "The Bulkhead Seat · United Club SFO Gate F11, August 2025 visit",
+            "url": "https://thebulkheadseat.com/lounge-review-united-club%E2%84%A0-sfo-gate-f11/",
+            "checkedOn": "2026-11-20"
+          }
+        ]
+      },
+      "recommendation": {
+        "summary": "Convenient for F-gates departures with a United Club membership. This is separate from the Polaris Lounge."
+      },
+      "note": "Currently matches verified United Club membership access only; status, premium-ticket and day-pass routes need a separate policy check. Facility-specific amenities remain unconfirmed by a readable primary source."
+    },
+    {
+      "id": "sfo-maple-leaf",
+      "name": "Air Canada Maple Leaf Lounge",
+      "terminal": "Terminal 2",
+      "location": "Terminal 2, after security; the lounge has an outdoor terrace.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:30",
+            "close": "19:15"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "star-premium-international",
+          "label": "Star Alliance international First or Business",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingAlliance": "star",
+          "route": "international",
+          "maxMinutesBeforeDeparture": 180,
+          "sourceIds": [
+            "ac-access"
+          ]
+        },
+        {
+          "id": "star-premium-international-connection",
+          "label": "Star Alliance international First or Business · connecting passenger",
+          "cabinsAnyOf": [
+            "business",
+            "first"
+          ],
+          "operatingAlliance": "star",
+          "route": "international",
+          "conditions": [
+            "This must be a genuine connection with a qualifying same-day departing boarding pass; the three-hour entry restriction is waived only for connecting passengers."
+          ],
+          "sourceIds": [
+            "ac-access"
+          ]
+        },
+        {
+          "id": "star-gold",
+          "label": "Star Alliance Gold, including eligible United and Aeroplan status",
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingAlliance": "star",
+          "maxMinutesBeforeDeparture": 180,
+          "sourceIds": [
+            "ac-access"
+          ]
+        },
+        {
+          "id": "star-gold-connection",
+          "label": "Star Alliance Gold, including eligible United and Aeroplan status · connecting passenger",
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingAlliance": "star",
+          "conditions": [
+            "This must be a genuine connection with a qualifying same-day departing boarding pass; the three-hour entry restriction is waived only for connecting passengers."
+          ],
+          "sourceIds": [
+            "ac-access"
+          ]
+        },
+        {
+          "id": "velocity-on-air-canada",
+          "label": "Velocity Gold, Platinum or Platinum Plus on Air Canada",
+          "membershipsAnyOf": [
+            "velocity-gold",
+            "velocity-platinum",
+            "velocity-platinum-plus"
+          ],
+          "operatingCarriersAnyOf": [
+            "AC"
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "sourceIds": [
+            "ac-access",
+            "velocity-access"
+          ],
+          "marketingCarriersAnyOf": [
+            "AC"
+          ],
+          "route": "international"
+        },
+        {
+          "id": "velocity-on-air-canada-connection",
+          "label": "Velocity Gold, Platinum or Platinum Plus on Air Canada · connecting passenger",
+          "membershipsAnyOf": [
+            "velocity-gold",
+            "velocity-platinum",
+            "velocity-platinum-plus"
+          ],
+          "operatingCarriersAnyOf": [
+            "AC"
+          ],
+          "conditions": [
+            "This must be a genuine connection with a qualifying same-day departing boarding pass; the three-hour entry restriction is waived only for connecting passengers."
+          ],
+          "sourceIds": [
+            "ac-access",
+            "velocity-access"
+          ],
+          "marketingCarriersAnyOf": [
+            "AC"
+          ],
+          "route": "international"
+        }
+      ],
+      "sources": [
+        {
+          "id": "ac-access",
+          "title": "Air Canada · Maple Leaf Lounge access and entry windows",
+          "url": "https://www.aircanada.com/content/aircanada/ca/en/aco/home/fly/premium-services/maple-leaf-lounges.html",
+          "checkedOn": "2026-11-20"
+        },
+        {
+          "id": "ac-facility",
+          "title": "Air Canada · SFO lounge facilities, July 2023 opening",
+          "url": "https://www.aircanada.com/media/air-canada-opens-first-maple-leaf-lounge-at-san-francisco-international-airport/",
+          "checkedOn": "2026-11-20"
+        },
+        {
+          "id": "sfo-airport",
+          "title": "SFO · Maple Leaf Lounge location and current hours",
+          "url": "https://www.flysfo.com/passengers/shop-dine-relax/lounges",
+          "checkedOn": "2026-11-20"
+        },
+        {
+          "id": "velocity-access",
+          "title": "Virgin Australia · Air Canada lounge eligibility for Velocity status",
+          "url": "https://www.virginaustralia.com/jp/en/travel-info/at-the-airport/lounge/international/air-canada/",
+          "checkedOn": "2026-11-20"
+        }
+      ],
+      "photos": [],
+      "photoLinks": [
+        {
+          "label": "Photos and independent review",
+          "url": "https://www.nerdwallet.com/travel/learn/air-canada-lounge-sfo",
+          "checkedOn": "2026-11-20"
+        }
+      ],
+      "qualityRating": {
+        "score": 4,
+        "summary": "The firsthand review praises the varied hot buffet, contemporary seating and outdoor terrace. It describes a strong place to eat and unwind; the article update does not establish a new visit date.",
+        "reviewedOn": "2026-11-20",
+        "sources": [
+          {
+            "id": "independent-review",
+            "title": "NerdWallet · Inside the Air Canada Maple Leaf Lounge at SFO",
+            "url": "https://www.nerdwallet.com/travel/learn/air-canada-lounge-sfo",
+            "checkedOn": "2026-11-20"
+          }
+        ]
+      },
+      "recommendation": {
+        "summary": "A useful option for a meal or shower, with an outdoor terrace. Star Gold access is available on qualifying Star Alliance departures, including domestic United flights.",
+        "bestFor": [
+          "dining",
+          "showers"
+        ]
+      },
+      "note": "Ordinary entry starts three hours before departure; genuine connections have a separate conditional route. US domestic premium cabin alone is not matched. Eligible Aeroplan premium cards and Chase Sapphire Reserve benefits are not represented by the current membership choices; Priority Pass and generic Amex Platinum do not substitute for those cards. Velocity is conservatively matched to Air Canada-marketed and operated international flights, following Virgin Australia’s partner policy."
+    },
+    {
+      "id": "sfo-centurion-t2",
+      "name": "The Centurion Lounge — Temporary Terminal 2",
+      "terminal": "Terminal 2",
+      "location": "Concourse D, Level 2, just after security near Compass Books and Napa Farms Market.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "weekly",
+        "periods": [
+          {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "open": "05:00",
+            "close": "23:00"
+          }
+        ]
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "amex-platinum",
+          "label": "Eligible American Express Platinum card",
+          "membershipsAnyOf": [
+            "amex-platinum"
+          ],
+          "conditions": [
+            "Use an eligible Platinum card with a confirmed same-day departing boarding pass. Companion Platinum and Employee Business Expense cards are excluded."
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "sourceIds": [
+            "amex-access",
+            "amex-terms"
+          ]
+        },
+        {
+          "id": "amex-platinum-connection",
+          "label": "Eligible American Express Platinum card · connection",
+          "membershipsAnyOf": [
+            "amex-platinum"
+          ],
+          "conditions": [
+            "Use an eligible Platinum card with a confirmed same-day departing boarding pass. Companion Platinum and Employee Business Expense cards are excluded.",
+            "The five-hour window applies only to a same-day connecting flight during a layover; a same-day round trip is not a connection."
+          ],
+          "maxMinutesBeforeDeparture": 300,
+          "sourceIds": [
+            "amex-access",
+            "amex-terms"
+          ]
+        },
+        {
+          "id": "delta-reserve-operated",
+          "label": "Delta Reserve · Delta-operated departure",
+          "membershipsAnyOf": [
+            "delta-skymiles-reserve"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "conditions": [
+            "Use an eligible US Delta Reserve or Reserve Business card with a confirmed same-day boarding pass; the flight must have been paid for with a US-issued American Express card."
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "sourceIds": [
+            "amex-access",
+            "amex-terms"
+          ]
+        },
+        {
+          "id": "delta-reserve-operated-connection",
+          "label": "Delta Reserve · Delta-operated departure · connection",
+          "membershipsAnyOf": [
+            "delta-skymiles-reserve"
+          ],
+          "operatingCarriersAnyOf": [
+            "DL"
+          ],
+          "conditions": [
+            "Use an eligible US Delta Reserve or Reserve Business card with a confirmed same-day boarding pass; the flight must have been paid for with a US-issued American Express card.",
+            "The five-hour window applies only to a same-day connecting flight during a layover; a same-day round trip is not a connection."
+          ],
+          "maxMinutesBeforeDeparture": 300,
+          "sourceIds": [
+            "amex-access",
+            "amex-terms"
+          ]
+        },
+        {
+          "id": "delta-reserve-marketed",
+          "label": "Delta Reserve · Delta-marketed departure",
+          "membershipsAnyOf": [
+            "delta-skymiles-reserve"
+          ],
+          "marketingCarriersAnyOf": [
+            "DL"
+          ],
+          "conditions": [
+            "Use an eligible US Delta Reserve or Reserve Business card with a confirmed same-day boarding pass; the flight must have been paid for with a US-issued American Express card."
+          ],
+          "maxMinutesBeforeDeparture": 180,
+          "sourceIds": [
+            "amex-access",
+            "amex-terms"
+          ]
+        },
+        {
+          "id": "delta-reserve-marketed-connection",
+          "label": "Delta Reserve · Delta-marketed departure · connection",
+          "membershipsAnyOf": [
+            "delta-skymiles-reserve"
+          ],
+          "marketingCarriersAnyOf": [
+            "DL"
+          ],
+          "conditions": [
+            "Use an eligible US Delta Reserve or Reserve Business card with a confirmed same-day boarding pass; the flight must have been paid for with a US-issued American Express card.",
+            "The five-hour window applies only to a same-day connecting flight during a layover; a same-day round trip is not a connection."
+          ],
+          "maxMinutesBeforeDeparture": 300,
+          "sourceIds": [
+            "amex-access",
+            "amex-terms"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "amex-location",
+          "title": "American Express · SFO temporary Centurion Lounge",
+          "url": "https://www.americanexpress.com/en-us/travel/lounges/the-platinum-card/SFO/The-Centurion-Lounge---Temporary-Location-Terminal-2-Concourse-D-rUJ5NvGkPK/",
+          "checkedOn": "2026-11-20"
+        },
+        {
+          "id": "amex-access",
+          "title": "American Express · Centurion access policy",
+          "url": "https://www.americanexpress.com/en-us/travel/lounges/centurion-network/access/",
+          "checkedOn": "2026-11-20"
+        },
+        {
+          "id": "amex-terms",
+          "title": "American Express · Centurion card exclusions and payment terms",
+          "url": "https://www.americanexpress.com/en-us/travel/lounges/centurion-network/terms/",
+          "checkedOn": "2026-11-20"
+        },
+        {
+          "id": "sfo-airport",
+          "title": "SFO · Temporary Centurion location and opening hours",
+          "url": "https://www.flysfo.com/passengers/shop-dine-relax/lounges",
+          "checkedOn": "2026-11-20"
+        }
+      ],
+      "photos": [],
+      "photoLinks": [
+        {
+          "label": "Photos and independent review",
+          "url": "https://www.nerdwallet.com/travel/learn/temporary-amex-lounge-sfo",
+          "checkedOn": "2026-11-20"
+        }
+      ],
+      "qualityRating": {
+        "score": 3.5,
+        "summary": "The temporary Terminal 2 review finds bright seating, airfield views, plentiful power and showers. Food is useful but less ambitious than at the former Terminal 3 facility, and busy periods can limit seating.",
+        "reviewedOn": "2026-11-20",
+        "sources": [
+          {
+            "id": "independent-review",
+            "title": "NerdWallet · Temporary SFO Centurion Lounge, Terminal 2",
+            "url": "https://www.nerdwallet.com/travel/learn/temporary-amex-lounge-sfo",
+            "checkedOn": "2026-11-20"
+          }
+        ]
+      },
+      "recommendation": {
+        "summary": "The current Centurion option is in Terminal 2. Showers and Wi-Fi are confirmed; entry depends on your exact card, boarding pass and departure window.",
+        "bestFor": [
+          "showers"
+        ]
+      },
+      "note": "The permanent Terminal 3 lounge is closed for construction and expected to return in 2027. Amex confirms food but not a dining format for this temporary facility. Arrival-only access is unavailable. Guest fees depend on the exact card and are not included in the cardholder match."
     }
   ]
 }

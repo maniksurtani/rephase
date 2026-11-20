@@ -1,0 +1,281 @@
+{
+  "$schema": "./schema.json",
+  "schemaVersion": 1,
+  "airport": "SZX",
+  "timeZone": "Asia/Shanghai",
+  "updatedAt": "2026-11-20",
+  "lounges": [
+    {
+      "id": "szx-shenzhen-king-international",
+      "name": "Shenzhen Airlines King Lounge (International)",
+      "terminal": "T3",
+      "location": "International departures, opposite security checkpoint 1.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "flight-dependent",
+        "note": "Operates around flight schedules; no fixed daily hours are published. Confirm opening for early or late departures."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "star-business",
+          "label": "Star Alliance Business Class",
+          "sourceIds": [
+            "ana-access"
+          ],
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingAlliance": "star",
+          "route": "international"
+        },
+        {
+          "id": "star-gold",
+          "label": "Star Alliance Gold",
+          "sourceIds": [
+            "operator",
+            "ana-access"
+          ],
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingAlliance": "star",
+          "route": "international"
+        }
+      ],
+      "sources": [
+        {
+          "id": "operator",
+          "title": "Shenzhen Airlines · King Lounge locations, services and access",
+          "url": "https://globalpage.shenzhenair.com/zhair/cms/static/pages/wcm/static-navigation/Itinerary/BoadingServices/KingLoungeIntroduction/KingLoungeIntroduction_en?language_id=102",
+          "checkedOn": "2026-11-20"
+        },
+        {
+          "id": "ana-access",
+          "title": "ANA · Shenzhen lounge eligibility",
+          "url": "https://www.ana.co.jp/en/jp/guide/lounge/international/szx/",
+          "checkedOn": "2026-11-20"
+        }
+      ],
+      "photos": [],
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://quietvacationer.com/2026/11/18/review-shenzhen-airlines-king-lounge-international-hall-szx/",
+          "checkedOn": "2026-11-20"
+        }
+      ],
+      "qualityRating": {
+        "score": 3,
+        "summary": "A November 2026 review found a useful breakfast buffet, made-to-order noodles and staffed coffee counter. Compact seating and no apron view make this a practical stop rather than a reason to arrive early.",
+        "reviewedOn": "2026-11-20",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "The Quiet Vacationer · King Lounge International Hall (November 2026)",
+            "url": "https://quietvacationer.com/2026/11/18/review-shenzhen-airlines-king-lounge-international-hall-szx/",
+            "checkedOn": "2026-11-20"
+          }
+        ]
+      },
+      "recommendation": {
+        "summary": "A meal and shower before an international Star Alliance departure."
+      },
+      "note": "Private-room availability and eligibility need confirmation at reception. Massage areas are not treated as a staffed spa. Domestic and international lounges are in separate controlled areas."
+    },
+    {
+      "id": "szx-shenzhen-king-hall-3",
+      "name": "Shenzhen Airlines King Lounge (Hall 3)",
+      "terminal": "T3",
+      "location": "Domestic departures, next to Gate 20, on the left below the escalator after security.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "flight-dependent",
+        "note": "Operates around flight schedules; no fixed daily hours are published. Confirm opening for early or late departures."
+      },
+      "amenities": {
+        "showers": "yes",
+        "dining": "buffet",
+        "spa": "unknown",
+        "quietArea": "yes",
+        "wifi": "unknown"
+      },
+      "accessRules": [
+        {
+          "id": "shenzhen-air-china-business",
+          "label": "Shenzhen Airlines or Air China Business Class",
+          "sourceIds": [
+            "operator"
+          ],
+          "cabinsAnyOf": [
+            "business"
+          ],
+          "operatingCarriersAnyOf": [
+            "ZH",
+            "CA"
+          ],
+          "route": "domestic"
+        },
+        {
+          "id": "star-gold",
+          "label": "Star Alliance Gold on Shenzhen Airlines or Air China",
+          "sourceIds": [
+            "operator"
+          ],
+          "membershipsAnyOf": [
+            "star-gold"
+          ],
+          "operatingCarriersAnyOf": [
+            "ZH",
+            "CA"
+          ],
+          "route": "domestic"
+        }
+      ],
+      "sources": [
+        {
+          "id": "operator",
+          "title": "Shenzhen Airlines · King Lounge locations, services and access",
+          "url": "https://globalpage.shenzhenair.com/zhair/cms/static/pages/wcm/static-navigation/Itinerary/BoadingServices/KingLoungeIntroduction/KingLoungeIntroduction_en?language_id=102",
+          "checkedOn": "2026-11-20"
+        }
+      ],
+      "photos": [],
+      "photoLinks": [
+        {
+          "label": "View photos and review",
+          "url": "https://quietvacationer.com/2026/10/12/review-shenzhen-airlines-king-lounge-hall-3-szx/",
+          "checkedOn": "2026-11-20"
+        }
+      ],
+      "qualityRating": {
+        "score": 3,
+        "summary": "An October 2026 review described dated surroundings and average food, but a useful hot buffet and staffed drinks counter. The short visit supports a convenient meal stop, not a judgment of peak-time comfort.",
+        "reviewedOn": "2026-11-20",
+        "sources": [
+          {
+            "id": "quality-review",
+            "title": "The Quiet Vacationer · King Lounge Hall 3 (October 2026)",
+            "url": "https://quietvacationer.com/2026/10/12/review-shenzhen-airlines-king-lounge-hall-3-szx/",
+            "checkedOn": "2026-11-20"
+          }
+        ]
+      },
+      "recommendation": {
+        "summary": "A buffet and shower near the domestic security area; allow time to reach distant gates."
+      },
+      "note": "Private-room availability and eligibility need confirmation at reception. Massage areas are not treated as a staffed spa. Domestic and international lounges are in separate controlled areas."
+    },
+    {
+      "id": "szx-international-guest",
+      "name": "International Guest Lounge",
+      "terminal": "T3",
+      "location": "International departures, near Gates 308–309.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "flight-dependent",
+        "note": "From three hours before the first scheduled flight until the last scheduled flight."
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "route": "international"
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · International Guest Lounge",
+          "url": "https://www.prioritypass.com/en-GB/lounges/china/shenzhen-baoan-international/szx7-international-guest-lounge",
+          "checkedOn": "2026-11-20"
+        },
+        {
+          "id": "amex-directory",
+          "title": "American Express · International VIP Lounge 1 near Gate 309",
+          "url": "https://www.americanexpress.com/en-us/travel/lounges/the-platinum-card/SZX/international-vip-lounge-1-international-terminal-y0Wa9cg2vg",
+          "checkedOn": "2026-11-20"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "A Priority Pass option in the international departure area."
+      },
+      "note": "Also listed as International VIP Lounge 1 or Joyee Guest Lounge. American Express reports boxed meals replacing the buffet; current meal service needs confirmation. Child policies conflict: Priority Pass excludes children, while American Express lists free entry for under-twos. Confirm before visiting with children."
+    },
+    {
+      "id": "szx-china-southern-satellite",
+      "name": "China Southern Airlines Lounge (Satellite)",
+      "terminal": "T3S",
+      "location": "Domestic departures, satellite level 4, above Gate 560. Departing passengers only.",
+      "airside": true,
+      "status": "open",
+      "hours": {
+        "type": "unknown",
+        "note": "Published hours conflict: Priority Pass lists 03:55–23:55 Monday/Wednesday, 02:30–23:55 Tuesday/Thursday/Saturday and 03:45–23:55 Friday/Sunday. Plaza Premium ties hours to China Southern flights. Confirm hours for your visit."
+      },
+      "amenities": {
+        "showers": "unknown",
+        "dining": "unknown",
+        "spa": "unknown",
+        "quietArea": "unknown",
+        "wifi": "yes"
+      },
+      "accessRules": [
+        {
+          "id": "priority-pass",
+          "label": "Priority Pass",
+          "sourceIds": [
+            "priority-pass"
+          ],
+          "membershipsAnyOf": [
+            "priority-pass"
+          ],
+          "route": "domestic",
+          "maxVisitMinutes": 120
+        }
+      ],
+      "sources": [
+        {
+          "id": "priority-pass",
+          "title": "Priority Pass · China Southern Airlines Lounge T3S",
+          "url": "https://www.prioritypass.com/en-GB/lounges/china/shenzhen-baoan-international/szx15-china-southern-airlines-lounge",
+          "checkedOn": "2026-11-20"
+        },
+        {
+          "id": "plaza-directory",
+          "title": "Plaza Premium · China Southern Guest Lounge, satellite",
+          "url": "https://www.plazapremiumlounge.com/en-uk/find/china-regions/mainland-china/shenzhen/shenzhen-baoan-international-airport/china-southern-guest-lounge",
+          "checkedOn": "2026-11-20"
+        }
+      ],
+      "photos": [],
+      "recommendation": {
+        "summary": "A two-hour Priority Pass stop near the domestic satellite gates."
+      },
+      "note": "Admission may be restricted when full. Food and beverages are listed, but the meal format is unconfirmed. Complimentary massage chairs do not establish a staffed spa. China Southern is not treated as a SkyTeam airline; airline premium/status access is not yet verified for this exact facility."
+    }
+  ]
+}

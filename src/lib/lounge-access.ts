@@ -85,6 +85,8 @@ const ALLIANCES: Record<string, LoungeAlliance> = {
   TK: 'star',
   TP: 'star',
   UA: 'star',
+  // ANA's ZH codeshare directory / Miles & More, checked 20 November 2026.
+  ZH: 'star',
   AF: 'skyteam',
   AM: 'skyteam',
   AR: 'skyteam',

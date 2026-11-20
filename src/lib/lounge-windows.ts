@@ -91,7 +91,7 @@ const COUNTRY_AIRPORTS: Record<string, readonly string[]> = {
   BE: ['BRU'],
   PT: ['LIS'],
   TW: ['TPE'],
-  CN: ['PVG', 'PEK', 'CAN'],
+  CN: ['PVG', 'PEK', 'CAN', 'PKX', 'SZX', 'TFU'],
   TH: ['BKK'],
   MY: ['KUL'],
   IN: ['DEL', 'BOM'],
