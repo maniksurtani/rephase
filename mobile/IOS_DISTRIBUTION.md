@@ -15,6 +15,8 @@ There are four modes:
 
 Rephase is a public repository: unlike private Zerocal, this workflow does not attach IPAs or archives to public Actions artifacts. `build` is a signing check; installable betas are distributed through TestFlight in `upload` mode. Apple processes the upload asynchronously; a green upload job means Apple accepted the upload, not that beta review or installation passed.
 
+**Before-upload retries rebuild native binaries.** GitHub discards the job runner and its files when a job ends. The publishing workflow retains no IPA/archive, and native validation retains diagnostics and dependency locks, not the simulator app. Re-running either job therefore recompiles it; only the verified shared engine and successful exact-commit checks can be reused. After a successful Apple upload, use the distribution-only retry below to avoid another build. If native validation is failing, finish that check before starting another signing build.
+
 ## If Zerocal already publishes successfully
 
 1. In Apple Developer, register **`app.rephase.Rephase`** and create its **App Store Connect distribution profile** using the same Apple Distribution certificate as Zerocal. In App Store Connect, create the Rephase app record for this bundle ID.

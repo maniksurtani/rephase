@@ -313,7 +313,8 @@ Updated 2026-11-19. Active work is kept here; the previous complete checklist is
 - [x] Update coverage and validate generated guides, shared/mobile access checks, types and production build; prepared for publication.
 - [x] Deploy the verified web release to Cloudflare: run 44673317295, source `7cd2ff0`.
 - [x] Publish Android 0.1.0 (10) to Firebase friends-and-family.
-- [ ] Unblock iOS native validation and publish a new beta. Build 0.1.0 (7) signed successfully but was not uploaded: three hosted attempts failed at simulator startup, app launch, and Xcode build-setting discovery before tests. Keep the native release gate; evidence is in RELEASES.md.
+- [x] Retry iOS validation and publish a new beta: all three WKWebView tests passed, then 0.1.0 (8) was uploaded and assigned to friends-family; Apple beta review pending at completion. Old binaries were not retained, so native compilation was required. Evidence is in RELEASES.md.
+- [ ] Qualify a hosted Xcode 27 / iOS 27 SDK upgrade before Apple’s April 2027 upload requirement (warning 90725 on build 8).
 
 ## Flight carbon footprint — 18 November 2026
 
