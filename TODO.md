@@ -311,8 +311,9 @@ Updated 2026-11-19. Active work is kept here; the previous complete checklist is
 - [x] Implement primary-source guides, exact-facility review ratings and explicit unresolved gaps: 18 additions, 89 airports / 244 lounges overall.
 - [x] Integrate country/carrier mappings and verify relevant access-policy boundaries.
 - [x] Update coverage and validate generated guides, shared/mobile access checks, types and production build; prepared for publication.
-- [ ] Deploy the verified web release to Cloudflare.
-- [ ] Publish Android and iOS beta updates for accumulated shared country/carrier changes; confirm distribution results.
+- [x] Deploy the verified web release to Cloudflare: run 44673317295, source `7cd2ff0`.
+- [x] Publish Android 0.1.0 (10) to Firebase friends-and-family.
+- [ ] Unblock iOS native validation and publish a new beta. Build 0.1.0 (7) signed successfully but was not uploaded: three hosted attempts failed at simulator startup, app launch, and Xcode build-setting discovery before tests. Keep the native release gate; evidence is in RELEASES.md.
 
 ## Flight carbon footprint — 18 November 2026
 
